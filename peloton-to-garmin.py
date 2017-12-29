@@ -86,21 +86,3 @@ for w in workouts:
 
     logger.info("Writing TCX file")
     tcx_builder.workoutSamplesToTCX(workout, workoutSummary, workoutSamples)
-    
-
-
-# latestWorkoutFound = api.getLatestWorkout()
-# latestWorkoutId = latestWorkoutFound["id"]
-
-# logger.debug("Get workout by id.")
-# latestWorkout = api.getWorkoutById(latestWorkoutId)
-
-# logger.debug("Get workout samples")
-# workoutSamples = api.getWorkoutSamplesById(latestWorkoutId)
-
-# logger.debug("Get workout summary")
-# workoutSummary = api.getWorkoutSummaryById(latestWorkoutId)
-
-# tcx_builder.workoutSamplesToTCX(latestWorkout, workoutSummary, workoutSamples)
-
-    

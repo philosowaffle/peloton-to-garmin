@@ -19,8 +19,6 @@ class PelotonApi:
         response = self.session.post(auth_endpoint, json=payload)
         parsed_response = util.parse_response(response)
         util.handle_error(response)
-        
-        #auth_data = util.parse_data(response)
 
         self.user_id = parsed_response['user_id']
         self.session_id = parsed_response['session_id']

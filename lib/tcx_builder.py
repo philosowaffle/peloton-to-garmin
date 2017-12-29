@@ -3,10 +3,6 @@ from datetime import datetime, timezone
 
 METERS_PER_MILE = 1609.34
 
-# TODO LIST
-# Discrepancy in speed values
-# need to remove ns0 values
-
 def getTimeStamp(timeInSeconds):
     timestamp = datetime.fromtimestamp(timeInSeconds, timezone.utc)
     iso = timestamp.isoformat()
