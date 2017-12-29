@@ -144,4 +144,9 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples):
     root.append(activities)
     tree = etree.ElementTree(root)
 
-    tree.write("{0}-{1}.tcx".format(workout["ride"]["title"], workoutSummary["workout_id"]), xml_declaration=True, encoding="UTF-8", method="xml")
+    instructor = ""
+    if workout['peloton']['ride']['instructor'] is not None:
+        instructor = " with " + workout['peloton']["ride"]["instructor"]["first_name"] + " " + workout['peloton']["ride"]["instructor"]["last_name"]
+    
+    filename = "{0}-{1}{2}-{3}.tcx".format(startTimeInSeconds, workout["ride"]["title"], instructor, workoutSummary["workout_id"])
+    tree.write("output/{0}.tcx".format(filename), xml_declaration=True, encoding="UTF-8", method="xml")

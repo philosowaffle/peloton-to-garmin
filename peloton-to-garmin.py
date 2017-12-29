@@ -15,18 +15,22 @@ from lib import tcx_builder
 ##############################
 # Logging Setup
 ##############################
-if config.ConfigSectionMap("LOGGER")['logfile'] is None:
-	logger.error("Please specify a path for the logfile.")
-	sys.exit(1)
+if len(sys.argv) > 3:
+    file_handler = logging.FileHandler(sys.argv[3])
+else:
+    if config.ConfigSectionMap("LOGGER")['logfile'] is None:
+        logger.error("Please specify a path for the logfile.")
+        sys.exit(1)
+    file_handler = logging.FileHandler(config.ConfigSectionMap("LOGGER")['logfile'])
 
 logger = logging.getLogger('peloton-to-garmin')
-logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 # Formatter
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s: %(message)s')
 
 # File Handler
-file_handler = logging.FileHandler(config.ConfigSectionMap("LOGGER")['logfile'])
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(formatter)
 
@@ -43,31 +47,29 @@ logger.debug("Peloton to Garmin Magic :)")
 ##############################
 # Peloton Setup
 ##############################
-if config.ConfigSectionMap("PELOTON")['email'] is None:
-	logger.error("Please specify your Peloton login email in the config.ini file.")
-	sys.exit(1)
 
-if config.ConfigSectionMap("PELOTON")['password'] is None:
-	logger.error("Please specify your Peloton login password in the config.ini file.")
-	sys.exit(1)
+if len(sys.argv) > 2:
+    user_email = sys.argv[1]
+    user_password = sys.argv[2]
+else :
+    if config.ConfigSectionMap("PELOTON")['email'] is None:
+        logger.error("Please specify your Peloton login email in the config.ini file.")
+        sys.exit(1)
 
-user_email = config.ConfigSectionMap("PELOTON")['email']
-user_password = config.ConfigSectionMap("PELOTON")['password']
+    if config.ConfigSectionMap("PELOTON")['password'] is None:
+        logger.error("Please specify your Peloton login password in the config.ini file.")
+        sys.exit(1)
+
+    user_email = config.ConfigSectionMap("PELOTON")['email']
+    user_password = config.ConfigSectionMap("PELOTON")['password']
 
 api = pelotonApi.PelotonApi(user_email, user_password)
-
-##############################
-# Helper Methods
-##############################
 
 ##############################
 # Main
 ##############################
 
-numActivities = 1
-
-if len(sys.argv) > 1:
-    numActivities = sys.argv[1]
+numActivities = input("How many past activities do you want to grab?  ")
 
 logger.info("Get latest " + str(numActivities) + " workouts.")
 workouts = api.getXWorkouts(numActivities)
@@ -86,3 +88,7 @@ for w in workouts:
 
     logger.info("Writing TCX file")
     tcx_builder.workoutSamplesToTCX(workout, workoutSummary, workoutSamples)
+
+logger.info("Done!")
+logger.info("Your Garmin TCX files can be found in the Output directory.")
+os.system("pause")

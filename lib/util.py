@@ -13,16 +13,6 @@ import urllib
 
 logger = logging.getLogger('peloton-to-garmin.Util')
 
-# Formatter
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s: %(message)s')
-
-# File Handler
-file_handler = logging.FileHandler(config.ConfigSectionMap("LOGGER")['logfile'])
-file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-
 ##############################
 # Main
 ##############################

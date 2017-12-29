@@ -18,8 +18,6 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 * Open a command prompt inside of the `peloton-to-garmin` folder
 * Run the following command:
     * `python peloton-to-garmin`
-* By default this will grab your latest Peloton cycling workout and create a TCX file in the `peloton-to-garmin` directory
+* You will be prompted to enter how many workouts you would like to fetch
+* A TCX file for each workout will be created in the `output` directory
 * The resulting TCX file can then be uploaded to Garmin
-*  You can generate TCX files for older rides by passing in a parameter when you run the command:
-    * `python peloton-to-garmin 3`
-* This will grab your 3 most recent rides.
