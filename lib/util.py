@@ -39,11 +39,15 @@ def full_url(base, suffix):
         return base + suffix
 
 def getResponse(session, url, payload, cookieDict):
-    response = session.get(url, json=payload, cookies=cookieDict)
-    parsed_response = parse_response(response)
-    handle_error(response)
+    try:
+        response = session.get(url, json=payload, cookies=cookieDict)
+        parsed_response = parse_response(response)
+        handle_error(response)
+        
+        return parsed_response
+    except Exception as e:
+        logger.error("Exception: {}".format(e))
     
-    return parsed_response
 
 def logError(response):
     request = response.request

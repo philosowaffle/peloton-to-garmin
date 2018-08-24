@@ -62,6 +62,7 @@ else :
 
     user_email = config.ConfigSectionMap("PELOTON")['email']
     user_password = config.ConfigSectionMap("PELOTON")['password']
+    output_directory = config.ConfigSectionMap("OUTPUT")['directory']
 
 api = pelotonApi.PelotonApi(user_email, user_password)
 
@@ -87,8 +88,8 @@ for w in workouts:
     workoutSummary = api.getWorkoutSummaryById(workoutId)
 
     logger.info("Writing TCX file")
-    tcx_builder.workoutSamplesToTCX(workout, workoutSummary, workoutSamples)
+    tcx_builder.workoutSamplesToTCX(workout, workoutSummary, workoutSamples, output_directory)
 
 logger.info("Done!")
-logger.info("Your Garmin TCX files can be found in the Output directory.")
+logger.info("Your Garmin TCX files can be found in the Output directory: " + output_directory)
 os.system("pause")

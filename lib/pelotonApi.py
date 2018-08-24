@@ -16,7 +16,7 @@ class PelotonApi:
             'password': user_password
         }
 
-        response = self.session.post(auth_endpoint, json=payload)
+        response = self.session.post(auth_endpoint, json=payload, verify=False)
         parsed_response = util.parse_response(response)
         util.handle_error(response)
 
@@ -58,13 +58,13 @@ class PelotonApi:
         url = util.full_url(self.http_base, query)
 
         return util.getResponse(self.session, url, {}, self.getAuthCookie())
-    
+
     def getWorkoutSamplesById(self, workoutId):
         """
             Gets workout samples from Peloton by id.
         """
 
-        query = "workout/" + workoutId + "/sample?every_n=3&fields=seconds_since_pedaling_start,power,cadence,speed,heart_rate,distance&limit=14400"
+        query = "workout/" + workoutId + "/performance_graph?every_n=1"
         url = util.full_url(self.http_base, query)
 
         return util.getResponse(self.session, url, {}, self.getAuthCookie())
