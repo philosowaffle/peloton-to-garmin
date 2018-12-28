@@ -66,39 +66,44 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
         totalMeters = miles * METERS_PER_MILE
         distanceMeters.text = "{0:.1f}".format(totalMeters)
     except Exception as e:
-            logger.error("Exception: {}".format(e))
+            logger.error("Failed to Parse Distance - Exception: {}".format(e))
+            return
 
-    maximumSpeed = etree.Element("MaximumSpeed")
-    maximumSpeed.text = getSpeedInMetersPerSecond(workoutSummary["max_speed"])
+    try:
+        maximumSpeed = etree.Element("MaximumSpeed")
+        maximumSpeed.text = getSpeedInMetersPerSecond(workoutSummary["max_speed"])
 
-    calories = etree.Element("Calories")
-    calories.text = str(workoutSummary["calories"])
+        calories = etree.Element("Calories")
+        calories.text = str(workoutSummary["calories"])
 
-    averageHeartRateBpm = etree.Element("AverageHeartRateBpm")
-    ahrbValue = etree.Element("Value")
-    ahrbValue.text = getHeartRate(workoutSummary["avg_heart_rate"])
-    averageHeartRateBpm.append(ahrbValue)
+        averageHeartRateBpm = etree.Element("AverageHeartRateBpm")
+        ahrbValue = etree.Element("Value")
+        ahrbValue.text = getHeartRate(workoutSummary["avg_heart_rate"])
+        averageHeartRateBpm.append(ahrbValue)
 
-    maximumHeartRateBpm = etree.Element("MaximumHeartRateBpm")
-    mhrbValue = etree.Element("Value")
-    mhrbValue.text = getHeartRate(workoutSummary["max_heart_rate"])
-    maximumHeartRateBpm.append(mhrbValue)
+        maximumHeartRateBpm = etree.Element("MaximumHeartRateBpm")
+        mhrbValue = etree.Element("Value")
+        mhrbValue.text = getHeartRate(workoutSummary["max_heart_rate"])
+        maximumHeartRateBpm.append(mhrbValue)
 
-    extensions = etree.Element("Extensions")
-    lx = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}LX")
-    avgSpeed = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}AvgSpeed")
-    avgSpeed.text = getSpeedInMetersPerSecond(workoutSummary["avg_speed"])
-    maxBikeCadence = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}MaxBikeCadence")
-    maxBikeCadence.text = getCadence(workoutSummary["max_cadence"])
-    avgWatts = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}AvgWatts")
-    avgWatts.text = "{0:.0f}".format(workoutSummary["avg_power"])
-    maxWatts = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}MaxWatts")
-    maxWatts.text = "{0:.0f}".format(workoutSummary["max_power"])
-    lx.append(avgSpeed)
-    lx.append(maxBikeCadence)
-    lx.append(avgWatts)
-    lx.append(maxWatts)
-    extensions.append(lx)
+        extensions = etree.Element("Extensions")
+        lx = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}LX")
+        avgSpeed = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}AvgSpeed")
+        avgSpeed.text = getSpeedInMetersPerSecond(workoutSummary["avg_speed"])
+        maxBikeCadence = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}MaxBikeCadence")
+        maxBikeCadence.text = getCadence(workoutSummary["max_cadence"])
+        avgWatts = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}AvgWatts")
+        avgWatts.text = "{0:.0f}".format(workoutSummary["avg_power"])
+        maxWatts = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}MaxWatts")
+        maxWatts.text = "{0:.0f}".format(workoutSummary["max_power"])
+        lx.append(avgSpeed)
+        lx.append(maxBikeCadence)
+        lx.append(avgWatts)
+        lx.append(maxWatts)
+        extensions.append(lx)
+    except Exception as e:
+        logger.error("Failed to Parse Speed/Cal/HR - Exception: {}".format(e))
+        return
 
     track = etree.Element("Track")
 
@@ -107,6 +112,11 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     outputMetrics = []
     cadenceMetrics = []
     speedMetrics = []
+
+    if(metrics is None):
+        logger.error("No workout metrics data.") 
+        return
+
     for item in metrics:
         if item["slug"] == "heart_rate":
             heartRateMetrics = item
@@ -190,6 +200,6 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     if workout['peloton']['ride']['instructor'] is not None:
         instructor = " with " + workout['peloton']["ride"]["instructor"]["first_name"] + " " + workout['peloton']["ride"]["instructor"]["last_name"]
     
-    filename = "{0}-{1}{2}-{3}.tcx".format(startTimeInSeconds, workout["ride"]["title"], instructor, workoutSummary["workout_id"])
+    filename = "{0}-{1}{2}-{3}.tcx".format(startTimeInSeconds, workout["ride"]["title"], instructor, workout['id'])
     outputDir = outputDir.replace("\"", "")
     tree.write("{0}/{1}".format(outputDir,filename), xml_declaration=True, encoding="UTF-8", method="xml")
