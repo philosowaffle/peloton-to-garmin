@@ -74,7 +74,7 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
         maximumSpeed.text = getSpeedInMetersPerSecond(workoutSummary["max_speed"])
 
         calories = etree.Element("Calories")
-        calories.text = str(workoutSummary["calories"])
+        calories.text = str(int(round((workoutSummary["calories"]))))
 
         averageHeartRateBpm = etree.Element("AverageHeartRateBpm")
         ahrbValue = etree.Element("Value")
