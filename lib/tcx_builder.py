@@ -143,6 +143,8 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
                 thrValue = etree.Element("Value")
                 thrValue.text = getHeartRate(heartRateMetrics["values"][index])
                 trackHeartRate.append(thrValue)
+                trackPoint.append(trackHeartRate)
+                
         except Exception as e:
             logger.error("Exception: {}".format(e))
 
@@ -174,10 +176,10 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
             logger.error("Exception: {}".format(e))
         
         trackExtensions.append(tpx)
-        trackPoint.append(trackTime)
-        trackPoint.append(trackHeartRate)
         
+        trackPoint.append(trackTime)
         trackPoint.append(trackExtensions)
+        
         track.append(trackPoint)
 
     lap.append(totalTimeSeconds)
