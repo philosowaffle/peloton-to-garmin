@@ -45,6 +45,19 @@ logger.addHandler(console_handler)
 logger.debug("Peloton to Garmin Magic :)")
 
 ##############################
+# Environment Variables Setup
+##############################
+if os.getenv("NUM_ACTIVITIES") is not None:
+    numActivities = os.getenv("NUM_ACTIVITIES")
+else:
+    numActivities = None
+
+if os.getenv("OUTPUT_DIRECTORY") is not None:
+    output_directory = os.getenv("OUTPUT_DIRECTORY")
+else:
+    output_directory = config.ConfigSectionMap("OUTPUT")['directory']
+
+##############################
 # Peloton Setup
 ##############################
 
@@ -62,17 +75,8 @@ else :
 
     user_email = config.ConfigSectionMap("PELOTON")['email']
     user_password = config.ConfigSectionMap("PELOTON")['password']
-    output_directory = config.ConfigSectionMap("OUTPUT")['directory']
 
 api = pelotonApi.PelotonApi(user_email, user_password)
-
-##############################
-# Environment Variables Setup
-##############################
-if os.getenv("NUM_ACTIVITIES") is not None:
-    numActivities = os.getenv("NUM_ACTIVITIES")
-else:
-    numActivities = None
 
 ##############################
 # Main

@@ -1,6 +1,7 @@
 FROM python:latest
 
 ENV NUM_ACTIVITIES=5
+ENV OUTPUT_DIRECTORY="/output"
 
 WORKDIR /usr/local/bin
 
