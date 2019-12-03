@@ -70,7 +70,7 @@ api = pelotonApi.PelotonApi(user_email, user_password)
 # Main
 ##############################
 
-numActivities = input("How many past activities do you want to grab?  ")
+numActivities = 5
 
 logger.info("Get latest " + str(numActivities) + " workouts.")
 workouts = api.getXWorkouts(numActivities)
@@ -86,6 +86,7 @@ for w in workouts:
 
     logger.info("Get workout summary")
     workoutSummary = api.getWorkoutSummaryById(workoutId)
+    logger.info("workoutSummary: " + str(workoutSummary))
 
     logger.info("Writing TCX file")
     try:
@@ -96,4 +97,3 @@ for w in workouts:
 
 logger.info("Done!")
 logger.info("Your Garmin TCX files can be found in the Output directory: " + output_directory)
-os.system("pause")
