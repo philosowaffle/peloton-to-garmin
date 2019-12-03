@@ -70,7 +70,7 @@ api = pelotonApi.PelotonApi(user_email, user_password)
 # Main
 ##############################
 
-numActivities = input("How many past activities do you want to grab?  ")
+numActivities = 5
 
 logger.info("Get latest " + str(numActivities) + " workouts.")
 workouts = api.getXWorkouts(numActivities)
