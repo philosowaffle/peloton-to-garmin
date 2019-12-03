@@ -1,5 +1,7 @@
 FROM python:latest
 
+ENV NUM_ACTIVITIES=5
+
 WORKDIR /usr/local/bin
 
 COPY . /opt/app

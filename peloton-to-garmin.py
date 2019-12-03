@@ -67,10 +67,18 @@ else :
 api = pelotonApi.PelotonApi(user_email, user_password)
 
 ##############################
+# Environment Variables Setup
+##############################
+if os.getenv("NUM_ACTIVITIES") is not None:
+    numActivities = os.getenv("NUM_ACTIVITIES")
+else:
+    numActivities = None
+
+##############################
 # Main
 ##############################
-
-numActivities = 5
+if numActivities is None:
+    numActivities = input("How many past activities do you want to grab?  ")
 
 logger.info("Get latest " + str(numActivities) + " workouts.")
 workouts = api.getXWorkouts(numActivities)
@@ -96,4 +104,3 @@ for w in workouts:
 
 logger.info("Done!")
 logger.info("Your Garmin TCX files can be found in the Output directory: " + output_directory)
-
