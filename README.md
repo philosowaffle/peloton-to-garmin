@@ -21,3 +21,13 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 * You will be prompted to enter how many workouts you would like to fetch
 * A TCX file for each workout will be created in the `output` directory
 * The resulting TCX file can then be uploaded to Garmin
+
+## Autoupload to Garmin
+* Put your Garmin connnect credentials in .guploadrc
+* Put a fully qualified path to your output folder in runme.sh.  Be careful, all tcx files will be removed before downloading new ones!
+
+## TODO
+* Use docker environment variable to set the number of activities to download from peloton
+* Use docker environment variable to set all configurable propeties (usernames, passwords, output folder location, etc.)
+* Feed names into garmin upload tool along with file names
+* Run container as a service that will periodically check for new activities
