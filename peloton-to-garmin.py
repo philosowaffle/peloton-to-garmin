@@ -96,4 +96,4 @@ for w in workouts:
 
 logger.info("Done!")
 logger.info("Your Garmin TCX files can be found in the Output directory: " + output_directory)
-os.system("pause")
+
