@@ -12,11 +12,13 @@ from lib import pelotonApi
 from lib import config_helper as config
 from lib import tcx_builder
 
+##############################
+# Debugging Setup
+##############################
 if config.ConfigSectionMap("DEBUG")['pauseonfinish'] is None:
     pause_on_finish = "false"
 else:
     pause_on_finish = config.ConfigSectionMap("DEBUG")['pauseonfinish']
-
 
 ##############################
 # Logging Setup
@@ -117,4 +119,3 @@ logger.info("Your Garmin TCX files can be found in the Output directory: " + out
 
 if pause_on_finish == "true":
     input("Press the <ENTER> key to continue...")
-    
