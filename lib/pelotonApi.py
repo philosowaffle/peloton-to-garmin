@@ -1,6 +1,6 @@
-from . import util
 import requests, json
 import logging
+from . import util
 
 class PelotonApi:
     """Main Peloton Api Class"""
