@@ -7,10 +7,13 @@ import os
 import sys
 import json
 import logging
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 from lib import pelotonApi
 from lib import config_helper as config
 from lib import tcx_builder
+from lib import garminClient
 
 ##############################
 # Debugging Setup
@@ -59,19 +62,23 @@ if os.getenv("NUM_ACTIVITIES") is not None:
     numActivities = os.getenv("NUM_ACTIVITIES")
 else:
     numActivities = None
+    #numActivities = 1
 
 if os.getenv("OUTPUT_DIRECTORY") is not None:
     output_directory = os.getenv("OUTPUT_DIRECTORY")
 else:
     output_directory = config.ConfigSectionMap("OUTPUT")['directory']
+    # Create directory if it does not exist
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
 
 ##############################
 # Peloton Setup
 ##############################
 
 if len(sys.argv) > 2:
-    user_email = sys.argv[1]
-    user_password = sys.argv[2]
+    peloton_email = sys.argv[1]
+    peloton_password = sys.argv[2]
 else :
     if config.ConfigSectionMap("PELOTON")['email'] is None:
         logger.error("Please specify your Peloton login email in the config.ini file.")
@@ -81,10 +88,10 @@ else :
         logger.error("Please specify your Peloton login password in the config.ini file.")
         sys.exit(1)
 
-    user_email = config.ConfigSectionMap("PELOTON")['email']
-    user_password = config.ConfigSectionMap("PELOTON")['password']
+    peloton_email = config.ConfigSectionMap("PELOTON")['email']
+    peloton_password = config.ConfigSectionMap("PELOTON")['password']
 
-api = pelotonApi.PelotonApi(user_email, user_password)
+api = pelotonApi.PelotonApi(peloton_email, peloton_password)
 
 ##############################
 # Main
@@ -94,6 +101,9 @@ if numActivities is None:
 
 logger.info("Get latest " + str(numActivities) + " workouts.")
 workouts = api.getXWorkouts(numActivities)
+
+garmin_email = config.ConfigSectionMap("GARMIN")['email']
+garmin_password = config.ConfigSectionMap("GARMIN")['password']
 
 for w in workouts:
     workoutId = w["id"]
@@ -109,9 +119,15 @@ for w in workouts:
 
     logger.info("Writing TCX file")
     try:
-        tcx_builder.workoutSamplesToTCX(workout, workoutSummary, workoutSamples, output_directory)
+        title, filename = tcx_builder.workoutSamplesToTCX(workout, workoutSummary, workoutSamples, output_directory)
     except Exception as e:
         logger.error("Failed to write TCX file for workout {} - Exception: {}".format(workoutId, e))
+
+    activityType = "cycling"
+
+    fileToUpload = [output_directory + "/" + filename]
+
+    garminClient.uploadToGarmin(fileToUpload, garmin_email, garmin_password, str(activityType), title)
     
 
 logger.info("Done!")
