@@ -4,7 +4,7 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 
 ## Setup
 
-1. Download the repo [here](https://github.com/jrit/peloton-to-tcx/archive/master.zip)
+1. Download the repo [here](https://github.com/philosowaffle/peloton-to-garmin/archive/master.zip)
 1. Extract the zip file
 1. Install the latest version of [Python 3](https://www.python.org/downloads/), currently 3.6.4
 1. Open `File Explorer` and navigate to the wherever you unzipped the downloaded project
