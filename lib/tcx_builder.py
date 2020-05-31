@@ -13,9 +13,7 @@ METERS_PER_MILE = 1609.34
 def getTimeStamp(timeInSeconds):
     timestamp = datetime.fromtimestamp(timeInSeconds, timezone.utc)
     iso = timestamp.isoformat()
-    stepOne = iso.replace("+", ".")
-    split = stepOne.split(":")
-    return "{0}:{1}:{2}{3}Z".format(split[0],split[1],split[2],split[3])
+    return iso.replace("+00:00", ".000Z")
 
 def getHeartRate(heartRate):
     return "{0:.0f}".format(heartRate)
