@@ -200,8 +200,9 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     if workout['peloton']['ride']['instructor'] is not None:
         instructor = " with " + workout['peloton']["ride"]["instructor"]["first_name"] + " " + workout['peloton']["ride"]["instructor"]["last_name"]
     
-    cleanedTitle = workout["ride"]["title"].replace("/","-").replace(":","-")
+    title = "{0}{1}".format(workout["ride"]["title"].replace("/","-").replace(":","-"), instructor)
+    filename = "{0}-{1}-{2}-{3}.tcx".format(startTimeInSeconds, title, workout['id'], datetime.now(tz=None))
 
-    filename = "{0}-{1}{2}-{3}.tcx".format(startTimeInSeconds, cleanedTitle, instructor, workout['id'])
     outputDir = outputDir.replace("\"", "")
     tree.write("{0}/{1}".format(outputDir,filename), xml_declaration=True, encoding="UTF-8", method="xml")
+    return title, filename
