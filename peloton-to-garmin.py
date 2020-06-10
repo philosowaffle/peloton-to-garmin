@@ -140,18 +140,16 @@ for w in workouts:
     logger.info("Get workout summary")
     workoutSummary = api.getWorkoutSummaryById(workoutId)
 
-    logger.info("Writing TCX file")
     try:
-        title, filename = tcx_builder.workoutSamplesToTCX(workout, workoutSummary, workoutSamples, output_directory)
+        title, filename, garmin_activity_type = tcx_builder.workoutSamplesToTCX(workout, workoutSummary, workoutSamples, output_directory)
+        logger.info("Writing TCX file: " + filename)
     except Exception as e:
-        logger.error("Failed to write TCX file for workout {} - Exception: {}".format(workoutId, e))
+        logger.error("Failed to write TCX file for workout {} - {} - Exception: {}".format(workoutId, e))
 
-    activityType = "cycling"
-
-    fileToUpload = [output_directory + "/" + filename]
-
-    garminClient.uploadToGarmin(fileToUpload, garmin_email, garmin_password, str(activityType), title)
-    
+    logger.info(garmin_password)
+    if garmin_email is not None:
+        fileToUpload = [output_directory + "/" + filename]
+        garminClient.uploadToGarmin(fileToUpload, garmin_email, garmin_password, str(garmin_activity_type), title)
 
 logger.info("Done!")
 logger.info("Your Garmin TCX files can be found in the Output directory: " + output_directory)

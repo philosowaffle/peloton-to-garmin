@@ -18,10 +18,11 @@ def ConfigSectionMap(section):
     options = Config.options(section)
     for option in options:
         try:
-            dict1[option] = Config.get(section, option)
+            dict1[option] = Config.get(section, option, raw=True)
             if dict1[option] == -1:
                 logger.debug("skip: %s" % option)
-        except:
+        except Exception as e:
             logger.error("exception on %s!" % option)
+            logger.error("Exception: {}".format(e))
             dict1[option] = None
     return dict1

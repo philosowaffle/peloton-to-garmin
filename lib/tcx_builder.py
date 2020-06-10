@@ -47,7 +47,19 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     activities = etree.Element("Activities")
 
     activity = etree.Element("Activity")
-    activity.attrib = dict(Sport="Biking")
+
+    # Valid Garmin types: Running/Biking/Other
+    # Peloton Disciplines: cardio, circuit, running, cycling, walking, strength, stretching, meditation, yoga
+    fitness_discipline = workout["ride"]["fitness_discipline"]
+    garmin_activity_type = "Biking"
+    if fitness_discipline == "cycling":
+        activity.attrib = dict(Sport="Biking")
+    elif fitness_discipline == "running":
+        activity.attrib = dict(Sport="Running")
+        garmin_activity_type = "Running"
+    else:   
+        activity.attrib = dict(Sport="Other")
+        garmin_activity_type = "Other"
 
     activityId = etree.Element("Id")
     activityId.text = getTimeStamp(startTimeInSeconds)
@@ -58,11 +70,21 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     totalTimeSeconds = etree.Element("TotalTimeSeconds")
     totalTimeSeconds.text = str(workout["peloton"]["ride"]["duration"])
 
+    instructor = ""
+    if workout['peloton']['ride']['instructor'] is not None:
+        instructor = " with " + workout['peloton']["ride"]["instructor"]["first_name"] + " " + workout['peloton']["ride"]["instructor"]["last_name"]
+    title = "{0}{1}".format(workout["ride"]["title"].replace("/","-").replace(":","-"), instructor)
+
+    notes = etree.Element("Notes")
+    notes.text = title
+
     try:
         distanceMeters = etree.Element("DistanceMeters")
-        miles = workoutSamples["summaries"][1]["value"]
-        totalMeters = miles * METERS_PER_MILE
-        distanceMeters.text = "{0:.1f}".format(totalMeters)
+        distanceMeters.text = ""
+        if len(workoutSamples["summaries"]) >= 2:
+            miles = workoutSamples["summaries"][1]["value"]
+            totalMeters = miles * METERS_PER_MILE
+            distanceMeters.text = "{0:.1f}".format(totalMeters)
     except Exception as e:
             logger.error("Failed to Parse Distance - Exception: {}".format(e))
             return
@@ -191,18 +213,15 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
 
     activity.append(activityId)
     activity.append(lap)
+    activity.append(notes)
 
     activities.append(activity)
     root.append(activities)
     tree = etree.ElementTree(root)
 
-    instructor = ""
-    if workout['peloton']['ride']['instructor'] is not None:
-        instructor = " with " + workout['peloton']["ride"]["instructor"]["first_name"] + " " + workout['peloton']["ride"]["instructor"]["last_name"]
     
-    title = "{0}{1}".format(workout["ride"]["title"].replace("/","-").replace(":","-"), instructor)
-    filename = "{0}-{1}-{2}-{3}.tcx".format(startTimeInSeconds, title, workout['id'], datetime.now(tz=None))
+    filename = "{0}-{1}-{2}.tcx".format(startTimeInSeconds, title, workout['id'])
 
     outputDir = outputDir.replace("\"", "")
     tree.write("{0}/{1}".format(outputDir,filename), xml_declaration=True, encoding="UTF-8", method="xml")
-    return title, filename
+    return title, filename, garmin_activity_type
