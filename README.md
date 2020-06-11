@@ -14,6 +14,7 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
     1. `pip install -r requirements.txt`
 1. Close the command prompt and return to the `peloton-to-garmin` folder
 1. Edit the `config.ini` file and set your Peloton Email and Password, Save and Close
+    1. Optionally set your Garmin Email and Password if you wish for activities to be uploaded automatically
 
 ## Windows Usage
 
