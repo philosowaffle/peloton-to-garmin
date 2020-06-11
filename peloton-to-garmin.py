@@ -146,10 +146,13 @@ for w in workouts:
     except Exception as e:
         logger.error("Failed to write TCX file for workout {} - {} - Exception: {}".format(workoutId, e))
 
-    logger.info(garmin_password)
     if garmin_email is not None:
-        fileToUpload = [output_directory + "/" + filename]
-        garminClient.uploadToGarmin(fileToUpload, garmin_email, garmin_password, str(garmin_activity_type), title)
+        try:
+            logger.info("Uploading workout to Garmin")
+            fileToUpload = [output_directory + "/" + filename]
+            garminClient.uploadToGarmin(fileToUpload, garmin_email, garmin_password, str(garmin_activity_type).lower(), title)
+        except Exception as e:
+            logger.error("Failed to upload to Garmin: {}".format(e))
 
 logger.info("Done!")
 logger.info("Your Garmin TCX files can be found in the Output directory: " + output_directory)
