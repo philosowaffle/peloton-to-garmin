@@ -15,6 +15,8 @@ from lib import pelotonApi
 from lib import config_helper as config
 from lib import tcx_builder
 from lib import garminClient
+from tinydb import TinyDB, Query
+from datetime import datetime
 
 ##############################
 # Debugging Setup
@@ -98,6 +100,11 @@ else:
         os.makedirs(output_directory)
 
 ##############################
+# Database Setup
+##############################
+database = TinyDB('database.json')
+
+##############################
 # Peloton Setup
 ##############################
 if argResults.email is not None:
@@ -134,6 +141,8 @@ elif config.ConfigSectionMap("GARMIN")['password'] is not None:
 
 uploadToGarmin = garmin_email is not None and garmin_password is not None
 
+garminUploadHistoryTable = database.table('garminUploadHistory')
+
 ##############################
 # Main
 ##############################
@@ -163,14 +172,22 @@ for w in workouts:
 
     if uploadToGarmin:
         try:
+            uploadItem = Query()
+            workoutAlreadyUploaded = garminUploadHistoryTable.contains(uploadItem.workoutId == workoutId)
+            if workoutAlreadyUploaded:
+                logger.info("Workout already uploaded to garmin, skipping...")
+                continue
+
             logger.info("Uploading workout to Garmin")
             fileToUpload = [output_directory + "/" + filename]
             garminClient.uploadToGarmin(fileToUpload, garmin_email, garmin_password, str(garmin_activity_type).lower(), title)
+            garminUploadHistoryTable.insert({'workoutId': workoutId, 'title': title, 'uploadDt': datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
         except Exception as e:
             logger.error("Failed to upload to Garmin: {}".format(e))
 
 logger.info("Done!")
 logger.info("Your Garmin TCX files can be found in the Output directory: " + output_directory)
+database.close()
 
 if pause_on_finish == "true":
     input("Press the <ENTER> key to continue...")
