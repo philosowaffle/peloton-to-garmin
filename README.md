@@ -2,6 +2,31 @@
 
 Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 
+## Command Line Arguments
+
+Usage:  
+peloton-to-garmin.py [-h] [-email EMAIL] [-password PASSWORD] [-path OUTPUT_DIR] [-num NUM_TO_DOWNLOAD] [-log LOG_FILE]
+
+optional arguments:
+
+  * -h, --help            show this help message and exit  
+  * -email EMAIL          Peloton email address  
+  * -password PASSWORD    Peloton password  
+  * -path OUTPUT_DIR      Path to output directory  
+  * -num NUM_TO_DOWNLOAD  Number of activities to download  
+  * -log LOG_FILE         Log file name## Runnning in docker  
+  * -garmin_email         Garmin email address for upload to Garmin
+  * -garmin_password      Garmin password for upload to Garmin
+  
+  Examples:
+  
+  * To get the last 10 activities:  
+        * `peloton-to-garmin.py -num 10`  
+  * To pass your email and passowrd:  
+        * `peloton-to-garmin.py -email you@email.com -password mypassword`  
+  
+  Note: Command line arguments take precedence over values in the configuration file. 
+
 ## Windows Setup
 
 1. Download the repo [here](https://github.com/philosowaffle/peloton-to-garmin/archive/master.zip)
@@ -45,27 +70,6 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 * You will be prompted to enter how many workouts you would like to fetch
 * A TCX file for each workout will be created in the `output` directory
 * The resulting TCX file can then be uploaded to Garmin
-
-## Command Line Arguments
-
-Usage:  
-peloton-to-garmin.py [-h] [-email EMAIL] [-password PASSWORD] [-path OUTPUT_DIR] [-num NUM_TO_DOWNLOAD] [-log LOG_FILE]
-
-optional arguments:
-  * -h, --help            show this help message and exit  
-  * -email EMAIL          Peloton email address  
-  * -password PASSWORD    Peloton password  
-  * -path OUTPUT_DIR      Path to output directory  
-  * -num NUM_TO_DOWNLOAD  Number of activities to download  
-  * -log LOG_FILE         Log file name## Runnning in docker  
-  
-  Examples:
-  * To get the last 10 activities:  
-        * `peloton-to-garmin.py -num 10`  
-  * To pass your email and passowrd:  
-        * `peloton-to-garmin.py -email you@email.com -password mypassword`  
-  
-  Note: Command line arguments take precedence over values in the configuration file. 
 
 ## Runnning in docker
 
