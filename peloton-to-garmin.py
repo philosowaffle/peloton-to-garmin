@@ -30,7 +30,7 @@ argParser.add_argument("-email",help="Peloton email address",dest="email",type=s
 argParser.add_argument("-password",help="Peloton password",dest="password",type=str)
 argParser.add_argument("-path",help="Path to output directory",dest="output_dir",type=str)
 argParser.add_argument("-num",help="Number of activities to download",dest="num_to_download",type=int)
-argParser.add_argument("-log",help="Log file name",dest="log_file",type=int)
+argParser.add_argument("-log",help="Log file name",dest="log_file",type=str)
 
 argResults = argParser.parse_args()
 
