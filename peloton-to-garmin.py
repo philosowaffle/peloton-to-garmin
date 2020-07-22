@@ -31,6 +31,8 @@ argParser = argparse.ArgumentParser()
 
 argParser.add_argument("-email",help="Peloton email address",dest="email",type=str)
 argParser.add_argument("-password",help="Peloton password",dest="password",type=str)
+argParser.add_argument("-garmin_email",help="Garmin email address for upload to Garmin",dest="garmin_email",type=str)
+argParser.add_argument("-garmin_password",help="Garmin password for upload to Garmin",dest="garmin_password",type=str)
 argParser.add_argument("-path",help="Path to output directory",dest="output_dir",type=str)
 argParser.add_argument("-num",help="Number of activities to download",dest="num_to_download",type=int)
 argParser.add_argument("-log",help="Log file name",dest="log_file",type=str)
@@ -117,6 +119,22 @@ else:
 api = pelotonApi.PelotonApi(peloton_email, peloton_password)
 
 ##############################
+# Garmin Setup
+##############################
+uploadToGarmin = False
+if argResults.garmin_email is not None:
+    garmin_email = argResults.garmin_email
+elif config.ConfigSectionMap("GARMIN")['email'] is not None:
+    garmin_email = config.ConfigSectionMap("GARMIN")['email']
+
+if argResults.garmin_password is not None:
+    garmin_password = argResults.garmin_password
+elif config.ConfigSectionMap("GARMIN")['password'] is not None:
+    garmin_password = config.ConfigSectionMap("GARMIN")['password']
+
+uploadToGarmin = garmin_email is not None and garmin_password is not None
+
+##############################
 # Main
 ##############################
 if numActivities is None:
@@ -124,9 +142,6 @@ if numActivities is None:
 
 logger.info("Get latest " + str(numActivities) + " workouts.")
 workouts = api.getXWorkouts(numActivities)
-
-garmin_email = config.ConfigSectionMap("GARMIN")['email']
-garmin_password = config.ConfigSectionMap("GARMIN")['password']
 
 for w in workouts:
     workoutId = w["id"]
@@ -146,7 +161,7 @@ for w in workouts:
     except Exception as e:
         logger.error("Failed to write TCX file for workout {} - {} - Exception: {}".format(workoutId, e))
 
-    if garmin_email is not None:
+    if uploadToGarmin:
         try:
             logger.info("Uploading workout to Garmin")
             fileToUpload = [output_directory + "/" + filename]
