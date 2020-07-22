@@ -139,7 +139,8 @@ if argResults.garmin_password is not None:
 elif config.ConfigSectionMap("GARMIN")['password'] is not None:
     garmin_password = config.ConfigSectionMap("GARMIN")['password']
 
-uploadToGarmin = garmin_email is not None and garmin_password is not None
+if config.ConfigSectionMap("GARMIN")['uploadenabled'] is not None:
+    uploadToGarmin = config.ConfigSectionMap("GARMIN")['uploadenabled'] == "true"
 
 garminUploadHistoryTable = database.table('garminUploadHistory')
 
