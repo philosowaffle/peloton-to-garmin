@@ -45,7 +45,26 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 * A TCX file for each workout will be created in the `output` directory
 * The resulting TCX file can then be uploaded to Garmin
 
+## Command Line Arguments
 
+Usage:  
+peloton-to-garmin.py [-h] [-email EMAIL] [-password PASSWORD] [-path OUTPUT_DIR] [-num NUM_TO_DOWNLOAD] [-log LOG_FILE]
+
+optional arguments:
+  * -h, --help            show this help message and exit  
+  * -email EMAIL          Peloton email address  
+  * -password PASSWORD    Peloton password  
+  * -path OUTPUT_DIR      Path to output directory  
+  * -num NUM_TO_DOWNLOAD  Number of activities to download  
+  * -log LOG_FILE         Log file name## Runnning in docker  
+  
+  Examples:
+  * To get the last 10 activities:  
+        * `peloton-to-garmin.py -num 10`  
+  * To pass your email and passowrd:  
+        * `peloton-to-garmin.py -email you@email.com -password mypassword`  
+  
+  Note: Command line arguments take precedence over values in the configuration file. 
 
 ## Runnning in docker
 
@@ -55,4 +74,5 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
     * `docker run -v /full_path_here/peloton-to-garmin/output:/output pelotontogarmin`
 
 ⚠️ WARNING!!! Your username and password for Peloton and Garmin Connect are stored in clear text, WHICH IS NOT SECURE. If you have concerns about storing your credentials in an unsecure file, do not use this option.
+
 ⚠️ WARNING!!! There is no certificate validation. This is open to person-in-the-middle attacks. 

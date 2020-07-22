@@ -102,3 +102,4 @@ ENV/
 
 
 *.lnk
+.DS_Store

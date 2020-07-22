@@ -16,7 +16,7 @@ class PelotonApi:
             'password': user_password
         }
 
-        response = self.session.post(auth_endpoint, json=payload, verify=False)
+        response = self.session.post(auth_endpoint, json=payload, verify=True)
         parsed_response = util.parse_response(response)
         util.handle_error(response)
 
