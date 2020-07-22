@@ -1,2 +1,4 @@
 requests
 ConfigParser
+garmin_uploader
+tinydb

@@ -1,6 +1,45 @@
 # peloton-to-garmin
 
-Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
+Convert workout data from Peloton into a TCX file that can be uploaded to Garmin.
+
+* Fetch latest workouts from Peloton
+* Convert Peloton workout to TCX file
+* Upload TCX workout to Garmin
+* Maintain Upload History to avoid duplicates in Garmin
+
+## Table of Contents
+
+1. [Command Line Arguments](#command-line-arguments)
+1. [Windows Usage](#windows-usage)
+1. [Linux Usage](#linux-usage)
+1. [Running in Docker](#running-in-docker)
+1. [Database](#database)
+1. [Use At Own Risk](#warnings)
+
+## Command Line Arguments
+
+Usage:  
+peloton-to-garmin.py [-h] [-email EMAIL] [-password PASSWORD] [-path OUTPUT_DIR] [-num NUM_TO_DOWNLOAD] [-log LOG_FILE]
+
+optional arguments:
+
+  * -h, --help            show this help message and exit  
+  * -email EMAIL          Peloton email address  
+  * -password PASSWORD    Peloton password  
+  * -path OUTPUT_DIR      Path to output directory  
+  * -num NUM_TO_DOWNLOAD  Number of activities to download  
+  * -log LOG_FILE         Log file name## Runnning in docker  
+  * -garmin_email         Garmin email address for upload to Garmin
+  * -garmin_password      Garmin password for upload to Garmin
+  
+  Examples:
+
+  * To get the last 10 activities:  
+        * `peloton-to-garmin.py -num 10`  
+  * To pass your email and passowrd:  
+        * `peloton-to-garmin.py -email you@email.com -password mypassword`  
+  
+  Note: Command line arguments take precedence over values in the configuration file. 
 
 ## Windows Setup
 
@@ -14,8 +53,9 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
     1. `pip install -r requirements.txt`
 1. Close the command prompt and return to the `peloton-to-garmin` folder
 1. Edit the `config.ini` file and set your Peloton Email and Password, Save and Close
+    1. Optionally set your Garmin Email and Password if you wish for activities to be uploaded automatically
 
-## Windows Usage
+### Windows Usage
 
 * Open a command prompt inside of the `peloton-to-garmin` folder
 * Run the following command:
@@ -36,7 +76,7 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 1. `vim config.ini` (or nano or whatever. Just not emacs, please :P)
     1. set your Peloton Email and Password, Save and Close
 
-## Linux Usage
+### Linux Usage
 
 * Open a command prompt inside of the `peloton-to-garmin` folder
 * Run the following command:
@@ -45,33 +85,18 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 * A TCX file for each workout will be created in the `output` directory
 * The resulting TCX file can then be uploaded to Garmin
 
-## Command Line Arguments
-
-Usage:  
-peloton-to-garmin.py [-h] [-email EMAIL] [-password PASSWORD] [-path OUTPUT_DIR] [-num NUM_TO_DOWNLOAD] [-log LOG_FILE]
-
-optional arguments:
-  * -h, --help            show this help message and exit  
-  * -email EMAIL          Peloton email address  
-  * -password PASSWORD    Peloton password  
-  * -path OUTPUT_DIR      Path to output directory  
-  * -num NUM_TO_DOWNLOAD  Number of activities to download  
-  * -log LOG_FILE         Log file name## Runnning in docker  
-  
-  Examples:
-  * To get the last 10 activities:  
-        * `peloton-to-garmin.py -num 10`  
-  * To pass your email and passowrd:  
-        * `peloton-to-garmin.py -email you@email.com -password mypassword`  
-  
-  Note: Command line arguments take precedence over values in the configuration file. 
-
 ## Runnning in docker
 
 * Build the image by running
     * `docker build . -t pelotontogarmin`
 * Run the container by running:
     * `docker run -v /full_path_here/peloton-to-garmin/output:/output pelotontogarmin`
+
+## Database
+
+Various config and upload history is maintained in a local `database.json` file. Deleting this file will delete any upload history and the servic will attempt to upload all workouts to Garmin Connect again.
+
+## Warnings
 
 ⚠️ WARNING!!! Your username and password for Peloton and Garmin Connect are stored in clear text, WHICH IS NOT SECURE. If you have concerns about storing your credentials in an unsecure file, do not use this option.
 
