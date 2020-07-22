@@ -13,4 +13,4 @@ def uploadToGarmin(paths, garminUsername, garminPassword, activityType, activity
         workflow.run()
     except Exception as e:
         logger.error("Failed to upload to Garmin Connect. - {}".format(e)) 
-        return
+        raise e
