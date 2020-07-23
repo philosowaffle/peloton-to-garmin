@@ -42,7 +42,7 @@ jobs:
     - name: Create Archive
       uses: papeloto/action-zip@v1
       with:
-       files: ${{ github.workspace }}\dist\peloton-to-garmin-win\
+       files: \dist\peloton-to-garmin-win\
        dest: \dist\peloton-to-garmin-win.zip
     - name: Commit changes
       uses: EndBug/add-and-commit@v4
@@ -63,5 +63,6 @@ jobs:
         file: ${{ github.workspace }}\dist\peloton-to-garmin-win.zip
         asset_name: peloton-to-garmin-windows.zip
         tag: ${{ steps.version_bump.outputs.new_tag }}
+        body: ${{ steps.version_bump.outputs.changelog }}
       
         
