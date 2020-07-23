@@ -38,6 +38,7 @@ argParser.add_argument("-garmin_password",help="Garmin password for upload to Ga
 argParser.add_argument("-path",help="Path to output directory",dest="output_dir",type=str)
 argParser.add_argument("-num",help="Number of activities to download",dest="num_to_download",type=int)
 argParser.add_argument("-log",help="Log file name",dest="log_file",type=str)
+argParser.add_argument("-loglevel",help="[DEBUG, INFO, ERROR]",dest="log_level",type=str)
 
 argResults = argParser.parse_args()
 
@@ -49,12 +50,24 @@ if argResults.log_file is not None:
 elif config.ConfigSectionMap("LOGGER")['logfile'] is not None:
     file_handler = logging.FileHandler(config.ConfigSectionMap("LOGGER")['logfile'])
 else:
-    logger.error("Please specify a path for the logfile.")
     sys.exit(1)
+
+if argResults.log_level is not None:
+    log_level = argResults.log_level
+elif config.ConfigSectionMap("LOGGER")['loglevel'] is not None:
+    log_level = config.ConfigSectionMap("LOGGER")['loglevel']
+else:
+    log_level = "INFO"
     
+if log_level == "ERROR":
+    level = logging.ERROR
+elif log_level == "DEBUG":
+    level = logging.DEBUG
+else:
+    level = logging.INFO
+
 logger = logging.getLogger('peloton-to-garmin')
-# logger.setLevel(logging.DEBUG)
-logger.setLevel(logging.INFO)
+logger.setLevel(level)
 
 # Formatter
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s: %(message)s')

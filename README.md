@@ -14,7 +14,7 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 1. [Linux Usage](#linux-usage)
 1. [Running in Docker](#running-in-docker)
 1. [Database](#database)
-1. [Contributors](#contributors)
+1. [Contributing](#contributing)
 1. [Use At Own Risk](#warnings)
 
 ## Command Line Arguments
@@ -97,7 +97,13 @@ optional arguments:
 
 Various config and upload history is maintained in a local `database.json` file. Deleting this file will delete any upload history and the servic will attempt to upload all workouts to Garmin Connect again.
 
-## Contributors
+## Contributing
+
+* `pip install -r dev_requirements.txt`
+* `cd tests`
+* `pytest`
+
+### Contributors
 
 Special thanks to all the contributors who have helped improve this project!
 
