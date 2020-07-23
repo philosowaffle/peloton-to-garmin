@@ -35,14 +35,19 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
+    - name: Get Date
+      uses: 1466587594/get-current-time@v1
+      id: current-date
+      with:
+        format: YYYY.MM.DD
     - name: Package
       run: |
         pyinstaller -n peloton-to-garmin-win --console --clean --noconfirm --add-data config.ini;. --add-data README.md;. peloton-to-garmin.py
-    - name: Get current time
-      uses: 1466587594/get-current-time@v1
-      id: current-time
-      with:
-        format: YYYY.MM.DD
+    - name: Create Archive
+        uses: thedoctor0/zip-release@master
+        with:
+          path: 'dist/peloton-to-garmin-win'
+          filename: 'dist/peloton-to-garmin-win.zip'
     - name: Commit changes
       uses: EndBug/add-and-commit@v4
       with:
