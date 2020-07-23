@@ -50,7 +50,6 @@ if argResults.log_file is not None:
 elif config.ConfigSectionMap("LOGGER")['logfile'] is not None:
     file_handler = logging.FileHandler(config.ConfigSectionMap("LOGGER")['logfile'])
 else:
-    logger.error("Please specify a path for the logfile.")
     sys.exit(1)
 
 if argResults.log_level is not None:
