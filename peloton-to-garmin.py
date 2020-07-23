@@ -169,7 +169,7 @@ for w in workouts:
         title, filename, garmin_activity_type = tcx_builder.workoutSamplesToTCX(workout, workoutSummary, workoutSamples, output_directory)
         logger.info("Writing TCX file: " + filename)
     except Exception as e:
-        logger.error("Failed to write TCX file for workout {} - {} - Exception: {}".format(workoutId, e))
+        logger.error("Failed to write TCX file for workout {} - Exception: {}".format(workoutId, e))
 
     if uploadToGarmin:
         try:
