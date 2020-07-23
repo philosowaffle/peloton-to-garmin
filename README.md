@@ -106,6 +106,7 @@ Special thanks to all the contributors who have helped improve this project!
 * @jyc66
 * @Kdisimone
 * @NateEverden
+* @padioca
 
 If you submit a pull request feel free to update this list to include your name (and or peloton handle).
 
