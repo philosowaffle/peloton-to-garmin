@@ -9,40 +9,29 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 
 ## Table of Contents
 
-1. [Command Line Arguments](#command-line-arguments)
-1. [Windows Usage](#windows-usage)
+1. [Windows Usage](#windows-setup)
 1. [Linux Usage](#linux-usage)
 1. [Running in Docker](#running-in-docker)
+1. [Command Line Arguments](#command-line-arguments)
 1. [Database](#database)
 1. [Contributing](#contributing)
 1. [Use At Own Risk](#warnings)
 
-## Command Line Arguments
-
-Usage:  
-peloton-to-garmin.py [-h] [-email EMAIL] [-password PASSWORD] [-path OUTPUT_DIR] [-num NUM_TO_DOWNLOAD] [-log LOG_FILE]
-
-optional arguments:
-
-  * -h, --help            show this help message and exit  
-  * -email EMAIL          Peloton email address  
-  * -password PASSWORD    Peloton password  
-  * -path OUTPUT_DIR      Path to output directory  
-  * -num NUM_TO_DOWNLOAD  Number of activities to download  
-  * -log LOG_FILE         Log file name## Runnning in docker  
-  * -garmin_email         Garmin email address for upload to Garmin
-  * -garmin_password      Garmin password for upload to Garmin
-  
-  Examples:
-
-  * To get the last 10 activities:  
-        * `peloton-to-garmin.py -num 10`  
-  * To pass your email and passowrd:  
-        * `peloton-to-garmin.py -email you@email.com -password mypassword`  
-  
-  Note: Command line arguments take precedence over values in the configuration file. 
-
 ## Windows Setup
+
+### Quick Start
+
+1. Find the latest release [here](https://github.com/philosowaffle/peloton-to-garmin/releases)
+1. Download the file `peloton-to-garmin-windows.zip`
+1. Unzip the folder
+1. Find the file named `config.ini`, open it with your text editor of choice and modify the Peloton/Garmin settings
+1. Save and close the file
+1. Find the file named `peloton-to-garmin.exe`, double click to launch the program
+1. You will be prompted to enter how many workouts you would like to fetch
+1. A TCX file for each workout will be created in the `Output` directory
+1. The resulting TCX file can then be uploaded to Garmin manually, or you can configure the `config.ini` settings to upload automagically for you
+
+### Advanced Setup
 
 1. Download the repo [here](https://github.com/philosowaffle/peloton-to-garmin/archive/master.zip)
 1. Extract the zip file
@@ -56,7 +45,7 @@ optional arguments:
 1. Edit the `config.ini` file and set your Peloton Email and Password, Save and Close
     1. Optionally set your Garmin Email and Password if you wish for activities to be uploaded automatically
 
-### Windows Usage
+### Advanced Usage
 
 * Open a command prompt inside of the `peloton-to-garmin` folder
 * Run the following command:
@@ -86,12 +75,37 @@ optional arguments:
 * A TCX file for each workout will be created in the `output` directory
 * The resulting TCX file can then be uploaded to Garmin
 
-## Runnning in docker
+## Runnning In Docker
 
 * Build the image by running
     * `docker build . -t pelotontogarmin`
 * Run the container by running:
     * `docker run -v /full_path_here/peloton-to-garmin/output:/output pelotontogarmin`
+
+## Command Line Arguments
+
+Usage:  
+peloton-to-garmin.py [-h] [-email EMAIL] [-password PASSWORD] [-path OUTPUT_DIR] [-num NUM_TO_DOWNLOAD] [-log LOG_FILE]
+
+optional arguments:
+
+  * -h, --help            show this help message and exit  
+  * -email EMAIL          Peloton email address  
+  * -password PASSWORD    Peloton password  
+  * -path OUTPUT_DIR      Path to output directory  
+  * -num NUM_TO_DOWNLOAD  Number of activities to download  
+  * -log LOG_FILE         Log file name## Runnning in docker  
+  * -garmin_email         Garmin email address for upload to Garmin
+  * -garmin_password      Garmin password for upload to Garmin
+  
+  Examples:
+
+  * To get the last 10 activities:  
+        * `peloton-to-garmin.py -num 10`  
+  * To pass your email and passowrd:  
+        * `peloton-to-garmin.py -email you@email.com -password mypassword`  
+  
+  Note: Command line arguments take precedence over values in the configuration file. 
 
 ## Database
 
