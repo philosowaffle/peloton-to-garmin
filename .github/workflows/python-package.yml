@@ -43,7 +43,7 @@ jobs:
       uses: papeloto/action-zip@v1
       with:
        files: ${{ github.workspace }}\dist\peloton-to-garmin-win\
-       dest: ${{ github.workspace }}\dist\peloton-to-garmin-win.zip
+       dest: \dist\peloton-to-garmin-win.zip
     - name: Commit changes
       uses: EndBug/add-and-commit@v4
       with:
