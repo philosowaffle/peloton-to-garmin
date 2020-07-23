@@ -53,7 +53,7 @@ jobs:
       uses: EndBug/add-and-commit@v4
       with:
         message: "Create windows distro ${{ steps.current-time.outputs.time }}"
-        add: "dist\peloton-to-garmin-win.zip"
+        add: "dist\\peloton-to-garmin-win.zip"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Bump version and tag
