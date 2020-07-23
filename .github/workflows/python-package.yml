@@ -43,7 +43,7 @@ jobs:
         format: YYYY.MM.DD
     - name: Package
       run: |
-        pyinstaller -n peloton-to-garmin-win --console --clean --noconfirm --add-data config.ini;. --add-data README.md;. peloton-to-garmin.py
+        pyinstaller -n peloton-to-garmin-win --console --clean --noconfirm --add-data 'config.ini;.' --add-data 'README.md;.' peloton-to-garmin.py
     - name: Create Archive
       uses: thedoctor0/zip-release@master
       with:
