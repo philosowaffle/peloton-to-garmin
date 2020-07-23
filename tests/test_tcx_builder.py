@@ -4,21 +4,16 @@ from lib import tcx_builder
 
 class TestTcxBuilder:
     
+    def loadTestData(self, filename):
+        with open(os.path.join(os.getcwd(), "data", filename)) as json_file:
+            return json.load(json_file)
+
     def test_cycling_smoketest(self):
         # Setup
-        workout_data = ""
-        with open(os.path.join(os.getcwd(),"tests","data","peloton_workout_cycling.json")) as json_file:
-            workout_data = json.load(json_file)
-
-        workout_summary = ""
-        with open(os.path.join(os.getcwd(),"tests","data","peloton_workoutsummary_cycling.json")) as json_file:
-            workout_summary = json.load(json_file)
-
-        workout_samples = ""
-        with open(os.path.join(os.getcwd(),"tests","data","peloton_workoutsamples_cycling.json")) as json_file:
-            workout_samples = json.load(json_file)
-
-        output_directory = os.path.join(os.getcwd(),"tests","testOutput")
+        workout_data = self.loadTestData("peloton_workout_cycling.json")
+        workout_summary = self.loadTestData("peloton_workoutsummary_cycling.json")
+        workout_samples = self.loadTestData("peloton_workoutsamples_cycling.json")
+        output_directory = os.path.join(os.getcwd(),"testOutput")
 
         # Act
         title, filename, garmin_activity_type = tcx_builder.workoutSamplesToTCX(workout_data, workout_summary, workout_samples, output_directory)
@@ -30,19 +25,10 @@ class TestTcxBuilder:
 
     def test_strength_smoketest(self):
         # Setup
-        workout_data = ""
-        with open(os.path.join(os.getcwd(),"tests","data","peloton_workout_strength.json")) as json_file:
-            workout_data = json.load(json_file)
-
-        workout_summary = ""
-        with open(os.path.join(os.getcwd(),"tests","data","peloton_workoutsummary_strength.json")) as json_file:
-            workout_summary = json.load(json_file)
-
-        workout_samples = ""
-        with open(os.path.join(os.getcwd(),"tests","data","peloton_workoutsamples_strength.json")) as json_file:
-            workout_samples = json.load(json_file)
-
-        output_directory = os.path.join(os.getcwd(),"tests","testOutput")
+        workout_data = self.loadTestData("peloton_workout_strength.json")
+        workout_summary = self.loadTestData("peloton_workoutsummary_strength.json")
+        workout_samples = self.loadTestData("peloton_workoutsamples_strength.json")
+        output_directory = os.path.join(os.getcwd(),"testOutput")
 
         # Act
         title, filename, garmin_activity_type = tcx_builder.workoutSamplesToTCX(workout_data, workout_summary, workout_samples, output_directory)

@@ -14,7 +14,7 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 1. [Linux Usage](#linux-usage)
 1. [Running in Docker](#running-in-docker)
 1. [Database](#database)
-1. [Contributors](#contributors)
+1. [Contributing](#contributing)
 1. [Use At Own Risk](#warnings)
 
 ## Command Line Arguments
