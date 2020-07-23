@@ -106,3 +106,7 @@ ENV/
 # User Files
 database.json
 *.log
+output/
+
+# Dev Files
+tests/testOutput/

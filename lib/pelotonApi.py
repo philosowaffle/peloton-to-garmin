@@ -35,8 +35,11 @@ class PelotonApi:
         url = util.full_url(self.http_base, query)
 
         workouts = util.getResponse(self.session, url, {}, self.getAuthCookie())
+        data = workouts["data"]
 
-        return workouts["data"]
+        self.logger.debug("getXWorkouts: {}".format(data))
+
+        return data
     
     def getLatestWorkout(self):
         """
@@ -46,8 +49,11 @@ class PelotonApi:
         url = util.full_url(self.http_base, query)
 
         workouts = util.getResponse(self.session, url, {}, self.getAuthCookie())
+        data = workouts["data"][0]
 
-        return workouts["data"][0]
+        self.logger.debug("getLatestWorkout: {}".format(data))
+
+        return data
     
     def getWorkoutById(self, workoutId):
         """
@@ -56,8 +62,11 @@ class PelotonApi:
 
         query = "workout/" + workoutId + "?joins=peloton,peloton.ride,peloton.ride.instructor,user"
         url = util.full_url(self.http_base, query)
+        data = util.getResponse(self.session, url, {}, self.getAuthCookie())
 
-        return util.getResponse(self.session, url, {}, self.getAuthCookie())
+        self.logger.debug("getWorkoutById: {}".format(data))
+
+        return data
 
     def getWorkoutSamplesById(self, workoutId):
         """
@@ -66,8 +75,11 @@ class PelotonApi:
 
         query = "workout/" + workoutId + "/performance_graph?every_n=1"
         url = util.full_url(self.http_base, query)
+        data = util.getResponse(self.session, url, {}, self.getAuthCookie())
 
-        return util.getResponse(self.session, url, {}, self.getAuthCookie())
+        self.logger.debug("getWorkoutSamplesById: {}".format(data))
+
+        return data
     
     def getWorkoutSummaryById(self, workoutId):
         """
@@ -76,8 +88,11 @@ class PelotonApi:
 
         query = "workout/" + workoutId + "/summary"
         url = util.full_url(self.http_base, query)
+        data = util.getResponse(self.session, url, {}, self.getAuthCookie())
 
-        return util.getResponse(self.session, url, {}, self.getAuthCookie())
+        self.logger.debug("getWorkoutSummaryById: {}".format(data))
+
+        return data
 
 
     
