@@ -50,7 +50,12 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
 
     # Valid Garmin types: Running/Biking/Other
     # Peloton Disciplines: cardio, circuit, running, cycling, walking, strength, stretching, meditation, yoga
-    fitness_discipline = workout["ride"]["fitness_discipline"]
+    fitness_discipline = ""
+    try:
+        fitness_discipline = workout["ride"]["fitness_discipline"]
+    except Exception as e:
+        logger.error("Failed to Parse Activity Type, defaulting to 'Other' - Exception: {}".format(e))
+        
     garmin_activity_type = "Biking"
     if fitness_discipline == "cycling":
         activity.attrib = dict(Sport="Biking")
