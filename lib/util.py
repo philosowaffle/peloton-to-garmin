@@ -19,7 +19,6 @@ logger = logging.getLogger('peloton-to-garmin.Util')
 def parse_response(response):
     """Parse JSON API response, return object."""
     parsed_response = json.loads(response.text)
-    logger.debug("parse_response: {}".format(parsed_response))
     return parsed_response
 
 def handle_error(response):

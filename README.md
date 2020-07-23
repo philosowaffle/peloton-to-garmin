@@ -97,7 +97,13 @@ optional arguments:
 
 Various config and upload history is maintained in a local `database.json` file. Deleting this file will delete any upload history and the servic will attempt to upload all workouts to Garmin Connect again.
 
-## Contributors
+## Contributing
+
+* `pip install -r dev_requirements.txt`
+* `cd tests`
+* `pytest`
+
+### Contributors
 
 Special thanks to all the contributors who have helped improve this project!
 
