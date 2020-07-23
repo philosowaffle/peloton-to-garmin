@@ -31,6 +31,7 @@ class TestTcxBuilder:
         assert title == "20 min HIIT Ride with Denis Morton"
         assert filename == "1586208689-20 min HIIT Ride with Denis Morton-6c4d525d20134c74b7395991ed6912ce.tcx"
         assert garmin_activity_type == "Biking"
+        assert os.path.exists(os.path.join(output_directory, filename))
 
     def test_strength_smoketest(self):
         # Setup
@@ -46,3 +47,4 @@ class TestTcxBuilder:
         assert title == "10 min Bodyweight Strength with Becs Gentry"
         assert filename == "1589907174-10 min Bodyweight Strength with Becs Gentry-38583cbc0e434e54a2eb91be1a770e01.tcx"
         assert garmin_activity_type == "Other"
+        assert os.path.exists(os.path.join(output_directory, filename))
