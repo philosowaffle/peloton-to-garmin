@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as etree
 from datetime import datetime, timezone
 import logging
+import os
 
 ##############################
 # Logging Setup
@@ -228,5 +229,5 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     filename = "{0}-{1}-{2}.tcx".format(startTimeInSeconds, title, workout['id'])
 
     outputDir = outputDir.replace("\"", "")
-    tree.write("{0}/{1}".format(outputDir,filename), xml_declaration=True, encoding="UTF-8", method="xml")
+    tree.write(os.path.join(outputDir,filename), xml_declaration=True, encoding="UTF-8", method="xml")
     return title, filename, garmin_activity_type
