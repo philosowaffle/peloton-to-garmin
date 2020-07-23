@@ -44,10 +44,10 @@ jobs:
       run: |
         pyinstaller -n peloton-to-garmin-win --console --clean --noconfirm --add-data config.ini;. --add-data README.md;. peloton-to-garmin.py
     - name: Create Archive
-        uses: thedoctor0/zip-release@master
-        with:
-          path: 'dist/peloton-to-garmin-win'
-          filename: 'dist/peloton-to-garmin-win.zip'
+      uses: thedoctor0/zip-release@master
+      with:
+       path: 'dist/peloton-to-garmin-win'
+       filename: 'dist/peloton-to-garmin-win.zip'
     - name: Commit changes
       uses: EndBug/add-and-commit@v4
       with:
