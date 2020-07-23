@@ -45,14 +45,15 @@ jobs:
       run: |
         pyinstaller -n peloton-to-garmin-win --console --clean --noconfirm --add-data 'config.ini;.' --add-data 'README.md;.' peloton-to-garmin.py
     - name: Create Archive
-      uses: thedoctor0/zip-release@master
+      uses: papeloto/action-zip@v1
       with:
-       path: 'dist/peloton-to-garmin-win'
-       filename: 'dist/peloton-to-garmin-win.zip'
+       files: ${{ github.workspace }}/dist/peloton-to-garmin-win
+       dest: ${{ github.workspace }}/dist/peloton-to-garmin-win.zip
     - name: Commit changes
       uses: EndBug/add-and-commit@v4
       with:
         message: "Create windows distro ${{ steps.current-time.outputs.time }}"
+        add: "*.zip"
         tag: ${{ steps.current-time.outputs.time }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
