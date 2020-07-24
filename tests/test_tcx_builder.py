@@ -170,3 +170,42 @@ class TestTcxBuilder:
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
+
+    def test_getDistanceMeters_km(self):
+        # Setup
+        workout_samples = self.loadTestData("peloton_workoutsamples_cycling.json")
+        workout_samples["summaries"][1]["display_unit"] = "km"
+        distance = workout_samples["summaries"][1]["value"]
+        expectedDistance = "{0:.1f}".format(distance * 1000)
+
+        # Act
+        distanceMeters = tcx_builder.getDistanceMeters(workout_samples)
+
+        # Assert
+        assert distanceMeters == expectedDistance
+    
+    def test_getDistanceMeters_mi(self):
+        # Setup
+        workout_samples = self.loadTestData("peloton_workoutsamples_cycling.json")
+        workout_samples["summaries"][1]["display_unit"] = "mi"
+        distance = workout_samples["summaries"][1]["value"]
+        expectedDistance = "{0:.1f}".format(distance * tcx_builder.METERS_PER_MILE)
+
+        # Act
+        distanceMeters = tcx_builder.getDistanceMeters(workout_samples)
+
+        # Assert
+        assert distanceMeters == expectedDistance
+    
+    def test_getDistanceMeters_m(self):
+        # Setup
+        workout_samples = self.loadTestData("peloton_workoutsamples_cycling.json")
+        workout_samples["summaries"][1]["display_unit"] = "m"
+        distance = workout_samples["summaries"][1]["value"]
+        expectedDistance = "{0:.1f}".format(distance)
+
+        # Act
+        distanceMeters = tcx_builder.getDistanceMeters(workout_samples)
+
+        # Assert
+        assert distanceMeters == expectedDistance
