@@ -14,7 +14,6 @@ develop-eggs/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -109,3 +108,4 @@ output/
 
 # Dev Files
 tests/testOutput/
+tests/database.json

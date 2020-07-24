@@ -15,7 +15,14 @@ Config.read('config.ini')
 
 def ConfigSectionMap(section):
     dict1 = {}
-    options = Config.options(section)
+    
+    try:
+        options = Config.options(section)
+    except Exception as e:
+        logger.error("exception on %s!" % section)
+        logger.error("Exception: {}".format(e))
+        return dict1
+
     for option in options:
         try:
             dict1[option] = Config.get(section, option, raw=True)
