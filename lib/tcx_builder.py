@@ -53,7 +53,7 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     # Peloton Disciplines: cardio, circuit, running, cycling, walking, strength, stretching, meditation, yoga
     fitness_discipline = ""
     try:
-        fitness_discipline = workout["ride"]["fitness_discipline"]
+        fitness_discipline = workout["fitness_discipline"]
     except Exception as e:
         logger.error("Failed to Parse Activity Type, defaulting to 'Other' - Exception: {}".format(e))
         
@@ -74,11 +74,12 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     lap.attrib = dict(StartTime=getTimeStamp(startTimeInSeconds))
 
     totalTimeSeconds = etree.Element("TotalTimeSeconds")
-    totalTimeSeconds.text = str(workout["peloton"]["ride"]["duration"])
+    totalTimeSeconds.text = str(workout["ride"]["duration"])
 
     instructor = ""
-    if workout['peloton']['ride']['instructor'] is not None:
-        instructor = " with " + workout['peloton']["ride"]["instructor"]["first_name"] + " " + workout['peloton']["ride"]["instructor"]["last_name"]
+    if workout["workout_type"] == "class":
+        if workout["peloton"]["ride"]["instructor"] is not None:
+            instructor = " with " + workout["peloton"]["ride"]["instructor"]["name"]
     title = "{0}{1}".format(workout["ride"]["title"].replace("/","-").replace(":","-"), instructor)
 
     notes = etree.Element("Notes")

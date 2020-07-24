@@ -33,6 +33,22 @@ class TestTcxBuilder:
         assert garmin_activity_type == "Biking"
         assert os.path.exists(os.path.join(output_directory, filename))
 
+    def test_cycling_freestyle_smoketest(self):
+        # Setup
+        workout_data = self.loadTestData("peloton_workout_cycling_freestyle.json")
+        workout_summary = self.loadTestData("peloton_workoutsummary_cycling_freestyle.json")
+        workout_samples = self.loadTestData("peloton_workoutsamples_cycling_freestyle.json")
+        output_directory = self.getOutputDir()
+
+        # Act
+        title, filename, garmin_activity_type = tcx_builder.workoutSamplesToTCX(workout_data, workout_summary, workout_samples, output_directory)
+        
+        # Assert
+        assert title == "27 sec Just Ride"
+        assert filename == "1595374979-27 sec Just Ride-88963f6daf89445387da4ee2e26015f9.tcx"
+        assert garmin_activity_type == "Biking"
+        assert os.path.exists(os.path.join(output_directory, filename))
+
     def test_strength_smoketest(self):
         # Setup
         workout_data = self.loadTestData("peloton_workout_strength.json")
