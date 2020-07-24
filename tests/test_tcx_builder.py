@@ -1,7 +1,11 @@
 import json
 import os
+<<<<<<< HEAD
 import tests.tcx_test_helper as TCX
 import xml.etree.ElementTree as ET
+=======
+import pytest
+>>>>>>> [15] refactor to smaller methods + unit tests
 from lib import tcx_builder
 
 class TestTcxBuilder:
@@ -171,41 +175,67 @@ class TestTcxBuilder:
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
 
-    def test_getDistanceMeters_km(self):
+    getDistanceMeters_testdata = [
+        (10, "m", "10.0"),
+        (10, "km", "10000.0"),
+        (10, "mi", "{0:.1f}".format(10 * tcx_builder.METERS_PER_MILE))
+    ]
+    @pytest.mark.parametrize("distanceValue, distanceUnit, expectedDistance", getDistanceMeters_testdata)
+    def test_getDistanceMeters(self, distanceValue, distanceUnit, expectedDistance):
         # Setup
         workout_samples = self.loadTestData("peloton_workoutsamples_cycling.json")
-        workout_samples["summaries"][1]["display_unit"] = "km"
+        workout_samples["summaries"][1]["display_unit"] = distanceUnit
+        workout_samples["summaries"][1]["value"] = distanceValue
         distance = workout_samples["summaries"][1]["value"]
-        expectedDistance = "{0:.1f}".format(distance * 1000)
+        expectedDistanceUnit = distanceUnit
 
         # Act
-        distanceMeters = tcx_builder.getDistanceMeters(workout_samples)
+        distanceMeters, originalDistanceUnit = tcx_builder.getDistanceMeters(workout_samples)
 
         # Assert
         assert distanceMeters == expectedDistance
+        assert originalDistanceUnit == expectedDistanceUnit
+
+    convertDistanceValueToMeters_testdata = [
+        (10, "m", 10),
+        (10, "km", 10000),
+        (10, "mi", 10 * tcx_builder.METERS_PER_MILE)
+    ]
+    @pytest.mark.parametrize("distanceValue, distanceUnit, expected", convertDistanceValueToMeters_testdata)
+    def test_convertDistanceValueToMeters(self, distanceValue, distanceUnit, expected):
+        # Act
+        meters = tcx_builder.convertDistanceValueToMeters(distanceValue, distanceUnit)
+
+        # Assert
+        assert meters == expected
     
-    def test_getDistanceMeters_mi(self):
-        # Setup
-        workout_samples = self.loadTestData("peloton_workoutsamples_cycling.json")
-        workout_samples["summaries"][1]["display_unit"] = "mi"
-        distance = workout_samples["summaries"][1]["value"]
-        expectedDistance = "{0:.1f}".format(distance * tcx_builder.METERS_PER_MILE)
-
+    getSpeedInMetersPerSecond_testdata = [
+        (10, "m", 0.0027777777777777775),
+        (10, "km", 2.7777777777777777),
+        (10, "mi", 4.4703888888888885)
+    ]
+    @pytest.mark.parametrize("speedPerHour, distanceUnit, expected", getSpeedInMetersPerSecond_testdata)
+    def test_getSpeedInMetersPerSecond(self, speedPerHour, distanceUnit, expected):
         # Act
-        distanceMeters = tcx_builder.getDistanceMeters(workout_samples)
+        meters = tcx_builder.getSpeedInMetersPerSecond(speedPerHour, distanceUnit)
 
         # Assert
-        assert distanceMeters == expectedDistance
-    
-    def test_getDistanceMeters_m(self):
+        assert meters == expected
+
+    getMaxSpeedMetersPerSecond_testdata = [
+        (10, "m", "0.0027777777777777775"),
+        (10, "km", "2.7777777777777777"),
+        (10, "mi", "4.4703888888888885")
+    ]
+    @pytest.mark.parametrize("speedValue, distanceUnit, expected", getMaxSpeedMetersPerSecond_testdata)
+    def test_getMaxSpeedMetersPerSecond(self, speedValue, distanceUnit, expected):
         # Setup
-        workout_samples = self.loadTestData("peloton_workoutsamples_cycling.json")
-        workout_samples["summaries"][1]["display_unit"] = "m"
-        distance = workout_samples["summaries"][1]["value"]
-        expectedDistance = "{0:.1f}".format(distance)
+        workout_summary = self.loadTestData("peloton_workoutsummary_cycling.json")
+        workout_summary["max_speed"] = speedValue
+        expectedDistanceUnit = distanceUnit
 
         # Act
-        distanceMeters = tcx_builder.getDistanceMeters(workout_samples)
+        speed = tcx_builder.getMaxSpeedMetersPerSecond(workout_summary, distanceUnit)
 
         # Assert
-        assert distanceMeters == expectedDistance
+        assert speed == expected
