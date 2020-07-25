@@ -28,6 +28,12 @@ def getSpeedInMetersPerSecond(speedInMilesPerHour):
     metersPerSecond = metersPerMinute / 60
     return str(metersPerSecond)
 
+def getInstructor(workout):
+    if workout["workout_type"] == "class":
+        if workout["peloton"]["ride"]["instructor"] is not None:
+            return " with " + workout["peloton"]["ride"]["instructor"]["name"]
+    return ""
+
 def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
 
     if(workoutSamples is None):
@@ -60,7 +66,7 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     garmin_activity_type = "Biking"
     if fitness_discipline == "cycling":
         activity.attrib = dict(Sport="Biking")
-    elif fitness_discipline == "running":
+    elif fitness_discipline == "running" or fitness_discipline == "walking":
         activity.attrib = dict(Sport="Running")
         garmin_activity_type = "Running"
     else:   
@@ -76,10 +82,7 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     totalTimeSeconds = etree.Element("TotalTimeSeconds")
     totalTimeSeconds.text = str(workout["ride"]["duration"])
 
-    instructor = ""
-    if workout["workout_type"] == "class":
-        if workout["peloton"]["ride"]["instructor"] is not None:
-            instructor = " with " + workout["peloton"]["ride"]["instructor"]["name"]
+    instructor = getInstructor(workout)
     title = "{0}{1}".format(workout["ride"]["title"].replace("/","-").replace(":","-"), instructor)
 
     notes = etree.Element("Notes")

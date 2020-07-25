@@ -64,3 +64,35 @@ class TestTcxBuilder:
         assert filename == "1589907174-10 min Bodyweight Strength with Becs Gentry-38583cbc0e434e54a2eb91be1a770e01.tcx"
         assert garmin_activity_type == "Other"
         assert os.path.exists(os.path.join(output_directory, filename))
+
+    def test_running_smoketest(self):
+        # Setup
+        workout_data = self.loadTestData("peloton_workout_running.json")
+        workout_summary = self.loadTestData("peloton_workoutsummary_running.json")
+        workout_samples = self.loadTestData("peloton_workoutsamples_running.json")
+        output_directory = self.getOutputDir()
+
+        # Act
+        title, filename, garmin_activity_type = tcx_builder.workoutSamplesToTCX(workout_data, workout_summary, workout_samples, output_directory)
+        
+        # Assert
+        assert title == "20 min Pop Fun Run with Olivia Amato"
+        assert filename == "1565299850-20 min Pop Fun Run with Olivia Amato-63eef26a23744af295f14006811b159b.tcx"
+        assert garmin_activity_type == "Running"
+        assert os.path.exists(os.path.join(output_directory, filename))
+    
+    def test_running_outdoor_smoketest(self):
+        # Setup
+        workout_data = self.loadTestData("peloton_workout_running_outdoor.json")
+        workout_summary = self.loadTestData("peloton_workoutsummary_running_outdoor.json")
+        workout_samples = self.loadTestData("peloton_workoutsamples_running_outdoor.json")
+        output_directory = self.getOutputDir()
+
+        # Act
+        title, filename, garmin_activity_type = tcx_builder.workoutSamplesToTCX(workout_data, workout_summary, workout_samples, output_directory)
+        
+        # Assert
+        assert title == "20 min Walk + Run with Olivia Amato"
+        assert filename == "1574980432-20 min Walk + Run with Olivia Amato-af25d72ea4c0400daeac2707fc30994f.tcx"
+        assert garmin_activity_type == "Running"
+        assert os.path.exists(os.path.join(output_directory, filename))
