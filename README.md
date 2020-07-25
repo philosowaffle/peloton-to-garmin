@@ -35,7 +35,7 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 
 1. Download the repo [here](https://github.com/philosowaffle/peloton-to-garmin/archive/master.zip)
 1. Extract the zip file
-1. Install the latest version of [Python 3](https://www.python.org/downloads/), currently 3.6.4
+1. Install the latest version of [Python 3](https://www.python.org/downloads/)
 1. Open `File Explorer` and navigate to the wherever you unzipped the downloaded project
 1. Navigate so that you are inside the `peloton-to-garmin` folder
 1. Open a command prompt by clicking in the `Location Bar` at the top and typing `cmd` then hit enter
@@ -54,11 +54,11 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 * A TCX file for each workout will be created in the `output` directory
 * The resulting TCX file can then be uploaded to Garmin
 
-## Linux Setup
+## Linux Setup (these instructions also work with macOS Catalina)
 
 1. `wget https://github.com/philosowaffle/peloton-to-garmin/archive/master.zip`
 1. `unzip master.zip`
-1. Install [Python 3](https://www.python.org/downloads/) (Windows docs say it works in 3.6.4, Linux tested against 3.8.2)
+1. Install [Python 3](https://www.python.org/downloads/)
 1. Navigate so that you are inside the `peloton-to-garmin` folder
 1. From the command prompt run the following command:
     1. `pip install -r requirements.txt`
@@ -74,6 +74,18 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 * You will be prompted to enter how many workouts you would like to fetch
 * A TCX file for each workout will be created in the `output` directory
 * The resulting TCX file can then be uploaded to Garmin
+
+## Python Versions Tested
+* Windows:          3.6.4
+
+* Mac (10.15.5):      3.7.7
+
+* Linux
+    * Ubuntu (20.04): 3.8.2
+    * CentOS (7):     3.6.8
+
+
+Most likely, these python versions will work on any OS. 
 
 ## Runnning In Docker
 
