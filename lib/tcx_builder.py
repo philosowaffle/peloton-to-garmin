@@ -34,6 +34,28 @@ def getInstructor(workout):
             return " with " + workout["peloton"]["ride"]["instructor"]["name"]
     return ""
 
+def getGarminActivityType(workout):
+        # Valid Garmin Parent types: Running/Biking/Other
+    # Peloton Disciplines: cardio, circuit, running, cycling, walking, strength, stretching, meditation, yoga
+    fitness_discipline = ""
+    try:
+        fitness_discipline = workout["fitness_discipline"]
+    except Exception as e:
+        logger.error("Failed to Parse Activity Type, defaulting to 'Other' - Exception: {}".format(e))
+
+    if fitness_discipline == "cycling":
+        sport = dict(Sport="Biking")
+        simple_garmin_type = "Biking"
+    elif fitness_discipline == "running" or fitness_discipline == "walking":
+        sport = dict(Sport="Running")
+        simple_garmin_type = "Running"
+    else:   
+        sport = dict(Sport="Other")
+        simple_garmin_type = "Other"
+    
+    return sport, simple_garmin_type
+
+
 def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
 
     if(workoutSamples is None):
@@ -54,24 +76,8 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     activities = etree.Element("Activities")
 
     activity = etree.Element("Activity")
-
-    # Valid Garmin types: Running/Biking/Other
-    # Peloton Disciplines: cardio, circuit, running, cycling, walking, strength, stretching, meditation, yoga
-    fitness_discipline = ""
-    try:
-        fitness_discipline = workout["fitness_discipline"]
-    except Exception as e:
-        logger.error("Failed to Parse Activity Type, defaulting to 'Other' - Exception: {}".format(e))
-        
-    garmin_activity_type = "Biking"
-    if fitness_discipline == "cycling":
-        activity.attrib = dict(Sport="Biking")
-    elif fitness_discipline == "running" or fitness_discipline == "walking":
-        activity.attrib = dict(Sport="Running")
-        garmin_activity_type = "Running"
-    else:   
-        activity.attrib = dict(Sport="Other")
-        garmin_activity_type = "Other"
+    sport, simple_garmin_type = getGarminActivityType(workout)
+    activity.attrib = sport
 
     activityId = etree.Element("Id")
     activityId.text = getTimeStamp(startTimeInSeconds)
@@ -85,8 +91,11 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     instructor = getInstructor(workout)
     title = "{0}{1}".format(workout["ride"]["title"].replace("/","-").replace(":","-"), instructor)
 
-    notes = etree.Element("Notes")
-    notes.text = title
+    try:
+        notes = etree.Element("Notes")
+        notes.text = "{} - {}".format(title, workout["ride"]["description"])
+    except Exception as e:
+        logger.error("Failed to Parse Description - Exception: {}".format(e))
 
     try:
         distanceMeters = etree.Element("DistanceMeters")
@@ -234,4 +243,4 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
 
     outputDir = outputDir.replace("\"", "")
     tree.write(os.path.join(outputDir,filename), xml_declaration=True, encoding="UTF-8", method="xml")
-    return title, filename, garmin_activity_type
+    return title, filename, simple_garmin_type
