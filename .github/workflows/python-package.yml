@@ -51,18 +51,5 @@ jobs:
         add: ${{ github.workspace }}\dist\peloton-to-garmin-win.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Bump version and tag
-      id: version_bump
-      uses: mathieudutour/github-tag-action@v4.5
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Upload the artifacts
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{ github.workspace }}\dist\peloton-to-garmin-win.zip
-        asset_name: peloton-to-garmin-windows.zip
-        tag: ${{ steps.version_bump.outputs.new_tag }}
-        body: ${{ steps.version_bump.outputs.changelog }}
       
         
