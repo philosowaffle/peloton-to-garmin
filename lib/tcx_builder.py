@@ -35,7 +35,8 @@ def getInstructor(workout):
     return ""
 
 def getGarminActivityType(workout):
-        # Valid Garmin Parent types: Running/Biking/Other
+    # Valid Garmin TCX Sports: Running/Biking/Other
+    # Valid Granular Garmin types: https://github.com/La0/garmin-uploader/blob/master/garmin_uploader/help.txt#L56
     # Peloton Disciplines: cardio, circuit, running, cycling, walking, strength, stretching, meditation, yoga
     fitness_discipline = ""
     try:
@@ -45,15 +46,27 @@ def getGarminActivityType(workout):
 
     if fitness_discipline == "cycling":
         sport = dict(Sport="Biking")
-        simple_garmin_type = "Biking"
-    elif fitness_discipline == "running" or fitness_discipline == "walking":
+        granular_garmin_activity_type = "indoor_cycling"
+    elif fitness_discipline == "running":
         sport = dict(Sport="Running")
-        simple_garmin_type = "Running"
+        granular_garmin_activity_type = "treadmill_running"
+    elif fitness_discipline == "walking":
+        sport = dict(Sport="Running")
+        granular_garmin_activity_type = "walking"
+    elif fitness_discipline == "cardio" or fitness_discipline == "circuit":
+        sport = dict(Sport="Other")
+        granular_garmin_activity_type = "indoor_cardio"
+    elif fitness_discipline == "strength":
+        sport = dict(Sport="Other")
+        granular_garmin_activity_type = "strength_training"
+    elif fitness_discipline == "yoga":
+        sport = dict(Sport="Other")
+        granular_garmin_activity_type = "yoga"
     else:   
         sport = dict(Sport="Other")
-        simple_garmin_type = "Other"
+        granular_garmin_activity_type = "Other"
     
-    return sport, simple_garmin_type
+    return sport, granular_garmin_activity_type
 
 
 def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
@@ -71,12 +84,13 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
   xsi:schemaLocation="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd"
   xmlns:ns3="http://www.garmin.com/xmlschemas/ActivityExtension/v2"
   xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://www.garmin.com/xmlschemas/ProfileExtension/v1"></TrainingCenterDatabase>""")
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://www.garmin.com/xmlschemas/ProfileExtension/v1">
+  </TrainingCenterDatabase>""")
 
     activities = etree.Element("Activities")
 
     activity = etree.Element("Activity")
-    sport, simple_garmin_type = getGarminActivityType(workout)
+    sport, granular_garmin_activity_type = getGarminActivityType(workout)
     activity.attrib = sport
 
     activityId = etree.Element("Id")
@@ -243,4 +257,4 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
 
     outputDir = outputDir.replace("\"", "")
     tree.write(os.path.join(outputDir,filename), xml_declaration=True, encoding="UTF-8", method="xml")
-    return title, filename, simple_garmin_type
+    return title, filename, granular_garmin_activity_type
