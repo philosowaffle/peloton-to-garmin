@@ -66,7 +66,7 @@ class PelotonToGarmin:
 
                     logger.info("Uploading workout to Garmin")
                     fileToUpload = [config.output_directory + "/" + filename]
-                    garminClient.uploadToGarmin(fileToUpload, config.garmin_email, config.garmin_password, str(garmin_activity_type).lower(), title)
+                    garminClient.uploadToGarmin(fileToUpload, config.garmin_email, config.garmin_password, garmin_activity_type.lower(), title)
                     garminUploadHistoryTable.insert({'workoutId': workoutId, 'title': title, 'uploadDt': datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
                 except Exception as e:
                     logger.error("Failed to upload to Garmin: {}".format(e))
