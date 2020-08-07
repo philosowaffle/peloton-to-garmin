@@ -1,11 +1,8 @@
 import json
 import os
-<<<<<<< HEAD
 import tests.tcx_test_helper as TCX
 import xml.etree.ElementTree as ET
-=======
 import pytest
->>>>>>> [15] refactor to smaller methods + unit tests
 from lib import tcx_builder
 
 class TestTcxBuilder:
@@ -48,10 +45,10 @@ class TestTcxBuilder:
         TCX.assertTcxIdMatches(workout_data, tcx)
         TCX.assertTcxLapStartTimeMatches(workout_data, tcx)
         TCX.assertTcxTotalTimeSecondsMatches(workout_data, tcx)
-        TCX.assertTcxMaximumSpeedMatches(workout_summary, tcx)
+        TCX.assertTcxMaximumSpeedMatches(workout_summary, workout_samples, tcx)
         TCX.assertTcxCaloriesMatches(workout_summary, tcx)
         TCX.assertTcxAvgHeartRateMatches(workout_summary,tcx)
-        TCX.assertTcxAvgSpeedMatches(workout_summary, tcx)
+        TCX.assertTcxAvgSpeedMatches(workout_summary, workout_samples, tcx)
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
@@ -77,10 +74,10 @@ class TestTcxBuilder:
         TCX.assertTcxIdMatches(workout_data, tcx)
         TCX.assertTcxLapStartTimeMatches(workout_data, tcx)
         TCX.assertTcxTotalTimeSecondsMatches(workout_data, tcx)
-        TCX.assertTcxMaximumSpeedMatches(workout_summary, tcx)
+        TCX.assertTcxMaximumSpeedMatches(workout_summary, workout_samples, tcx)
         TCX.assertTcxCaloriesMatches(workout_summary, tcx)
         TCX.assertTcxAvgHeartRateMatches(workout_summary,tcx)
-        TCX.assertTcxAvgSpeedMatches(workout_summary, tcx)
+        TCX.assertTcxAvgSpeedMatches(workout_summary, workout_samples, tcx)
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
@@ -107,10 +104,10 @@ class TestTcxBuilder:
         TCX.assertTcxIdMatches(workout_data, tcx)
         TCX.assertTcxLapStartTimeMatches(workout_data, tcx)
         TCX.assertTcxTotalTimeSecondsMatches(workout_data, tcx)
-        TCX.assertTcxMaximumSpeedMatches(workout_summary, tcx)
+        TCX.assertTcxMaximumSpeedMatches(workout_summary, workout_samples, tcx)
         TCX.assertTcxCaloriesMatches(workout_summary, tcx)
         TCX.assertTcxAvgHeartRateMatches(workout_summary,tcx)
-        TCX.assertTcxAvgSpeedMatches(workout_summary, tcx)
+        TCX.assertTcxAvgSpeedMatches(workout_summary, workout_samples, tcx)
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
@@ -137,10 +134,10 @@ class TestTcxBuilder:
         TCX.assertTcxIdMatches(workout_data, tcx)
         TCX.assertTcxLapStartTimeMatches(workout_data, tcx)
         TCX.assertTcxTotalTimeSecondsMatches(workout_data, tcx)
-        TCX.assertTcxMaximumSpeedMatches(workout_summary, tcx)
+        TCX.assertTcxMaximumSpeedMatches(workout_summary, workout_samples, tcx)
         TCX.assertTcxCaloriesMatches(workout_summary, tcx)
         TCX.assertTcxAvgHeartRateMatches(workout_summary,tcx)
-        TCX.assertTcxAvgSpeedMatches(workout_summary, tcx)
+        TCX.assertTcxAvgSpeedMatches(workout_summary, workout_samples, tcx)
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
@@ -167,10 +164,10 @@ class TestTcxBuilder:
         TCX.assertTcxIdMatches(workout_data, tcx)
         TCX.assertTcxLapStartTimeMatches(workout_data, tcx)
         TCX.assertTcxTotalTimeSecondsMatches(workout_data, tcx)
-        TCX.assertTcxMaximumSpeedMatches(workout_summary, tcx)
+        TCX.assertTcxMaximumSpeedMatches(workout_summary, workout_samples, tcx)
         TCX.assertTcxCaloriesMatches(workout_summary, tcx)
         TCX.assertTcxAvgHeartRateMatches(workout_summary,tcx)
-        TCX.assertTcxAvgSpeedMatches(workout_summary, tcx)
+        TCX.assertTcxAvgSpeedMatches(workout_summary, workout_samples, tcx)
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
