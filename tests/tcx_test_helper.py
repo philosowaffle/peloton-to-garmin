@@ -14,10 +14,10 @@ def assertTcxTotalTimeSecondsMatches(workout, tcx):
     expected = str(workout["ride"]["duration"])
     assert actual == expected
 
-def assertTcxMaximumSpeedMatches(workoutSummary, workoutSamples, tcx):
+def assertTcxMaximumSpeedMatches(workoutSamples, tcx):
     actual = tcx[0][0][1][2].text
     _, originalDistanceUnit = tcx_builder.getDistanceMeters(workoutSamples) 
-    expected = str(tcx_builder.getSpeedInMetersPerSecond(workoutSummary["max_speed"], originalDistanceUnit))
+    expected = str(tcx_builder.getMaxSpeedMetersPerSecond(workoutSamples, originalDistanceUnit))
     assert actual == expected
 
 def assertTcxCaloriesMatches(workoutSummary, tcx):
@@ -35,10 +35,10 @@ def assertTcxMaxHeartRateMatches(workoutSummary, tcx):
     expected = tcx_builder.getHeartRate(workoutSummary["max_heart_rate"])
     assert actual == expected
 
-def assertTcxAvgSpeedMatches(workoutSummary, workoutSamples, tcx):
+def assertTcxAvgSpeedMatches(workoutSamples, tcx):
     actual = tcx[0][0][1][7][0][0].text 
     _, originalDistanceUnit = tcx_builder.getDistanceMeters(workoutSamples) 
-    expected = str(tcx_builder.getSpeedInMetersPerSecond(workoutSummary["avg_speed"], originalDistanceUnit))
+    expected = str(tcx_builder.getAverageSpeedMetersPerSecond(workoutSamples, originalDistanceUnit))
     assert actual == expected
 
 def assertTcxMaxBikeCadenceMatches(workoutSummary, tcx):

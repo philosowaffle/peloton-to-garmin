@@ -57,11 +57,23 @@ def getDistanceMeters(workoutSamples):
     
     return "", "unknown"
 
-def getMaxSpeedMetersPerSecond(workoutSummary, distanceUnit):
+def getMaxSpeedMetersPerSecond(workoutSamples, distanceUnit):
     try:
-        return str(getSpeedInMetersPerSecond(workoutSummary["max_speed"], distanceUnit))
+        speedSlug = next((x for x in workoutSamples["metrics"] if x["slug"] == "speed"), None)
+        if (speedSlug is not None):
+            return str(getSpeedInMetersPerSecond(speedSlug["max_value"], distanceUnit))
     except Exception as e:
             logger.error("Failed to Parse MaxSpeed - Exception: {}".format(e))
+    
+    return "0.0"
+
+def getAverageSpeedMetersPerSecond(workoutSamples, distanceUnit):
+    try:
+        speedSlug = next((x for x in workoutSamples["metrics"] if x["slug"] == "speed"), None)
+        if (speedSlug is not None):
+            return str(getSpeedInMetersPerSecond(speedSlug["average_value"], distanceUnit))
+    except Exception as e:
+            logger.error("Failed to Parse AvgSpeed - Exception: {}".format(e))
     
     return "0.0"
 
@@ -146,7 +158,7 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     distanceMeters.text, originalDistanceUnit = getDistanceMeters(workoutSamples)  
 
     maximumSpeed = etree.Element("MaximumSpeed")
-    maximumSpeed.text = getMaxSpeedMetersPerSecond(workoutSummary, originalDistanceUnit)
+    maximumSpeed.text = getMaxSpeedMetersPerSecond(workoutSamples, originalDistanceUnit)
 
     try:
         calories = etree.Element("Calories")
@@ -165,7 +177,7 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
         extensions = etree.Element("Extensions")
         lx = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}LX")
         avgSpeed = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}AvgSpeed")
-        avgSpeed.text = str(getSpeedInMetersPerSecond(workoutSummary["avg_speed"], originalDistanceUnit))
+        avgSpeed.text = str(getAverageSpeedMetersPerSecond(workoutSamples, originalDistanceUnit))
         maxBikeCadence = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}MaxBikeCadence")
         maxBikeCadence.text = getCadence(workoutSummary["max_cadence"])
         avgWatts = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}AvgWatts")

@@ -45,10 +45,39 @@ class TestTcxBuilder:
         TCX.assertTcxIdMatches(workout_data, tcx)
         TCX.assertTcxLapStartTimeMatches(workout_data, tcx)
         TCX.assertTcxTotalTimeSecondsMatches(workout_data, tcx)
-        TCX.assertTcxMaximumSpeedMatches(workout_summary, workout_samples, tcx)
+        TCX.assertTcxMaximumSpeedMatches(workout_samples, tcx)
         TCX.assertTcxCaloriesMatches(workout_summary, tcx)
         TCX.assertTcxAvgHeartRateMatches(workout_summary,tcx)
-        TCX.assertTcxAvgSpeedMatches(workout_summary, workout_samples, tcx)
+        TCX.assertTcxAvgSpeedMatches(workout_samples, tcx)
+        TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
+        TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
+        TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
+
+    def test_cycling_km_smoketest(self):
+        # Setup
+        workout_data = self.loadTestData("peloton_workout_cycling_km.json")
+        workout_summary = self.loadTestData("peloton_workoutsummary_cycling_km.json")
+        workout_samples = self.loadTestData("peloton_workoutsamples_cycling_km.json")
+        output_directory = self.getOutputDir()
+
+        # Act
+        title, filename, garmin_activity_type = tcx_builder.workoutSamplesToTCX(workout_data, workout_summary, workout_samples, output_directory)
+        
+        # Assert
+        assert title == "20 min 2010s Pop Ride with Tunde Oyeneyin"
+        assert filename == "1598294050-20 min 2010s Pop Ride with Tunde Oyeneyin-6a8b9725f87346b9a84c917c32a02df6.tcx"
+        assert garmin_activity_type == "indoor_cycling"
+        assert os.path.exists(os.path.join(output_directory, filename))
+
+        tcx = self.loadOutputTCX(os.path.join(output_directory, filename))
+        TCX.assertTcxSportMatches("Biking", tcx)
+        TCX.assertTcxIdMatches(workout_data, tcx)
+        TCX.assertTcxLapStartTimeMatches(workout_data, tcx)
+        TCX.assertTcxTotalTimeSecondsMatches(workout_data, tcx)
+        TCX.assertTcxMaximumSpeedMatches(workout_samples, tcx)
+        TCX.assertTcxCaloriesMatches(workout_summary, tcx)
+        TCX.assertTcxAvgHeartRateMatches(workout_summary,tcx)
+        TCX.assertTcxAvgSpeedMatches(workout_samples, tcx)
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
@@ -74,10 +103,10 @@ class TestTcxBuilder:
         TCX.assertTcxIdMatches(workout_data, tcx)
         TCX.assertTcxLapStartTimeMatches(workout_data, tcx)
         TCX.assertTcxTotalTimeSecondsMatches(workout_data, tcx)
-        TCX.assertTcxMaximumSpeedMatches(workout_summary, workout_samples, tcx)
+        TCX.assertTcxMaximumSpeedMatches(workout_samples, tcx)
         TCX.assertTcxCaloriesMatches(workout_summary, tcx)
         TCX.assertTcxAvgHeartRateMatches(workout_summary,tcx)
-        TCX.assertTcxAvgSpeedMatches(workout_summary, workout_samples, tcx)
+        TCX.assertTcxAvgSpeedMatches(workout_samples, tcx)
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
@@ -104,10 +133,10 @@ class TestTcxBuilder:
         TCX.assertTcxIdMatches(workout_data, tcx)
         TCX.assertTcxLapStartTimeMatches(workout_data, tcx)
         TCX.assertTcxTotalTimeSecondsMatches(workout_data, tcx)
-        TCX.assertTcxMaximumSpeedMatches(workout_summary, workout_samples, tcx)
+        TCX.assertTcxMaximumSpeedMatches(workout_samples, tcx)
         TCX.assertTcxCaloriesMatches(workout_summary, tcx)
         TCX.assertTcxAvgHeartRateMatches(workout_summary,tcx)
-        TCX.assertTcxAvgSpeedMatches(workout_summary, workout_samples, tcx)
+        TCX.assertTcxAvgSpeedMatches(workout_samples, tcx)
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
@@ -134,10 +163,10 @@ class TestTcxBuilder:
         TCX.assertTcxIdMatches(workout_data, tcx)
         TCX.assertTcxLapStartTimeMatches(workout_data, tcx)
         TCX.assertTcxTotalTimeSecondsMatches(workout_data, tcx)
-        TCX.assertTcxMaximumSpeedMatches(workout_summary, workout_samples, tcx)
+        TCX.assertTcxMaximumSpeedMatches(workout_samples, tcx)
         TCX.assertTcxCaloriesMatches(workout_summary, tcx)
         TCX.assertTcxAvgHeartRateMatches(workout_summary,tcx)
-        TCX.assertTcxAvgSpeedMatches(workout_summary, workout_samples, tcx)
+        TCX.assertTcxAvgSpeedMatches(workout_samples, tcx)
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
@@ -164,10 +193,10 @@ class TestTcxBuilder:
         TCX.assertTcxIdMatches(workout_data, tcx)
         TCX.assertTcxLapStartTimeMatches(workout_data, tcx)
         TCX.assertTcxTotalTimeSecondsMatches(workout_data, tcx)
-        TCX.assertTcxMaximumSpeedMatches(workout_summary, workout_samples, tcx)
+        TCX.assertTcxMaximumSpeedMatches(workout_samples, tcx)
         TCX.assertTcxCaloriesMatches(workout_summary, tcx)
         TCX.assertTcxAvgHeartRateMatches(workout_summary,tcx)
-        TCX.assertTcxAvgSpeedMatches(workout_summary, workout_samples, tcx)
+        TCX.assertTcxAvgSpeedMatches(workout_samples, tcx)
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
@@ -227,12 +256,13 @@ class TestTcxBuilder:
     @pytest.mark.parametrize("speedValue, distanceUnit, expected", getMaxSpeedMetersPerSecond_testdata)
     def test_getMaxSpeedMetersPerSecond(self, speedValue, distanceUnit, expected):
         # Setup
-        workout_summary = self.loadTestData("peloton_workoutsummary_cycling.json")
-        workout_summary["max_speed"] = speedValue
+        workout_samples = self.loadTestData("peloton_workoutsamples_cycling.json")
+        speedSlug = next((x for x in workout_samples["metrics"] if x["slug"] == "speed"), None)
+        speedSlug["max_value"] = speedValue
         expectedDistanceUnit = distanceUnit
 
         # Act
-        speed = tcx_builder.getMaxSpeedMetersPerSecond(workout_summary, distanceUnit)
+        speed = tcx_builder.getMaxSpeedMetersPerSecond(workout_samples, distanceUnit)
 
         # Assert
         assert speed == expected
