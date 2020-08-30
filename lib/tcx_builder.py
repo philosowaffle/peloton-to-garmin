@@ -22,17 +22,60 @@ def getHeartRate(heartRate):
 def getCadence(cadence):
     return "{0:.0f}".format(cadence)
 
-def getSpeedInMetersPerSecond(speedInMilesPerHour):
-    metersPerHour = speedInMilesPerHour * METERS_PER_MILE
+def convertDistanceValueToMeters(distanceValue, distanceUnit):
+    meters = 0
+    if distanceUnit == "km":
+        meters = distanceValue * 1000
+    elif distanceUnit == "mi":
+        meters = distanceValue * METERS_PER_MILE
+    else:
+        meters = distanceValue
+    return meters
+
+def getSpeedInMetersPerSecond(speedPerHour, distanceUnit):
+    metersPerHour = convertDistanceValueToMeters(speedPerHour, distanceUnit)
     metersPerMinute = metersPerHour / 60
     metersPerSecond = metersPerMinute / 60
-    return str(metersPerSecond)
+    return metersPerSecond
 
 def getInstructor(workout):
     if workout["workout_type"] == "class":
         if workout["peloton"]["ride"]["instructor"] is not None:
             return " with " + workout["peloton"]["ride"]["instructor"]["name"]
     return ""
+    
+def getDistanceMeters(workoutSamples):
+    try:
+        distanceSlug = next((x for x in workoutSamples["summaries"] if x["slug"] == "distance"), None)
+        if distanceSlug is not None:
+            distance = distanceSlug["value"]
+            originalDistanceUnit = distanceSlug["display_unit"]
+            totalMeters = convertDistanceValueToMeters(distance, originalDistanceUnit)
+            return "{0:.1f}".format(totalMeters), originalDistanceUnit
+    except Exception as e:
+            logger.error("Failed to Parse Distance - Exception: {}".format(e))
+    
+    return "", "unknown"
+
+def getMaxSpeedMetersPerSecond(workoutSamples, distanceUnit):
+    try:
+        speedSlug = next((x for x in workoutSamples["metrics"] if x["slug"] == "speed"), None)
+        if (speedSlug is not None):
+            return str(getSpeedInMetersPerSecond(speedSlug["max_value"], distanceUnit))
+    except Exception as e:
+            logger.error("Failed to Parse MaxSpeed - Exception: {}".format(e))
+    
+    return "0.0"
+
+def getAverageSpeedMetersPerSecond(workoutSamples, distanceUnit):
+    try:
+        speedSlug = next((x for x in workoutSamples["metrics"] if x["slug"] == "speed"), None)
+        if (speedSlug is not None):
+            return str(getSpeedInMetersPerSecond(speedSlug["average_value"], distanceUnit))
+    except Exception as e:
+            logger.error("Failed to Parse AvgSpeed - Exception: {}".format(e))
+    
+    return "0.0"
 
 def getGarminActivityType(workout):
     # Valid Garmin TCX Sports: Running/Biking/Other
@@ -111,21 +154,13 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     except Exception as e:
         logger.error("Failed to Parse Description - Exception: {}".format(e))
 
-    try:
-        distanceMeters = etree.Element("DistanceMeters")
-        distanceMeters.text = ""
-        if len(workoutSamples["summaries"]) >= 2:
-            miles = workoutSamples["summaries"][1]["value"]
-            totalMeters = miles * METERS_PER_MILE
-            distanceMeters.text = "{0:.1f}".format(totalMeters)
-    except Exception as e:
-            logger.error("Failed to Parse Distance - Exception: {}".format(e))
-            return
+    distanceMeters = etree.Element("DistanceMeters")
+    distanceMeters.text, originalDistanceUnit = getDistanceMeters(workoutSamples)  
+
+    maximumSpeed = etree.Element("MaximumSpeed")
+    maximumSpeed.text = getMaxSpeedMetersPerSecond(workoutSamples, originalDistanceUnit)
 
     try:
-        maximumSpeed = etree.Element("MaximumSpeed")
-        maximumSpeed.text = getSpeedInMetersPerSecond(workoutSummary["max_speed"])
-
         calories = etree.Element("Calories")
         calories.text = str(int(round((workoutSummary["calories"]))))
 
@@ -142,7 +177,7 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
         extensions = etree.Element("Extensions")
         lx = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}LX")
         avgSpeed = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}AvgSpeed")
-        avgSpeed.text = getSpeedInMetersPerSecond(workoutSummary["avg_speed"])
+        avgSpeed.text = str(getAverageSpeedMetersPerSecond(workoutSamples, originalDistanceUnit))
         maxBikeCadence = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}MaxBikeCadence")
         maxBikeCadence.text = getCadence(workoutSummary["max_cadence"])
         avgWatts = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}AvgWatts")
@@ -215,7 +250,7 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
 
         try:
             if speedMetrics:
-                tpxSpeed.text = getSpeedInMetersPerSecond(speedMetrics["values"][index])
+                tpxSpeed.text = str(getSpeedInMetersPerSecond(speedMetrics["values"][index], originalDistanceUnit))
                 tpx.append(tpxSpeed)
         except Exception as e:
             logger.error("Exception: {}".format(e))
