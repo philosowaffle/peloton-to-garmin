@@ -11,7 +11,7 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 
 1. [Windows Usage](#windows-setup)
 1. [Linux Usage](#linux-usage)
-1. [Running in Docker](#running-in-docker)
+1. [Docker](#docker)
 1. [Command Line Arguments](#command-line-arguments)
 1. [Database](#database)
 1. [Contributing](#contributing)
@@ -54,7 +54,7 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 * A TCX file for each workout will be created in the `output` directory
 * The resulting TCX file can then be uploaded to Garmin
 
-## Linux Setup (these instructions also work with macOS Catalina)
+## Linux/MacOs
 
 1. `wget https://github.com/philosowaffle/peloton-to-garmin/archive/master.zip`
 1. `unzip master.zip`
@@ -66,7 +66,7 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 1. `vim config.ini` (or nano or whatever. Just not emacs, please :P)
     1. set your Peloton Email and Password, Save and Close
 
-### Linux Usage
+### Usage
 
 * Open a command prompt inside of the `peloton-to-garmin` folder
 * Run the following command:
@@ -75,24 +75,11 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 * A TCX file for each workout will be created in the `output` directory
 * The resulting TCX file can then be uploaded to Garmin
 
-## Python Versions Tested
-* Windows:          3.6.4
+## Docker
 
-* Mac (10.15.5):      3.7.7
+This repository does not directly maintain support for running the code in a docker container, but @Octopusprime83 has created and published a [container that can be pulled from docker hub](https://hub.docker.com/r/philo138/peloton-to-garmin).  Note that some of the behavior in the container may differ from the latest code published on github.
 
-* Linux
-    * Ubuntu (20.04): 3.8.2
-    * CentOS (7):     3.6.8
-
-
-Most likely, these python versions will work on any OS. 
-
-## Runnning In Docker
-
-* Build the image by running
-    * `docker build . -t pelotontogarmin`
-* Run the container by running:
-    * `docker run -v /full_path_here/peloton-to-garmin/output:/output pelotontogarmin`
+* `docker pull philo138/peloton-to-garmin`
 
 ## Command Line Arguments
 
@@ -106,7 +93,8 @@ optional arguments:
   * -password PASSWORD    Peloton password  
   * -path OUTPUT_DIR      Path to output directory  
   * -num NUM_TO_DOWNLOAD  Number of activities to download  
-  * -log LOG_FILE         Log file name## Runnning in docker  
+  * -log LOG_FILE         Log file name## Runnning in docker
+  * -loglevel LOGLEVEL    DEBUG, INFO, ERROR  
   * -garmin_email         Garmin email address for upload to Garmin
   * -garmin_password      Garmin password for upload to Garmin
   
@@ -118,6 +106,10 @@ optional arguments:
         * `peloton-to-garmin.py -email you@email.com -password mypassword`  
   
   Note: Command line arguments take precedence over values in the configuration file. 
+
+## Supported Python/OS
+
+The matrix of supported Python versions and OS's can be found [here](https://github.com/philosowaffle/peloton-to-garmin/blob/master/.github/workflows/pr-test.yml#L17).
 
 ## Database
 
