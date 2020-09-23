@@ -45,16 +45,32 @@ jobs:
       if: ${{ matrix.os == 'macos-latest' }}
       run: |
         pyinstaller -n peloton-to-garmin-${{ matrix.os }} --console --clean --noconfirm --add-data 'config.ini:.' --add-data 'README.md:.' peloton-to-garmin.py
-    - name: Create Archive
+    - name: Create Archive Windows
       uses: papeloto/action-zip@v1
+      if: ${{ matrix.os == 'windows-latest' }}
       with:
        files: \dist\peloton-to-garmin-${{ matrix.os }}\
        dest: \dist\peloton-to-garmin-${{ matrix.os }}.zip
-    - name: Commit changes
+    - name: Create Archive MacOS
+      uses: papeloto/action-zip@v1
+      if: ${{ matrix.os == 'macos-latest' }}
+      with:
+       files: /dist/peloton-to-garmin-${{ matrix.os }}/
+       dest: /dist/peloton-to-garmin-${{ matrix.os }}.zip
+    - name: Commit changes Windows
       uses: EndBug/add-and-commit@v4
+      if: ${{ matrix.os == 'windows-latest' }}
       with:
         message: "Create ${{ matrix.os }} distro"
         add: ${{ github.workspace }}\dist\peloton-to-garmin-${{ matrix.os }}.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Commit changes MacOS
+      uses: EndBug/add-and-commit@v4
+      if: ${{ matrix.os == 'macos-latest' }}
+      with:
+        message: "Create ${{ matrix.os }} distro"
+        add: ${{ github.workspace }}/dist/peloton-to-garmin-${{ matrix.os }}.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
