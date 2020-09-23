@@ -9,10 +9,11 @@ on:
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python-version: [3.8]
+        os: [windows-latest, macos-latest]
 
     steps:
     - uses: actions/checkout@v2
@@ -38,17 +39,17 @@ jobs:
         pytest
     - name: Package
       run: |
-        pyinstaller -n peloton-to-garmin-win --console --clean --noconfirm --add-data 'config.ini;.' --add-data 'README.md;.' peloton-to-garmin.py
+        pyinstaller -n peloton-to-garmin-${{ matrix.os }} --console --clean --noconfirm --add-data 'config.ini;.' --add-data 'README.md;.' peloton-to-garmin.py
     - name: Create Archive
       uses: papeloto/action-zip@v1
       with:
-       files: \dist\peloton-to-garmin-win\
-       dest: \dist\peloton-to-garmin-win.zip
+       files: \dist\peloton-to-garmin-${{ matrix.os }}\
+       dest: \dist\peloton-to-garmin-${{ matrix.os }}.zip
     - name: Commit changes
       uses: EndBug/add-and-commit@v4
       with:
-        message: "Create windows distro"
-        add: ${{ github.workspace }}\dist\peloton-to-garmin-win.zip
+        message: "Create ${{ matrix.os }} distro"
+        add: ${{ github.workspace }}\dist\peloton-to-garmin-${{ matrix.os }}.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
