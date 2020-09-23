@@ -55,7 +55,7 @@ jobs:
       uses: papeloto/action-zip@v1
       if: ${{ matrix.os == 'macos-latest' }}
       with:
-       files: /dist/peloton-to-garmin-${{ matrix.os }}/
+       files: /dist/
        dest: /dist/peloton-to-garmin-${{ matrix.os }}.zip
     - name: Commit changes Windows
       uses: EndBug/add-and-commit@v4
