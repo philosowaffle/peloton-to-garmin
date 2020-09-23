@@ -38,11 +38,11 @@ jobs:
         cd tests
         pytest
     - name: Package Windows
-      if: ${{ matrix.os }} == 'windows-latest'
+      if: ${{ matrix.os == 'windows-latest' }}
       run: |
         pyinstaller -n peloton-to-garmin-${{ matrix.os }} --console --clean --noconfirm --add-data 'config.ini;.' --add-data 'README.md;.' peloton-to-garmin.py
     - name: Package MacOS
-      if: ${{ matrix.os }} == 'macos-latest'
+      if: ${{ matrix.os == 'macos-latest' }}
       run: |
         pyinstaller -n peloton-to-garmin-${{ matrix.os }} --console --clean --noconfirm --add-data 'config.ini:.' --add-data 'README.md:.' peloton-to-garmin.py
     - name: Create Archive
