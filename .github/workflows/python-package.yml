@@ -44,7 +44,7 @@ jobs:
     - name: Package MacOS
       if: ${{ matrix.os == 'macos-latest' }}
       run: |
-        pyinstaller -n peloton-to-garmin-${{ matrix.os }} --windowed --clean --noconfirm --add-data 'config.ini:.' --add-data 'README.md:.' peloton-to-garmin.py
+        pyinstaller -n peloton-to-garmin-${{ matrix.os }} --windowed --onedir --clean --noconfirm --add-data 'config.ini:.' --add-data 'README.md:.' peloton-to-garmin.py
     - name: Create Archive Windows
       uses: papeloto/action-zip@v1
       if: ${{ matrix.os == 'windows-latest' }}
