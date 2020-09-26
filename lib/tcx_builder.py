@@ -121,7 +121,8 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     startTimeInSeconds = workout['start_time']
 
     etree.register_namespace("","http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2")
-    etree.register_namespace("activityExtensions", "http://www.garmin.com/xmlschemas/ActivityExtension/v2")    
+    etree.register_namespace("activityExtensions", "http://www.garmin.com/xmlschemas/ActivityExtension/v2") 
+    etree.register_namespace("trackPointExtensions", "http://www.garmin.com/xmlschemas/TrackPointExtension/v2") 
 
     root = etree.fromstring("""<TrainingCenterDatabase
   xsi:schemaLocation="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd"
@@ -144,6 +145,9 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
 
     totalTimeSeconds = etree.Element("TotalTimeSeconds")
     totalTimeSeconds.text = str(workout["ride"]["duration"])
+
+    intensity = etree.Element("Intensity")
+    intensity.text = "Active"
 
     instructor = getInstructor(workout)
     title = "{0}{1}".format(workout["ride"]["title"].replace("/","-").replace(":","-"), instructor)
@@ -176,14 +180,19 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
 
         extensions = etree.Element("Extensions")
         lx = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}LX")
+
         avgSpeed = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}AvgSpeed")
         avgSpeed.text = str(getAverageSpeedMetersPerSecond(workoutSamples, originalDistanceUnit))
+
         maxBikeCadence = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}MaxBikeCadence")
         maxBikeCadence.text = getCadence(workoutSummary["max_cadence"])
+
         avgWatts = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}AvgWatts")
         avgWatts.text = "{0:.0f}".format(workoutSummary["avg_power"])
+
         maxWatts = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}MaxWatts")
         maxWatts.text = "{0:.0f}".format(workoutSummary["max_power"])
+
         lx.append(avgSpeed)
         lx.append(maxBikeCadence)
         lx.append(avgWatts)
@@ -200,6 +209,7 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     outputMetrics = []
     cadenceMetrics = []
     speedMetrics = []
+    resistanceMetrices = []
 
     if(metrics is None):
         logger.error("No workout metrics data.") 
@@ -214,6 +224,8 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
             cadenceMetrics = item
         if item["slug"] == "speed":
             speedMetrics = item
+        if item["slug"] == "resistance":
+            resistanceMetrics = item
         
     seconds_since_start = workoutSamples["seconds_since_pedaling_start"]
 
@@ -262,6 +274,14 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
                 tpx.append(tpxWatts)
         except Exception as e:
             logger.error("Exception: {}".format(e))
+
+        try:
+            if resistanceMetrics:
+                tpxResistance = etree.Element("{http://www.garmin.com/xmlschemas/ActivityExtension/v2}Resistance")
+                tpxResistance.text = "{0:.0f}".format(resistanceMetrics["values"][index])
+                tpx.append(tpxResistance)
+        except Exception as e:
+            logger.error("Exception: {}".format(e))
         
         trackExtensions.append(tpx)
         
@@ -276,6 +296,7 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     lap.append(calories)
     lap.append(averageHeartRateBpm)
     lap.append(maximumHeartRateBpm)
+    lap.append(intensity)
     lap.append(track)
     lap.append(extensions)
 
