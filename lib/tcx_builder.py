@@ -209,7 +209,7 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     outputMetrics = []
     cadenceMetrics = []
     speedMetrics = []
-    resistanceMetrices = []
+    resistanceMetrics = []
 
     if(metrics is None):
         logger.error("No workout metrics data.") 
