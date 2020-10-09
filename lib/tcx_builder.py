@@ -296,9 +296,9 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     lap.append(calories)
     lap.append(averageHeartRateBpm)
     lap.append(maximumHeartRateBpm)
-    lap.append(intensity)
     lap.append(track)
     lap.append(extensions)
+    lap.append(intensity)
 
     activity.append(activityId)
     activity.append(lap)
