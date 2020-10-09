@@ -75,7 +75,7 @@ class PelotonToGarmin:
         logger.info("Done!")
         logger.info("Your Garmin TCX files can be found in the Output directory: " + config.output_directory)
 
-        if config.pause_on_finish == "true":
+        if config.pause_on_finish:
             input("Press the <ENTER> key to continue...")
 
 ##############################
