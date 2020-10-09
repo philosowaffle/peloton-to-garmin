@@ -267,7 +267,7 @@ class TestTcxBuilder:
         # Assert
         assert speed == expected
   
-   def test_can_parse_workout_title(self):
+    def test_can_parse_workout_title(self):
         # Setup
         workout_data = self.loadTestData("peloton_workout_cycling.json")
         workout_data["ride"]["title"] = "5 min Peloton All-Star Cool Down Ride with Alex Toussaint"
