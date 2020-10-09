@@ -270,7 +270,8 @@ class TestTcxBuilder:
     def test_can_parse_workout_title(self):
         # Setup
         workout_data = self.loadTestData("peloton_workout_cycling.json")
-        workout_data["ride"]["title"] = "5 min Peloton All-Star Cool Down Ride with Alex Toussaint"
+        workout_data["ride"]["title"] = "5 min Peloton All-Star Cool Down Ride"
+        workout_data["peloton"]["ride"]["instructor"]["name"] = "Alex Toussaint"
         workout_summary = self.loadTestData("peloton_workoutsummary_cycling.json")
         workout_samples = self.loadTestData("peloton_workoutsamples_cycling.json")
         output_directory = self.getOutputDir()
