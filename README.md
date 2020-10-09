@@ -114,7 +114,7 @@ The matrix of supported Python versions and OS's can be found [here](https://git
 
 Various config and upload history is maintained in a local `database.json` file. Deleting this file will delete any upload history and the servic will attempt to upload all workouts to Garmin Connect again.
 
-### Contributors
+## Contributors
 
 Special thanks to all the contributors who have helped improve this project!
 
