@@ -266,3 +266,18 @@ class TestTcxBuilder:
 
         # Assert
         assert speed == expected
+  
+   def test_can_parse_workout_title(self):
+        # Setup
+        workout_data = self.loadTestData("peloton_workout_cycling.json")
+        workout_data["ride"]["title"] = "5 min Peloton All-Star Cool Down Ride with Alex Toussaint"
+        workout_summary = self.loadTestData("peloton_workoutsummary_cycling.json")
+        workout_samples = self.loadTestData("peloton_workoutsamples_cycling.json")
+        output_directory = self.getOutputDir()
+
+        # Act
+        title, filename, garmin_activity_type = tcx_builder.workoutSamplesToTCX(workout_data, workout_summary, workout_samples, output_directory)
+        
+        # Assert
+        assert title == "5 min Peloton All-Star Cool Down Ride with Alex Toussaint"
+        assert filename == "1586208689-5 min Peloton All-Star Cool Down Ride with Alex Toussaint-6c4d525d20134c74b7395991ed6912ce.tcx"
