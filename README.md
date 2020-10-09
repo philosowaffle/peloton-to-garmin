@@ -130,5 +130,3 @@ If you submit a pull request feel free to update this list to include your name 
 ## Warnings
 
 ⚠️ WARNING!!! Your username and password for Peloton and Garmin Connect are stored in clear text, WHICH IS NOT SECURE. If you have concerns about storing your credentials in an unsecure file, do not use this option.
-
-⚠️ WARNING!!! There is no certificate validation. This is open to person-in-the-middle attacks.
