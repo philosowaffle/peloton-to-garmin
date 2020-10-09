@@ -26,6 +26,7 @@ class TestPelotonToGarmin:
         workouts_data[0]["status"] = "IN PROGRESS"
         output_directory = self.getOutputDir()
         config = configuration.Configuration(argparse.ArgumentParser())
+        config.pause_on_finish = False
 
         pToG = pelotonToGarmin.PelotonToGarmin()
         pelotonApiMock = mocker.patch('peloton-to-garmin.pelotonApi.PelotonApi').return_value
