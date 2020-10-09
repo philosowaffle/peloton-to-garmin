@@ -42,16 +42,16 @@ def assertTcxAvgSpeedMatches(workoutSamples, tcx):
     assert actual == expected
 
 def assertTcxMaxBikeCadenceMatches(workoutSummary, tcx):
-    actual = tcx[0][0][1][7][0][1].text 
+    actual = tcx[0][0][1][8][0][1].text 
     expected = tcx_builder.getCadence(workoutSummary["max_cadence"])
     assert actual == expected
 
 def assertTcxAvgWattsMatches(workoutSummary, tcx):
-    actual = tcx[0][0][1][7][0][2].text 
+    actual = tcx[0][0][1][8][0][2].text 
     expected = "{0:.0f}".format(workoutSummary["avg_power"])
     assert actual == expected
 
 def assertTcxMaxWattsMatches(workoutSummary, tcx):
-    actual = tcx[0][0][1][7][0][3].text 
+    actual = tcx[0][0][1][8][0][3].text 
     expected = "{0:.0f}".format(workoutSummary["max_power"])
     assert actual == expected
