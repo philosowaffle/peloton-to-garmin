@@ -122,7 +122,8 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
 
     etree.register_namespace("","http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2")
     etree.register_namespace("activityExtensions", "http://www.garmin.com/xmlschemas/ActivityExtension/v2") 
-    etree.register_namespace("trackPointExtensions", "http://www.garmin.com/xmlschemas/TrackPointExtension/v2") 
+    etree.register_namespace("trackPointExtensions", "http://www.garmin.com/xmlschemas/TrackPointExtension/v2")
+    etree.register_namespace("userProfilePowerExtensions", "http://www.garmin.com/xmlschemas/UserProfilePowerExtension/v1")
 
     root = etree.fromstring("""<TrainingCenterDatabase
   xsi:schemaLocation="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd"
@@ -157,6 +158,12 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
         notes.text = "{} - {}".format(title, workout["ride"]["description"])
     except Exception as e:
         logger.error("Failed to Parse Description - Exception: {}".format(e))
+    
+    activityExtension = etree.Element("Extensions")
+    uppx = etree.Element("{http://www.garmin.com/xmlschemas/UserProfilePowerExtension/v1}UPPX")
+    ftp = etree.Element("{http://www.garmin.com/xmlschemas/UserProfilePowerExtension/v1}FTP")
+    # ftp.text = get ftp from peloton data
+    powerzones = etree.Element("{http://www.garmin.com/xmlschemas/UserProfilePowerExtension/v1}PowerZone")
 
     distanceMeters = etree.Element("DistanceMeters")
     distanceMeters.text, originalDistanceUnit = getDistanceMeters(workoutSamples)  
