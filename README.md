@@ -10,11 +10,13 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 ## Table of Contents
 
 1. [Windows Usage](#windows-setup)
-1. [Linux Usage](#linux-usage)
+1. [Linux/MacOs Usage](#linuxmacos)
 1. [Docker](#docker)
 1. [Command Line Arguments](#command-line-arguments)
 1. [Database](#database)
 1. [Use At Own Risk](#warnings)
+
+<a href="https://www.buymeacoffee.com/philosowaffle" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
 ## Windows Setup
 
