@@ -1,162 +1,199 @@
 {
-    "created_at": 1586208627,
+    "created_at": 1607634518,
     "device_type": "home_bike_v1",
-    "end_time": 1586209887,
+    "end_time": 1607636378,
     "fitbit_id": null,
     "fitness_discipline": "cycling",
     "has_pedaling_metrics": true,
     "has_leaderboard_metrics": true,
-    "id": "6c4d525d20134c74b7395991ed6912ce",
+    "id": "d49cc8314b4e4f7ca1726394a90f6757",
     "is_total_work_personal_record": false,
     "metrics_type": "cycling",
     "name": "Cycling Workout",
-    "peloton_id": "9b37da39d62b46a8b4b67e30732d62c2",
+    "peloton_id": "125322b484f140c888e6b51d33dca68e",
     "platform": "home_bike",
-    "start_time": 1586208689,
-    "strava_id": "-1",
+    "start_time": 1607634579,
+    "strava_id": "4456039585",
     "status": "COMPLETE",
     "timezone": "America/Chicago",
     "title": null,
-    "total_work": 121758.96,
+    "total_work": 205916.09,
     "user_id": "9d50dddf7e594c57bda54280eeec98d7",
     "workout_type": "class",
-    "total_video_watch_time_seconds": 1231,
+    "total_video_watch_time_seconds": 1831,
     "total_video_buffering_seconds": 0,
-    "peloton": {
-        "id": "9b37da39d62b46a8b4b67e30732d62c2",
-        "ride_id": "b772c275cd2a4421a424ee0afe357005",
-        "server_time": 1595514612,
-        "scheduled_start_time": null,
-        "start_time": 1586208627,
-        "end_time": 1586210048,
-        "pedaling_start_time": 1586208687,
-        "pedaling_end_time": 1586209887,
-        "status": "COMPLETE",
-        "countdown": null,
-        "is_live": false,
-        "is_studio": false,
-        "is_encore": false,
-        "seconds_since_start": null,
-        "created_at": 1586208627,
-        "total_workouts": 1,
-        "is_complete": true,
-        "total_home_reservations": 0,
-        "ride": {
-            "has_closed_captions": false,
-            "content_provider": "peloton",
-            "content_format": "video",
-            "description": "Efficient and effective, this intervals-driven class boosts metabolism and gives you a heart-healthy workout leaving you full of energy and confidence.  ",
-            "difficulty_rating_avg": 8.5785,
-            "difficulty_rating_count": 31398,
-            "difficulty_level": "intermediate",
-            "duration": 1200,
-            "extra_images": [],
-            "fitness_discipline": "cycling",
-            "fitness_discipline_display_name": "Cycling",
-            "has_pedaling_metrics": true,
-            "home_peloton_id": "0281a0b3631b4441bf5e6493a87cf588",
-            "id": "b772c275cd2a4421a424ee0afe357005",
-            "image_url": "https://s3.amazonaws.com/peloton-ride-images/67dac5fc6dc6d9e42837a7ebc988643af247bd16/img_1584983114_4d241806633b4ae8b7ea4a4394d92022.png",
-            "instructor_id": "1e59e949a19341539214a4a13ea7ff01",
-            "is_archived": true,
-            "is_closed_caption_shown": false,
-            "is_explicit": false,
-            "is_live_in_studio_only": true,
-            "language": "english",
-            "length": 1421,
-            "live_stream_id": "b772c275cd2a4421a424ee0afe357005-live",
-            "live_stream_url": null,
-            "location": "psny-studio-1",
-            "metrics": [
-                "heart_rate",
-                "cadence",
-                "calories"
-            ],
-            "original_air_time": 1584993600,
-            "overall_rating_avg": 0.9947,
-            "overall_rating_count": 38462,
-            "pedaling_start_offset": 60,
-            "pedaling_end_offset": 1260,
-            "pedaling_duration": 1200,
-            "rating": 0,
-            "ride_type_id": "7579b9edbdf9464fa19eb58193897a73",
-            "ride_type_ids": [
-                "7579b9edbdf9464fa19eb58193897a73"
-            ],
-            "sample_vod_stream_url": null,
-            "scheduled_start_time": 1584993600,
-            "series_id": "3eeb7b9e3a3d4e01b6348da56790bdd2",
-            "sold_out": false,
-            "studio_peloton_id": "e5d7c8ce6065485e9cb99dc171efe478",
-            "title": "20 min HIIT Ride",
-            "total_ratings": 0,
-            "total_in_progress_workouts": 0,
-            "total_workouts": 63993,
-            "vod_stream_url": "https://amd-vod.akamaized.net/vod/bike/03-2020/03172020-denis_morton-1145am-bb-1-b772c275cd2a4421a424ee0afe357005/HLS/master.m3u8",
-            "vod_stream_id": "b772c275cd2a4421a424ee0afe357005-vod",
-            "class_type_ids": [
-                "7579b9edbdf9464fa19eb58193897a73"
-            ],
-            "difficulty_estimate": 8.5785,
-            "overall_estimate": 0.9947,
-            "instructor": {
-                "id": "1e59e949a19341539214a4a13ea7ff01",
-                "bio": "Raised in Florida, schooled in Tennessee, steeped in southern California and heat-tested in Texas, Denis brings 14 years of fitness leadership to Peloton. With an athletic history ranging from college football to aerial acrobatics, and a musical taste to match, Denis will keep you moving, grooving and guessing what comes next.",
-                "short_bio": "�Learn to love the skin you�re in.�",
-                "coach_type": "peloton_coach",
-                "is_filterable": true,
-                "is_instructor_group": false,
-                "is_visible": true,
-                "list_order": 18,
-                "featured_profile": true,
-                "film_link": "",
-                "facebook_fan_page": "",
-                "music_bio": "Check out a sample of Denis� current class playlist.",
-                "spotify_playlist_uri": "spotify:user:onepeloton:playlist:5ThwrtEuDGiQAWiO3nI8YY",
-                "background": "This bike gives us an opportunity to reclaim our natural athleticism, even if only for a few minutes each day, which leads naturally to a renewed self image and that feeling of athleticism that had long been lying dormant.",
-                "ordered_q_and_as": [
-                    [
-                        "How Do You Motivate?",
-                        "I use music and personal stories to connect deeply between the workout, the people in the room and the Members around the world. I want to inspire people to explore their own abilities with my guidance and experience."
-                    ],
-                    [
-                        "Outside of Peloton",
-                        "I surf, practice yoga, snowboard, skateboard, hike, play guitar, read historical nonfiction, lift weights, watch college football (FSU) and look for chances to stamp my passport."
-                    ],
-                    [
-                        "",
-                        ""
-                    ]
+    "v2_total_video_watch_time_seconds": 1876,
+    "v2_total_video_buffering_seconds": 0,
+    "ride": {
+        "instructor": {
+            "id": "1e59e949a19341539214a4a13ea7ff01",
+            "bio": "Raised in Florida, schooled in Tennessee, steeped in southern California and heat-tested in Texas, Denis brings 14 years of fitness leadership to Peloton. With an athletic history ranging from college football to aerial acrobatics, and a musical taste to match, Denis will keep you moving, grooving and guessing what comes next.",
+            "short_bio": "�Learn to love the skin you�re in.�",
+            "coach_type": "peloton_coach",
+            "is_filterable": true,
+            "is_instructor_group": false,
+            "is_visible": true,
+            "list_order": 18,
+            "featured_profile": true,
+            "film_link": "",
+            "facebook_fan_page": "",
+            "music_bio": "Check out a sample of Denis� current class playlist.",
+            "spotify_playlist_uri": "spotify:user:onepeloton:playlist:5ThwrtEuDGiQAWiO3nI8YY",
+            "background": "This bike gives us an opportunity to reclaim our natural athleticism, even if only for a few minutes each day, which leads naturally to a renewed self image and that feeling of athleticism that had long been lying dormant.",
+            "ordered_q_and_as": [
+                [
+                    "How Do You Motivate?",
+                    "I use music and personal stories to connect deeply between the workout, the people in the room and the Members around the world. I want to inspire people to explore their own abilities with my guidance and experience."
                 ],
-                "instagram_profile": "",
-                "strava_profile": "",
-                "twitter_profile": "",
-                "quote": "Learn to love the skin you�re in",
-                "username": "Loonisee",
-                "name": "Denis Morton",
-                "first_name": "Denis",
-                "last_name": "Morton",
-                "user_id": "c7443a7d826743c180de16459e2c99a7",
-                "life_style_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/3015c9c8b8634c7599d89b059071513c",
-                "bike_instructor_list_display_image_url": null,
-                "web_instructor_list_display_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/c907860d917d4ca4a5f024e3ba044190",
-                "ios_instructor_list_display_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/45abbb08c9bf4d66bf057d6e08abe733",
-                "about_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/6791dce6d0e34547907810d52cfca68f",
-                "image_url": "https://s3.amazonaws.com/workout-metric-images-prod/e663f5068ac240be8665feb18322bae2",
-                "jumbotron_url": null,
-                "jumbotron_url_dark": "https://s3.amazonaws.com/workout-metric-images-prod/fe748a3693e847a1a2670c88814c88cc",
-                "jumbotron_url_ios": "https://s3.amazonaws.com/workout-metric-images-prod/6d8cd2b933274bf8bec5e63bd2d5b325",
-                "web_instructor_list_gif_image_url": null,
-                "instructor_hero_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/2bfa19e7bb3a4f72bc45a5eea697d35b",
-                "fitness_disciplines": [
-                    "cycling",
-                    "cardio",
-                    "yoga",
-                    "strength",
-                    "stretching"
+                [
+                    "Outside of Peloton",
+                    "I surf, practice yoga, snowboard, skateboard, hike, play guitar, read historical nonfiction, lift weights, watch college football (FSU) and look for chances to stamp my passport."
+                ],
+                [
+                    "",
+                    ""
                 ]
-            }
-        }
+            ],
+            "instagram_profile": "",
+            "strava_profile": "",
+            "twitter_profile": "",
+            "quote": "Learn to love the skin you�re in",
+            "username": "Loonisee",
+            "name": "Denis Morton",
+            "first_name": "Denis",
+            "last_name": "Morton",
+            "user_id": "c7443a7d826743c180de16459e2c99a7",
+            "life_style_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/3015c9c8b8634c7599d89b059071513c",
+            "bike_instructor_list_display_image_url": null,
+            "web_instructor_list_display_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/c907860d917d4ca4a5f024e3ba044190",
+            "ios_instructor_list_display_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/45abbb08c9bf4d66bf057d6e08abe733",
+            "about_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/6791dce6d0e34547907810d52cfca68f",
+            "image_url": "https://s3.amazonaws.com/workout-metric-images-prod/e663f5068ac240be8665feb18322bae2",
+            "jumbotron_url": null,
+            "jumbotron_url_dark": "https://s3.amazonaws.com/workout-metric-images-prod/fe748a3693e847a1a2670c88814c88cc",
+            "jumbotron_url_ios": "https://s3.amazonaws.com/workout-metric-images-prod/6d8cd2b933274bf8bec5e63bd2d5b325",
+            "web_instructor_list_gif_image_url": null,
+            "instructor_hero_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/2bfa19e7bb3a4f72bc45a5eea697d35b",
+            "workout_share_images": [
+                {
+                    "fitness_discipline": "beyond_the_ride",
+                    "image_url": "https://strava-default-images.s3-us-west-2.amazonaws.com/workout_share_image/default.png"
+                },
+                {
+                    "fitness_discipline": "circuit",
+                    "image_url": "https://strava-default-images.s3-us-west-2.amazonaws.com/workout_share_image/default.png"
+                },
+                {
+                    "fitness_discipline": "bike_bootcamp",
+                    "image_url": "https://strava-default-images.s3-us-west-2.amazonaws.com/workout_share_image/default.png"
+                },
+                {
+                    "fitness_discipline": "running",
+                    "image_url": "https://strava-default-images.s3-us-west-2.amazonaws.com/workout_share_image/default.png"
+                },
+                {
+                    "fitness_discipline": "yoga",
+                    "image_url": "https://s3.amazonaws.com/workout-metric-images-prod/5700b454fe86401ba68b882c592ad17f"
+                },
+                {
+                    "fitness_discipline": "walking",
+                    "image_url": "https://strava-default-images.s3-us-west-2.amazonaws.com/workout_share_image/default.png"
+                },
+                {
+                    "fitness_discipline": "cycling",
+                    "image_url": "https://s3.amazonaws.com/workout-metric-images-prod/b421872868d2416cb08c26f519af7a63"
+                },
+                {
+                    "fitness_discipline": "strength",
+                    "image_url": "https://strava-default-images.s3-us-west-2.amazonaws.com/workout_share_image/default.png"
+                },
+                {
+                    "fitness_discipline": "cardio",
+                    "image_url": "https://strava-default-images.s3-us-west-2.amazonaws.com/workout_share_image/default.png"
+                },
+                {
+                    "fitness_discipline": "meditation",
+                    "image_url": "https://s3.amazonaws.com/workout-metric-images-prod/5700b454fe86401ba68b882c592ad17f"
+                },
+                {
+                    "fitness_discipline": "stretching",
+                    "image_url": "https://strava-default-images.s3-us-west-2.amazonaws.com/workout_share_image/default.png"
+                }
+            ],
+            "fitness_disciplines": [
+                "yoga",
+                "cycling",
+                "strength",
+                "cardio",
+                "stretching"
+            ]
+        },
+        "class_type_ids": [
+            "f10471dcd6a34e5f8ed54eb634b5df19"
+        ],
+        "content_provider": "peloton",
+        "content_format": "video",
+        "description": "�Tis the season to go all out and have some fun! Celebrate and sweat to festive tunes that will put you in the holiday spirit.",
+        "difficulty_estimate": 7.339,
+        "overall_estimate": 0.9958,
+        "difficulty_rating_avg": 7.339,
+        "difficulty_rating_count": 2174,
+        "difficulty_level": null,
+        "duration": 1800,
+        "equipment_ids": [],
+        "equipment_tags": [],
+        "extra_images": [],
+        "fitness_discipline": "cycling",
+        "fitness_discipline_display_name": "Cycling",
+        "has_closed_captions": false,
+        "has_pedaling_metrics": true,
+        "home_peloton_id": "7ba4b31b15174f099c315271d5dcdaf0",
+        "id": "732da083a7d544368a9218b6f05e7502",
+        "image_url": "https://s3.amazonaws.com/peloton-ride-images/d01aa18d4340a9a2477a31142737293f3787cff8/img_1607636466_5a581f17bdc84fb383e1a855f22433ce.png",
+        "instructor_id": "1e59e949a19341539214a4a13ea7ff01",
+        "is_archived": true,
+        "is_closed_caption_shown": false,
+        "is_explicit": false,
+        "has_free_mode": false,
+        "is_live_in_studio_only": false,
+        "language": "english",
+        "origin_locale": "en-US",
+        "length": 1990,
+        "live_stream_id": "732da083a7d544368a9218b6f05e7502-live",
+        "live_stream_url": null,
+        "location": "psny-studio-1",
+        "metrics": [
+            "heart_rate",
+            "cadence",
+            "calories"
+        ],
+        "original_air_time": 1607617440,
+        "overall_rating_avg": 0.9958,
+        "overall_rating_count": 1653,
+        "pedaling_start_offset": 60,
+        "pedaling_end_offset": 1860,
+        "pedaling_duration": 1800,
+        "rating": 0,
+        "ride_type_id": "f10471dcd6a34e5f8ed54eb634b5df19",
+        "ride_type_ids": [
+            "f10471dcd6a34e5f8ed54eb634b5df19"
+        ],
+        "sample_vod_stream_url": null,
+        "scheduled_start_time": 1607617800,
+        "series_id": "6dde75a6113f4ed0982506a11938ad4b",
+        "sold_out": false,
+        "studio_peloton_id": "a2d203f0ae3b4046a473fb8495272d5d",
+        "title": "30 min Holiday Ride",
+        "total_ratings": 0,
+        "total_in_progress_workouts": 701,
+        "total_workouts": 9564,
+        "vod_stream_url": null,
+        "vod_stream_id": "732da083a7d544368a9218b6f05e7502-vod",
+        "captions": [],
+        "join_tokens": {
+            "on_demand": "eyJob21lX3BlbG90b25faWQiOiBudWxsLCAicmlkZV9pZCI6ICI3MzJkYTA4M2E3ZDU0NDM2OGE5MjE4YjZmMDVlNzUwMiIsICJzdHVkaW9fcGVsb3Rvbl9pZCI6IG51bGwsICJ0eXBlIjogIm9uX2RlbWFuZCJ9"
+        },
+        "excluded_platforms": []
     },
     "user": {
         "block_explicit": false,
@@ -165,56 +202,26 @@
         "image_url": "https://peloton-profile-images.s3.amazonaws.com/b63822584200f0882c8d05111d028ba73e2c7ae3/profile_img_1512101314448.jpg",
         "is_profile_private": false,
         "is_provisional": false,
-        "last_workout_at": 1589907102,
+        "last_workout_at": 1603127584,
         "location": "Dallas",
-        "total_followers": 22,
-        "total_following": 22,
-        "total_non_pedaling_metric_workouts": 68,
-        "total_pedaling_metric_workouts": 111,
-        "total_workouts": 179,
+        "total_followers": 25,
+        "total_following": 23,
+        "total_non_pedaling_metric_workouts": 71,
+        "total_pedaling_metric_workouts": 137,
+        "total_workouts": 208,
         "username": "Cyclesaurus",
         "workout_counts": [
             {
-                "name": "Cycling",
-                "slug": "cycling",
-                "count": 111,
-                "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/workout-count-icons/nonzero-cycling2.png"
-            },
-            {
-                "name": "Cardio",
-                "slug": "cardio",
-                "count": 0,
-                "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/workout-count-icons/zero-cardio2.png"
-            },
-            {
-                "name": "Bootcamp",
+                "name": "Tread Bootcamp",
                 "slug": "circuit",
                 "count": 0,
                 "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/workout-count-icons/zero-circuit2.png"
             },
             {
-                "name": "Yoga",
-                "slug": "yoga",
-                "count": 16,
-                "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/workout-count-icons/nonzero-yoga2.png"
-            },
-            {
-                "name": "Strength",
-                "slug": "strength",
-                "count": 13,
-                "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/workout-count-icons/nonzero-strength2.png"
-            },
-            {
-                "name": "Walking",
-                "slug": "walking",
-                "count": 1,
-                "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/workout-count-icons/nonzero-walking2.png"
-            },
-            {
-                "name": "Stretching",
-                "slug": "stretching",
-                "count": 16,
-                "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/workout-count-icons/nonzero-stretching2.png"
+                "name": "Bike Bootcamp",
+                "slug": "bike_bootcamp",
+                "count": 0,
+                "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/workout-count-icons/zero-bike_bootcamp2.png"
             },
             {
                 "name": "Running",
@@ -223,96 +230,59 @@
                 "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/workout-count-icons/nonzero-running2.png"
             },
             {
+                "name": "Yoga",
+                "slug": "yoga",
+                "count": 16,
+                "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/workout-count-icons/nonzero-yoga2.png"
+            },
+            {
+                "name": "Walking",
+                "slug": "walking",
+                "count": 1,
+                "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/workout-count-icons/nonzero-walking2.png"
+            },
+            {
+                "name": "Cycling",
+                "slug": "cycling",
+                "count": 137,
+                "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/workout-count-icons/nonzero-cycling2.png"
+            },
+            {
+                "name": "Strength",
+                "slug": "strength",
+                "count": 16,
+                "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/workout-count-icons/nonzero-strength2.png"
+            },
+            {
+                "name": "Cardio",
+                "slug": "cardio",
+                "count": 0,
+                "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/workout-count-icons/zero-cardio2.png"
+            },
+            {
                 "name": "Meditation",
                 "slug": "meditation",
                 "count": 11,
                 "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/workout-count-icons/nonzero-meditation2.png"
+            },
+            {
+                "name": "Stretching",
+                "slug": "stretching",
+                "count": 16,
+                "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/workout-count-icons/nonzero-stretching2.png"
             }
         ]
     },
-    "created": 1586208627,
-    "device_time_created_at": 1586190627,
-    "ride": {
-        "class_type_ids": [
-            "7579b9edbdf9464fa19eb58193897a73"
-        ],
-        "content_provider": "peloton",
-        "content_format": "video",
-        "description": "Efficient and effective, this intervals-driven class boosts metabolism and gives you a heart-healthy workout leaving you full of energy and confidence.  ",
-        "difficulty_estimate": 8.5785,
-        "overall_estimate": 0.9947,
-        "difficulty_rating_avg": 8.5785,
-        "difficulty_rating_count": 31398,
-        "difficulty_level": null,
-        "duration": 1200,
-        "equipment_ids": [],
-        "equipment_tags": [],
-        "extra_images": [],
-        "fitness_discipline": "cycling",
-        "fitness_discipline_display_name": "Cycling",
-        "has_closed_captions": false,
-        "has_pedaling_metrics": true,
-        "home_peloton_id": "0281a0b3631b4441bf5e6493a87cf588",
-        "id": "b772c275cd2a4421a424ee0afe357005",
-        "image_url": "https://s3.amazonaws.com/peloton-ride-images/67dac5fc6dc6d9e42837a7ebc988643af247bd16/img_1584983114_4d241806633b4ae8b7ea4a4394d92022.png",
-        "instructor_id": "1e59e949a19341539214a4a13ea7ff01",
-        "is_archived": true,
-        "is_closed_caption_shown": false,
-        "is_explicit": false,
-        "has_free_mode": false,
-        "is_live_in_studio_only": true,
-        "language": "english",
-        "origin_locale": "en-US",
-        "length": 1421,
-        "live_stream_id": "b772c275cd2a4421a424ee0afe357005-live",
-        "live_stream_url": null,
-        "location": "psny-studio-1",
-        "metrics": [
-            "heart_rate",
-            "cadence",
-            "calories"
-        ],
-        "original_air_time": 1584993600,
-        "overall_rating_avg": 0.9947,
-        "overall_rating_count": 38462,
-        "pedaling_start_offset": 60,
-        "pedaling_end_offset": 1260,
-        "pedaling_duration": 1200,
-        "rating": 0,
-        "ride_type_id": "7579b9edbdf9464fa19eb58193897a73",
-        "ride_type_ids": [
-            "7579b9edbdf9464fa19eb58193897a73"
-        ],
-        "sample_vod_stream_url": null,
-        "scheduled_start_time": 1584993600,
-        "series_id": "3eeb7b9e3a3d4e01b6348da56790bdd2",
-        "sold_out": false,
-        "studio_peloton_id": "e5d7c8ce6065485e9cb99dc171efe478",
-        "title": "20 min HIIT Ride",
-        "total_ratings": 0,
-        "total_in_progress_workouts": 0,
-        "total_workouts": 63993,
-        "vod_stream_url": null,
-        "vod_stream_id": "b772c275cd2a4421a424ee0afe357005-vod",
-        "captions": [],
-        "join_tokens": {
-            "on_demand": "eyJob21lX3BlbG90b25faWQiOiBudWxsLCAicmlkZV9pZCI6ICJiNzcyYzI3NWNkMmE0NDIxYTQyNGVlMGFmZTM1NzAwNSIsICJzdHVkaW9fcGVsb3Rvbl9pZCI6IG51bGwsICJ0eXBlIjogIm9uX2RlbWFuZCJ9"
-        },
-        "excluded_platforms": []
-    },
-    "achievement_templates": [
-        {
-            "id": "657e50c747d6458480f1ba6a0fa94c6a",
-            "name": "Dynamic Duo",
-            "slug": "two_to_tango",
-            "image_url": "https://s3.amazonaws.com/peloton-achievement-images-prod/702495cd985d4791bfd3d25f36e0df72",
-            "description": "Awarded for working out with a friend."
-        }
-    ],
-    "leaderboard_rank": 39682,
-    "total_leaderboard_users": 54963,
+    "created": 1607634518,
+    "device_time_created_at": 1607612918,
+    "is_skip_intro_available": true,
+    "total_heart_rate_zone_durations": null,
+    "average_effort_score": null,
+    "achievement_templates": [],
+    "leaderboard_rank": 3455,
+    "total_leaderboard_users": 7369,
     "ftp_info": {
-        "ftp": 164,
+        "ftp": 154,
         "ftp_source": "ftp_manual_source",
         "ftp_workout_id": null
     },

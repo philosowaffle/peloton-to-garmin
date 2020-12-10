@@ -22,138 +22,6 @@
     "workout_type": "class",
     "total_video_watch_time_seconds": 654,
     "total_video_buffering_seconds": 1,
-    "peloton": {
-        "id": "8c40b96c98514e59be8353516e6e6621",
-        "ride_id": "fe675c1fbf9e411c850367109165e54d",
-        "server_time": 1595514611,
-        "scheduled_start_time": null,
-        "start_time": 1589907102,
-        "end_time": 1589907883,
-        "pedaling_start_time": 1589907162,
-        "pedaling_end_time": 1589907762,
-        "status": "COMPLETE",
-        "countdown": null,
-        "is_live": false,
-        "is_studio": false,
-        "is_encore": false,
-        "seconds_since_start": null,
-        "created_at": 1589907102,
-        "total_workouts": 1,
-        "is_complete": true,
-        "total_home_reservations": 0,
-        "ride": {
-            "has_closed_captions": false,
-            "content_provider": "peloton",
-            "content_format": "video",
-            "description": "No equipment, no problem. Join us for a high-energy bodyweight training session. This class will work your full body and will include a mix of upper and lower body strength training. Meet us on the mat.",
-            "difficulty_rating_avg": 6.3936,
-            "difficulty_rating_count": 47769,
-            "difficulty_level": null,
-            "duration": 600,
-            "extra_images": [],
-            "fitness_discipline": "strength",
-            "fitness_discipline_display_name": "Strength",
-            "has_pedaling_metrics": false,
-            "home_peloton_id": "8296f45b1cda4e0e8454af28fe17a3c6",
-            "id": "fe675c1fbf9e411c850367109165e54d",
-            "image_url": "https://s3.amazonaws.com/peloton-ride-images/d991ef26114631b5940997424458ffddf5e39d14/img_1585582911_3bce3da6ec86454c87bb48e34aa93e44.png",
-            "instructor_id": "286fc17080d34406a54b80ad8ff83e12",
-            "is_archived": true,
-            "is_closed_caption_shown": false,
-            "is_explicit": false,
-            "is_live_in_studio_only": false,
-            "language": "english",
-            "length": 781,
-            "live_stream_id": "fe675c1fbf9e411c850367109165e54d-live",
-            "live_stream_url": null,
-            "location": "psny-studio-4",
-            "metrics": [
-                "heart_rate",
-                "calories"
-            ],
-            "original_air_time": 1585581420,
-            "overall_rating_avg": 0.9891,
-            "overall_rating_count": 43018,
-            "pedaling_start_offset": 60,
-            "pedaling_end_offset": 660,
-            "pedaling_duration": 600,
-            "rating": 0,
-            "ride_type_id": "b6d28ceb6d1448b4b9cc6f0bb97dd78f",
-            "ride_type_ids": [
-                "b6d28ceb6d1448b4b9cc6f0bb97dd78f"
-            ],
-            "sample_vod_stream_url": null,
-            "scheduled_start_time": 1585581600,
-            "series_id": "cf909a310eae4fdbba36b63e9876b856",
-            "sold_out": false,
-            "studio_peloton_id": "778210c22b20499dacb4e33d132f1a0e",
-            "title": "10 min Bodyweight Strength",
-            "total_ratings": 0,
-            "total_in_progress_workouts": 3,
-            "total_workouts": 141485,
-            "vod_stream_url": "https://amd-vod.akamaized.net/vod/btr/03-2020/03302020-becs_gentry-1120am-drastic-1-fe675c1fbf9e411c850367109165e54d/HLS/master.m3u8",
-            "vod_stream_id": "fe675c1fbf9e411c850367109165e54d-vod",
-            "class_type_ids": [
-                "b6d28ceb6d1448b4b9cc6f0bb97dd78f"
-            ],
-            "difficulty_estimate": 6.3936,
-            "overall_estimate": 0.9891,
-            "instructor": {
-                "id": "286fc17080d34406a54b80ad8ff83e12",
-                "bio": "Becs joins Peloton from London as an accomplished distance runner and coach who uses the sport as a way to explore the world. From adventurous trails, tropical beaches, and exotic volcanoes, to sub-3:00 marathons and demanding ultramarathons, she�s run across the globe and can�t wait for her next journey on the Peloton Tread. When teaching, Becs shares wisdom from her own training experience to help inspire everyone from first time runners to seasoned athletes. No matter how experienced you are, you�ll leave her class smiling and proud, energized to tackle your next challenge.",
-                "short_bio": "'Challenge yourself, and be determined to thrive.'",
-                "coach_type": "peloton_coach",
-                "is_filterable": true,
-                "is_instructor_group": false,
-                "is_visible": true,
-                "list_order": 12,
-                "featured_profile": true,
-                "film_link": "",
-                "facebook_fan_page": "https://www.facebook.com/becsgentrypeloton/",
-                "music_bio": "",
-                "spotify_playlist_uri": "spotify:user:onepeloton:playlist:25hvBDM2UA8X9EZqvsA51k?si=6OGJiiQiQbqyUkbi3_QRAw",
-                "background": "My inspiration comes from running all around the world! I want to teach the people in my class to love the way running makes them feel. My approach is tough, but I�ll always run with a smile because my passion for the sport is so alive.",
-                "ordered_q_and_as": [
-                    [
-                        "How Do You Motivate?",
-                        "I share a lot of my own personal training experiences to relate to people in my classes. I want Members to see that we have the same goals, and are on a journey together."
-                    ],
-                    [
-                        "Outside of Peloton",
-                        "I train for my own goals, setting myself up for whatever my next race may be. I adore spending time eating my way around cities, so moving to NYC has been a dream and I keep finding amazing new places everywhere I go."
-                    ],
-                    [
-                        "",
-                        ""
-                    ]
-                ],
-                "instagram_profile": "",
-                "strava_profile": "",
-                "twitter_profile": "",
-                "quote": "Challenge yourself, and be determined to thrive.",
-                "username": "BecsGentry",
-                "name": "Becs Gentry",
-                "first_name": "Becs",
-                "last_name": "Gentry",
-                "user_id": "81be40879cf34e4581e1840d217146e3",
-                "life_style_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/adc7373b2e734f09a97ca51c3bfc5da6",
-                "bike_instructor_list_display_image_url": null,
-                "web_instructor_list_display_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/f330cae7b2bd49d7b7300c35ba479f7e",
-                "ios_instructor_list_display_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/37913816c8d94c3ea00a1fb941bea157",
-                "about_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/b9bbff07102b4a3ab9ade5b328372db6",
-                "image_url": "https://s3.amazonaws.com/workout-metric-images-prod/0d185aebed3442ce8288dce5f907147d",
-                "jumbotron_url": null,
-                "jumbotron_url_dark": "https://s3.amazonaws.com/workout-metric-images-prod/ce88865d40e74a07bf76cdc5c29529be",
-                "jumbotron_url_ios": "https://s3.amazonaws.com/workout-metric-images-prod/03a894c7bb1f4f9a995a504eb3cb4a75",
-                "web_instructor_list_gif_image_url": null,
-                "instructor_hero_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/fd5be9e6d5e047b0b2f83a3422762001",
-                "fitness_disciplines": [
-                    "circuit",
-                    "running"
-                ]
-            }
-        }
-    },
     "user": {
         "block_explicit": false,
         "created_at": 1511729820,
@@ -295,7 +163,61 @@
         "join_tokens": {
             "on_demand": "eyJob21lX3BlbG90b25faWQiOiBudWxsLCAicmlkZV9pZCI6ICJmZTY3NWMxZmJmOWU0MTFjODUwMzY3MTA5MTY1ZTU0ZCIsICJzdHVkaW9fcGVsb3Rvbl9pZCI6IG51bGwsICJ0eXBlIjogIm9uX2RlbWFuZCJ9"
         },
-        "excluded_platforms": []
+        "excluded_platforms": [],
+        "instructor": {
+            "id": "286fc17080d34406a54b80ad8ff83e12",
+            "bio": "Becs joins Peloton from London as an accomplished distance runner and coach who uses the sport as a way to explore the world. From adventurous trails, tropical beaches, and exotic volcanoes, to sub-3:00 marathons and demanding ultramarathons, she�s run across the globe and can�t wait for her next journey on the Peloton Tread. When teaching, Becs shares wisdom from her own training experience to help inspire everyone from first time runners to seasoned athletes. No matter how experienced you are, you�ll leave her class smiling and proud, energized to tackle your next challenge.",
+            "short_bio": "'Challenge yourself, and be determined to thrive.'",
+            "coach_type": "peloton_coach",
+            "is_filterable": true,
+            "is_instructor_group": false,
+            "is_visible": true,
+            "list_order": 12,
+            "featured_profile": true,
+            "film_link": "",
+            "facebook_fan_page": "https://www.facebook.com/becsgentrypeloton/",
+            "music_bio": "",
+            "spotify_playlist_uri": "spotify:user:onepeloton:playlist:25hvBDM2UA8X9EZqvsA51k?si=6OGJiiQiQbqyUkbi3_QRAw",
+            "background": "My inspiration comes from running all around the world! I want to teach the people in my class to love the way running makes them feel. My approach is tough, but I�ll always run with a smile because my passion for the sport is so alive.",
+            "ordered_q_and_as": [
+                [
+                    "How Do You Motivate?",
+                    "I share a lot of my own personal training experiences to relate to people in my classes. I want Members to see that we have the same goals, and are on a journey together."
+                ],
+                [
+                    "Outside of Peloton",
+                    "I train for my own goals, setting myself up for whatever my next race may be. I adore spending time eating my way around cities, so moving to NYC has been a dream and I keep finding amazing new places everywhere I go."
+                ],
+                [
+                    "",
+                    ""
+                ]
+            ],
+            "instagram_profile": "",
+            "strava_profile": "",
+            "twitter_profile": "",
+            "quote": "Challenge yourself, and be determined to thrive.",
+            "username": "BecsGentry",
+            "name": "Becs Gentry",
+            "first_name": "Becs",
+            "last_name": "Gentry",
+            "user_id": "81be40879cf34e4581e1840d217146e3",
+            "life_style_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/adc7373b2e734f09a97ca51c3bfc5da6",
+            "bike_instructor_list_display_image_url": null,
+            "web_instructor_list_display_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/f330cae7b2bd49d7b7300c35ba479f7e",
+            "ios_instructor_list_display_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/37913816c8d94c3ea00a1fb941bea157",
+            "about_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/b9bbff07102b4a3ab9ade5b328372db6",
+            "image_url": "https://s3.amazonaws.com/workout-metric-images-prod/0d185aebed3442ce8288dce5f907147d",
+            "jumbotron_url": null,
+            "jumbotron_url_dark": "https://s3.amazonaws.com/workout-metric-images-prod/ce88865d40e74a07bf76cdc5c29529be",
+            "jumbotron_url_ios": "https://s3.amazonaws.com/workout-metric-images-prod/03a894c7bb1f4f9a995a504eb3cb4a75",
+            "web_instructor_list_gif_image_url": null,
+            "instructor_hero_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/fd5be9e6d5e047b0b2f83a3422762001",
+            "fitness_disciplines": [
+                "circuit",
+                "running"
+            ]
+        }
     },
     "achievement_templates": [
         {
