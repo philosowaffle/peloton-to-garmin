@@ -22,145 +22,6 @@
     "workout_type": "class",
     "total_video_watch_time_seconds": 1198,
     "total_video_buffering_seconds": 1,
-    "peloton": {
-        "id": "68e9017696a84dea83c1ac0319df9a02",
-        "ride_id": "71613c9770ff40b397bf55c075f87529",
-        "server_time": 1595637870,
-        "scheduled_start_time": null,
-        "start_time": 1574980402,
-        "end_time": 1574981604,
-        "pedaling_start_time": 1574980403,
-        "pedaling_end_time": 1574981603,
-        "status": "COMPLETE",
-        "countdown": null,
-        "is_live": false,
-        "is_studio": false,
-        "is_encore": false,
-        "seconds_since_start": null,
-        "created_at": 1574980402,
-        "total_workouts": 1,
-        "is_complete": true,
-        "total_home_reservations": 0,
-        "ride": {
-            "has_closed_captions": false,
-            "content_provider": "peloton",
-            "content_format": "audio",
-            "description": "Olivia doesn't waste a second in this 20 min Walk + Run. After a quick 1 min warm up, spend 18 mins in jogs, runs, and walks, followed by a 1 min cooldown.",
-            "difficulty_rating_avg": 6.3715,
-            "difficulty_rating_count": 7609,
-            "difficulty_level": null,
-            "duration": 1200,
-            "extra_images": [],
-            "fitness_discipline": "walking",
-            "fitness_discipline_display_name": "Walking",
-            "has_pedaling_metrics": false,
-            "home_peloton_id": null,
-            "id": "71613c9770ff40b397bf55c075f87529",
-            "image_url": "https://s3.amazonaws.com/peloton-ride-images/da983f4099dd6202ba49ac498a2f4d6b95ae816b/img_1533777017288.jpg",
-            "instructor_id": "05735e106f0747d2a112d32678be8afd",
-            "is_archived": true,
-            "is_closed_caption_shown": false,
-            "is_explicit": false,
-            "is_live_in_studio_only": false,
-            "language": "english",
-            "length": 1202,
-            "live_stream_id": "71613c9770ff40b397bf55c075f87529-live",
-            "live_stream_url": null,
-            "location": "nyc-gw-tread",
-            "metrics": [
-                "heart_rate",
-                "calories",
-                "speed",
-                "distance",
-                "gps",
-                "gps_accuracy",
-                "altitude",
-                "elevation"
-            ],
-            "original_air_time": 1533826800,
-            "overall_rating_avg": 0.9969,
-            "overall_rating_count": 7408,
-            "pedaling_start_offset": 1,
-            "pedaling_end_offset": 1201,
-            "pedaling_duration": 1200,
-            "rating": 0,
-            "ride_type_id": "9dc3be9eaafb476d8853f90cd33e6e04",
-            "ride_type_ids": [
-                "9dc3be9eaafb476d8853f90cd33e6e04"
-            ],
-            "sample_vod_stream_url": null,
-            "scheduled_start_time": 1533826800,
-            "series_id": "4ccaa685162e4bb0acd6cd55147b8686",
-            "sold_out": false,
-            "studio_peloton_id": null,
-            "title": "20 min Walk + Run",
-            "total_ratings": 0,
-            "total_in_progress_workouts": 0,
-            "total_workouts": 24583,
-            "vod_stream_url": "http://audio-only.mdc.akamaized.net/audio/08-2018/07302018-olivia-20m-walkrun/07302018-olivia-20m-walkrun-192.m4a",
-            "vod_stream_id": "71613c9770ff40b397bf55c075f87529-vod",
-            "class_type_ids": [
-                "9dc3be9eaafb476d8853f90cd33e6e04"
-            ],
-            "difficulty_estimate": 6.3715,
-            "overall_estimate": 0.9969,
-            "instructor": {
-                "id": "05735e106f0747d2a112d32678be8afd",
-                "bio": "Born and raised in New York, Olivia grew up playing and excelling at team sports, including lacrosse, field hockey, cheerleading and track. With a professional background in finance, as well as boxing and cycling, she brings a we-first, cheerleader approach to every class, inspiring you to leave each workout walking taller and feeling stronger. ",
-                "short_bio": "\u201cDecide what you want to accomplish, and I will help you conquer it.\u201d",
-                "coach_type": "peloton_coach",
-                "is_filterable": true,
-                "is_instructor_group": false,
-                "is_visible": true,
-                "list_order": 33,
-                "featured_profile": true,
-                "film_link": "",
-                "facebook_fan_page": "https://www.facebook.com/OliviaAmatoPeloton/",
-                "music_bio": "",
-                "spotify_playlist_uri": "spotify:user:onepeloton:playlist:6eHoh1Sp7T9nc5lFSA5rW1?si=0Gwb9YlCQA-reLgA4cwinA",
-                "background": "We\u2019re gonna work, and we\u2019re gonna work hard. Know that I\u2019m in this with you every step of the way. I\u2019m a natural cheerleader, and when we workout together, we\u2019re a team. I will always have your back, no matter how challenging things get! ",
-                "ordered_q_and_as": [
-                    [
-                        "How Do You Motivate?",
-                        "I like to lead by example. By staying with you throughout class, I can show you that sometimes, all it takes is getting out of your own way to accomplish your goals. You\u2019re going to love the way you feel when we\u2019re done!"
-                    ],
-                    [
-                        "Outside of Peloton",
-                        "My first word was doggy, so you can imagine what my favorite animal is! I also love fashion, family, skincare, being outdoors, and being a crazy plant lady. "
-                    ],
-                    [
-                        "",
-                        ""
-                    ]
-                ],
-                "instagram_profile": "",
-                "strava_profile": "",
-                "twitter_profile": "",
-                "quote": "\u201cDecide what you want to accomplish, and I will help you conquer it.\u201d",
-                "username": "liv_amato",
-                "name": "Olivia Amato",
-                "first_name": "Olivia",
-                "last_name": "Amato",
-                "user_id": "9ac4103069284724b054ca26f066e9f0",
-                "life_style_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/d18003b575274c5d89bf0de59ac600f9",
-                "bike_instructor_list_display_image_url": null,
-                "web_instructor_list_display_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/1362633e6ee24c1680fc8328eb070a86",
-                "ios_instructor_list_display_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/a3b0e0876d2740639fa5517ed23fae57",
-                "about_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/def7a0b5494048fc99fff948c094cea7",
-                "image_url": "https://s3.amazonaws.com/workout-metric-images-prod/8707d2315f154958be8c91776fedf20a",
-                "jumbotron_url": null,
-                "jumbotron_url_dark": "https://s3.amazonaws.com/workout-metric-images-prod/3311a18a7b2e49c5b0ba9f0ecf6d3967",
-                "jumbotron_url_ios": "https://s3.amazonaws.com/workout-metric-images-prod/aa98ce5316614aa081ba0d4c6c647d19",
-                "web_instructor_list_gif_image_url": null,
-                "instructor_hero_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/55a6d573f93a48b99ececbd1e9f87b54",
-                "fitness_disciplines": [
-                    "cycling",
-                    "circuit",
-                    "running"
-                ]
-            }
-        }
-    },
     "user": {
         "block_explicit": false,
         "created_at": 1500509861,
@@ -321,7 +182,62 @@
             "android_tv",
             "roku",
             "tiger"
-        ]
+        ],
+        "instructor": {
+            "id": "05735e106f0747d2a112d32678be8afd",
+            "bio": "Born and raised in New York, Olivia grew up playing and excelling at team sports, including lacrosse, field hockey, cheerleading and track. With a professional background in finance, as well as boxing and cycling, she brings a we-first, cheerleader approach to every class, inspiring you to leave each workout walking taller and feeling stronger. ",
+            "short_bio": "\u201cDecide what you want to accomplish, and I will help you conquer it.\u201d",
+            "coach_type": "peloton_coach",
+            "is_filterable": true,
+            "is_instructor_group": false,
+            "is_visible": true,
+            "list_order": 33,
+            "featured_profile": true,
+            "film_link": "",
+            "facebook_fan_page": "https://www.facebook.com/OliviaAmatoPeloton/",
+            "music_bio": "",
+            "spotify_playlist_uri": "spotify:user:onepeloton:playlist:6eHoh1Sp7T9nc5lFSA5rW1?si=0Gwb9YlCQA-reLgA4cwinA",
+            "background": "We\u2019re gonna work, and we\u2019re gonna work hard. Know that I\u2019m in this with you every step of the way. I\u2019m a natural cheerleader, and when we workout together, we\u2019re a team. I will always have your back, no matter how challenging things get! ",
+            "ordered_q_and_as": [
+                [
+                    "How Do You Motivate?",
+                    "I like to lead by example. By staying with you throughout class, I can show you that sometimes, all it takes is getting out of your own way to accomplish your goals. You\u2019re going to love the way you feel when we\u2019re done!"
+                ],
+                [
+                    "Outside of Peloton",
+                    "My first word was doggy, so you can imagine what my favorite animal is! I also love fashion, family, skincare, being outdoors, and being a crazy plant lady. "
+                ],
+                [
+                    "",
+                    ""
+                ]
+            ],
+            "instagram_profile": "",
+            "strava_profile": "",
+            "twitter_profile": "",
+            "quote": "\u201cDecide what you want to accomplish, and I will help you conquer it.\u201d",
+            "username": "liv_amato",
+            "name": "Olivia Amato",
+            "first_name": "Olivia",
+            "last_name": "Amato",
+            "user_id": "9ac4103069284724b054ca26f066e9f0",
+            "life_style_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/d18003b575274c5d89bf0de59ac600f9",
+            "bike_instructor_list_display_image_url": null,
+            "web_instructor_list_display_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/1362633e6ee24c1680fc8328eb070a86",
+            "ios_instructor_list_display_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/a3b0e0876d2740639fa5517ed23fae57",
+            "about_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/def7a0b5494048fc99fff948c094cea7",
+            "image_url": "https://s3.amazonaws.com/workout-metric-images-prod/8707d2315f154958be8c91776fedf20a",
+            "jumbotron_url": null,
+            "jumbotron_url_dark": "https://s3.amazonaws.com/workout-metric-images-prod/3311a18a7b2e49c5b0ba9f0ecf6d3967",
+            "jumbotron_url_ios": "https://s3.amazonaws.com/workout-metric-images-prod/aa98ce5316614aa081ba0d4c6c647d19",
+            "web_instructor_list_gif_image_url": null,
+            "instructor_hero_image_url": "https://s3.amazonaws.com/workout-metric-images-prod/55a6d573f93a48b99ececbd1e9f87b54",
+            "fitness_disciplines": [
+                "cycling",
+                "circuit",
+                "running"
+            ]
+        }
     },
     "achievement_templates": [
         {

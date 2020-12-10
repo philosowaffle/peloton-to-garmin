@@ -109,3 +109,5 @@ output/
 # Dev Files
 tests/testOutput/
 tests/database.json
+bak_config.ini
+.vscode/

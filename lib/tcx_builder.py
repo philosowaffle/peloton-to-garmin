@@ -40,8 +40,8 @@ def getSpeedInMetersPerSecond(speedPerHour, distanceUnit):
 
 def getInstructor(workout):
     if workout["workout_type"] == "class":
-        if workout["peloton"]["ride"]["instructor"] is not None:
-            return " with " + workout["peloton"]["ride"]["instructor"]["name"]
+        if workout["ride"]["instructor"] is not None:
+            return " with " + workout["ride"]["instructor"]["name"]
     return ""
     
 def getDistanceMeters(workoutSamples):

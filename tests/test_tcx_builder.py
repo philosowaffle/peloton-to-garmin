@@ -35,8 +35,8 @@ class TestTcxBuilder:
         title, filename, garmin_activity_type = tcx_builder.workoutSamplesToTCX(workout_data, workout_summary, workout_samples, output_directory)
         
         # Assert
-        assert title == "20 min HIIT Ride with Denis Morton"
-        assert filename == "1586208689-20 min HIIT Ride with Denis Morton-6c4d525d20134c74b7395991ed6912ce.tcx"
+        assert title == "30 min Holiday Ride with Denis Morton"
+        assert filename == "1607634579-30 min Holiday Ride with Denis Morton-d49cc8314b4e4f7ca1726394a90f6757.tcx"
         assert garmin_activity_type == "indoor_cycling"
         assert os.path.exists(os.path.join(output_directory, filename))
 
@@ -271,7 +271,7 @@ class TestTcxBuilder:
         # Setup
         workout_data = self.loadTestData("peloton_workout_cycling.json")
         workout_data["ride"]["title"] = "5 min Peloton All-Star Cool Down Ride"
-        workout_data["peloton"]["ride"]["instructor"]["name"] = "Alex Toussaint"
+        workout_data["ride"]["instructor"]["name"] = "Alex Toussaint"
         workout_summary = self.loadTestData("peloton_workoutsummary_cycling.json")
         workout_samples = self.loadTestData("peloton_workoutsamples_cycling.json")
         output_directory = self.getOutputDir()
@@ -281,4 +281,4 @@ class TestTcxBuilder:
         
         # Assert
         assert title == "5 min Peloton All-Star Cool Down Ride with Alex Toussaint"
-        assert filename == "1586208689-5 min Peloton All-Star Cool Down Ride with Alex Toussaint-6c4d525d20134c74b7395991ed6912ce.tcx"
+        assert filename == "1607634579-5 min Peloton All-Star Cool Down Ride with Alex Toussaint-d49cc8314b4e4f7ca1726394a90f6757.tcx"

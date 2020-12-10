@@ -40,7 +40,7 @@ class PelotonApi:
         """
             Gets the latest x workouts from Peloton.
         """
-        query = "user/" + self.user_id + "/workouts?joins=peloton.ride&limit="+ str(numWorkouts) +"&page=0&sort_by=-created"
+        query = "user/" + self.user_id + "/workouts?joins=ride&limit="+ str(numWorkouts) +"&page=0&sort_by=-created"
         url = util.full_url(self.http_base, query)
 
         workouts = util.getResponse(self.session, url, {}, self.getAuthCookie())
@@ -54,7 +54,7 @@ class PelotonApi:
         """
             Gets the latest workout from Peloton.
         """
-        query = "user/" + self.user_id + "/workouts?joins=peloton.ride&limit=1&page=0&sort_by=-created"
+        query = "user/" + self.user_id + "/workouts?joins=ride&limit=1&page=0&sort_by=-created"
         url = util.full_url(self.http_base, query)
 
         workouts = util.getResponse(self.session, url, {}, self.getAuthCookie())
@@ -69,7 +69,7 @@ class PelotonApi:
             Gets workout from Peloton by id.
         """
 
-        query = "workout/" + workoutId + "?joins=peloton,peloton.ride,peloton.ride.instructor,user"
+        query = "workout/" + workoutId + "?joins=ride,ride.instructor,user"
         url = util.full_url(self.http_base, query)
         data = util.getResponse(self.session, url, {}, self.getAuthCookie())
 
