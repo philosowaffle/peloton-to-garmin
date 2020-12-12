@@ -118,16 +118,7 @@ Various config and upload history is maintained in a local `database.json` file.
 
 ## Contributors
 
-Special thanks to all the contributors who have helped improve this project!
-
-* @clipin 
-* @douglasawh
-* @jyc66
-* @Kdisimone
-* @NateEverden
-* @padioca
-
-If you submit a pull request feel free to update this list to include your name (and or peloton handle).
+Special thanks to all the [contributors](https://github.com/philosowaffle/peloton-to-garmin/graphs/contributors) who have helped improve this project!
 
 ## Warnings
 
