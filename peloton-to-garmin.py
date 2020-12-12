@@ -33,6 +33,9 @@ class PelotonToGarmin:
 
         logger.info("Get latest " + str(numActivities) + " workouts.")
         workouts = pelotonClient.getXWorkouts(numActivities)
+
+        if config.uploadToGarmin:
+            garminUploader = garminClient.garminUploader(config.garmin_email, config.garmin_password)
         
         for w in workouts:
             workoutId = w["id"]
@@ -64,13 +67,19 @@ class PelotonToGarmin:
                         logger.info("Workout already uploaded to garmin, skipping...")
                         continue
 
-                    logger.info("Uploading workout to Garmin")
+                    logger.info("Queing activity for upload: {}".format(title))
                     fileToUpload = [config.output_directory + "/" + filename]
-                    garminClient.uploadToGarmin(fileToUpload, config.garmin_email, config.garmin_password, garmin_activity_type.lower(), title)
-                    garminUploadHistoryTable.insert({'workoutId': workoutId, 'title': title, 'uploadDt': datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
+                    garminUploader.addActivity(fileToUpload, garmin_activity_type.lower(), title, workoutId)
                 except Exception as e:
-                    logger.error("Failed to upload to Garmin: {}".format(e))
-                    database.close()
+                    logger.error("Failed to queue activity for Garmin upload: {}".format(e))
+
+        if config.uploadToGarmin:
+            try:
+                logger.info("Uploading activities to Garmin...")
+                garminUploader.uploadToGarmin(garminUploadHistoryTable)
+            except Exception as e:
+                database.close()
+                raise e
 
         logger.info("Done!")
         logger.info("Your Garmin TCX files can be found in the Output directory: " + config.output_directory)
