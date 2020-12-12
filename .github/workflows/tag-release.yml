@@ -19,7 +19,7 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload the artifacts
-      uses: svenstaro/upload-release-action@v2
+      uses: svenstaro/upload-release-action@v2.2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: ${{ github.workspace }}\dist\peloton-to-garmin-win.zip
