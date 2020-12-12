@@ -1,4 +1,6 @@
-# peloton-to-garmin
+# peloton-to-garmin 
+
+#### _#PelotonToGarmin_
 
 Convert workout data from Peloton into a TCX file that can be uploaded to Garmin.
 
