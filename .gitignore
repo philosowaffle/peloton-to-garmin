@@ -110,4 +110,3 @@ output/
 tests/testOutput/
 tests/database.json
 bak_config.ini
-.vscode/

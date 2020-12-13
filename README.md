@@ -122,6 +122,8 @@ Various config and upload history is maintained in a local `database.json` file.
 
 Special thanks to all the [contributors](https://github.com/philosowaffle/peloton-to-garmin/graphs/contributors) who have helped improve this project!
 
+Garmin Upload feature is provided by the library: https://github.com/La0/garmin-uploader
+
 ## Warnings
 
 ⚠️ WARNING!!! Your username and password for Peloton and Garmin Connect are stored in clear text, WHICH IS NOT SECURE. If you have concerns about storing your credentials in an unsecure file, do not use this option.
