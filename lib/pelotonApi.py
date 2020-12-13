@@ -8,8 +8,8 @@ class PelotonApi:
     def __init__(self, user_email, user_password):
         self.logger = logging.getLogger('peloton-to-garmin.PelotonApi')
 
-        assert user_email is not None and user_email is not "", "Please specify your Peloton login email."
-        assert user_password is not None and user_password is not "", "Please specify your Peloton login password."
+        assert user_email is not None and user_email != "", "Please specify your Peloton login email."
+        assert user_password is not None and user_password != "", "Please specify your Peloton login password."
 
         self.http_base = "https://api.pelotoncycle.com/api/"
         self.session = requests.Session()

@@ -15,8 +15,8 @@ class GarminClient:
     def __init__(self, user_email, user_password):
         self.logger = logging.getLogger('peloton-to-garmin.garminClient')
 
-        assert user_email is not None and user_email is not "", "Please specify your Garmin login email."
-        assert user_password is not None and user_password is not "", "Please specify your Garmin login password."
+        assert user_email is not None and user_email != "", "Please specify your Garmin login email."
+        assert user_password is not None and user_password != "", "Please specify your Garmin login password."
 
         self.user = User(user_email, user_password)
         self.activities = {}
