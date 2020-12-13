@@ -2,6 +2,7 @@ import xml.etree.ElementTree as etree
 from datetime import datetime, timezone
 import logging
 import os
+from unidecode import unidecode
 
 ##############################
 # Logging Setup
@@ -41,7 +42,7 @@ def getSpeedInMetersPerSecond(speedPerHour, distanceUnit):
 def getInstructor(workout):
     if workout["workout_type"] == "class":
         if workout["ride"]["instructor"] is not None:
-            return " with " + workout["ride"]["instructor"]["name"]
+            return unidecode(" with " + workout["ride"]["instructor"]["name"])
     return ""
     
 def getDistanceMeters(workoutSamples):
@@ -150,7 +151,8 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     intensity.text = "Active"
 
     instructor = getInstructor(workout)
-    title = "{0}{1}".format(workout["ride"]["title"].replace("/","-").replace(":","-"), instructor)
+    rideTitle = unidecode(workout["ride"]["title"].replace("/","-").replace(":","-"))
+    title = "{0}{1}".format(rideTitle, instructor)
 
     try:
         notes = etree.Element("Notes")

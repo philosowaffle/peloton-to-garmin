@@ -282,3 +282,19 @@ class TestTcxBuilder:
         # Assert
         assert title == "5 min Peloton All-Star Cool Down Ride with Alex Toussaint"
         assert filename == "1607634579-5 min Peloton All-Star Cool Down Ride with Alex Toussaint-d49cc8314b4e4f7ca1726394a90f6757.tcx"
+    
+    def test_can_parse_workout_title_with_accented_characters(self):
+        # Setup
+        workout_data = self.loadTestData("peloton_workout_cycling.json")
+        workout_data["ride"]["title"] = "5 min Beyoncé All-Star Cool Down Ride"
+        workout_data["ride"]["instructor"]["name"] = "Robin Arzón"
+        workout_summary = self.loadTestData("peloton_workoutsummary_cycling.json")
+        workout_samples = self.loadTestData("peloton_workoutsamples_cycling.json")
+        output_directory = self.getOutputDir()
+
+        # Act
+        title, filename, garmin_activity_type = tcx_builder.workoutSamplesToTCX(workout_data, workout_summary, workout_samples, output_directory)
+        
+        # Assert
+        assert title == "5 min Beyonce All-Star Cool Down Ride with Robin Arzon"
+        assert filename == "1607634579-5 min Beyonce All-Star Cool Down Ride with Robin Arzon-d49cc8314b4e4f7ca1726394a90f6757.tcx"
