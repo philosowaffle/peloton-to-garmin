@@ -15,13 +15,8 @@ class GarminClient:
     def __init__(self, user_email, user_password):
         self.logger = logging.getLogger('peloton-to-garmin.garminClient')
 
-        if user_email is None:
-            self.logger.error("Please specify your Garmin login email.")
-            raise "Please specify your Garmin login email."
-            
-        if user_password is None:
-            self.logger.error("Please specify your Garmin login password.")
-            raise "Please specify your Garmin login password."
+        assert user_email is not None and user_email is not "", "Please specify your Garmin login email."
+        assert user_password is not None and user_password is not "", "Please specify your Garmin login password."
 
         self.user = User(user_email, user_password)
         self.activities = {}
@@ -31,9 +26,7 @@ class GarminClient:
         self.activities[activityId] = Activity(path, activityName, activityType)
 
     def uploadToGarmin(self, uploadHistoryTable):
-        if not self.user.authenticate():
-            self.logger.error("Failed to authenticate garmin user.")
-            raise Exception("Failed to authenticate garmin user.")
+        assert self.user.authenticate(), "Failed to authenticate garmin user."
 
         for activityId in self.activities:
             try:
@@ -56,4 +49,4 @@ class GarminClient:
         time.sleep(wait_time)
 
         self.last_request = time.time()
-        self.logger.debug("Rate limited for %f" % wait_time)
+        self.logger.debug("Rate limiting for %f" % wait_time)

@@ -35,7 +35,7 @@ class PelotonToGarmin:
         workouts = pelotonClient.getXWorkouts(numActivities)
 
         if config.uploadToGarmin:
-            garminUploader = garminClient.garminUploader(config.garmin_email, config.garmin_password)
+            garminUploader = garminClient.GarminClient(config.garmin_email, config.garmin_password)
         
         for w in workouts:
             workoutId = w["id"]
@@ -68,7 +68,7 @@ class PelotonToGarmin:
                         continue
 
                     logger.info("Queing activity for upload: {}".format(title))
-                    fileToUpload = [config.output_directory + "/" + filename]
+                    fileToUpload = config.output_directory + "/" + filename
                     garminUploader.addActivity(fileToUpload, garmin_activity_type.lower(), title, workoutId)
                 except Exception as e:
                     logger.error("Failed to queue activity for Garmin upload: {}".format(e))
