@@ -11,10 +11,15 @@ class TestAdHoc:
     def setup_class(cls):
         return
     
+    # Place tcx file in /tests/data directory
+    # Modify below settings for tcx to upload
+    # > cd tests
+    # > pytest -q adhoc.py
     def test_adhoc_garmin_upload(self):
         filename = "1606519184-30 min Power Zone Ride with Denis Morton-86e1f383b2164f3392ac4ec6f10d7a56.tcx"
         workout_name = "30 min Power Zone Ride with Denis Morton"
         workout_type = "indoor_cycling"
         garmin_email = ""
         garmin_password = ""
+        
         garminClient.uploadToGarmin([os.path.join(os.getcwd(), "data", filename)], garmin_email, garmin_password, workout_type, workout_name)
