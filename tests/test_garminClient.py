@@ -23,7 +23,7 @@ class TestGarminClient:
         with pytest.raises(AssertionError) as err:
             garminUploader = garminClient.GarminClient(user_email, user_password)
         
-        if user_email is None or user_email is "":
+        if user_email is None or user_email == "":
             assert "email" in str(err.value)
         else:
             assert "password" in str(err.value)
