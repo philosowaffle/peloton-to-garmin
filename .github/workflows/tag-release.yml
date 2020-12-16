@@ -18,13 +18,20 @@ jobs:
       uses: mathieudutour/github-tag-action@v5.1
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Get release
+      id: get_release
+      uses: bruceadams/get-release@v1.2.2
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+          
     - name: Upload Release Asset
       id: upload-release-asset 
       uses: actions/upload-release-asset@v1
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ steps.get_release.outputs.upload_url }}
         asset_path:  \dist\peloton-to-garmin-win.zip
         asset_name: peloton-to-garmin-windows.zip
         asset_content_type: application/zip
