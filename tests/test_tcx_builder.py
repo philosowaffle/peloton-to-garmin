@@ -43,15 +43,27 @@ class TestTcxBuilder:
         tcx = self.loadOutputTCX(os.path.join(output_directory, filename))
         TCX.assertTcxSportMatches("Biking", tcx)
         TCX.assertTcxIdMatches(workout_data, tcx)
+
         TCX.assertTcxLapStartTimeMatches(workout_data, tcx)
         TCX.assertTcxTotalTimeSecondsMatches(workout_data, tcx)
+        TCX.assertTcxTriggerMethodMatches(workout_summary, tcx)
+        TCX.assertTcxIntensityMatches(workout_summary, tcx)
+
+        TCX.assertTcxTotalPowerMatches(workout_summary, tcx)
         TCX.assertTcxMaximumSpeedMatches(workout_samples, tcx)
         TCX.assertTcxCaloriesMatches(workout_summary, tcx)
+
         TCX.assertTcxAvgHeartRateMatches(workout_summary,tcx)
-        TCX.assertTcxAvgSpeedMatches(workout_samples, tcx)
+        TCX.assertTcxMaxHeartRateMatches(workout_summary, tcx)
+
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
+        TCX.assertTcxAvgBikeCadenceMatches(workout_summary, tcx)
+
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
+
+        TCX.assertTcxAvgResistanceMatches(workout_summary, tcx)
+        TCX.assertTcxMaxResistanceMatches(workout_summary, tcx)
 
     def test_cycling_km_smoketest(self):
         # Setup
@@ -72,15 +84,27 @@ class TestTcxBuilder:
         tcx = self.loadOutputTCX(os.path.join(output_directory, filename))
         TCX.assertTcxSportMatches("Biking", tcx)
         TCX.assertTcxIdMatches(workout_data, tcx)
+
         TCX.assertTcxLapStartTimeMatches(workout_data, tcx)
         TCX.assertTcxTotalTimeSecondsMatches(workout_data, tcx)
+        TCX.assertTcxTriggerMethodMatches(workout_summary, tcx)
+        TCX.assertTcxIntensityMatches(workout_summary, tcx)
+
+        TCX.assertTcxTotalPowerMatches(workout_summary, tcx)
         TCX.assertTcxMaximumSpeedMatches(workout_samples, tcx)
         TCX.assertTcxCaloriesMatches(workout_summary, tcx)
+
         TCX.assertTcxAvgHeartRateMatches(workout_summary,tcx)
-        TCX.assertTcxAvgSpeedMatches(workout_samples, tcx)
+        TCX.assertTcxMaxHeartRateMatches(workout_summary, tcx)
+
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
+        TCX.assertTcxAvgBikeCadenceMatches(workout_summary, tcx)
+
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
+
+        TCX.assertTcxAvgResistanceMatches(workout_summary, tcx)
+        TCX.assertTcxMaxResistanceMatches(workout_summary, tcx)
 
     def test_cycling_freestyle_smoketest(self):
         # Setup
@@ -101,15 +125,27 @@ class TestTcxBuilder:
         tcx = self.loadOutputTCX(os.path.join(output_directory, filename))
         TCX.assertTcxSportMatches("Biking", tcx)
         TCX.assertTcxIdMatches(workout_data, tcx)
+
         TCX.assertTcxLapStartTimeMatches(workout_data, tcx)
         TCX.assertTcxTotalTimeSecondsMatches(workout_data, tcx)
+        TCX.assertTcxTriggerMethodMatches(workout_summary, tcx)
+        TCX.assertTcxIntensityMatches(workout_summary, tcx)
+
+        TCX.assertTcxTotalPowerMatches(workout_summary, tcx)
         TCX.assertTcxMaximumSpeedMatches(workout_samples, tcx)
         TCX.assertTcxCaloriesMatches(workout_summary, tcx)
+
         TCX.assertTcxAvgHeartRateMatches(workout_summary,tcx)
-        TCX.assertTcxAvgSpeedMatches(workout_samples, tcx)
+        TCX.assertTcxMaxHeartRateMatches(workout_summary, tcx)
+
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
+        TCX.assertTcxAvgBikeCadenceMatches(workout_summary, tcx)
+
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
+
+        TCX.assertTcxAvgResistanceMatches(workout_summary, tcx)
+        TCX.assertTcxMaxResistanceMatches(workout_summary, tcx)
 
 
     def test_strength_smoketest(self):
@@ -136,7 +172,6 @@ class TestTcxBuilder:
         TCX.assertTcxMaximumSpeedMatches(workout_samples, tcx)
         TCX.assertTcxCaloriesMatches(workout_summary, tcx)
         TCX.assertTcxAvgHeartRateMatches(workout_summary,tcx)
-        TCX.assertTcxAvgSpeedMatches(workout_samples, tcx)
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
@@ -166,7 +201,6 @@ class TestTcxBuilder:
         TCX.assertTcxMaximumSpeedMatches(workout_samples, tcx)
         TCX.assertTcxCaloriesMatches(workout_summary, tcx)
         TCX.assertTcxAvgHeartRateMatches(workout_summary,tcx)
-        TCX.assertTcxAvgSpeedMatches(workout_samples, tcx)
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
@@ -196,7 +230,6 @@ class TestTcxBuilder:
         TCX.assertTcxMaximumSpeedMatches(workout_samples, tcx)
         TCX.assertTcxCaloriesMatches(workout_summary, tcx)
         TCX.assertTcxAvgHeartRateMatches(workout_summary,tcx)
-        TCX.assertTcxAvgSpeedMatches(workout_samples, tcx)
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
