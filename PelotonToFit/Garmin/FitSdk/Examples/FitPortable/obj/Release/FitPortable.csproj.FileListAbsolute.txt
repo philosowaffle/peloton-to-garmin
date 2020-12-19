@@ -1,0 +1,5 @@
+C:\jenkins\workspace\CCR-Rel-FIT-release\cs\Examples\FitPortable\obj\Release\FitPortable.csprojResolveAssemblyReference.cache
+C:\jenkins\workspace\CCR-Rel-FIT-release\cs\Examples\FitPortable\obj\Release\Dynastream.Fit.Portable.dll
+C:\jenkins\workspace\CCR-Rel-FIT-release\cs\Examples\FitPortable\obj\Release\Dynastream.Fit.Portable.pdb
+C:\jenkins\workspace\CCR-Rel-FIT-release\cs\Dynastream.Fit.Portable.dll
+C:\jenkins\workspace\CCR-Rel-FIT-release\cs\Dynastream.Fit.Portable.pdb
