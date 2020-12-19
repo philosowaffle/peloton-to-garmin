@@ -1,0 +1,4 @@
+D:\code\peloton-to-garmin\PelotonToFit\obj\Debug\net5.0\PelotonToFitConsole.GeneratedMSBuildEditorConfig.editorconfig
+D:\code\peloton-to-garmin\PelotonToFit\obj\Debug\net5.0\PelotonToFitConsole.AssemblyInfoInputs.cache
+D:\code\peloton-to-garmin\PelotonToFit\obj\Debug\net5.0\PelotonToFitConsole.AssemblyInfo.cs
+D:\code\peloton-to-garmin\PelotonToFit\obj\Debug\net5.0\PelotonToFitConsole.csproj.CoreCompileInputs.cache
