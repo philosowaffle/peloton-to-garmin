@@ -47,7 +47,7 @@ jobs:
        files: /dist/
        dest: /dist/peloton-to-garmin-${{ matrix.os }}.zip
     - name: Commit changes Windows
-      uses: EndBug/add-and-commit@v4
+      uses: EndBug/add-and-commit@v7.0.0
       if: ${{ matrix.os == 'windows-latest' }}
       with:
         message: "Create ${{ matrix.os }} distro"
