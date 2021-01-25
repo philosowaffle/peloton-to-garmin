@@ -11,16 +11,20 @@ class PelotonApi:
         assert user_email is not None and user_email != "", "Please specify your Peloton login email."
         assert user_password is not None and user_password != "", "Please specify your Peloton login password."
 
-        self.http_base = "https://api.pelotoncycle.com/api/"
+        self.http_base = "https://api.onepeloton.com/api/"
         self.session = requests.Session()
         
-        auth_endpoint = "https://api.pelotoncycle.com/auth/login"
+        auth_endpoint = "https://api.onepeloton.com/auth/login"
         payload = {
             'username_or_email': user_email,
             'password': user_password
         }
+        
+        headers = {
+            'peloton-platform': 'web'
+        }
 
-        response = self.session.post(auth_endpoint, json=payload, verify=True)
+        response = self.session.post(auth_endpoint, json=payload, verify=True, headers=headers)
         parsed_response = util.parse_response(response)
         util.handle_error(response)
 
