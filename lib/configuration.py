@@ -22,14 +22,14 @@ class Configuration:
     def __init__(self, args):
         self.logger = logging.getLogger('peloton-to-garmin.ArgParser')
 
-        args.add_argument("-email",help="Peloton email address",dest="email",type=str)
-        args.add_argument("-password",help="Peloton password",dest="password",type=str)
-        args.add_argument("-garmin_email",help="Garmin email address for upload to Garmin",dest="garmin_email",type=str)
-        args.add_argument("-garmin_password",help="Garmin password for upload to Garmin",dest="garmin_password",type=str)
-        args.add_argument("-path",help="Path to output directory",dest="output_dir",type=str)
-        args.add_argument("-num",help="Number of activities to download",dest="num_to_download",type=int)
-        args.add_argument("-log",help="Log file name",dest="log_file",type=str)
-        args.add_argument("-loglevel",help="[DEBUG, INFO, ERROR]",dest="log_level",type=str)
+        args.add_argument("-email",help="Peloton email address",dest="email",type=str, default=os.environ.get('P2G_PELOTON_EMAIL'))
+        args.add_argument("-password",help="Peloton password",dest="password",type=str, default=os.environ.get('P2G_PELOTON_PASS'))
+        args.add_argument("-garmin_email",help="Garmin email address for upload to Garmin",dest="garmin_email",type=str, default=os.environ.get('P2G_GARMIN_EMAIL'))
+        args.add_argument("-garmin_password",help="Garmin password for upload to Garmin",dest="garmin_password",type=str, default=os.environ.get('P2G_GARMIN_PASS'))
+        args.add_argument("-path",help="Path to output directory",dest="output_dir",type=str, default=os.environ.get('P2G_PATH'))
+        args.add_argument("-num",help="Number of activities to download",dest="num_to_download",type=int, default=os.environ.get('P2G_NUM'))
+        args.add_argument("-log",help="Log file name",dest="log_file",type=str, default=os.environ.get('P2G_LOG'))
+        args.add_argument("-loglevel",help="[DEBUG, INFO, ERROR]",dest="log_level",type=str, default=os.environ.get('P2G_LOG_LEVEL'))
 
         argResults = args.parse_args()
 
