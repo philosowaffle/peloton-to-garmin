@@ -110,6 +110,19 @@ optional arguments:
   
   Note: Command line arguments take precedence over values in the configuration file. 
 
+## Environment Variables
+
+If you want to use environment variables instead of command line arguements, use the following environment variables.
+
+  * `P2G_PELOTON_EMAIL`       Peloton email address  
+  * `P2G_PELOTON_PASS`        Peloton password  
+  * `P2G_PATH`                Path to output directory  
+  * `P2G_NUM`                 Number of activities to download  
+  * `P2G_LOG`                 Log file name## Runnning in docker
+  * `P2G_LOG_LEVEL`           DEBUG, INFO, ERROR  
+  * `P2G_GARMIN_EMAIL`        Garmin email address for upload to Garmin
+  * `P2G_GARMIN_PASS`         Garmin password for upload to Garmin
+
 ## Supported Python/OS
 
 The matrix of supported Python versions and OS's can be found [here](https://github.com/philosowaffle/peloton-to-garmin/blob/master/.github/workflows/pr-test.yml#L17).
