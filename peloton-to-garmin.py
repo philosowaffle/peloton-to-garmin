@@ -7,6 +7,7 @@ import argparse
 import json
 import logging
 import urllib3
+import time
 
 from lib import configuration
 from lib import pelotonApi
@@ -92,4 +93,13 @@ class PelotonToGarmin:
 ##############################
 if __name__ == "__main__":
     config = configuration.Configuration(argparse.ArgumentParser())
-    PelotonToGarmin.run(config)
+    logger = config.logger
+
+    if config.polling_enabled:
+        logger.info("Begin polling. Fetching {} activities, every {} seconds.".format(config.numActivities, config.polling_interval_seconds))
+        while True:
+            PelotonToGarmin.run(config)
+            logger.info("Sleeping for: {}seconds".format(config.polling_interval_seconds))
+            time.sleep(config.polling_interval_seconds)            
+    else:
+        PelotonToGarmin.run(config)
