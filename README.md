@@ -1,4 +1,4 @@
-# peloton-to-garmin 
+# peloton-to-garmin
 
 #### _#PelotonToGarmin_
 
@@ -14,7 +14,7 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 1. [Windows Usage](#windows-setup)
 1. [Linux/MacOs Usage](#linuxmacos)
 1. [Docker](#docker)
-1. [Command Line Arguments](#command-line-arguments)
+1. [Configuration](#configuration)
 1. [Database](#database)
 1. [Use At Own Risk](#warnings)
 
@@ -84,44 +84,43 @@ This repository does not directly maintain support for running the code in a doc
 
 * `docker pull philo138/peloton-to-garmin`
 
-## Command Line Arguments
+## Configuration
+
+There are multiple ways to configure values, the precedence order is:
+
+1. Environment Variable
+1. Command Line Arg
+1. config.ini value
+
+|Config.ini|Command Line|Env Var|Description|
+|----------|------------|-------|-----------|
+|[PELOTON] Email|-email EMAIL|P2G_PELOTON_EMAIL|Peloton email address|
+|[PELOTON] Password|-password PASWORD|P2G_PELOTON_PASS| Peloton password|
+|[PELOTON] NumActivities|-num #|P2G_NUM|Batch size of activities to grab at one time|
+|[GARMIN] UploadEnabled|-garmin_enable_upload true/false|P2G_GARMIN_ENABLE_UPLOAD|Automatically upload to Garmin Connect|
+|[GARMIN] Email|-garmin_email EMAIL|P2G_GARMIN_EMAIL|Garmin Email|
+|[GARMIN] Password|-garmin_password PASSWORD|P2G_GARMIN_PASS|Garmin Password|
+|[PTOG] EnablePolling|-enable_polling true/false|PTG_ENABLE_POLLING|Automatically and periodically check for new activities|
+|[PTOG] PollingIntervalSeconds|-polling_interval_seconds #|PTG_POLLING_INTERVAL_SECONDS|How frequently to poll for new activities if pollingis enabled.|
+|[OUTPUT] Directory|-path PATH|P2G_PATH|Path to output directory, this is where the TCX files are written|
+|[DEBUG] PauseOnFinish|-pause_on_finish true/false|P2G_PAUSE_ON_FINISH|Do not automatically close the application on completion.|
+|[LOGGER] LogFile|-log|P2G_LOG|Log file path|
+|[LOGGER] LogLevel|-loglevel|P2G_LOG_LEVEL|DEBUG, INFO, ERROR|
+
+### Command Line Arguments
 
 Usage:  
+
+```
 peloton-to-garmin.py [-h] [-email EMAIL] [-password PASSWORD] [-path OUTPUT_DIR] [-num NUM_TO_DOWNLOAD] [-log LOG_FILE]
+```  
 
-optional arguments:
-
-  * -h, --help            show this help message and exit  
-  * -email EMAIL          Peloton email address  
-  * -password PASSWORD    Peloton password  
-  * -path OUTPUT_DIR      Path to output directory  
-  * -num NUM_TO_DOWNLOAD  Number of activities to download  
-  * -log LOG_FILE         Log file name## Runnning in docker
-  * -loglevel LOGLEVEL    DEBUG, INFO, ERROR  
-  * -garmin_email         Garmin email address for upload to Garmin
-  * -garmin_password      Garmin password for upload to Garmin
-  
-  Examples:
+Examples:
 
   * To get the last 10 activities:  
         * `peloton-to-garmin.py -num 10`  
   * To pass your email and passowrd:  
         * `peloton-to-garmin.py -email you@email.com -password mypassword`  
-  
-  Note: Command line arguments take precedence over values in the configuration file. 
-
-## Environment Variables
-
-If you want to use environment variables instead of command line arguements, use the following environment variables.
-
-  * `P2G_PELOTON_EMAIL`       Peloton email address  
-  * `P2G_PELOTON_PASS`        Peloton password  
-  * `P2G_PATH`                Path to output directory  
-  * `P2G_NUM`                 Number of activities to download  
-  * `P2G_LOG`                 Log file name## Runnning in docker
-  * `P2G_LOG_LEVEL`           DEBUG, INFO, ERROR  
-  * `P2G_GARMIN_EMAIL`        Garmin email address for upload to Garmin
-  * `P2G_GARMIN_PASS`         Garmin password for upload to Garmin
 
 ## Supported Python/OS
 
