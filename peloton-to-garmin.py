@@ -80,6 +80,8 @@ class PelotonToGarmin:
                 garminUploader.uploadToGarmin(garminUploadHistoryTable)
             except Exception as e:
                 database.close()
+                logger.info("Failed to upload to Garmin. With error: {}".format(e))
+                input("Press the <ENTER> key to quit...")
                 raise e
 
         logger.info("Done!")
