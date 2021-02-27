@@ -1,6 +1,7 @@
 #
 # Author: Bailey Belvis (https://github.com/philosowaffle)
 #
+from pathlib import Path
 import configparser
 import logging
 
@@ -12,6 +13,10 @@ logger = logging.getLogger('peloton-to-garmin.config_helper')
 
 Config = configparser.ConfigParser()
 Config.read('config.ini')
+
+my_file = Path('config.local.ini')
+if my_file.is_file():
+    Config.read('config.local.ini')
 
 def ConfigSectionMap(section):
     dict1 = {}
