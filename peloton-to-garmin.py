@@ -68,7 +68,7 @@ class PelotonToGarmin:
                         logger.info("Workout already uploaded to garmin, skipping...")
                         continue
 
-                    logger.info("Queing activity for upload: {}".format(title))
+                    logger.info("Queuing activity for upload: {}".format(title))
                     fileToUpload = config.output_directory + "/" + filename
                     garminUploader.addActivity(fileToUpload, garmin_activity_type.lower(), title, workoutId)
                 except Exception as e:

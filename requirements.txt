@@ -1,5 +1,5 @@
 requests
 ConfigParser
-garmin_uploader>=1.0.8
+garmin_uploader>=1.0.9
 tinydb
 unidecode
