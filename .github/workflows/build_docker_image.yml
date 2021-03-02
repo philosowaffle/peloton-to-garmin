@@ -32,11 +32,6 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: philosowaffle/peloton-to-garmin
           tag_with_ref: true
-      - name: Checkout nginx-opentracing master
-        uses: actions/checkout@v2.3.4
-        with:
-          repository: opentracing-contrib/nginx-opentracing
-          ref: master
       - name: Set up Docker Buildx      
         uses: crazy-max/ghaction-docker-buildx@v1      
         with:        
