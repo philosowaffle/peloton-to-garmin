@@ -6,6 +6,7 @@ services:
     environment:
       - P2G_PELOTON_EMAIL=email
       - P2G_PELOTON_PASS=password
+      # additional environment vars can be configured here
     volumes:
       - ./p2g.log:/p2g.log
       - ./output:/output
