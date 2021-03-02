@@ -1,0 +1,61 @@
+name: Build Image
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: [3.8]
+        os: [windows-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+    - name: Package Windows
+      if: ${{ matrix.os == 'windows-latest' }}
+      run: |
+        pyinstaller -n peloton-to-garmin-${{ matrix.os }} --console --clean --noconfirm --add-data 'config.ini;.' --add-data 'README.md;.' peloton-to-garmin.py
+    - name: Package MacOS
+      if: ${{ matrix.os == 'macos-latest' }}
+      run: |
+        pyinstaller -n peloton-to-garmin-${{ matrix.os }} --windowed --onedir --clean --noconfirm --add-data 'config.ini:.' --add-data 'README.md:.' peloton-to-garmin.py
+    - name: Create Archive Windows
+      uses: papeloto/action-zip@v1
+      if: ${{ matrix.os == 'windows-latest' }}
+      with:
+       files: \dist\peloton-to-garmin-${{ matrix.os }}\
+       dest: \dist\peloton-to-garmin-${{ matrix.os }}.zip
+    - name: Create Archive MacOS
+      uses: papeloto/action-zip@v1
+      if: ${{ matrix.os == 'macos-latest' }}
+      with:
+       files: /dist/
+       dest: /dist/peloton-to-garmin-${{ matrix.os }}.zip
+    - name: Commit changes Windows
+      uses: EndBug/add-and-commit@v7.0.0
+      if: ${{ matrix.os == 'windows-latest' }}
+      with:
+        message: "Create ${{ matrix.os }} distro"
+        add: ${{ github.workspace }}\dist\peloton-to-garmin-${{ matrix.os }}.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Commit changes MacOS
+      uses: EndBug/add-and-commit@v4
+      if: ${{ matrix.os == 'macos-latest' }}
+      with:
+        message: "Create ${{ matrix.os }} distro"
+        add: ${{ github.workspace }}/dist/peloton-to-garmin-${{ matrix.os }}.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
