@@ -1,0 +1,14 @@
+version: "3.5"
+   
+services:
+  p2g:
+    container_name: p2g
+    image: docker.pkg.github.com/philosowaffle/peloton-to-garmin/peloton-to-garmin:TAG_NAME
+    restart: unless-stopped
+    environment:
+      - P2G_PELOTON_EMAIL=email
+      - P2G_PELOTON_PASS=password
+      # additional environment vars can be configured here
+    volumes:
+      - ./p2g.log:/p2g.log
+      - ./output:/output
