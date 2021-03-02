@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:alpine
 
 ENV P2G_NUM=5
 ENV P2G_GARMIN_ENABLE_UPLOAD=false
