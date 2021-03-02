@@ -8,7 +8,7 @@ on:
 env:
   DOCKER_REGISTRY: registry.hub.docker.com    
   DOCKER_IMAGE: philosowaffle/peloton-to-garmin
-  DOCKER_TARGET_PLATFORM: linux/amd64,linux/arm64,linux/arm/v7
+  DOCKER_TARGET_PLATFORM: linux/amd64,linux/arm64
 jobs:
   push_to_registry:
     name: Push Docker image to GitHub Packages
