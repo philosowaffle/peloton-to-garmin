@@ -42,7 +42,7 @@ jobs:
         run: |        
           echo ::set-output name=docker_platform::${DOCKER_TARGET_PLATFORM}        
           echo ::set-output name=docker_image::${DOCKER_REGISTRY}/${DOCKER_IMAGE}        
-          echo ::set-output name=version::latest
+          echo ::set-output name=version::latest-arm
       - name: Docker Login      
         if: success()      
         run: |        
