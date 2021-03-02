@@ -7,9 +7,7 @@ on:
 
 env:
   DOCKER_REGISTRY: registry.hub.docker.com    
-  DOCKER_IMAGE: philosowaffle/peloton-to-garmin    
-  DOCKERUSERNAME: ${{ secrets.DOCKER_USERNAME }}
-  DOCKERPASS: ${{ secrets.DOCKER_PASSWORD }}  
+  DOCKER_IMAGE: philosowaffle/peloton-to-garmin
   DOCKER_TARGET_PLATFORM: linux/arm/v7
 
 jobs:
@@ -53,7 +51,7 @@ jobs:
       - name: Docker Login      
         if: success()      
         run: |        
-          echo "${DOCKER_PASSWORD}" | docker login ${DOCKER_REGISTRY} --username "${DOCKER_USERNAME}" --password-stdin
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${DOCKER_REGISTRY} --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
       - name: Create armv7 Image    
         if: success()
         run: |        
