@@ -1,8 +1,9 @@
-name: Build Docker Image
+name: Build Docker Image - Latest
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+    - master
   workflow_dispatch:
 
 env:
