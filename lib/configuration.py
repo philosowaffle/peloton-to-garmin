@@ -34,8 +34,8 @@ class Configuration:
         args.add_argument("-num",help="Number of activities to download",dest="num_to_download",type=int, default=os.environ.get('P2G_NUM'))
         args.add_argument("-log",help="Log file name",dest="log_file",type=str, default=os.environ.get('P2G_LOG'))
         args.add_argument("-loglevel",help="[DEBUG, INFO, ERROR]",dest="log_level",type=str, default=os.environ.get('P2G_LOG_LEVEL'))
-        args.add_argument("-pause_on_finish",help="Do not automatically close the application on completion.", dest="pause_on_finish", default=os.environ.get('P2G_PAUSE_ON_FINISH'))
-        args.add_argument("-enable_polling", help="True will automatically and periodically check for new activities.",dest="polling_enabled",default=os.environ.get('PTG_ENABLE_POLLING'))
+        args.add_argument("-pause_on_finish",help="Do not automatically close the application on completion.", dest="pause_on_finish",type=str, default=os.environ.get('P2G_PAUSE_ON_FINISH'))
+        args.add_argument("-enable_polling", help="True will automatically and periodically check for new activities.",dest="polling_enabled",type=str,default=os.environ.get('PTG_ENABLE_POLLING'))
         args.add_argument("-polling_interval_seconds",help="How frequently to poll for new activities if polling is enabled.",dest="polling_interval_seconds",default=os.environ.get('PTG_POLLING_INTERVAL_SECONDS'))
 
         argResults = args.parse_args()
@@ -48,7 +48,7 @@ class Configuration:
         
     def loadDebugConfig(self, argResults):
         if argResults.pause_on_finish is not None:
-            self.pause_on_finish = bool(argResults.pause_on_finish)
+            self.pause_on_finish = argResults.pause_on_finish == "true"
         elif config.ConfigSectionMap("DEBUG").get('pauseonfinish', None) == "false":
             self.pause_on_finish = False
         else:
@@ -147,7 +147,7 @@ class Configuration:
 
     def loadPtoGConfig(self, argResults):
         if argResults.polling_enabled is not None:
-            self.polling_enabled = bool(argResults.polling_enabled)
+            self.polling_enabled = argResults.polling_enabled == "true"
         elif config.ConfigSectionMap("PTOG").get('enablepolling') is not None:
             self.polling_enabled = config.ConfigSectionMap("PTOG").get('enablepolling') == "true"
 
