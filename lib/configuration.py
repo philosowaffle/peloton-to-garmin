@@ -48,7 +48,7 @@ class Configuration:
         
     def loadDebugConfig(self, argResults):
         if argResults.pause_on_finish is not None:
-            self.pause_on_finish = bool(argResults.parse_args)
+            self.pause_on_finish = bool(argResults.pause_on_finish)
         elif config.ConfigSectionMap("DEBUG").get('pauseonfinish', None) == "false":
             self.pause_on_finish = False
         else:
