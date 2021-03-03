@@ -36,7 +36,7 @@ class Configuration:
         args.add_argument("-loglevel",help="[DEBUG, INFO, ERROR]",dest="log_level",type=str, default=os.environ.get('P2G_LOG_LEVEL'))
         args.add_argument("-pause_on_finish",help="Do not automatically close the application on completion.", dest="pause_on_finish",type=str, default=os.environ.get('P2G_PAUSE_ON_FINISH'))
         args.add_argument("-enable_polling", help="True will automatically and periodically check for new activities.",dest="polling_enabled",type=str,default=os.environ.get('PTG_ENABLE_POLLING'))
-        args.add_argument("-polling_interval_seconds",help="How frequently to poll for new activities if polling is enabled.",dest="polling_interval_seconds",default=os.environ.get('PTG_POLLING_INTERVAL_SECONDS'))
+        args.add_argument("-polling_interval_seconds",help="How frequently to poll for new activities if polling is enabled.",dest="polling_interval_seconds",type=int,default=os.environ.get('PTG_POLLING_INTERVAL_SECONDS'))
 
         argResults = args.parse_args()
 
