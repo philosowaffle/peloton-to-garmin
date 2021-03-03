@@ -29,7 +29,7 @@ class Configuration:
         args.add_argument("-password",help="Peloton password",dest="password",type=str, default=os.environ.get('P2G_PELOTON_PASS'))
         args.add_argument("-garmin_email",help="Garmin email address for upload to Garmin",dest="garmin_email",type=str, default=os.environ.get('P2G_GARMIN_EMAIL'))
         args.add_argument("-garmin_password",help="Garmin password for upload to Garmin",dest="garmin_password",type=str, default=os.environ.get('P2G_GARMIN_PASS'))
-        args.add_argument("-garmin_enable_upload",help="True will try to upload activities to Garmin", dest="garmin_enable_upload", default=os.environ.get('P2G_GARMIN_ENABLE_UPLOAD'))
+        args.add_argument("-garmin_enable_upload",help="True will try to upload activities to Garmin", dest="garmin_enable_upload", type=str, default=os.environ.get('P2G_GARMIN_ENABLE_UPLOAD'))
         args.add_argument("-path",help="Path to output directory",dest="output_dir",type=str, default=os.environ.get('P2G_PATH'))
         args.add_argument("-num",help="Number of activities to download",dest="num_to_download",type=int, default=os.environ.get('P2G_NUM'))
         args.add_argument("-log",help="Log file name",dest="log_file",type=str, default=os.environ.get('P2G_LOG'))
@@ -141,7 +141,7 @@ class Configuration:
             self.garmin_password = config.ConfigSectionMap("GARMIN").get('password')
 
         if argResults.garmin_enable_upload is not None:
-            self.uploadToGarmin = bool(argResults.garmin_enable_upload)
+            self.uploadToGarmin = argResults.garmin_enable_upload == "true"
         elif config.ConfigSectionMap("GARMIN").get('uploadenabled') == "true":
             self.uploadToGarmin = True
 
