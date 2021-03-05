@@ -1,4 +1,5 @@
-﻿using Peloton;
+﻿using ActivityEncode;
+using Peloton;
 using PelotonToFitConsole.Converter;
 using System;
 using System.Threading.Tasks;
@@ -20,13 +21,15 @@ namespace PelotonToFitConsole
 		{
 			Console.WriteLine("Hello World!");
 
+			FitEncoderExample.CreateTimeBasedActivity();
+
 			var fitConverter = new FitConverter();
 
 			var pelotonApiClient = new ApiClient("@gmail.com", "");
 			await pelotonApiClient.InitAuthAsync();
-			
+
 			var recentWorkouts = await pelotonApiClient.GetWorkoutsAsync(2);
-			foreach(var recentWorkout in recentWorkouts.data)
+			foreach (var recentWorkout in recentWorkouts.data)
 			{
 				if (recentWorkout.Status != "COMPLETE")
 					continue;

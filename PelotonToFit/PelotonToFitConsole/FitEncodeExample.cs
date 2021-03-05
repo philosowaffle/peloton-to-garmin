@@ -40,40 +40,40 @@ namespace ActivityEncode
             eventMesgStart.SetEventType(EventType.Start);
             messages.Add(eventMesgStart);
 
-            // Create the Developer Id message for the developer data fields.
-            var developerIdMesg = new DeveloperDataIdMesg();
-            // It is a BEST PRACTICE to reuse the same Guid for all FIT files created by your platform
-            byte[] appId = new Guid("00010203-0405-0607-0809-0A0B0C0D0E0F").ToByteArray();
-            for (int i = 0; i < appId.Length; i++)
-            {
-                developerIdMesg.SetApplicationId(i, appId[i]);
-            }
-            developerIdMesg.SetDeveloperDataIndex(0);
-            developerIdMesg.SetApplicationVersion(110);
-            messages.Add(developerIdMesg);
+			// Create the Developer Id message for the developer data fields.
+			//var developerIdMesg = new DeveloperDataIdMesg();
+			// It is a BEST PRACTICE to reuse the same Guid for all FIT files created by your platform
+			//byte[] appId = new Guid("00010203-0405-0607-0809-0A0B0C0D0E0F").ToByteArray();
+			//for (int i = 0; i < appId.Length; i++)
+			//{
+			//	developerIdMesg.SetApplicationId(i, appId[i]);
+			//}
+			//developerIdMesg.SetDeveloperDataIndex(0);
+			//developerIdMesg.SetApplicationVersion(110);
+			//messages.Add(developerIdMesg);
 
-            // Create the Developer Data Field Descriptions
-            var doughnutsFieldDescMesg = new FieldDescriptionMesg();
-            doughnutsFieldDescMesg.SetDeveloperDataIndex(0);
-            doughnutsFieldDescMesg.SetFieldDefinitionNumber(0);
-            doughnutsFieldDescMesg.SetFitBaseTypeId(FitBaseType.Float32);
-            doughnutsFieldDescMesg.SetFieldName(0, "Doughnuts Earned");
-            doughnutsFieldDescMesg.SetUnits(0, "doughnuts");
-            doughnutsFieldDescMesg.SetNativeMesgNum(MesgNum.Session);
-            messages.Add(doughnutsFieldDescMesg);
+			//// Create the Developer Data Field Descriptions
+			//var doughnutsFieldDescMesg = new FieldDescriptionMesg();
+			//doughnutsFieldDescMesg.SetDeveloperDataIndex(0);
+			//doughnutsFieldDescMesg.SetFieldDefinitionNumber(0);
+			//doughnutsFieldDescMesg.SetFitBaseTypeId(FitBaseType.Float32);
+			//doughnutsFieldDescMesg.SetFieldName(0, "Doughnuts Earned");
+			//doughnutsFieldDescMesg.SetUnits(0, "doughnuts");
+			//doughnutsFieldDescMesg.SetNativeMesgNum(MesgNum.Session);
+			//messages.Add(doughnutsFieldDescMesg);
 
-            FieldDescriptionMesg hrFieldDescMesg = new FieldDescriptionMesg();
-            hrFieldDescMesg.SetDeveloperDataIndex(0);
-            hrFieldDescMesg.SetFieldDefinitionNumber(1);
-            hrFieldDescMesg.SetFitBaseTypeId(FitBaseType.Uint8);
-            hrFieldDescMesg.SetFieldName(0, "Heart Rate");
-            hrFieldDescMesg.SetUnits(0, "bpm");
-            hrFieldDescMesg.SetNativeFieldNum(RecordMesg.FieldDefNum.HeartRate);
-            hrFieldDescMesg.SetNativeMesgNum(MesgNum.Record);
-            messages.Add(hrFieldDescMesg);
+			//FieldDescriptionMesg hrFieldDescMesg = new FieldDescriptionMesg();
+			//hrFieldDescMesg.SetDeveloperDataIndex(0);
+			//hrFieldDescMesg.SetFieldDefinitionNumber(1);
+			//hrFieldDescMesg.SetFitBaseTypeId(FitBaseType.Uint8);
+			//hrFieldDescMesg.SetFieldName(0, "Heart Rate");
+			//hrFieldDescMesg.SetUnits(0, "bpm");
+			//hrFieldDescMesg.SetNativeFieldNum(RecordMesg.FieldDefNum.HeartRate);
+			//hrFieldDescMesg.SetNativeMesgNum(MesgNum.Record);
+			//messages.Add(hrFieldDescMesg);
 
-            // Every FIT ACTIVITY file MUST contain Record messages
-            var timestamp = new Dynastream.Fit.DateTime(startTime);
+			// Every FIT ACTIVITY file MUST contain Record messages
+			var timestamp = new Dynastream.Fit.DateTime(startTime);
 
             // Create one hour (3600 seconds) of Record data
             for (uint i = 0; i <= 3600; i++)
@@ -90,13 +90,14 @@ namespace ActivityEncode
                 recordMesg.SetPower((ushort)((i % 255) < 127 ? 150 : 250)); // Square
                 recordMesg.SetAltitude((float)Math.Abs(((double)i % 255.0) - 127.0)); // Triangle
 
-                // Add a Developer Field to the Record Message
-                var hrDevField = new DeveloperField(hrFieldDescMesg, developerIdMesg);
-                recordMesg.SetDeveloperField(hrDevField);
-                hrDevField.SetValue((byte)((Math.Sin(TWOPI * (0.01 * i + 10)) + 1.0) * 127.0)); // Sine
+				//Add a Developer Field to the Record Message
 
-                // Write the Rercord message to the output stream
-                messages.Add(recordMesg);
+				//var hrDevField = new DeveloperField(hrFieldDescMesg, developerIdMesg);
+				//recordMesg.SetDeveloperField(hrDevField);
+				//hrDevField.SetValue((byte)((Math.Sin(TWOPI * (0.01 * i + 10)) + 1.0) * 127.0)); // Sine
+
+				// Write the Rercord message to the output stream
+				messages.Add(recordMesg);
 
                 // Increment the timestamp by one second
                 timestamp.Add(1);
@@ -127,15 +128,16 @@ namespace ActivityEncode
             sessionMesg.SetSubSport(SubSport.GravelCycling);
             sessionMesg.SetFirstLapIndex(0);
             sessionMesg.SetNumLaps(1);
-
-            // Add a Developer Field to the Session message
-            var doughnutsEarnedDevField = new DeveloperField(doughnutsFieldDescMesg, developerIdMesg);
-            doughnutsEarnedDevField.SetValue(sessionMesg.GetTotalElapsedTime() / 1200.0f);
-            sessionMesg.SetDeveloperField(doughnutsEarnedDevField);
             messages.Add(sessionMesg);
 
-            // Every FIT ACTIVITY file MUST contain EXACTLY one Activity message
-            var activityMesg = new ActivityMesg();
+			// Add a Developer Field to the Session message
+			//var doughnutsEarnedDevField = new DeveloperField(doughnutsFieldDescMesg, developerIdMesg);
+			//doughnutsEarnedDevField.SetValue(sessionMesg.GetTotalElapsedTime() / 1200.0f);
+			//sessionMesg.SetDeveloperField(doughnutsEarnedDevField);
+			//messages.Add(sessionMesg);
+
+			// Every FIT ACTIVITY file MUST contain EXACTLY one Activity message
+			var activityMesg = new ActivityMesg();
             activityMesg.SetTimestamp(timestamp);
             activityMesg.SetNumSessions(1);
             var timezoneOffset = (int)TimeZoneInfo.Local.BaseUtcOffset.TotalSeconds;

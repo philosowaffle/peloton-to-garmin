@@ -1,23 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\PelotonToFitConsole\\PelotonToFitConsole.csproj": {}
+    "D:\\code\\peloton-to-garmin\\PelotonToFit\\PelotonToFitConsole\\PelotonToFitConsole.csproj": {}
   },
   "projects": {
-    "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Garmin\\Garmin.csproj": {
+    "D:\\code\\peloton-to-garmin\\PelotonToFit\\Garmin\\Garmin.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Garmin\\Garmin.csproj",
+        "projectUniqueName": "D:\\code\\peloton-to-garmin\\PelotonToFit\\Garmin\\Garmin.csproj",
         "projectName": "Garmin",
-        "projectPath": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Garmin\\Garmin.csproj",
-        "packagesPath": "C:\\Users\\Bailey\\.nuget\\packages\\",
-        "outputPath": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Garmin\\obj\\",
+        "projectPath": "D:\\code\\peloton-to-garmin\\PelotonToFit\\Garmin\\Garmin.csproj",
+        "packagesPath": "C:\\Users\\baile\\.nuget\\packages\\",
+        "outputPath": "D:\\code\\peloton-to-garmin\\PelotonToFit\\Garmin\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Bailey\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\baile\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -29,6 +26,7 @@
         },
         "frameworks": {
           "netstandard2.1": {
+            "targetAlias": "netstandard2.1",
             "projectReferences": {}
           }
         },
@@ -40,6 +38,7 @@
       },
       "frameworks": {
         "netstandard2.1": {
+          "targetAlias": "netstandard2.1",
           "imports": [
             "net461",
             "net462",
@@ -55,24 +54,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\PelotonToFitConsole\\PelotonToFitConsole.csproj": {
+    "D:\\code\\peloton-to-garmin\\PelotonToFit\\PelotonToFitConsole\\PelotonToFitConsole.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\PelotonToFitConsole\\PelotonToFitConsole.csproj",
+        "projectUniqueName": "D:\\code\\peloton-to-garmin\\PelotonToFit\\PelotonToFitConsole\\PelotonToFitConsole.csproj",
         "projectName": "PelotonToFitConsole",
-        "projectPath": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\PelotonToFitConsole\\PelotonToFitConsole.csproj",
-        "packagesPath": "C:\\Users\\Bailey\\.nuget\\packages\\",
-        "outputPath": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\PelotonToFitConsole\\obj\\",
+        "projectPath": "D:\\code\\peloton-to-garmin\\PelotonToFit\\PelotonToFitConsole\\PelotonToFitConsole.csproj",
+        "packagesPath": "C:\\Users\\baile\\.nuget\\packages\\",
+        "outputPath": "D:\\code\\peloton-to-garmin\\PelotonToFit\\PelotonToFitConsole\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Bailey\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\baile\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -84,12 +80,13 @@
         },
         "frameworks": {
           "netcoreapp3.1": {
+            "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Garmin\\Garmin.csproj": {
-                "projectPath": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Garmin\\Garmin.csproj"
+              "D:\\code\\peloton-to-garmin\\PelotonToFit\\Garmin\\Garmin.csproj": {
+                "projectPath": "D:\\code\\peloton-to-garmin\\PelotonToFit\\Garmin\\Garmin.csproj"
               },
-              "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj": {
-                "projectPath": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj"
+              "D:\\code\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj": {
+                "projectPath": "D:\\code\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj"
               }
             }
           }
@@ -102,6 +99,7 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
           "dependencies": {
             "Flurl.Http": {
               "target": "Package",
@@ -123,24 +121,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj": {
+    "D:\\code\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj",
+        "projectUniqueName": "D:\\code\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj",
         "projectName": "Peloton",
-        "projectPath": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj",
-        "packagesPath": "C:\\Users\\Bailey\\.nuget\\packages\\",
-        "outputPath": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Peloton\\obj\\",
+        "projectPath": "D:\\code\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj",
+        "packagesPath": "C:\\Users\\baile\\.nuget\\packages\\",
+        "outputPath": "D:\\code\\peloton-to-garmin\\PelotonToFit\\Peloton\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Bailey\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\baile\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -152,6 +147,7 @@
         },
         "frameworks": {
           "netstandard2.0": {
+            "targetAlias": "netstandard2.0",
             "projectReferences": {}
           }
         },
@@ -163,6 +159,7 @@
       },
       "frameworks": {
         "netstandard2.0": {
+          "targetAlias": "netstandard2.0",
           "dependencies": {
             "Flurl.Http": {
               "target": "Package",
@@ -185,7 +182,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     }
