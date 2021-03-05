@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "dgSpecHash": "nCkQT0FNXNQ4zZ6W2pkiGiHLCGcN2Cu5ZOa5heqpkAY4S09Y7tX0lmTnm/OrgGZFs3EuO+I/ZrkXJ771WrM4ig==",
+  "dgSpecHash": "rCMKa2Xi/xiclxJCliwp24hzm26/mOw6k9R5JnwBq0QtMM9Vmbtc8DMm/9S3W1a4/t66LJKESdN409xV5p9AEA==",
   "success": true,
-  "projectFilePath": "D:\\code\\peloton-to-garmin\\PelotonToFit\\PelotonToFitConsole\\PelotonToFitConsole.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\PelotonToFitConsole\\PelotonToFitConsole.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Bailey\\.nuget\\packages\\flurl\\3.0.1\\flurl.3.0.1.nupkg.sha512",
+    "C:\\Users\\Bailey\\.nuget\\packages\\flurl.http\\3.0.1\\flurl.http.3.0.1.nupkg.sha512",
+    "C:\\Users\\Bailey\\.nuget\\packages\\microsoft.netcore.platforms\\2.1.2\\microsoft.netcore.platforms.2.1.2.nupkg.sha512",
+    "C:\\Users\\Bailey\\.nuget\\packages\\newtonsoft.json\\12.0.2\\newtonsoft.json.12.0.2.nupkg.sha512",
+    "C:\\Users\\Bailey\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\4.5.2\\system.runtime.compilerservices.unsafe.4.5.2.nupkg.sha512",
+    "C:\\Users\\Bailey\\.nuget\\packages\\system.text.encoding.codepages\\4.5.1\\system.text.encoding.codepages.4.5.1.nupkg.sha512"
+  ],
   "logs": []
 }
