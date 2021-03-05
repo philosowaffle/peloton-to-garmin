@@ -8,9 +8,9 @@ namespace Peloton.Dto
 		public string Display_Unit { get; set; }
 		public double Max_Value { get; set; }
 		public double Average_Value { get; set; }
-		public ICollection<double> Values { get; set; }
+		public double[] Values { get; set; }
 		public string Slug { get; set; } // enum
-		ICollection<Zone> Zones { get; set; }
-		public int Missing_Datat_Duration { get; set; }
+		public ICollection<Zone> Zones { get; set; }
+		public int Missing_Data_Duration { get; set; }
 	}
 }

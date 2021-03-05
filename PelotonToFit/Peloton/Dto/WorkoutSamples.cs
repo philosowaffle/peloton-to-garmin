@@ -13,7 +13,7 @@ namespace Peloton.Dto
 		public ICollection<Metric> Metrics { get; set; }
 		public bool Has_Apple_Watch_Metrcis { get; set; }
 		// location data
-		public bool Is_Location_Data_Accuragte { get; set; }
+		public bool? Is_Location_Data_Accurate { get; set; }
 		// splits data
 		public TargetPerformanceMetrics Target_Performance_Metrics { get; set; }
 		// effort zones
