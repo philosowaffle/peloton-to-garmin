@@ -7,3 +7,12 @@ G:\Code\Git\peloton-to-garmin\PelotonToFit\Peloton\obj\Debug\netstandard2.0\Pelo
 G:\Code\Git\peloton-to-garmin\PelotonToFit\Peloton\obj\Debug\netstandard2.0\Peloton.csproj.CoreCompileInputs.cache
 G:\Code\Git\peloton-to-garmin\PelotonToFit\Peloton\obj\Debug\netstandard2.0\Peloton.dll
 G:\Code\Git\peloton-to-garmin\PelotonToFit\Peloton\obj\Debug\netstandard2.0\Peloton.pdb
+D:\code\peloton-to-garmin\PelotonToFit\Peloton\bin\Debug\netstandard2.0\Peloton.deps.json
+D:\code\peloton-to-garmin\PelotonToFit\Peloton\bin\Debug\netstandard2.0\Peloton.dll
+D:\code\peloton-to-garmin\PelotonToFit\Peloton\bin\Debug\netstandard2.0\Peloton.pdb
+D:\code\peloton-to-garmin\PelotonToFit\Peloton\obj\Debug\netstandard2.0\Peloton.csprojAssemblyReference.cache
+D:\code\peloton-to-garmin\PelotonToFit\Peloton\obj\Debug\netstandard2.0\Peloton.AssemblyInfoInputs.cache
+D:\code\peloton-to-garmin\PelotonToFit\Peloton\obj\Debug\netstandard2.0\Peloton.AssemblyInfo.cs
+D:\code\peloton-to-garmin\PelotonToFit\Peloton\obj\Debug\netstandard2.0\Peloton.csproj.CoreCompileInputs.cache
+D:\code\peloton-to-garmin\PelotonToFit\Peloton\obj\Debug\netstandard2.0\Peloton.dll
+D:\code\peloton-to-garmin\PelotonToFit\Peloton\obj\Debug\netstandard2.0\Peloton.pdb
