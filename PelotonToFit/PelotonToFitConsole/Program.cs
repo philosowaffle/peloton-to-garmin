@@ -1,8 +1,10 @@
 ﻿using ActivityEncode;
 using Dynastream.Fit;
+using Garmin;
 using Peloton;
 using PelotonToFitConsole.Converter;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -81,6 +83,7 @@ namespace PelotonToFitConsole
 			var workoutSamples = await pelotonApiClient.GetWorkoutSamplesByIdAsync(wId);
 			var workoutSummary = await pelotonApiClient.GetWorkoutSummaryByIdAsync(wId);
 			var response = fitConverter.Convert(workout, workoutSamples, workoutSummary, config);
+			GarminUploader.UploadToGarmin(new List<string>() { response.Path }, config.Garmin.Email, config.Garmin.Password, config.Application.PathToPythonExe);
 
 			//foreach (var recentWorkout in recentWorkouts.data)
 			//{
