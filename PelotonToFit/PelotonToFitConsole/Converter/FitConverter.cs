@@ -22,11 +22,8 @@ namespace PelotonToFitConsole.Converter
 
 			var startTime = GetStartTime(workout);
 
-			// Start Time			
+			// Start Time
 			messages.Add(GetStartTimeMesg(startTime));
-
-			// Developer Data Fields			
-			//messages.Add(GetDeveloperIdMesg());			
 
 			var allMetrics = workoutSamples.Metrics;
 			var hrMetrics = allMetrics.FirstOrDefault(m => m.Slug == "heart_rate");
@@ -36,19 +33,27 @@ namespace PelotonToFitConsole.Converter
 			var resistanceMetrics = allMetrics.FirstOrDefault(m => m.Slug == "resistance");
 
 			var recordsTimeStamp = new Dynastream.Fit.DateTime(startTime);
-			if (workoutSamples.Seconds_Since_Pedalling_Start is object)
+			if (workoutSamples.Seconds_Since_Pedaling_Start is object)
 			{
-				for (var i = 0; i < workoutSamples.Seconds_Since_Pedalling_Start.Count; i++)
+				for (var i = 0; i < workoutSamples.Seconds_Since_Pedaling_Start.Count; i++)
 				{
 					var record = new RecordMesg();
 					record.SetTimestamp(recordsTimeStamp);
 
-					record.SetDistance(i); // TODO: this is wrong
-					record.SetSpeed((float)speedMetrics.Values[i]);
-					record.SetHeartRate((byte)hrMetrics.Values[i]);
-					record.SetCadence((byte)cadenceMetrics.Values[i]);
-					record.SetPower((ushort)outputMetrics.Values[i]);
-					record.SetResistance((byte)resistanceMetrics.Values[i]);
+					if (speedMetrics is object && i < speedMetrics.Values.Length)
+						record.SetSpeed((float)speedMetrics.Values[i]);
+
+					if (hrMetrics is object && i < hrMetrics.Values.Length)
+						record.SetHeartRate((byte)hrMetrics.Values[i]);
+
+					if (cadenceMetrics is object && i < cadenceMetrics.Values.Length)
+						record.SetCadence((byte)cadenceMetrics.Values[i]);
+
+					if (outputMetrics is object && i < outputMetrics.Values.Length)
+						record.SetPower((ushort)outputMetrics.Values[i]);
+
+					if (resistanceMetrics is object && i < resistanceMetrics.Values.Length)
+						record.SetResistance((byte)resistanceMetrics.Values[i]);
 
 					messages.Add(record);
 					recordsTimeStamp.Add(1);
@@ -61,35 +66,23 @@ namespace PelotonToFitConsole.Converter
 			eventMesgStop.SetEventType(EventType.StopAll);
 			messages.Add(eventMesgStop);
 
-			// Every FIT ACTIVITY file MUST contain at least one Lap message
-			var lapMesg = new LapMesg();
-			lapMesg.SetTimestamp(recordsTimeStamp);
-			lapMesg.SetStartTime(startTime);
-			lapMesg.SetTotalElapsedTime(recordsTimeStamp.GetTimeStamp() - startTime.GetTimeStamp());
-			lapMesg.SetTotalTimerTime(recordsTimeStamp.GetTimeStamp() - startTime.GetTimeStamp());
-			messages.Add(lapMesg);
+			if (workoutSamples.Segment_List.Any())
+			{
+				var totalElapsedTime = 0;
+				foreach (var segment in workoutSamples.Segment_List)
+				{
+					var lapStartTime = new Dynastream.Fit.DateTime(startTime);
+					lapStartTime.Add(segment.Start_Time_Offset);
 
-			//if (workoutSamples.Segment_List.Any())
-			//{
-			//	var totalElapsedTime = 0;
-			//	foreach (var segment in workoutSamples.Segment_List)
-			//	{
-			//		var lapStartTime = new Dynastream.Fit.DateTime(startTime);
-			//		lapStartTime.Add(segment.Start_Time_Offset);
+					totalElapsedTime += segment.Length;
 
-			//		var lapEndTime = new Dynastream.Fit.DateTime(lapStartTime);
-			//		lapEndTime.Add(segment.Length);
-
-			//		var lapMesg = new LapMesg();
-			//		lapMesg.SetTimestamp(lapStartTime);
-			//		lapMesg.SetStartTime(lapStartTime);
-			//		lapMesg.SetTotalElapsedTime(totalElapsedTime);
-			//		lapMesg.SetTotalTimerTime(totalElapsedTime);
-			//		messages.Add(lapMesg);
-
-			//		totalElapsedTime += segment.Length;
-			//	}
-			//}
+					var lapMesg = new LapMesg();
+					lapMesg.SetStartTime(lapStartTime);
+					lapMesg.SetTotalElapsedTime(segment.Length);
+					lapMesg.SetTotalTimerTime(segment.Length);
+					messages.Add(lapMesg);
+				}
+			}
 
 			var sessionMesg = new SessionMesg();
 			sessionMesg.SetTimestamp(recordsTimeStamp);
@@ -107,7 +100,15 @@ namespace PelotonToFitConsole.Converter
 			activityMesg.SetNumSessions(1);
 			var timezoneOffset = (int)TimeZoneInfo.Local.BaseUtcOffset.TotalSeconds;
 			activityMesg.SetLocalTimestamp((uint)((int)recordsTimeStamp.GetTimeStamp() + timezoneOffset));
-			messages.Add(activityMesg);			
+			messages.Add(activityMesg);
+
+			// Every FIT file MUST contain a File ID message
+			var fileIdMesg = new FileIdMesg();
+			fileIdMesg.SetType(Dynastream.Fit.File.Activity);
+			fileIdMesg.SetManufacturer(_manufacturerId);
+			fileIdMesg.SetProduct(_productId);
+			fileIdMesg.SetTimeCreated(startTime);
+			fileIdMesg.SetSerialNumber(_serialNumber);
 
 			// A Device Info message is a BEST PRACTICE for FIT ACTIVITY files
 			var deviceInfoMesg = new DeviceInfoMesg();
@@ -118,14 +119,6 @@ namespace PelotonToFitConsole.Converter
 			deviceInfoMesg.SetSerialNumber(_serialNumber);
 			deviceInfoMesg.SetSoftwareVersion(_softwareVersion);
 			deviceInfoMesg.SetTimestamp(startTime);
-
-			// Every FIT file MUST contain a File ID message
-			var fileIdMesg = new FileIdMesg();
-			fileIdMesg.SetType(Dynastream.Fit.File.Activity);
-			fileIdMesg.SetManufacturer(_manufacturerId);
-			fileIdMesg.SetProduct(_productId);
-			fileIdMesg.SetTimeCreated(startTime);
-			fileIdMesg.SetSerialNumber(_serialNumber);
 
 			// Create the output stream, this can be any type of stream, including a file or memory stream. Must have read/write access
 			FileStream fitDest = new FileStream($"./{workout.Name}.fit", FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
