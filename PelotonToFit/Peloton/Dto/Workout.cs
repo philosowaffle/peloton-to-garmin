@@ -26,7 +26,6 @@ namespace Peloton.Dto
 		public string Strava_Id { get; set; }
 		public string Status { get; set; }
 		public string Timezone { get; set; }
-		public string Title { get; set; }
 		public double Total_Work { get; set; }
 		public string User_Id { get; set; }
 		public int? Total_Video_Watch_Time_Seconds { get; set; }
