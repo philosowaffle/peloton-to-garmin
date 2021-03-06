@@ -14,8 +14,13 @@ namespace PelotonToFitConsole
 	{
 		static void Main(string[] args)
 		{
-			// TODO: Load Config from file or ENV variables
-			Configuration config = new Configuration();
+			if (!ConfigurationLoader.TryLoadConfigurationFile(out var config))
+			{
+				throw new ArgumentException("Failed to load configuration.");
+			}
+
+			// TODO: Configuration validation
+
 			FlurlConfiguration.Configure(config);
 
 			if (config.Application.EnablePolling)

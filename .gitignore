@@ -106,8 +106,14 @@ database.json
 *.log
 output/
 
+
+# dotnet
+#*/**/bin/*
+#*/**/obj/*
+
 # Dev Files
 tests/testOutput/
 tests/database.json
 config.local.ini
 bak_config.ini
+configuration.local.json
