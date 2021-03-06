@@ -5,7 +5,8 @@ namespace PelotonToFitConsole.Converter
 {
 	public interface IConverter
 	{
-		public ConversionDetails Convert(Workout workout, WorkoutSamples workoutSamples, WorkoutSummary workoutSummary);
+		public ConversionDetails Convert(Workout workout, WorkoutSamples workoutSamples, WorkoutSummary workoutSummary, Configuration config);
+		public void Decode(string filePath);
 	}
 
 	public class ConversionDetails

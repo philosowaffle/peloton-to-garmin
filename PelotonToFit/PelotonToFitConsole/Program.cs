@@ -5,6 +5,7 @@ using PelotonToFitConsole.Converter;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PelotonToFitConsole
@@ -13,22 +14,59 @@ namespace PelotonToFitConsole
 	{
 		static void Main(string[] args)
 		{
-			Configuration.DebugSeverity = Severity.Debug;
+			// TODO: Load Config from file or ENV variables
+			Configuration config = new Configuration();
+			FlurlConfiguration.Configure(config);
 
-			FlurlConfiguration.Configure();
-
-			RunAsync().GetAwaiter().GetResult();
+			if (config.Application.EnablePolling)
+			{
+				while (true)
+				{
+					RunAsync(config).GetAwaiter().GetResult();
+					Thread.Sleep(config.Application.PollingIntervalSeconds * 1000);
+				}
+			} else
+			{
+				RunAsync(config).GetAwaiter().GetResult();
+			}
 		}
 
-		static async Task RunAsync()
+		static async Task RunAsync(Configuration config)
 		{
 			Console.WriteLine("Hello World!");
+
+			// TODO: Get workoutIds to convert
+			// -- first check local DB for most recent convert
+			// -- then query Peloton and look back until we find that id
+			// -- grab all activities since then
+			// -- logic to override via NUM instead??
+			// -- need to handle when we purge the db and have no history, should it try to process all activities again?
+
+			// TODO: enrich peloton data
+			// -- once we have the list of workout ids, fetch the additional metadata we need from Peloton
+			// -- make these requests async
+
+			// TODO: Convert workouts
+			// -- now, for each workout, convert to desired output
+			// -- convert can probably be async process as well
+
+			// TODO: Upload
+			// -- if Garmin upload enabled then upload
+
+			// TODO: Sleep till next wake up time
+			
+
+			//
+			//
+			//
+			//
+
 
 			//FitEncoderExample.CreateTimeBasedActivity();
 
 			var fitConverter = new FitConverter();
 
-			var pelotonApiClient = new ApiClient("@gmail.com", "");
+			var pelotonApiClient = new ApiClient(config.Peloton.Email, config.Peloton.Password);
 			await pelotonApiClient.InitAuthAsync();
 
 			//var recentWorkouts = await pelotonApiClient.GetWorkoutsAsync(70);
@@ -37,7 +75,7 @@ namespace PelotonToFitConsole
 			var workout = await pelotonApiClient.GetWorkoutByIdAsync(wId);
 			var workoutSamples = await pelotonApiClient.GetWorkoutSamplesByIdAsync(wId);
 			var workoutSummary = await pelotonApiClient.GetWorkoutSummaryByIdAsync(wId);
-			var response = fitConverter.Convert(workout, workoutSamples, workoutSummary);
+			var response = fitConverter.Convert(workout, workoutSamples, workoutSummary, config);
 
 			//foreach (var recentWorkout in recentWorkouts.data)
 			//{
@@ -50,84 +88,8 @@ namespace PelotonToFitConsole
 			//	var response = fitConverter.Convert(workout, workoutSamples, workoutSummary);
 			//}
 
-			//Decode();
-		}
-
-		private static void Decode()
-		{
-			Decode decoder = new Decode();
-			MesgBroadcaster mesgBroadcaster = new MesgBroadcaster();
-
-			decoder.MesgEvent += mesgBroadcaster.OnMesg;
-			decoder.MesgDefinitionEvent += mesgBroadcaster.OnMesgDefinition;
-
-			mesgBroadcaster.ActivityMesgEvent += Write;
-			mesgBroadcaster.DeviceInfoMesgEvent += Write;
-			mesgBroadcaster.EventMesgEvent += Write;
-			mesgBroadcaster.FileIdMesgEvent += Write;
-			mesgBroadcaster.LapMesgEvent += WriteLap;
-			mesgBroadcaster.SegmentLapMesgEvent += Write;
-			mesgBroadcaster.SessionMesgEvent += Write;
-			mesgBroadcaster.UserProfileMesgEvent += Write;
-			mesgBroadcaster.WorkoutMesgEvent += WriteWorkout;
-			mesgBroadcaster.WorkoutStepMesgEvent += WriteWorkoutStep;
-			mesgBroadcaster.ZonesTargetMesgEvent += Write;
-			mesgBroadcaster.BikeProfileMesgEvent += Write;
-			mesgBroadcaster.CadenceZoneMesgEvent += Write;
-			mesgBroadcaster.DeveloperDataIdMesgEvent += Write;
-			mesgBroadcaster.PowerZoneMesgEvent += Write;
-			mesgBroadcaster.SportMesgEvent += Write;
-			mesgBroadcaster.TrainingFileMesgEvent += Write;
-			mesgBroadcaster.UserProfileMesgEvent += Write;
-			mesgBroadcaster.WorkoutSessionMesgEvent += Write;
-			//mesgBroadcaster.RecordMesgEvent += Write;
-
-			//FileStream fitDest = new FileStream("G:\\5837503646_ACTIVITY.fit", FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
-			FileStream fitDest = new FileStream("./20_min_Classic_Rock_Ride.fit", FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
-			decoder.Read(fitDest);
-		}
-
-		private static void Write(object sender, MesgEventArgs e)
-		{
-			Console.Out.WriteLine($"{e.mesg.Name}::");
-			foreach (var f in e.mesg.Fields)
-			{
-				Console.Out.WriteLine($"{f.Name}::{f.GetValue()}");
-			}
-		}
-
-		private static void WriteLap(object sender, MesgEventArgs e)
-		{
-			var lapmesg = e.mesg as LapMesg;
-
-			Console.Out.WriteLine("LAP::");
-			Console.Out.WriteLine($"{lapmesg.GetWktStepIndex()}");
-			foreach (var f in lapmesg.Fields)
-			{
-				Console.Out.WriteLine($"{f.Name}:{f.GetValue()}");
-			}
-		}
-
-		private static void WriteWorkout(object sender, MesgEventArgs e)
-		{
-			var lapmesg = e.mesg as WorkoutMesg;
-
-			Console.Out.WriteLine("WORKOUT::");
-			foreach (var f in lapmesg.Fields)
-			{
-				Console.Out.WriteLine($"{f.Name}:{f.GetValue()}");
-			}
-		}
-
-		private static void WriteWorkoutStep(object sender, MesgEventArgs e)
-		{
-			var lapmesg = e.mesg as WorkoutStepMesg;
-
-			Console.Out.WriteLine("WORKOUTSTEP::");
-			foreach (var f in lapmesg.Fields)
-			{
-				Console.Out.WriteLine($"{f.Name}:{f.GetValue()}");
-			}
+			//fitConverter.Decode("./20_min_Classic_Rock_Ride.fit");
+			//fitConverter.Decode("G:\\5837503646_ACTIVITY.fit");
 		}
 	}
 }

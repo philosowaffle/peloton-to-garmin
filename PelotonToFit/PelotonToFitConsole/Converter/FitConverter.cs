@@ -15,14 +15,18 @@ namespace PelotonToFitConsole.Converter
 		private static readonly uint _serialNumber = 1234098765;
 		private static readonly float _metersPerMile = 1609.34f;
 
-		public ConversionDetails Convert(Workout workout, WorkoutSamples workoutSamples, WorkoutSummary workoutSummary)
+		public ConversionDetails Convert(Workout workout, WorkoutSamples workoutSamples, WorkoutSummary workoutSummary, Configuration config)
 		{
+			var output = new ConversionDetails();
+
 			var messages = new List<Mesg>();
 
 			var startTime = GetStartTime(workout);
 			var endTime = new Dynastream.Fit.DateTime(startTime);
 			endTime.Add(workoutSamples.Duration);
 			var title = workout.Ride.Title.Replace(" ", "_");
+			var sport = GetGarminSport(workout);
+			var subSport = GetGarminSubSport(workout);
 
 			var fileIdMesg = new FileIdMesg();
 			fileIdMesg.SetSerialNumber(_serialNumber);
@@ -50,8 +54,8 @@ namespace PelotonToFitConsole.Converter
 			messages.Add(deviceInfoMesg);
 
 			var sportMesg = new SportMesg();
-			sportMesg.SetSport(Sport.Cycling);
-			sportMesg.SetSubSport(SubSport.IndoorCycling);
+			sportMesg.SetSport(sport);
+			sportMesg.SetSubSport(subSport);
 			messages.Add(sportMesg);
 
 			var zoneTargetMesg = new ZonesTargetMesg();
@@ -69,15 +73,15 @@ namespace PelotonToFitConsole.Converter
 
 			AddMetrics(messages, workoutSamples, startTime);
 
-			var stepsAndLaps = GetWorkoutStepsAndLaps(workoutSamples, startTime);
+			var stepsAndLaps = GetWorkoutStepsAndLaps(workoutSamples, startTime, sport, subSport);
 
 			if (stepsAndLaps.Values.Any())
 			{
 				var workoutMesg = new WorkoutMesg();
 				workoutMesg.SetCapabilities(32);
-				workoutMesg.SetSport(Sport.Cycling);
-				workoutMesg.SetSubSport(SubSport.IndoorCycling);
-				workoutMesg.SetWktName(title);
+				workoutMesg.SetSport(sport);
+				workoutMesg.SetSubSport(subSport);
+				workoutMesg.SetWktName(title.Replace("_"," "));
 				workoutMesg.SetNumValidSteps((ushort)stepsAndLaps.Keys.Count);
 				messages.Add(workoutMesg);
 
@@ -102,19 +106,97 @@ namespace PelotonToFitConsole.Converter
 			
 			messages.Add(activityMesg);
 
-			FileStream fitDest = new FileStream($"./{title}.fit", FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
-			Encode encoder = new Encode(ProtocolVersion.V20);
-			encoder.Open(fitDest);
-			foreach (Mesg message in messages)
+			using (FileStream fitDest = new FileStream(Path.Join(config.Application.OutputDirectory, $"{title}.fit"), FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
 			{
-				encoder.Write(message);
+				Encode encoder = new Encode(ProtocolVersion.V20);
+				encoder.Open(fitDest);
+				foreach (Mesg message in messages)
+				{
+					encoder.Write(message);
+				}
+				encoder.Close();
+
+				if (config.Application.DebugSeverity == Severity.Info)
+					Console.WriteLine($"Encoded FIT file {fitDest.Name}");
+
+				output.Path = fitDest.Name;
 			}
-			encoder.Close();
-			fitDest.Close();
+			return output;
+		}
 
-			Console.WriteLine($"Encoded FIT file {fitDest.Name}");
+		public void Decode(string filePath)
+		{
+			Decode decoder = new Decode();
+			MesgBroadcaster mesgBroadcaster = new MesgBroadcaster();
 
-			return new ConversionDetails();
+			decoder.MesgEvent += mesgBroadcaster.OnMesg;
+			decoder.MesgDefinitionEvent += mesgBroadcaster.OnMesgDefinition;
+
+			mesgBroadcaster.ActivityMesgEvent += Write;
+			mesgBroadcaster.DeviceInfoMesgEvent += Write;
+			mesgBroadcaster.EventMesgEvent += Write;
+			mesgBroadcaster.FileIdMesgEvent += Write;
+			mesgBroadcaster.LapMesgEvent += WriteLap;
+			mesgBroadcaster.SegmentLapMesgEvent += Write;
+			mesgBroadcaster.SessionMesgEvent += Write;
+			mesgBroadcaster.UserProfileMesgEvent += Write;
+			mesgBroadcaster.WorkoutMesgEvent += WriteWorkout;
+			mesgBroadcaster.WorkoutStepMesgEvent += WriteWorkoutStep;
+			mesgBroadcaster.ZonesTargetMesgEvent += Write;
+			mesgBroadcaster.BikeProfileMesgEvent += Write;
+			mesgBroadcaster.CadenceZoneMesgEvent += Write;
+			mesgBroadcaster.DeveloperDataIdMesgEvent += Write;
+			mesgBroadcaster.PowerZoneMesgEvent += Write;
+			mesgBroadcaster.SportMesgEvent += Write;
+			mesgBroadcaster.TrainingFileMesgEvent += Write;
+			mesgBroadcaster.UserProfileMesgEvent += Write;
+			mesgBroadcaster.WorkoutSessionMesgEvent += Write;
+			//mesgBroadcaster.RecordMesgEvent += Write;
+
+			FileStream fitDest = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
+			decoder.Read(fitDest);
+		}
+		private static void Write(object sender, MesgEventArgs e)
+		{
+			Console.Out.WriteLine($"{e.mesg.Name}::");
+			foreach (var f in e.mesg.Fields)
+			{
+				Console.Out.WriteLine($"{f.Name}::{f.GetValue()}");
+			}
+		}
+
+		private static void WriteLap(object sender, MesgEventArgs e)
+		{
+			var lapmesg = e.mesg as LapMesg;
+
+			Console.Out.WriteLine("LAP::");
+			Console.Out.WriteLine($"{lapmesg.GetWktStepIndex()}");
+			foreach (var f in lapmesg.Fields)
+			{
+				Console.Out.WriteLine($"{f.Name}:{f.GetValue()}");
+			}
+		}
+
+		private static void WriteWorkout(object sender, MesgEventArgs e)
+		{
+			var lapmesg = e.mesg as WorkoutMesg;
+
+			Console.Out.WriteLine("WORKOUT::");
+			foreach (var f in lapmesg.Fields)
+			{
+				Console.Out.WriteLine($"{f.Name}:{f.GetValue()}");
+			}
+		}
+
+		private static void WriteWorkoutStep(object sender, MesgEventArgs e)
+		{
+			var lapmesg = e.mesg as WorkoutStepMesg;
+
+			Console.Out.WriteLine("WORKOUTSTEP::");
+			foreach (var f in lapmesg.Fields)
+			{
+				Console.Out.WriteLine($"{f.Name}:{f.GetValue()}");
+			}
 		}
 
 		private Dynastream.Fit.DateTime GetStartTime(Workout workout)
@@ -159,8 +241,6 @@ namespace PelotonToFitConsole.Converter
 						var resistancePercent = resistanceMetrics.Values[i] / 1;
 						record.SetResistance((byte)(254 * resistancePercent));
 					}
-						
-
 					messages.Add(record);
 					recordsTimeStamp.Add(1);
 				}
@@ -297,7 +377,7 @@ namespace PelotonToFitConsole.Converter
 			return sessionMesg;
 		}
 
-		private Dictionary<int, Tuple<WorkoutStepMesg, LapMesg>> GetWorkoutStepsAndLaps(WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime)
+		private Dictionary<int, Tuple<WorkoutStepMesg, LapMesg>> GetWorkoutStepsAndLaps(WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime, Sport sport, SubSport subSport)
 		{
 			var stepsAndLaps = new Dictionary<int, Tuple<WorkoutStepMesg, LapMesg>>();
 
@@ -359,8 +439,8 @@ namespace PelotonToFitConsole.Converter
 					lapMesg.SetMessageIndex(stepIndex);
 					lapMesg.SetEvent(Event.Lap);
 					lapMesg.SetLapTrigger(LapTrigger.Time);
-					lapMesg.SetSport(Sport.Cycling);
-					lapMesg.SetSubSport(SubSport.IndoorCycling);
+					lapMesg.SetSport(sport);
+					lapMesg.SetSubSport(subSport);
 
 					previousCadenceLower = currentCadenceLower;
 					previousCadenceUpper = currentCadenceUpper;

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "3pO1bFi+EnOZhZhRTuUqf/klGvaP9iKJWsfYbMEhho/hL0xsOqL0CF+dwg5XCZL3P0J4op0dz+sWxFoA4gUepw==",
+  "dgSpecHash": "X5BwtZp3ivRJQtE7DW+q60HGvfk3DdgyY7A7dZJot24lg1NFY/QUzFGpMxdaZyIPx4eEKadL5sca6AV1kPJEuA==",
   "success": true,
-  "projectFilePath": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Garmin\\Garmin.csproj",
+  "projectFilePath": "D:\\code\\peloton-to-garmin\\PelotonToFit\\Garmin\\Garmin.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
