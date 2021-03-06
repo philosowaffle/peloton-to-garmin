@@ -20,8 +20,8 @@ namespace Peloton.Dto
 
 	public class GraphData
 	{
-		public ICollection<int> Upper { get; set; }
-		public ICollection<int> Lower { get; set; }
-		public ICollection<int> Average { get; set; }
+		public int[] Upper { get; set; }
+		public int[] Lower { get; set; }
+		public int[] Average { get; set; }
 	}
 }
