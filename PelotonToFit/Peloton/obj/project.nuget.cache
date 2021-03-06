@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "oku3gN/srmDofPI7UbDJBvXIrbZL3qCEyokKgqZDQW50s4aWFXtKGbagE1HP01isLhhrRwPUjfh/Cr6MaN9b1A==",
+  "dgSpecHash": "J3lPXtku/ytV0eLemoFK9UqD6/u6mbaT6lB4yLpx3tepctq05RkpjfiOr9Y6Wi+SysB4pSBgb+WbUM9vEZSqfA==",
   "success": true,
-  "projectFilePath": "D:\\code\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj",
+  "projectFilePath": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\baile\\.nuget\\packages\\flurl\\3.0.1\\flurl.3.0.1.nupkg.sha512",
-    "C:\\Users\\baile\\.nuget\\packages\\flurl.http\\3.0.1\\flurl.http.3.0.1.nupkg.sha512",
-    "C:\\Users\\baile\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
-    "C:\\Users\\baile\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512",
-    "C:\\Users\\baile\\.nuget\\packages\\newtonsoft.json\\12.0.2\\newtonsoft.json.12.0.2.nupkg.sha512",
-    "C:\\Users\\baile\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\4.5.2\\system.runtime.compilerservices.unsafe.4.5.2.nupkg.sha512",
-    "C:\\Users\\baile\\.nuget\\packages\\system.text.encoding.codepages\\4.5.1\\system.text.encoding.codepages.4.5.1.nupkg.sha512"
+    "C:\\Users\\Bailey\\.nuget\\packages\\flurl\\3.0.1\\flurl.3.0.1.nupkg.sha512",
+    "C:\\Users\\Bailey\\.nuget\\packages\\flurl.http\\3.0.1\\flurl.http.3.0.1.nupkg.sha512",
+    "C:\\Users\\Bailey\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512",
+    "C:\\Users\\Bailey\\.nuget\\packages\\newtonsoft.json\\12.0.2\\newtonsoft.json.12.0.2.nupkg.sha512",
+    "C:\\Users\\Bailey\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\4.5.2\\system.runtime.compilerservices.unsafe.4.5.2.nupkg.sha512",
+    "C:\\Users\\Bailey\\.nuget\\packages\\system.text.encoding.codepages\\4.5.1\\system.text.encoding.codepages.4.5.1.nupkg.sha512"
   ],
   "logs": []
 }

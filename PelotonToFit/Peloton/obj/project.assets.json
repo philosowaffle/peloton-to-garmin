@@ -125,12 +125,11 @@
       ]
     },
     "Microsoft.NETCore.Platforms/1.1.0": {
-      "sha512": "kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A==",
+      "sha512": "ftkSzEx3Yah+TSbWOc8V3hhQdBgv+AaD1628KIQA5TB7aL5U+Dhu8y+czYjZ5vjdC7ouscPCsln60BUOxRxh+Q==",
       "type": "package",
       "path": "microsoft.netcore.platforms/1.1.0",
       "files": [
         ".nupkg.metadata",
-        ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "lib/netstandard1.0/_._",
@@ -366,19 +365,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\baile\\.nuget\\packages\\": {}
+    "C:\\Users\\Bailey\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\code\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj",
+      "projectUniqueName": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj",
       "projectName": "Peloton",
-      "projectPath": "D:\\code\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj",
-      "packagesPath": "C:\\Users\\baile\\.nuget\\packages\\",
-      "outputPath": "D:\\code\\peloton-to-garmin\\PelotonToFit\\Peloton\\obj\\",
+      "projectPath": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj",
+      "packagesPath": "C:\\Users\\Bailey\\.nuget\\packages\\",
+      "outputPath": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Peloton\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\baile\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Bailey\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -390,7 +393,6 @@
       },
       "frameworks": {
         "netstandard2.0": {
-          "targetAlias": "netstandard2.0",
           "projectReferences": {}
         }
       },
@@ -402,7 +404,6 @@
     },
     "frameworks": {
       "netstandard2.0": {
-        "targetAlias": "netstandard2.0",
         "dependencies": {
           "Flurl.Http": {
             "target": "Package",
@@ -425,7 +426,7 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.101\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
       }
     }
   }
