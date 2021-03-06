@@ -1,23 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj": {}
+    "D:\\code\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj": {}
   },
   "projects": {
-    "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj": {
+    "D:\\code\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj",
+        "projectUniqueName": "D:\\code\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj",
         "projectName": "Peloton",
-        "projectPath": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj",
-        "packagesPath": "C:\\Users\\Bailey\\.nuget\\packages\\",
-        "outputPath": "G:\\Code\\Git\\peloton-to-garmin\\PelotonToFit\\Peloton\\obj\\",
+        "projectPath": "D:\\code\\peloton-to-garmin\\PelotonToFit\\Peloton\\Peloton.csproj",
+        "packagesPath": "C:\\Users\\baile\\.nuget\\packages\\",
+        "outputPath": "D:\\code\\peloton-to-garmin\\PelotonToFit\\Peloton\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Bailey\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\baile\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -29,6 +26,7 @@
         },
         "frameworks": {
           "netstandard2.0": {
+            "targetAlias": "netstandard2.0",
             "projectReferences": {}
           }
         },
@@ -40,6 +38,7 @@
       },
       "frameworks": {
         "netstandard2.0": {
+          "targetAlias": "netstandard2.0",
           "dependencies": {
             "Flurl.Http": {
               "target": "Package",
@@ -62,7 +61,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     }

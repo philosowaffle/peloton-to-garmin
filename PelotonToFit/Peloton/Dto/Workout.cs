@@ -39,11 +39,17 @@ namespace Peloton.Dto
 		// achievemtn_templates
 		public int? Leaderboard_Rank { get; set; }
 		public int Total_Leaderboard_Users { get; set; }
-		// ftp object
+		public FTPInfo Ftp_Info { get; set; }
 		public string Device_Type_Display_Name { get; set; }
 		public Ride Ride { get; set; }
 		public bool Is_Skup_Intro_Available { get; set; }
 		// total hr zones durations
 		// average effort score
+
+	}
+
+	public class FTPInfo
+	{
+		public int Ftp { get; set; }
 	}
 }
