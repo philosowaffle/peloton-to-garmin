@@ -28,7 +28,7 @@ namespace PelotonToFitConsole
 			var pelotonApiClient = new ApiClient("@gmail.com", "");
 			await pelotonApiClient.InitAuthAsync();
 
-			var recentWorkouts = await pelotonApiClient.GetWorkoutsAsync(2);
+			var recentWorkouts = await pelotonApiClient.GetWorkoutsAsync(5);
 			foreach (var recentWorkout in recentWorkouts.data)
 			{
 				if (recentWorkout.Status != "COMPLETE")

@@ -135,7 +135,8 @@ namespace PelotonToFitConsole.Converter
 			deviceInfoMesg.SetTimestamp(startTime);
 
 			// Create the output stream, this can be any type of stream, including a file or memory stream. Must have read/write access
-			FileStream fitDest = new FileStream($"./{workout.Name}.fit", FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
+			var title = workout.Ride.Title.Replace(" ", "_");
+			FileStream fitDest = new FileStream($"./{title}.fit", FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
 
 			// Create a FIT Encode object
 			Encode encoder = new Encode(ProtocolVersion.V20);
