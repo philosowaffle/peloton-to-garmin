@@ -108,8 +108,9 @@ output/
 
 
 # dotnet
-#*/**/bin/*
-#*/**/obj/*
+#*/**/.vs/*
+*/**/bin/*
+*/**/obj/*
 
 # Dev Files
 tests/testOutput/
