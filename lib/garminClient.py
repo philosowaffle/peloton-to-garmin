@@ -22,6 +22,10 @@ class GarminClient:
         self.activities = {}
         self.last_request = 0.0
 
+    def addActivity(self, path):
+        index = len(self.activities) + 1
+        self.activities[index] = Activity(path)
+
     def addActivity(self, path, activityType, activityName, activityId):
         self.activities[activityId] = Activity(path, activityName, activityType)
 
@@ -38,6 +42,18 @@ class GarminClient:
             except Exception as e:
                 self.logger.error("Failed to upload activity: {} to Garmin Connect with error {}".format(activityName, e))
 
+    def uploadToGarmin(self):
+        assert self.user.authenticate(), "Failed to authenticate garmin user."
+
+        for activityId in self.activities:
+            try:
+                self.rate_limit()
+                self.activities[activityId].upload(self.user)
+                activityName = self.activities[activityId].name
+                self.logger.info("Uploaded activity: {}".format(activityName))
+            except Exception as e:
+                self.logger.error("Failed to upload activity: {} to Garmin Connect with error {}".format(activityName, e))
+    
     def rate_limit(self):
         min_period = 1
         if not self.last_request:

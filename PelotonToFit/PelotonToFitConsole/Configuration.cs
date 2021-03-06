@@ -55,6 +55,9 @@ namespace PelotonToFitConsole
 		public string ProcessedHistoryFilePath { get; set; }
 		public bool EnablePolling { get; set; }
 		public int PollingIntervalSeconds { get; set; }
+		public string PathToPythonExe { get; set; }
+
+		public string FitDirectory => Path.Join(OutputDirectory, "fit");
 	}
 
 	public class PelotonConfig
