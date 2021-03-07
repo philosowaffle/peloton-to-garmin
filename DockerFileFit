@@ -22,4 +22,4 @@ RUN ls -l
 RUN pip install -r requirements.txt
 RUN chmod +x garminUpload.py
 RUN chmod +x PelotonToFitConsole
-CMD ./opt/app/PelotonToFitConsole
+CMD ./PelotonToFitConsole
