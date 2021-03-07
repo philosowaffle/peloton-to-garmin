@@ -6,7 +6,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 
 ENV PYTHONUNBUFFERED=1
 
-RUN apt install python3 python3-pip
+RUN apt-get update && apt-get install -y python3 python3-pip && rm -rf /var/lib/apt/lists/*
 
 COPY . /app
 WORKDIR /app
