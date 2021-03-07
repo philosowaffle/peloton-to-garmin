@@ -1,0 +1,21 @@
+{
+    "Application": {
+      "DebugSeverity": 0,
+      "OutputDirectory": "/output",
+      "ProcessedHistoryFilePath": null,
+      "EnablePolling": true,
+      "PollingIntervalSeconds": 3600
+    },
+    "Peloton": {
+      "Email": "fillInYourEmail",
+      "Password": null,
+      "NumWorkoutsToDownload": 5
+    },
+    "Garmin": {
+      "Email": "fillInYourEmail",
+      "Password": null,
+      "Upload": true,
+      "PathToGarminUploadPy": "/opt/app/garminUpload.py"
+    },
+    "DoNotEdit_ConfigVersion": 1
+  }

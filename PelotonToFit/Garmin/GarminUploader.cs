@@ -16,7 +16,7 @@ namespace Garmin
 		public static bool UploadToGarmin(ICollection<string> filePaths, Configuration config)
 		{
 			var uploadScriptPath = config.Garmin.PathToGarminUploadPy ?? ScriptPath;
-			var pythonPath = config.Application.PathToPythonExe;
+			var pythonPath = "python";
 
 			ProcessStartInfo start = new ProcessStartInfo();
 			start.FileName = pythonPath;
@@ -65,13 +65,6 @@ namespace Garmin
 			if (!File.Exists(uploadScriptPath))
 			{
 				Console.Out.WriteLine($"File does not exist, check your configuration {nameof(config.Garmin)}.{nameof(config.Garmin.PathToGarminUploadPy)} is correct: {uploadScriptPath}");
-				return false;
-			}
-
-			var pythonPath = config.Application.PathToPythonExe;
-			if (!File.Exists(pythonPath))
-			{
-				Console.Out.WriteLine($"File does not exist, check your configuration {nameof(config.Application)}.{nameof(config.Application.PathToPythonExe)} is correct: {pythonPath}");
 				return false;
 			}
 

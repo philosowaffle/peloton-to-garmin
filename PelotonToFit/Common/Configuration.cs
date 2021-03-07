@@ -84,7 +84,6 @@ namespace Common
 		public string ProcessedHistoryFilePath { get; set; }
 		public bool EnablePolling { get; set; }
 		public int PollingIntervalSeconds { get; set; }
-		public string PathToPythonExe { get; set; }
 
 		[JsonIgnore]
 		public string FitDirectory => Path.Join(OutputDirectory, "fit");
