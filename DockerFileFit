@@ -5,8 +5,8 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 WORKDIR /app
 COPY . /app
 
-RUN mkdir ./published && \
-    dotnet publish ./PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Debug -r linux-x64 -o ./published && \
+RUN mkdir /app/published && \
+    dotnet publish /app/PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Debug -r linux-x64 -o /app/published && \
     ls -l
 
 COPY /app/published/ /
