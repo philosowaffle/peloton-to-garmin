@@ -1,6 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 namespace PelotonToFitConsole
 {
@@ -15,13 +16,13 @@ namespace PelotonToFitConsole
 			{
 				Console.Out.WriteLine($"Failed to find file: {configFilePath}");
 				Console.Out.WriteLine($"Creating file: {configFilePath}");
-				File.WriteAllText(configFilePath, JsonConvert.SerializeObject(config));
+				File.WriteAllText(configFilePath, JsonSerializer.Serialize(config, new JsonSerializerOptions() { WriteIndented = true }));
 				return false;
 			}
 
 			try
 			{
-				config = JsonConvert.DeserializeObject<Configuration>(new StreamReader(configFilePath).ReadToEnd());
+				config = JsonSerializer.Deserialize<Configuration>(new StreamReader(configFilePath).ReadToEnd(), new JsonSerializerOptions() { ReadCommentHandling = JsonCommentHandling.Skip });
 				return true;
 			}
 			catch(Exception e)
@@ -50,6 +51,9 @@ namespace PelotonToFitConsole
 
 	public class ApplicationConfig
 	{
+		/// <summary>
+		/// Test comment.
+		/// </summary>
 		public Severity DebugSeverity { get; set; }
 		public string OutputDirectory { get; set; }
 		public string ProcessedHistoryFilePath { get; set; }
@@ -57,6 +61,7 @@ namespace PelotonToFitConsole
 		public int PollingIntervalSeconds { get; set; }
 		public string PathToPythonExe { get; set; }
 
+		[JsonIgnore]
 		public string FitDirectory => Path.Join(OutputDirectory, "fit");
 	}
 
@@ -64,13 +69,13 @@ namespace PelotonToFitConsole
 	{
 		public string Email { get; set; }
 		public string Password { get; set; }
-		public bool Upload { get; set; }
 	}
 
 	public class GarminConfig
 	{
 		public string Email { get; set; }
 		public string Password { get; set; }
+		public bool Upload { get; set; }
 	}
 
 	public enum Severity

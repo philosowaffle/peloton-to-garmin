@@ -1,11 +1,8 @@
-﻿using ActivityEncode;
-using Dynastream.Fit;
-using Garmin;
+﻿using Garmin;
 using Peloton;
 using PelotonToFitConsole.Converter;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,62 +39,42 @@ namespace PelotonToFitConsole
 		{
 			Console.WriteLine("Hello World!");
 
+			var fitConverter = new FitConverter();
+
 			// TODO: Get workoutIds to convert
 			// -- first check local DB for most recent convert
 			// -- then query Peloton and look back until we find that id
 			// -- grab all activities since then
 			// -- logic to override via NUM instead??
 			// -- need to handle when we purge the db and have no history, should it try to process all activities again?
-
+			var pelotonApiClient = new ApiClient(config.Peloton.Email, config.Peloton.Password);
+			await pelotonApiClient.InitAuthAsync();
+			var recentWorkouts = await pelotonApiClient.GetWorkoutsAsync(10); // TODO
+			//var recentWorkouts = new RecentWorkouts() { data = new List<Workout>() {  new Workout() { Id = "1174a7ae422b4fb48ab6976d91341882" } };
+			 
 			// TODO: enrich peloton data
 			// -- once we have the list of workout ids, fetch the additional metadata we need from Peloton
+			// -- optimize api calls, using joins query may not need to make three calls
 			// -- make these requests async
+			var converted = new List<ConversionDetails>();
+			foreach (var workout  in recentWorkouts.data)
+			{
+				var workoutEnriched = await pelotonApiClient.GetWorkoutByIdAsync(workout.Id);
+				var workoutSamples = await pelotonApiClient.GetWorkoutSamplesByIdAsync(workout.Id);
+				var workoutSummary = await pelotonApiClient.GetWorkoutSummaryByIdAsync(workout.Id);
 
-			// TODO: Convert workouts
-			// -- now, for each workout, convert to desired output
-			// -- convert can probably be async process as well
+				// TODO: Convert workouts
+				// -- now, for each workout, convert to desired output
+				// -- convert can probably be async process as well
+				converted.Add(fitConverter.Convert(workoutEnriched, workoutSamples, workoutSummary, config));
+			}
 
 			// TODO: Upload
 			// -- if Garmin upload enabled then upload
-
-			// TODO: Sleep till next wake up time
-			
-
-			//
-			//
-			//
-			//
-
-
-			//FitEncoderExample.CreateTimeBasedActivity();
-
-			var fitConverter = new FitConverter();
-
-			var pelotonApiClient = new ApiClient(config.Peloton.Email, config.Peloton.Password);
-			await pelotonApiClient.InitAuthAsync();
-
-			//var recentWorkouts = await pelotonApiClient.GetWorkoutsAsync(70);
-			//var wId = recentWorkouts.data.ElementAt(2);
-			var wId = "1174a7ae422b4fb48ab6976d91341882"; // cadence and resistance
-			var workout = await pelotonApiClient.GetWorkoutByIdAsync(wId);
-			var workoutSamples = await pelotonApiClient.GetWorkoutSamplesByIdAsync(wId);
-			var workoutSummary = await pelotonApiClient.GetWorkoutSummaryByIdAsync(wId);
-			var response = fitConverter.Convert(workout, workoutSamples, workoutSummary, config);
-			GarminUploader.UploadToGarmin(new List<string>() { response.Path }, config.Garmin.Email, config.Garmin.Password, config.Application.PathToPythonExe);
-
-			//foreach (var recentWorkout in recentWorkouts.data)
-			//{
-			//	if (recentWorkout.Status != "COMPLETE")
-			//		continue;
-
-			//	var workout = await pelotonApiClient.GetWorkoutByIdAsync(recentWorkout.Id);
-			//	var workoutSamples = await pelotonApiClient.GetWorkoutSamplesByIdAsync(recentWorkout.Id);
-			//	var workoutSummary = await pelotonApiClient.GetWorkoutSummaryByIdAsync(recentWorkout.Id);
-			//	var response = fitConverter.Convert(workout, workoutSamples, workoutSummary);
-			//}
-
-			//fitConverter.Decode("./20_min_Classic_Rock_Ride.fit");
-			//fitConverter.Decode("G:\\5837503646_ACTIVITY.fit");
+			if (config.Garmin.Upload)
+			{
+				GarminUploader.UploadToGarmin(converted.Select(c => c.Path).ToList(), config.Garmin.Email, config.Garmin.Password, config.Application.PathToPythonExe);
+			}
 		}
 	}
 }
