@@ -1,6 +1,7 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 
 COPY . /opt/build
+WORKDIR /opt/build
 
 RUN dotnet publish /opt/build/PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Release -r linux-x64 -o /opt/build/published && \
 
