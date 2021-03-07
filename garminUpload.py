@@ -6,13 +6,15 @@ args.add_argument("-ge", "--garmin_email",help="Garmin email address for upload 
 args.add_argument("-gp", "--garmin_password",help="Garmin password for upload to Garmin",dest="garmin_password",type=str, required=True)
 args.add_argument("-f", "--files", help="Path to file to upload", dest="files", nargs="+", required=True)
 
-garmin_email = args.garmin_email
-garmin_password = args.garmin_password
-paths = args.paths
+argResults = args.parse_args()
+
+garmin_email = argResults.garmin_email
+garmin_password = argResults.garmin_password
+files = argResults.files
 
 garminUploader = garminClient.GarminClient(garmin_email, garmin_password)
 
-for path in paths:
-    garminUploader.addActivity(path)
+for file in files:
+    garminUploader.addActivity(file)
 
 garminUploader.uploadToGarmin()

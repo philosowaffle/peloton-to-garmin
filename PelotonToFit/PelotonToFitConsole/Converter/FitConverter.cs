@@ -106,6 +106,9 @@ namespace PelotonToFitConsole.Converter
 			
 			messages.Add(activityMesg);
 
+			if (!Directory.Exists(config.Application.FitDirectory))
+				Directory.CreateDirectory(config.Application.FitDirectory);
+
 			using (FileStream fitDest = new FileStream(Path.Join(config.Application.FitDirectory, $"{title}.fit"), FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
 			{
 				Encode encoder = new Encode(ProtocolVersion.V20);
