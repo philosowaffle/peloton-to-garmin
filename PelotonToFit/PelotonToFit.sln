@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PelotonToFitConsole", "Pelo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Garmin", "Garmin\Garmin.csproj", "{3E0E0007-E67A-44BA-B819-40C6E2C2EC8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peloton", "Peloton\Peloton.csproj", "{0194BE87-68AC-4F02-B2A0-B35BEB2F5466}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peloton", "Peloton\Peloton.csproj", "{0194BE87-68AC-4F02-B2A0-B35BEB2F5466}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{DC38F108-7BB1-4055-B913-4EA1547EEDDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{0194BE87-68AC-4F02-B2A0-B35BEB2F5466}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0194BE87-68AC-4F02-B2A0-B35BEB2F5466}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0194BE87-68AC-4F02-B2A0-B35BEB2F5466}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC38F108-7BB1-4055-B913-4EA1547EEDDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC38F108-7BB1-4055-B913-4EA1547EEDDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC38F108-7BB1-4055-B913-4EA1547EEDDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC38F108-7BB1-4055-B913-4EA1547EEDDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
