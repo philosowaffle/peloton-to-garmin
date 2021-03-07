@@ -1,9 +1,7 @@
-ARG CACHEBUST=1 
-
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 
-WORKDIR /opt/app
 COPY . /opt/app
+WORKDIR /opt/app
 
 RUN mkdir /published && \
     ls -l && \
