@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 
 RUN mkdir /published && \
     dotnet publish ./PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Debug -r linux-x64 -o /published && \
@@ -10,7 +10,7 @@ FROM python:alpine
 
 WORKDIR /opt/app
 
-COPY --from=build-env /published/ /opt/app/
+COPY --from=build /published/ /opt/app/
 COPY ./requirements.txt /opt/app/requirements.txt
 COPY ./LICENSE /opt/app/LICENSE
 COPY ./garminUpload.py /opt/app/garminUpload.py
