@@ -14,6 +14,8 @@ namespace PelotonToFitConsole
 	{
 		static void Main(string[] args)
 		{
+			Console.WriteLine("Peloton To FIT");
+
 			if (!ConfigurationLoader.TryLoadConfigurationFile(out var config))
 			{
 				throw new ArgumentException("Failed to load configuration.");
@@ -29,6 +31,7 @@ namespace PelotonToFitConsole
 				while (true)
 				{
 					RunAsync(config).GetAwaiter().GetResult();
+					Console.Out.WriteLine($"Sleeping for {config.Application.PollingIntervalSeconds} seconds...");
 					Thread.Sleep(config.Application.PollingIntervalSeconds * 1000);
 				}
 			} else
@@ -39,8 +42,6 @@ namespace PelotonToFitConsole
 
 		static async Task RunAsync(Configuration config)
 		{
-			Console.WriteLine("Hello World!");
-
 			var fitConverter = new FitConverter();
 
 			// TODO: Get workoutIds to convert
