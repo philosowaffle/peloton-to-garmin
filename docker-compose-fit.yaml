@@ -2,8 +2,8 @@ version: "3.5"
    
 services:
   p2g:
-    container_name: p2g
+    container_name: p2g-fit
     image: philosowaffle/peloton-to-garmin:fitvLatest
     volumes:
-      - ./configuration.local.json:/opt/app/configuration.local.json
+      - ./app:/opt/app/
       - ./output:/output
