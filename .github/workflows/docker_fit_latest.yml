@@ -38,9 +38,10 @@ jobs:
         with:
           push: true
           file: ./DockerFileFit
+          build-args: CACHEBUST=${{ github.run_id }}
           tags: philosowaffle/peloton-to-garmin:fitvLatest
           platforms: linux/amd64,linux/arm64
-          cache-from: type=local,src=/tmp/.buildx-cache-${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
       -
