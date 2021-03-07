@@ -18,7 +18,7 @@ WORKDIR /app
 RUN pip3 install -r requirements.txt
 RUN chmod +x garminUpload.py
 # RUN chmod +x PelotonToFitConsole
-CMD dotnet run PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj
+CMD dotnet run --project /app/PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj
 
 # FROM python:alpine
 
