@@ -1,21 +1,21 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 
-COPY . /opt/build
-WORKDIR /opt/build
+COPY . /build
+WORKDIR /build
 
-RUN dotnet publish /opt/build/PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Release -r linux-x64 -o /opt/build/published && \
+RUN dotnet publish /build/PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Release -r linux-x64 -o /build/published && \
 
 FROM python:alpine
 
-WORKDIR /opt/app
+COPY --from=build /build/published/ /opt/app/
+COPY --from=build /build/requirements.txt /opt/app/requirements.txt
+COPY --from=build /build/LICENSE /opt/app/LICENSE
+COPY --from=build /build/garminUpload.py /opt/app/garminUpload.py
+COPY --from=build /build/__init__.py /opt/app/__init__.py
+COPY --from=build /build/PelotonToFit/configuration.example.json /opt/app/configuration.local.json
+COPY --from=build /build/lib /opt/app/
 
-COPY --from=build /opt/build/published/ /opt/app/
-COPY --from=build /opt/build/requirements.txt /opt/app/requirements.txt
-COPY --from=build /opt/build/LICENSE /opt/app/LICENSE
-COPY --from=build /opt/build/garminUpload.py /opt/app/garminUpload.py
-COPY --from=build /opt/build/__init__.py /opt/app/__init__.py
-COPY --from=build /opt/build/PelotonToFit/configuration.example.json /opt/app/configuration.local.json
-COPY --from=build /opt/build/lib /opt/app/
+WORKDIR /opt/app
 
 RUN pip install -r requirements.txt
 RUN chmod +x garminUpload.py
