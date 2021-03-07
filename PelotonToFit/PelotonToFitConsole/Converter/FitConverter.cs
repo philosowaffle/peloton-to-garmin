@@ -1,4 +1,5 @@
-﻿using Dynastream.Fit;
+﻿using Common;
+using Dynastream.Fit;
 using Peloton.Dto;
 using System;
 using System.Collections.Generic;
@@ -17,16 +18,26 @@ namespace PelotonToFitConsole.Converter
 
 		public ConversionDetails Convert(Workout workout, WorkoutSamples workoutSamples, WorkoutSummary workoutSummary, Configuration config)
 		{
-			var output = new ConversionDetails();
+			var output = new ConversionDetails() { Successful = true };
 
+			// MESSAGE ORDER MATTERS
 			var messages = new List<Mesg>();
 
 			var startTime = GetStartTime(workout);
 			var endTime = new Dynastream.Fit.DateTime(startTime);
 			endTime.Add(workoutSamples.Duration);
-			var title = workout.Ride.Title.Replace(" ", "_");
+			var title = workout.Ride.Title.Replace(" ", "_") + $"_with_{workout.Ride.Instructor.Name.Replace(" ", "_")}";
 			var sport = GetGarminSport(workout);
 			var subSport = GetGarminSubSport(workout);
+
+			output.Name = title;
+
+			if (sport == Sport.Invalid)
+			{
+				output.Successful = false;
+				output.Errors.Add(new ConversionError() { Message = $"Unsupported Sport Type - Skipping", Details = $"Sport: {workout.Fitness_Discipline}" });
+				return output;
+			}
 
 			var fileIdMesg = new FileIdMesg();
 			fileIdMesg.SetSerialNumber(_serialNumber);
@@ -263,11 +274,11 @@ namespace PelotonToFitConsole.Converter
 					return Sport.Running;
 				case "walking":
 					return Sport.Walking;
-				case "cardio":
 				case "strength":
 				case "yoga":
+					return Sport.Generic;
 				default:
-					return Sport.All;
+					return Sport.Invalid;
 			}
 		}
 
@@ -289,7 +300,7 @@ namespace PelotonToFitConsole.Converter
 				case "yoga":
 					return SubSport.Yoga;
 				default:
-					return SubSport.All;
+					return SubSport.Generic;
 			}
 		}
 
@@ -391,17 +402,28 @@ namespace PelotonToFitConsole.Converter
 
 			var cadenceTargets = workoutSamples.Target_Performance_Metrics.Target_Graph_Metrics.FirstOrDefault(w => w.Type == "cadence").Graph_Data;
 
+			if (cadenceTargets is null)
+				return stepsAndLaps;
+
 			uint previousCadenceLower = 0;
 			uint previousCadenceUpper = 0;
 			ushort stepIndex = 0;
 			var duration = 0;
+			float lapDistanceInMeters = 0;
 			WorkoutStepMesg workoutStep = null;
 			LapMesg lapMesg = null;
+			var speedMetrics = workoutSamples.Metrics.FirstOrDefault(m => m.Slug == "speed");
 
 			foreach (var secondSinceStart in workoutSamples.Seconds_Since_Pedaling_Start)
 			{
 				var index = secondSinceStart - 1;
 				duration++;
+
+				if (speedMetrics is object && index < speedMetrics.Values.Length)
+				{
+					var currentSpeedInMPS = ConvertToMetersPerSecond(speedMetrics.Values[index], workoutSamples);
+					lapDistanceInMeters += 1 * currentSpeedInMPS;
+				}
 
 				var currentCadenceLower = (uint)cadenceTargets.Lower[index];
 				var currentCadenceUpper = (uint)cadenceTargets.Upper[index];
@@ -411,7 +433,6 @@ namespace PelotonToFitConsole.Converter
 				{
 					if (workoutStep != null && lapMesg != null)
 					{
-						Console.Out.Write(duration);
 						workoutStep.SetDurationValue((uint)duration * 1000); // milliseconds
 
 						var lapEndTime = new Dynastream.Fit.DateTime(startTime);
@@ -420,10 +441,12 @@ namespace PelotonToFitConsole.Converter
 						lapMesg.SetTotalTimerTime(duration);
 						lapMesg.SetTimestamp(lapEndTime);
 						lapMesg.SetEventType(EventType.Stop);
+						lapMesg.SetTotalDistance(lapDistanceInMeters);
 
 						stepsAndLaps.Add(stepIndex, new Tuple<WorkoutStepMesg, LapMesg>(workoutStep, lapMesg));
 						stepIndex++;
 						duration = 0;
+						lapDistanceInMeters = 0;
 					}
 
 					workoutStep = new WorkoutStepMesg();

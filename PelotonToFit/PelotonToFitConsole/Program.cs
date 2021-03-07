@@ -1,4 +1,5 @@
-﻿using Garmin;
+﻿using Common;
+using Garmin;
 using Peloton;
 using PelotonToFitConsole.Converter;
 using System;
@@ -19,6 +20,7 @@ namespace PelotonToFitConsole
 			}
 
 			// TODO: Configuration validation
+			GarminUploader.ValidateConfig(config);
 
 			FlurlConfiguration.Configure(config);
 
@@ -49,7 +51,7 @@ namespace PelotonToFitConsole
 			// -- need to handle when we purge the db and have no history, should it try to process all activities again?
 			var pelotonApiClient = new ApiClient(config.Peloton.Email, config.Peloton.Password);
 			await pelotonApiClient.InitAuthAsync();
-			var recentWorkouts = await pelotonApiClient.GetWorkoutsAsync(10); // TODO
+			var recentWorkouts = await pelotonApiClient.GetWorkoutsAsync(config.Peloton.NumWorkoutsToDownload);
 			//var recentWorkouts = new RecentWorkouts() { data = new List<Workout>() {  new Workout() { Id = "1174a7ae422b4fb48ab6976d91341882" } };
 			 
 			// TODO: enrich peloton data
@@ -57,7 +59,7 @@ namespace PelotonToFitConsole
 			// -- optimize api calls, using joins query may not need to make three calls
 			// -- make these requests async
 			var converted = new List<ConversionDetails>();
-			foreach (var workout  in recentWorkouts.data)
+			foreach (var workout  in recentWorkouts.data.Where(w => w.Status == "COMPLETE"))
 			{
 				var workoutEnriched = await pelotonApiClient.GetWorkoutByIdAsync(workout.Id);
 				var workoutSamples = await pelotonApiClient.GetWorkoutSamplesByIdAsync(workout.Id);
@@ -69,11 +71,16 @@ namespace PelotonToFitConsole
 				converted.Add(fitConverter.Convert(workoutEnriched, workoutSamples, workoutSummary, config));
 			}
 
-			// TODO: Upload
-			// -- if Garmin upload enabled then upload
+			var unsuccessfulConversions = converted.Where(c => c.Successful == false);
+			if (unsuccessfulConversions.Any())
+				foreach(var failure in unsuccessfulConversions)
+				{
+					Console.Out.WriteLine($"Failed to convert: {failure}");
+				}
+
 			if (config.Garmin.Upload)
 			{
-				GarminUploader.UploadToGarmin(converted.Select(c => c.Path).ToList(), config.Garmin.Email, config.Garmin.Password, config.Application.PathToPythonExe);
+				GarminUploader.UploadToGarmin(converted.Where(p => p.Successful).Select(c => c.Path).ToList(), config);
 			}
 		}
 	}

@@ -44,8 +44,6 @@ namespace Peloton
 				.SetQueryParams(new
 				{
 					limit = numWorkouts,
-					joins = "ride",
-					page = 0,
 					sort_by = "-created"
 				})
 				.GetJsonAsync<RecentWorkouts>();
@@ -57,7 +55,7 @@ namespace Peloton
 				.WithCookie("peloton_session_id", SessionId)
 				.SetQueryParams(new
 				{
-					joins = "ride,ride.instructor,user"
+					joins = "ride,ride.instructor"
 				})
 				.GetJsonAsync<Workout>();
 		}

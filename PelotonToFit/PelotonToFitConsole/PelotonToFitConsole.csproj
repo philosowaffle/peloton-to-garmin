@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Garmin\Garmin.csproj" />
     <ProjectReference Include="..\Peloton\Peloton.csproj" />
   </ItemGroup>

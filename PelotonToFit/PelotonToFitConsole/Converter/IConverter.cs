@@ -1,4 +1,5 @@
-﻿using Peloton.Dto;
+﻿using Common;
+using Peloton.Dto;
 using System.Collections.Generic;
 
 namespace PelotonToFitConsole.Converter
@@ -11,14 +12,30 @@ namespace PelotonToFitConsole.Converter
 
 	public class ConversionDetails
 	{
+		public ConversionDetails()
+		{
+			Errors = new List<ConversionError>();
+		}
+
+		public bool Successful { get; set; }
 		public string Path { get; set; }
-		public object Data { get; set; }
+		public string Name { get; set; }
 		public ICollection<ConversionError> Errors { get; set; }
+
+		public override string ToString()
+		{
+			return $"Successful: {Successful}, OutputPath: {Path}, Name: {Name}, Errors: \n {string.Join("\n", Errors)} ";
+		}
 	}
 
 	public class ConversionError
 	{
 		public string Message { get; set; }
 		public string Details { get; set; }
+
+		public override string ToString()
+		{
+			return $"Message: {Message}, Details: {Details}";
+		}
 	}
 }

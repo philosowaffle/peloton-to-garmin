@@ -50,6 +50,12 @@ namespace Peloton.Dto
 		// ride type id
 		// ride type ids
 		public string Title { get; set; }
+		public Instructor Instructor { get; set; }
 
+	}
+
+	public class Instructor
+	{
+		public string Name { get; set; }
 	}
 }
