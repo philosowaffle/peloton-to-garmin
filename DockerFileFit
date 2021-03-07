@@ -13,7 +13,7 @@ COPY ./requirements.txt /opt/app/requirements.txt
 COPY ./LICENSE /opt/app/LICENSE
 COPY ./garminUpload.py /opt/app/garminUpload.py
 COPY ./__init__.py /opt/app/__init__.py
-COPY ./configuration.example.json /opt/app/configuration.local.json
+COPY ./PelotonToFit/configuration.example.json /opt/app/configuration.local.json
 COPY ./lib /opt/app/
 
 WORKDIR /opt/app
