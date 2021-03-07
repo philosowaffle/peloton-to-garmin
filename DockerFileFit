@@ -1,14 +1,16 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
 
-RUN mkdir ./published
-RUN dotnet publish ./PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Release -r linux-x64 -o ./published
+RUN mkdir /published
+RUN dotnet publish ./PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Release -r linux-x64 -o /published
 RUN ls -l
 
-COPY ./published /
-WORKDIR ./published
+COPY /published /
+WORKDIR /published
 RUN ls -l
 
 FROM python:alpine
+
+WORKDIR /opt/app
 
 COPY --from=build-env /published/ /opt/app/
 COPY ./requirements.txt /opt/app/requirements.txt
@@ -18,7 +20,6 @@ COPY ./__init__.py /opt/app/__init__.py
 COPY ./PelotonToFit/configuration.example.json /opt/app/configuration.local.json
 COPY ./lib /opt/app/
 
-WORKDIR /opt/app
 RUN pip install -r requirements.txt
 RUN chmod +x garminUpload.py
 RUN chmod +x PelotonToFitConsole
