@@ -13,7 +13,7 @@ COPY --from=build /build/LICENSE /opt/app/LICENSE
 COPY --from=build /build/garminUpload.py /opt/app/garminUpload.py
 COPY --from=build /build/__init__.py /opt/app/__init__.py
 COPY --from=build /build/PelotonToFit/configuration.example.json /opt/app/configuration.local.json
-COPY --from=build /build/lib /opt/app/
+COPY --from=build /build/lib /opt/app/lib/
 
 WORKDIR /opt/app
 
@@ -21,4 +21,4 @@ RUN ls -l
 RUN pip install -r requirements.txt
 RUN chmod +x garminUpload.py
 RUN chmod +x PelotonToFitConsole
-CMD ./PelotonToFitConsole
+CMD ./opt/app/PelotonToFitConsole
