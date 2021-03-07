@@ -1,10 +1,13 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 
-RUN mkdir /published && \
-    dotnet publish ./PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Debug -r linux-x64 -o /published && \
+WORKDIR /app
+COPY . /app
+
+RUN mkdir ./published && \
+    dotnet publish ./PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Debug -r linux-x64 -o ./published && \
     ls -l
 
-COPY /published/ /
+COPY /app/published/ /
 
 FROM python:alpine
 
