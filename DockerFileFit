@@ -2,9 +2,9 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 
 COPY . /build
 WORKDIR /build
-RUN dotnet publish /build/PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Release -r linux-x64 -o /build/published
+RUN dotnet publish /build/PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Release -r linux-musl-x64 -o /build/published
 
-FROM mcr.microsoft.com/dotnet/runtime:3.1-alpine-arm64
+FROM mcr.microsoft.com/dotnet/runtime:3.1-alpine
 
 ENV PYTHONUNBUFFERED=1
 RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
