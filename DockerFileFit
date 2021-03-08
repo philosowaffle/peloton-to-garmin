@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 
 COPY . /build
 WORKDIR /build
-RUN dotnet publish /build/PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Release -r linux-arm64 -o /build/published
+RUN dotnet publish /build/PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Release -r linux-musl-arm64 -o /build/published
 
 FROM mcr.microsoft.com/dotnet/runtime:3.1-alpine-arm64v8
 
