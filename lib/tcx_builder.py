@@ -288,7 +288,11 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
                 tposLon.text = str(locationData[index]["longitude"])
                 
                 tposAltitude = etree.Element("AltitudeMeters")
-                tposAltitude.text = str(convertFeetValueToMeters(altitudeData["values"][index]))
+                if(altitudeData["display_unit"] == "ft"):
+                    tposAltitude.text = str(convertFeetValueToMeters(altitudeData["values"][index]))
+                else:
+                    tposAltitude.text = str(altitudeData["values"][index])
+
                 trackPosition.append(tposLat)
                 trackPosition.append(tposLon)
                 trackPosition.append(tposAltitude)
