@@ -10,5 +10,5 @@ services:
       # And set the correct values.
       # "OutputDirectory": "/output",
       # "PathToGarminUploadPy": "/app/garminUpload.py"
-      - ./configuration.local.json:/configuration.local.json
+      - ./configuration.local.json:/app/configuration.local.json
       - ./output:/output
