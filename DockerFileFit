@@ -1,8 +1,10 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 
-# COPY . /build
-# WORKDIR /build
-# RUN dotnet publish /build/PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Release -r linux-x64 -o /build/published
+COPY . /build
+WORKDIR /build
+RUN dotnet publish /build/PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Release -r linux-x64 -o /build/published
+
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 
 ENV PYTHONUNBUFFERED=1
 
@@ -13,28 +15,15 @@ RUN apt-get update \
   && pip3 --no-cache-dir install --upgrade pip \
   && rm -rf /var/lib/apt/lists/*
 
-COPY . /app
+COPY --from=build /build/published/ /app/
+COPY --from=build /build/requirements.txt /app/requirements.txt
+COPY --from=build /build/LICENSE /app/LICENSE
+COPY --from=build /build/garminUpload.py /app/garminUpload.py
+COPY --from=build /build/__init__.py /app/__init__.py
+COPY --from=build /build/PelotonToFit/configuration.example.json /app/configuration.local.json
+COPY --from=build /build/lib /app/lib/
+
 WORKDIR /app
 RUN pip3 install -r requirements.txt
 RUN chmod +x garminUpload.py
-# RUN chmod +x PelotonToFitConsole
-CMD dotnet run --project /app/PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj
-
-# FROM python:alpine
-
-# COPY --from=build /build/published/ /opt/app/
-# COPY --from=build /build/requirements.txt /opt/app/requirements.txt
-# COPY --from=build /build/LICENSE /opt/app/LICENSE
-# COPY --from=build /build/garminUpload.py /opt/app/garminUpload.py
-# COPY --from=build /build/__init__.py /opt/app/__init__.py
-# COPY --from=build /build/PelotonToFit/configuration.example.json /opt/app/configuration.local.json
-# COPY --from=build /build/lib /opt/app/lib/
-
-# WORKDIR /opt/app
-
-# RUN apk add --no-cache bash
-# RUN ls -l
-# RUN pip install -r requirements.txt
-# RUN chmod +x garminUpload.py
-# RUN chmod +x PelotonToFitConsole
-# CMD ./PelotonToFitConsole
+CMD dotnet /app/PelotonToFitConsole.dll
