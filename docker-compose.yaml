@@ -4,7 +4,6 @@ services:
   p2g:
     container_name: p2g
     image: philosowaffle/peloton-to-garmin
-    restart: unless-stopped
     environment:
       - P2G_PELOTON_EMAIL=peloton@gmail.com
       - P2G_PELOTON_PASS=peloton_password
