@@ -79,3 +79,16 @@ def assertTcxTriggerMethodMatches(workoutSummary, tcx):
     actual = tcx[0][0][2][7].text 
     expected = "Manual"
     assert actual == expected
+
+def assertTcxPositionDataPresent(workoutSummary, tcx):
+    actualLat = tcx[0][0][2][9][1000][0][0].text
+    actualLon = tcx[0][0][2][9][1000][0][1].text
+    actualAltitude = tcx[0][0][2][9][1000][0][2].text
+
+    expectedLat = str(-71.662547)
+    expectedLon = str(26.904664)
+    expectedAltitude = str(40.2336)
+
+    assert actualLat == expectedLat
+    assert actualLon == expectedLon
+    assert actualAltitude == expectedAltitude

@@ -233,6 +233,7 @@ class TestTcxBuilder:
         TCX.assertTcxMaxBikeCadenceMatches(workout_summary, tcx)
         TCX.assertTcxAvgWattsMatches(workout_summary, tcx)
         TCX.assertTcxMaxWattsMatches(workout_summary, tcx)
+        TCX.assertTcxPositionDataPresent(workout_summary, tcx)
 
     getDistanceMeters_testdata = [
         (10, "m", "10.0"),

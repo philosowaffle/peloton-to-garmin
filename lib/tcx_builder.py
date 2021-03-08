@@ -23,6 +23,21 @@ def getHeartRate(heartRate):
 def getCadence(cadence):
     return "{0:.0f}".format(cadence)
 
+def flattenLocationData(locationData):
+    flatData = dict()
+
+    for segment in locationData:
+        for coordinate in segment["coordinates"]:
+            flatData[coordinate["seconds_offset_from_start"]] = dict(longitude=coordinate["longitude"], latitude=coordinate["latitude"])
+
+    return flatData
+
+def convertFeetValueToMeters(feetValue):
+    try: 
+        return float(feetValue) * 0.3048
+    except:
+        return 0
+        
 def convertDistanceValueToMeters(distanceValue, distanceUnit):
     meters = 0
     if distanceUnit == "km":
@@ -227,10 +242,16 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     cadenceMetrics = []
     speedMetrics = []
     resistanceMetrics = []
+    locationData = []
+    altitudeData = []
 
     if(metrics is None):
         logger.error("No workout metrics data.") 
         return
+
+    if("location_data" in workoutSamples.keys() and len(workoutSamples["location_data"]) > 0):
+        logger.info("found location data")
+        locationData = flattenLocationData(workoutSamples["location_data"])
 
     for item in metrics:
         if item["slug"] == "heart_rate":
@@ -243,6 +264,8 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
             speedMetrics = item
         if item["slug"] == "resistance":
             resistanceMetrics = item
+        if item["slug"] == "altitude":
+            altitudeData = item
         
     seconds_since_start = workoutSamples["seconds_since_pedaling_start"]
 
@@ -253,6 +276,26 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
         secondsSinceStart = second
         timeInSeconds = startTimeInSeconds + secondsSinceStart
         trackTime.text = getTimeStamp(timeInSeconds)
+
+        try:
+            if locationData and index in locationData:
+                trackPosition = etree.Element("Position")
+                
+                tposLat = etree.Element("LatitudeDegrees")
+                tposLat.text = str(locationData[index]["latitude"])
+                
+                tposLon = etree.Element("LongitudeDegrees")
+                tposLon.text = str(locationData[index]["longitude"])
+                
+                tposAltitude = etree.Element("AltitudeMeters")
+                tposAltitude.text = str(convertFeetValueToMeters(altitudeData["values"][index]))
+                trackPosition.append(tposLat)
+                trackPosition.append(tposLon)
+                trackPosition.append(tposAltitude)
+                trackPoint.append(trackPosition)
+                
+        except Exception as e:
+            logger.error("Exception: {}".format(e))
 
         try:
             if heartRateMetrics:
