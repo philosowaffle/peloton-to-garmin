@@ -23,7 +23,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
           repository: philosowaffle/peloton-to-garmin/peloton-to-garmin
-          tags: stable
+          tags: ${{ github.event.release.tag_name }}
       - name: Set up Docker Buildx      
         uses: crazy-max/ghaction-docker-buildx@v1      
         with:        
@@ -34,7 +34,7 @@ jobs:
         run: |        
           echo ::set-output name=docker_platform::${DOCKER_TARGET_PLATFORM}        
           echo ::set-output name=docker_image::${DOCKER_REGISTRY}/${DOCKER_IMAGE}        
-          echo ::set-output name=version::stable
+          echo ::set-output name=version::${{ github.event.release.tag_name }}
       - name: Docker Login      
         if: success()      
         run: |        
