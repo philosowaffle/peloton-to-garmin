@@ -4,7 +4,7 @@ COPY . /build
 WORKDIR /build
 RUN dotnet publish /build/PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Release -r linux-x64 -o /build/published
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+FROM mcr.microsoft.com/dotnet/runtime:3.1-alpine
 
 ENV PYTHONUNBUFFERED=1
 
@@ -26,4 +26,4 @@ COPY --from=build /build/lib /app/lib/
 WORKDIR /app
 RUN pip3 install -r requirements.txt
 RUN chmod +x garminUpload.py
-CMD dotnet /app/PelotonToFitConsole.dll
+ENTRYPOINT ["./app/PelotonToFitConsole"]
