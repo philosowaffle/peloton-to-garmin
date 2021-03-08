@@ -21,7 +21,6 @@ COPY --from=build /build/__init__.py ./__init__.py
 COPY --from=build /build/PelotonToFit/configuration.example.json ./configuration.local.json
 COPY --from=build /build/lib ./lib/
 
-
 RUN pip3 install -r requirements.txt
 RUN ls -l
 RUN chmod +x garminUpload.py
