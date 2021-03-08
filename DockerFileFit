@@ -11,15 +11,15 @@ RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
 RUN python3 -m ensurepip
 RUN pip3 install --no-cache --upgrade pip setuptools
 
-COPY --from=build /build/published/ /app/
-COPY --from=build /build/requirements.txt /app/requirements.txt
-COPY --from=build /build/LICENSE /app/LICENSE
-COPY --from=build /build/garminUpload.py /app/garminUpload.py
-COPY --from=build /build/__init__.py /app/__init__.py
-COPY --from=build /build/PelotonToFit/configuration.example.json /app/configuration.local.json
-COPY --from=build /build/lib /app/lib/
+COPY --from=build /build/published/ /
+COPY --from=build /build/requirements.txt /requirements.txt
+COPY --from=build /build/LICENSE /LICENSE
+COPY --from=build /build/garminUpload.py /garminUpload.py
+COPY --from=build /build/__init__.py /__init__.py
+COPY --from=build /build/PelotonToFit/configuration.example.json /configuration.local.json
+COPY --from=build /build/lib /lib/
 
 WORKDIR /app
 RUN pip3 install -r requirements.txt
 RUN chmod +x garminUpload.py
-ENTRYPOINT ["./app/PelotonToFitConsole"]
+ENTRYPOINT ["./PelotonToFitConsole"]
