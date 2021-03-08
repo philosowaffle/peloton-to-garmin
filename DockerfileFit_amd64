@@ -4,7 +4,7 @@ COPY . /build
 WORKDIR /build
 RUN dotnet publish /build/PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Release -r linux-musl-x64 -o /build/published
 
-FROM mcr.microsoft.com/dotnet/runtime:3.1-alpine-amd64
+FROM mcr.microsoft.com/dotnet/runtime:5.0-alpine-amd64
 
 ENV PYTHONUNBUFFERED=1
 RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
