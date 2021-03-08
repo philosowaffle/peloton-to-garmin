@@ -5,5 +5,10 @@ services:
     container_name: p2g-fit
     image: philosowaffle/peloton-to-garmin:fitvLatest
     volumes:
-      - ./app:/opt/app/
+      # Make sure you create configuration.local.json first.
+      # You may need to grant read/write permissions on the configuration file.
+      # And set the correct values.
+      # "OutputDirectory": "/output",
+      # "PathToGarminUploadPy": "/app/garminUpload.py"
+      - ./configuration.local.json:/app/configuration.local.json
       - ./output:/output
