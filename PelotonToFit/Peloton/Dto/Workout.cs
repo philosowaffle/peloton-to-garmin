@@ -4,8 +4,15 @@ namespace Peloton.Dto
 {
 	public class RecentWorkouts
 	{
-		public ICollection<Workout> data { get; set; }
+		public ICollection<RecentWorkout> data { get; set; }
 	}
+
+	public class RecentWorkout
+	{
+		public string Id { get; set; }
+		public string Status { get; set; }
+	}
+
 	public class Workout
 	{
 		public long Created_At { get; set; }
