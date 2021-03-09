@@ -54,22 +54,22 @@ namespace PelotonToFitConsole
 			await pelotonApiClient.InitAuthAsync();
 			var recentWorkouts = await pelotonApiClient.GetWorkoutsAsync(config.Peloton.NumWorkoutsToDownload);
 			//var recentWorkouts = new RecentWorkouts() { data = new List<Workout>() {  new Workout() { Id = "1174a7ae422b4fb48ab6976d91341882" } };
-			 
+
 			// TODO: enrich peloton data
 			// -- once we have the list of workout ids, fetch the additional metadata we need from Peloton
 			// -- optimize api calls, using joins query may not need to make three calls
 			// -- make these requests async
 			var converted = new List<ConversionDetails>();
-			foreach (var workout  in recentWorkouts.data.Where(w => w.Status == "COMPLETE"))
+			foreach (var recentWorkout  in recentWorkouts.data.Where(w => w.Status == "COMPLETE"))
 			{
-				var workoutEnriched = await pelotonApiClient.GetWorkoutByIdAsync(workout.Id);
-				var workoutSamples = await pelotonApiClient.GetWorkoutSamplesByIdAsync(workout.Id);
-				var workoutSummary = await pelotonApiClient.GetWorkoutSummaryByIdAsync(workout.Id);
+				var workout = await pelotonApiClient.GetWorkoutByIdAsync(recentWorkout.Id);
+				var workoutSamples = await pelotonApiClient.GetWorkoutSamplesByIdAsync(recentWorkout.Id);
+				var workoutSummary = await pelotonApiClient.GetWorkoutSummaryByIdAsync(recentWorkout.Id);
 
 				// TODO: Convert workouts
 				// -- now, for each workout, convert to desired output
 				// -- convert can probably be async process as well
-				converted.Add(fitConverter.Convert(workoutEnriched, workoutSamples, workoutSummary, config));
+				converted.Add(fitConverter.Convert(workout, workoutSamples, workoutSummary, config));
 			}
 
 			var unsuccessfulConversions = converted.Where(c => c.Successful == false);
