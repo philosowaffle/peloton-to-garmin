@@ -14,8 +14,7 @@
     "Garmin": {
       "Email": "fillInYourEmail",
       "Password": null,
-      "Upload": true,
-      "PathToGarminUploadPy": "/opt/app/garminUpload.py"
+      "Upload": true
     },
     "DoNotEdit_ConfigVersion": 1
   }
