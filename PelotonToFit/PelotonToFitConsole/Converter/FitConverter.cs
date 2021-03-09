@@ -15,6 +15,7 @@ namespace PelotonToFitConsole.Converter
 		private static readonly ushort _manufacturerId = Manufacturer.Development;
 		private static readonly uint _serialNumber = 1234098765;
 		private static readonly float _metersPerMile = 1609.34f;
+		private static readonly string _spaceSeparator = "_";
 
 		public ConversionDetails Convert(Workout workout, WorkoutSamples workoutSamples, WorkoutSummary workoutSummary, Configuration config)
 		{
@@ -26,7 +27,7 @@ namespace PelotonToFitConsole.Converter
 			var startTime = GetStartTime(workout);
 			var endTime = new Dynastream.Fit.DateTime(startTime);
 			endTime.Add(workoutSamples.Duration);
-			var title = workout.Ride.Title.Replace(" ", "_") + $"_with_{workout.Ride.Instructor.Name.Replace(" ", "_")}";
+			var title = GetTitle(workout);
 			var sport = GetGarminSport(workout);
 			var subSport = GetGarminSubSport(workout);
 
@@ -86,24 +87,21 @@ namespace PelotonToFitConsole.Converter
 
 			var stepsAndLaps = GetWorkoutStepsAndLaps(workoutSamples, startTime, sport, subSport);
 
-			if (stepsAndLaps.Values.Any())
-			{
-				var workoutMesg = new WorkoutMesg();
-				workoutMesg.SetCapabilities(32);
-				workoutMesg.SetSport(sport);
-				workoutMesg.SetSubSport(subSport);
-				workoutMesg.SetWktName(title.Replace("_"," "));
-				workoutMesg.SetNumValidSteps((ushort)stepsAndLaps.Keys.Count);
-				messages.Add(workoutMesg);
+			var workoutMesg = new WorkoutMesg();
+			workoutMesg.SetWktName(title.Replace(_spaceSeparator, " "));
+			workoutMesg.SetCapabilities(32);
+			workoutMesg.SetSport(sport);
+			workoutMesg.SetSubSport(subSport);
+			workoutMesg.SetNumValidSteps((ushort)stepsAndLaps.Keys.Count);
+			messages.Add(workoutMesg);
 
-				// add steps in order
-				foreach (var tuple in stepsAndLaps.Values)
-					messages.Add(tuple.Item1);
+			// add steps in order
+			foreach (var tuple in stepsAndLaps.Values)
+				messages.Add(tuple.Item1);
 
-				// Add laps in order
-				foreach (var tuple in stepsAndLaps.Values)
-					messages.Add(tuple.Item2);
-			}
+			// Add laps in order
+			foreach (var tuple in stepsAndLaps.Values)
+				messages.Add(tuple.Item2);
 
 			messages.Add(GetSessionMesg(workout, workoutSamples, workoutSummary, startTime, endTime, (ushort)stepsAndLaps.Keys.Count));			
 
@@ -474,6 +472,14 @@ namespace PelotonToFitConsole.Converter
 			}
 
 			return stepsAndLaps;
+		}
+
+		private string GetTitle(Workout workout)
+		{
+			return $"{workout.Ride.Title} with {workout.Ride.Instructor.Name}"
+				.Replace(" ", "_")
+				.Replace("/", "-")
+				.Replace(":", "-");
 		}
 	}
 }

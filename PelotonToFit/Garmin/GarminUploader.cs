@@ -10,24 +10,19 @@ namespace Garmin
 {
 	public static class GarminUploader
 	{
-		private static string[] ScriptPathParts = new string[] { Environment.CurrentDirectory, "..", "..", "..", "..", "..", "garminUpload.py" };
-		private static string ScriptPath = Path.Combine(ScriptPathParts);
 
 		public static bool UploadToGarmin(ICollection<string> filePaths, Configuration config)
 		{
-			var uploadScriptPath = config.Garmin.PathToGarminUploadPy ?? ScriptPath;
-			var pythonPath = "python";
-
 			ProcessStartInfo start = new ProcessStartInfo();
-			start.FileName = pythonPath;
+			start.FileName = "gupload";
 
 			var paths = String.Join(" ", filePaths.Select(p => $"\"{p}\""));
-			var cmd = $"{uploadScriptPath} -ge {config.Garmin.Email} -gp {config.Garmin.Password} -f {paths}";
+			var cmd = $"-u {config.Garmin.Email} -p {config.Garmin.Password} {paths}";
 
 			if (config.Application.DebugSeverity == Severity.Debug)
 			{
 				Console.WriteLine("Uploading to Garmin with the following parameters:");
-				Console.WriteLine($"Python: {pythonPath}");
+				Console.WriteLine($"Python: {start.FileName}");
 				Console.WriteLine($"File Paths: {paths}");
 				Console.WriteLine($"Full command: {cmd.Replace(config.Garmin.Email, "**email**").Replace(config.Garmin.Password, "**password**")}");
 			}
@@ -60,13 +55,6 @@ namespace Garmin
 		public static bool ValidateConfig(Configuration config)
 		{
 			if (config.Garmin.Upload == false) return true;
-
-			var uploadScriptPath = config.Garmin.PathToGarminUploadPy ?? ScriptPath;
-			if (!File.Exists(uploadScriptPath))
-			{
-				Console.Out.WriteLine($"File does not exist, check your configuration {nameof(config.Garmin)}.{nameof(config.Garmin.PathToGarminUploadPy)} is correct: {uploadScriptPath}");
-				return false;
-			}
 
 			if (string.IsNullOrEmpty(config.Garmin.Email))
 			{

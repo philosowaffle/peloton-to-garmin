@@ -1,7 +1,1 @@
-requests
-ConfigParser
-# garmin_uploader>=1.0.10
-# Patch cloudscrapper fix for garmin auth failures
-https://github.com/La0/garmin-uploader/archive/cloudscraper.zip
-tinydb
-unidecode
+garmin_uploader>=1.0.9
