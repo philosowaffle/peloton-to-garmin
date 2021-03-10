@@ -102,9 +102,12 @@ ENV/
 .DS_Store
 
 # User Files
-database.json
-*.log
 output/
+*.log
+syncHistory.json
+config.local.ini
+bak_config.ini
+configuration.local.json
 
 
 # dotnet
@@ -115,6 +118,3 @@ output/
 # Dev Files
 tests/testOutput/
 tests/database.json
-config.local.ini
-bak_config.ini
-configuration.local.json

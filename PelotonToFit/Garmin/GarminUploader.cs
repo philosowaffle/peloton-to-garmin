@@ -22,7 +22,6 @@ namespace Garmin
 			if (config.Application.DebugSeverity == Severity.Debug)
 			{
 				Console.WriteLine("Uploading to Garmin with the following parameters:");
-				Console.WriteLine($"Python: {start.FileName}");
 				Console.WriteLine($"File Paths: {paths}");
 				Console.WriteLine($"Full command: {cmd.Replace(config.Garmin.Email, "**email**").Replace(config.Garmin.Password, "**password**")}");
 			}

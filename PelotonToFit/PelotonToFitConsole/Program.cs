@@ -1,6 +1,6 @@
 ﻿using Common;
 using Garmin;
-using LiteDB;
+using JsonFlatFileDataStore;
 using Peloton;
 using PelotonToFitConsole.Converter;
 using System;
@@ -42,62 +42,60 @@ namespace PelotonToFitConsole
 		static async Task RunAsync(Configuration config)
 		{
 			var converted = new List<ConversionDetails>();
-			using (var syncDb = new LiteDatabase(config.Application.SyncHistoryDbPath))
+			var store = new DataStore(config.Application.SyncHistoryDbPath);
+			var syncHistory = store.GetCollection<SyncHistoryItem>();
+
+			// TODO: Get workoutIds to convert
+			// -- first check local DB for most recent convert
+			// -- then query Peloton and look back until we find that id
+			// -- grab all activities since then
+			// -- logic to override via NUM instead??
+			// -- need to handle when we purge the db and have no history, should it try to process all activities again?
+			var pelotonApiClient = new ApiClient(config.Peloton.Email, config.Peloton.Password);
+			await pelotonApiClient.InitAuthAsync();
+			var recentWorkouts = await pelotonApiClient.GetWorkoutsAsync(config.Peloton.NumWorkoutsToDownload);
+
+			foreach (var recentWorkout in recentWorkouts.data.Where(w => w.Status == "COMPLETE"))
 			{
-				var syncHistory = syncDb.GetCollection<SyncHistoryItem>("syncHistory");
+				var syncRecord = syncHistory.AsQueryable().Where(i => i.Id == recentWorkout.Id).FirstOrDefault();
 
-				// TODO: Get workoutIds to convert
-				// -- first check local DB for most recent convert
-				// -- then query Peloton and look back until we find that id
-				// -- grab all activities since then
-				// -- logic to override via NUM instead??
-				// -- need to handle when we purge the db and have no history, should it try to process all activities again?
-				var pelotonApiClient = new ApiClient(config.Peloton.Email, config.Peloton.Password);
-				await pelotonApiClient.InitAuthAsync();
-				var recentWorkouts = await pelotonApiClient.GetWorkoutsAsync(config.Peloton.NumWorkoutsToDownload);
-
-				foreach (var recentWorkout in recentWorkouts.data.Where(w => w.Status == "COMPLETE"))
+				if ((syncRecord?.ConvertedToFit ?? false) && config.Garmin.IgnoreSyncHistory == false)
 				{
-					var syncRecord = syncHistory.Query().Where(i => i.WorkoutId == recentWorkout.Id).FirstOrDefault();
-
-					if (config.Garmin.IgnoreSyncHistory == false || (syncRecord?.ConvertedToFit ?? false))
-					{
-						if (config.Application.DebugSeverity == Severity.Info) Console.Out.Write($"Workout {recentWorkout.Id} already synced, skipping..."); 
-						continue;
-					}
-
-					var workout = await pelotonApiClient.GetWorkoutByIdAsync(recentWorkout.Id);
-					var workoutSamples = await pelotonApiClient.GetWorkoutSamplesByIdAsync(recentWorkout.Id);
-					var workoutSummary = await pelotonApiClient.GetWorkoutSummaryByIdAsync(recentWorkout.Id);
-
-					syncRecord = new SyncHistoryItem()
-					{
-						WorkoutId = workout.Id,
-						WorkoutTitle = workout.Ride.Title,
-						WorkoutDate = new DateTime(workout.Start_Time),
-						DownloadDate = DateTime.Now
-					};
-
-					// TODO: Convert workouts
-					// -- now, for each workout, convert to desired output
-					// -- convert can probably be async process as well
-					var fitConverter = new FitConverter();
-					var convertedResponse = fitConverter.Convert(workout, workoutSamples, workoutSummary, config);
-					syncRecord.ConvertedToFit = convertedResponse.Successful;
-					if (convertedResponse.Successful)
-					{
-						converted.Add(convertedResponse);
-					}
-					else
-					{
-						Console.Out.WriteLine($"Failed to convert: {convertedResponse}");
-					}
-
-					syncHistory.Upsert(syncRecord);
+					if (config.Application.DebugSeverity != Severity.None) Console.Out.Write($"Workout {recentWorkout.Id} already synced, skipping..."); 
+					continue;
 				}
+
+				var workout = await pelotonApiClient.GetWorkoutByIdAsync(recentWorkout.Id);
+				var workoutSamples = await pelotonApiClient.GetWorkoutSamplesByIdAsync(recentWorkout.Id);
+				var workoutSummary = await pelotonApiClient.GetWorkoutSummaryByIdAsync(recentWorkout.Id);
+
+				syncRecord = new SyncHistoryItem()
+				{
+					Id = workout.Id,
+					WorkoutTitle = workout.Ride.Title,
+					WorkoutDate = new DateTime(workout.Created),
+					DownloadDate = DateTime.Now
+				};
+
+				// TODO: Convert workouts
+				// -- now, for each workout, convert to desired output
+				// -- convert can probably be async process as well
+				var fitConverter = new FitConverter();
+				var convertedResponse = fitConverter.Convert(workout, workoutSamples, workoutSummary, config);
+				syncRecord.ConvertedToFit = convertedResponse.Successful;
+				if (convertedResponse.Successful)
+				{
+					converted.Add(convertedResponse);
+				}
+				else
+				{
+					Console.Out.WriteLine($"Failed to convert: {convertedResponse}");
+				}
+
+				syncHistory.ReplaceOne(syncRecord.Id, syncRecord, upsert: true);
 			}
 
-			if (config.Garmin.Upload)
+			if (config.Garmin.Upload && converted.Any())
 			{
 				var uploadSuccess = GarminUploader.UploadToGarmin(converted.Select(c => c.Path).ToList(), config);
 			}

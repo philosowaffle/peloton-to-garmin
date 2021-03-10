@@ -5,7 +5,7 @@
       "ProcessedHistoryFilePath": null,
       "EnablePolling": true,
       "PollingIntervalSeconds": 3600,
-      "SyncHistoryDbPath": "/syncHistory.db"
+      "SyncHistoryDbPath": "syncHistory.json"
     },
     "Peloton": {
       "Email": "fillInYourEmail",
