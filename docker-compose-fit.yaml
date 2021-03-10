@@ -9,6 +9,5 @@ services:
       # You may need to grant read/write permissions on the configuration file.
       # And set the correct values.
       # "OutputDirectory": "/output",
-      # "PathToGarminUploadPy": "/app/garminUpload.py"
       - ./configuration.local.json:/app/configuration.local.json
       - ./output:/output
