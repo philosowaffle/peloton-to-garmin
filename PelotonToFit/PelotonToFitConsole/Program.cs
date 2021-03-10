@@ -69,11 +69,15 @@ namespace PelotonToFitConsole
 				var workoutSamples = await pelotonApiClient.GetWorkoutSamplesByIdAsync(recentWorkout.Id);
 				var workoutSummary = await pelotonApiClient.GetWorkoutSummaryByIdAsync(recentWorkout.Id);
 
+				var startTimeInSeconds = workout.Start_Time;
+				var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+				dtDateTime = dtDateTime.AddSeconds(startTimeInSeconds).ToLocalTime();
+
 				syncRecord = new SyncHistoryItem()
 				{
 					Id = workout.Id,
 					WorkoutTitle = workout.Ride.Title,
-					WorkoutDate = new DateTime(workout.Created),
+					WorkoutDate = dtDateTime,
 					DownloadDate = DateTime.Now
 				};
 
