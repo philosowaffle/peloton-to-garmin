@@ -5,9 +5,9 @@ services:
     container_name: p2g-fit
     image: philosowaffle/peloton-to-garmin:fitvLatest
     volumes:
-      # Make sure you create configuration.local.json first.
-      # You may need to grant read/write permissions on the configuration file.
-      # And set the correct values.
-      # "OutputDirectory": "/output",
+      # You may need to grant read/write permissions on the following.
+      # touch configuration.local.json
       - ./configuration.local.json:/app/configuration.local.json
       - ./output:/output
+      # touch syncHistory.json
+      - ./syncHistory.json:/app/syncHistory.db

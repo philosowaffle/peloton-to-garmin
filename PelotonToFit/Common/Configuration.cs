@@ -58,7 +58,7 @@ namespace Common
 		{
 			Application = new ApplicationConfig() 
 			{
-				SyncHistoryDbPath = Path.Join(Environment.CurrentDirectory, "syncHistory.db")
+				SyncHistoryDbPath = Path.Join(Environment.CurrentDirectory, "syncHistory.json")
 			};
 
 			Peloton = new PelotonConfig();
