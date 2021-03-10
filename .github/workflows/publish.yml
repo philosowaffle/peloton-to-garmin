@@ -1,0 +1,37 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        dotnet: ['3.1']
+        os: [linux-x64, win10-x64, osx-x64]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core SDK ${{ matrix.dotnet }}
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+        dotnet-version: ${{ matrix.dotnet }}
+        
+    - name: Publish ${{matrix.os}}
+      run: dotnet publish ${{ github.workspace }}\PelotonToFit\PelotonToFitConsole.csproj -c Release -r ${{ matrix.os }} -o \dist\${{ matrix.os }}
+      
+    - name: Create Archive ${{ matrix.os }}
+      uses: papeloto/action-zip@v1
+      with:
+       files: \dist\${{ matrix.os }}\
+       dest: \dist\${{ matrix.os }}.zip
+       
+    - name: Commit changes ${{ matrix.os }}
+      uses: EndBug/add-and-commit@v7.0.0
+      with:
+        message: "Create ${{ matrix.os }} distro"
+        add: ${{ github.workspace }}\dist\${{ matrix.os }}.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
