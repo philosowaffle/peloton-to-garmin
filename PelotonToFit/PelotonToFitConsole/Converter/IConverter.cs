@@ -24,7 +24,7 @@ namespace PelotonToFitConsole.Converter
 
 		public override string ToString()
 		{
-			return $"Successful: {Successful}, OutputPath: {Path}, Name: {Name}, Errors: \n {string.Join("\n", Errors)} ";
+			return $"Name: {Name}, OutputPath: {Path}, Successful: {Successful}, Errors: \n {string.Join("\n", Errors)}";
 		}
 	}
 
