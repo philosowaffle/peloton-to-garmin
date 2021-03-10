@@ -1,6 +1,5 @@
 ﻿using Flurl.Http;
 using Peloton.Dto;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Peloton

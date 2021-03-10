@@ -56,9 +56,14 @@ namespace Common
 
 		public Configuration()
 		{
-			Application = new ApplicationConfig();
+			Application = new ApplicationConfig() 
+			{
+				SyncHistoryDbPath = Path.Join(Environment.CurrentDirectory, "syncHistory.db")
+			};
+
 			Peloton = new PelotonConfig();
 			Garmin = new GarminConfig();
+
 			_configVersion = 0;
 		}
 
@@ -81,7 +86,7 @@ namespace Common
 		/// </summary>
 		public Severity DebugSeverity { get; set; }
 		public string OutputDirectory { get; set; }
-		public string ProcessedHistoryFilePath { get; set; }
+		public string SyncHistoryDbPath { get; set; }
 		public bool EnablePolling { get; set; }
 		public int PollingIntervalSeconds { get; set; }
 
@@ -101,6 +106,7 @@ namespace Common
 		public string Email { get; set; }
 		public string Password { get; set; }
 		public bool Upload { get; set; }
+		public bool IgnoreSyncHistory { get; set; }
 	}
 
 	public enum Severity

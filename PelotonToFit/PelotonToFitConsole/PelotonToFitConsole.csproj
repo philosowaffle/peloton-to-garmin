@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Flurl.Http" Version="3.0.1" />
+    <PackageReference Include="LiteDB" Version="5.0.10" />
   </ItemGroup>
 
   <ItemGroup>

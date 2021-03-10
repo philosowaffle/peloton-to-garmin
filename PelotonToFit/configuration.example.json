@@ -4,7 +4,8 @@
       "OutputDirectory": "/output",
       "ProcessedHistoryFilePath": null,
       "EnablePolling": true,
-      "PollingIntervalSeconds": 3600
+      "PollingIntervalSeconds": 3600,
+      "SyncHistoryDbPath": "/syncHistory.db"
     },
     "Peloton": {
       "Email": "fillInYourEmail",
