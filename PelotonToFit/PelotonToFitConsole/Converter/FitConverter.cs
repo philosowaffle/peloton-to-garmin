@@ -72,6 +72,7 @@ namespace PelotonToFitConsole.Converter
 
 			var zoneTargetMesg = new ZonesTargetMesg();
 			zoneTargetMesg.SetFunctionalThresholdPower((ushort)workout.Ftp_Info.Ftp);
+			zoneTargetMesg.SetPwrCalcType(PwrZoneCalc.PercentFtp);
 			messages.Add(zoneTargetMesg);
 
 			var trainingMesg = new TrainingFileMesg();
@@ -103,7 +104,7 @@ namespace PelotonToFitConsole.Converter
 			foreach (var tuple in stepsAndLaps.Values)
 				messages.Add(tuple.Item2);
 
-			messages.Add(GetSessionMesg(workout, workoutSamples, workoutSummary, startTime, endTime, (ushort)stepsAndLaps.Keys.Count));			
+			messages.Add(GetSessionMesg(workout, workoutSamples, workoutSummary, startTime, endTime, (ushort)stepsAndLaps.Keys.Count));
 
 			var activityMesg = new ActivityMesg();
 			activityMesg.SetTimestamp(endTime);
@@ -112,7 +113,10 @@ namespace PelotonToFitConsole.Converter
 			activityMesg.SetType(Activity.Manual);
 			activityMesg.SetEvent(Event.Activity);
 			activityMesg.SetEventType(EventType.Stop);
-			
+
+			var timezoneOffset = (int)TimeZoneInfo.Local.BaseUtcOffset.TotalSeconds;
+			activityMesg.SetLocalTimestamp((uint)((int)endTime.GetTimeStamp() + timezoneOffset));
+
 			messages.Add(activityMesg);
 
 			if (!Directory.Exists(config.Application.FitDirectory))
