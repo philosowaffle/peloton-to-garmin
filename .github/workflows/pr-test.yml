@@ -21,6 +21,6 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet }}
     - name: Install dependencies
-      run: dotnet restore PelotonToFit/PelotonToFitConsole.csproj
+      run: dotnet restore PelotonToFit\PelotonToFitConsole.csproj
     - name: Build
-      run: dotnet build PelotonToFit/PelotonToFit.sln --configuration Release --no-restore
+      run: dotnet build PelotonToFit\PelotonToFit.sln --configuration Release --no-restore
