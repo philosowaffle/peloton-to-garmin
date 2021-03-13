@@ -110,3 +110,4 @@ output/
 tests/testOutput/
 tests/database.json
 config.local.ini
+bak_config.ini
