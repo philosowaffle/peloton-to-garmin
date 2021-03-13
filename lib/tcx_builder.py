@@ -103,7 +103,7 @@ def getGarminActivityType(workout):
     except Exception as e:
         logger.error("Failed to Parse Activity Type, defaulting to 'Other' - Exception: {}".format(e))
 
-    if fitness_discipline == "cycling":
+    if fitness_discipline == "cycling" or fitness_discipline == "bike_bootcamp":
         sport = dict(Sport="Biking")
         granular_garmin_activity_type = "indoor_cycling"
     elif fitness_discipline == "running":
@@ -112,7 +112,7 @@ def getGarminActivityType(workout):
     elif fitness_discipline == "walking":
         sport = dict(Sport="Running")
         granular_garmin_activity_type = "walking"
-    elif fitness_discipline == "cardio" or fitness_discipline == "circuit":
+    elif fitness_discipline == "cardio" or fitness_discipline == "circuit" or fitness_discipline == "stretching":
         sport = dict(Sport="Other")
         granular_garmin_activity_type = "indoor_cardio"
     elif fitness_discipline == "strength":
@@ -121,6 +121,9 @@ def getGarminActivityType(workout):
     elif fitness_discipline == "yoga":
         sport = dict(Sport="Other")
         granular_garmin_activity_type = "yoga"
+    elif fitness_discipline == "meditation":
+        sport = dict(Sport="Other")
+        granular_garmin_activity_type = "breathwork"    
     else:   
         sport = dict(Sport="Other")
         granular_garmin_activity_type = "Other"
