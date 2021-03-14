@@ -17,10 +17,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solution", ".solution", "{
 		configuration.example.json = configuration.example.json
 		PelotonToFitConsole\configuration.local.json = PelotonToFitConsole\configuration.local.json
 		..\docker-compose-fit.yaml = ..\docker-compose-fit.yaml
+		..\.github\workflows\docker_fit_amd64_latest.yml = ..\.github\workflows\docker_fit_amd64_latest.yml
+		..\.github\workflows\docker_fit_arm64_latest.yml = ..\.github\workflows\docker_fit_arm64_latest.yml
 		..\DockerfileFit_amd64 = ..\DockerfileFit_amd64
 		..\DockerfileFit_arm64 = ..\DockerfileFit_arm64
+		..\.github\workflows\pr-test.yml = ..\.github\workflows\pr-test.yml
+		..\.github\workflows\publish.yml = ..\.github\workflows\publish.yml
 		..\README.md = ..\README.md
 		..\requirements.txt = ..\requirements.txt
+		..\.github\workflows\tag-release.yml = ..\.github\workflows\tag-release.yml
 	EndProjectSection
 EndProject
 Global
