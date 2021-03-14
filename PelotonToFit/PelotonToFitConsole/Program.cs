@@ -71,7 +71,9 @@ namespace PelotonToFitConsole
 			{
 				if (config.Observability.Prometheus.Enabled) Metrics.WorkoutsToConvert.Dec();
 
-				var syncRecord = syncHistory.AsQueryable().Where(i => i.Id == recentWorkout.Id).FirstOrDefault();
+				SyncHistoryItem syncRecord = null;
+				using (Metrics.DbActionDuration.WithLabels("select", "workoutId").NewTimer())
+					syncRecord = syncHistory.AsQueryable().Where(i => i.Id == recentWorkout.Id).FirstOrDefault();
 
 				if ((syncRecord?.ConvertedToFit ?? false) && config.Garmin.IgnoreSyncHistory == false)
 				{
@@ -79,27 +81,24 @@ namespace PelotonToFitConsole
 					continue;
 				}
 
-				using (Metrics.WorkoutConversionDuration.NewTimer())
+				var workout = await pelotonApiClient.GetWorkoutByIdAsync(recentWorkout.Id);
+				var workoutSamples = await pelotonApiClient.GetWorkoutSamplesByIdAsync(recentWorkout.Id);
+				var workoutSummary = await pelotonApiClient.GetWorkoutSummaryByIdAsync(recentWorkout.Id);
+
+				var startTimeInSeconds = workout.Start_Time;
+				var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+				dtDateTime = dtDateTime.AddSeconds(startTimeInSeconds).ToLocalTime();
+
+				syncRecord = new SyncHistoryItem()
 				{
-					var workout = await pelotonApiClient.GetWorkoutByIdAsync(recentWorkout.Id);
-					var workoutSamples = await pelotonApiClient.GetWorkoutSamplesByIdAsync(recentWorkout.Id);
-					var workoutSummary = await pelotonApiClient.GetWorkoutSummaryByIdAsync(recentWorkout.Id);
+					Id = workout.Id,
+					WorkoutTitle = workout.Ride.Title,
+					WorkoutDate = dtDateTime,
+					DownloadDate = DateTime.Now
+				};
 
-					var startTimeInSeconds = workout.Start_Time;
-					var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-					dtDateTime = dtDateTime.AddSeconds(startTimeInSeconds).ToLocalTime();
-
-					syncRecord = new SyncHistoryItem()
-					{
-						Id = workout.Id,
-						WorkoutTitle = workout.Ride.Title,
-						WorkoutDate = dtDateTime,
-						DownloadDate = DateTime.Now
-					};
-
-					// TODO: Convert workouts
-					// -- now, for each workout, convert to desired output
-					// -- convert can probably be async process as well
+				using (Metrics.WorkoutConversionDuration.WithLabels("fit").NewTimer())
+				{
 					var fitConverter = new FitConverter();
 					var convertedResponse = fitConverter.Convert(workout, workoutSamples, workoutSummary, config);
 					syncRecord.ConvertedToFit = convertedResponse.Successful;
@@ -111,14 +110,16 @@ namespace PelotonToFitConsole
 					{
 						Console.Out.WriteLine($"Failed to convert: {convertedResponse}");
 					}
-
-					syncHistory.ReplaceOne(syncRecord.Id, syncRecord, upsert: true);
 				}
+
+				using (Metrics.DbActionDuration.WithLabels("upsert", "workoutId").NewTimer())
+					syncHistory.ReplaceOne(syncRecord.Id, syncRecord, upsert: true);
 			}
 
 			if (config.Garmin.Upload && converted.Any())
 			{
-				var uploadSuccess = GarminUploader.UploadToGarmin(converted.Select(c => c.Path).ToList(), config);
+				using (Metrics.WorkoutUploadDuration.WithLabels(converted.Count.ToString()).NewTimer())
+					GarminUploader.UploadToGarmin(converted.Select(c => c.Path).ToList(), config);
 			}
 		}
 
@@ -128,10 +129,10 @@ namespace PelotonToFitConsole
 			if (config.Observability.Prometheus.Enabled)
 			{
 				var port = config.Observability.Prometheus.Port ?? 4000;
-				var registry = new CollectorRegistry();
-				var staticLabels = new Dictionary<string, string>() { { "app", "p2g" } };
-				registry.SetStaticLabels(staticLabels);
-				metricsServer = new KestrelMetricServer(port: port, registry: registry);
+				//var registry = new CollectorRegistry();
+				//var staticLabels = new Dictionary<string, string>() { { "app", "p2g" } };
+				//registry.SetStaticLabels(staticLabels);
+				metricsServer = new KestrelMetricServer(port: port);
 				metricsServer.Start();
 				Console.Out.WriteLine($"Metrics Server started and listening on: http://localhost:{port}/metrics");
 			}

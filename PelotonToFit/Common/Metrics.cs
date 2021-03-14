@@ -1,19 +1,26 @@
 ﻿using Prometheus;
 using System;
-using System.Collections.Generic;
 using PromMetrics = Prometheus.Metrics;
 
 namespace Common
 {
 	public static class Metrics
 	{
+		// GENERAL
 		public static readonly Counter PollsCounter = PromMetrics.CreateCounter("polls_total", "The number of times the current process has polled for new data.");
+		
+		// WORKOUT
 		public static readonly Histogram WorkoutConversionDuration = PromMetrics.CreateHistogram("workout_conversion_duration_seconds", "Histogram of workout conversion durations.", new HistogramConfiguration() 
 		{
 			LabelNames = new[] { "format" }
 		});
+		public static readonly Gauge WorkoutsToConvert = PromMetrics.CreateGauge("workout_conversion_pending", "The number of workouts pending conversion to output format.");
+		public static readonly Histogram WorkoutUploadDuration = PromMetrics.CreateHistogram("workout_upload_duration_seconds", "Histogram of workout upload durations.", new HistogramConfiguration()
+		{
+			LabelNames = new[] { "count" }
+		});
 
-
+		// HTTP
 		public static readonly Counter HttpResponseCounter = PromMetrics.CreateCounter("http_responses", "The number of http responses.", new CounterConfiguration
 		{
 			LabelNames = new[] { "method", "uri", "status_code", "duration_in_seconds" }
@@ -24,7 +31,11 @@ namespace Common
 			LabelNames = new[] { "method", "uri", "status_code", "duration_in_seconds", "message" }
 		});
 
-		public static readonly Gauge WorkoutsToConvert = PromMetrics.CreateGauge("workout_conversion_pending", "The number of workouts pending conversion to output format.");
+		// DB
+		public static readonly Histogram DbActionDuration = PromMetrics.CreateHistogram("db_action_duration_seconds", "Histogram of db action durations.", new HistogramConfiguration()
+		{
+			LabelNames = new[] { "action", "queryName" }
+		});
 
 		public static bool ValidateConfig(ObservabilityConfig config)
 		{
