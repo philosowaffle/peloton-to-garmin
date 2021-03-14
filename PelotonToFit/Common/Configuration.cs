@@ -52,7 +52,7 @@ namespace Common
 	public class Configuration
 	{
 		[JsonIgnore]
-		public static readonly int CurrentConfigVersion = 1;
+		public static readonly int CurrentConfigVersion = 2;
 
 		public Configuration()
 		{
@@ -63,6 +63,7 @@ namespace Common
 
 			Peloton = new PelotonConfig();
 			Garmin = new GarminConfig();
+			Observability = new ObservabilityConfig();
 
 			_configVersion = 0;
 		}
@@ -70,6 +71,8 @@ namespace Common
 		public ApplicationConfig Application { get; set; }
 		public PelotonConfig Peloton { get; set; }
 		public GarminConfig Garmin { get; set; }
+
+		public ObservabilityConfig Observability { get; set; }
 
 		private int? _configVersion = null;
 		public int DoNotEdit_ConfigVersion 
@@ -107,6 +110,22 @@ namespace Common
 		public string Password { get; set; }
 		public bool Upload { get; set; }
 		public bool IgnoreSyncHistory { get; set; }
+	}
+
+	public class ObservabilityConfig
+	{
+		public ObservabilityConfig()
+		{
+			Prometheus = new PrometheusConfig();
+		}
+
+		public PrometheusConfig Prometheus { get; set; }
+	}
+
+	public class PrometheusConfig
+	{
+		public bool Enabled { get; set; }
+		public int? Port { get; set; }
 	}
 
 	public enum Severity
