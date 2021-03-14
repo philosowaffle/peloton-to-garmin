@@ -58,14 +58,14 @@ namespace PelotonToFitConsole
 
 		static async Task RunAsync(Configuration config)
 		{
-			var activity = Tracing.Source.StartActivity(nameof(RunAsync));
+			using var activity = Tracing.Source.StartActivity(nameof(RunAsync));
 
 			var converted = new List<ConversionDetails>();
 			var store = new DataStore(config.Application.SyncHistoryDbPath);
 
 			IDocumentCollection<SyncHistoryItem> syncHistory = null;
 			using (Metrics.DbActionDuration.WithLabels("using", "syncHistoryTable").NewTimer())
-			using (var dbSapn = Tracing.Source.StartActivity("LoadTable").SetTag("table", "SyncHistoryItem"))
+			using (Tracing.Source.StartActivity("LoadTable")?.SetTag("table", "SyncHistoryItem"))
 			{
 				syncHistory = store.GetCollection<SyncHistoryItem>();
 			}
@@ -92,7 +92,7 @@ namespace PelotonToFitConsole
 
 				SyncHistoryItem syncRecord = null;
 				using (Metrics.DbActionDuration.WithLabels("select", "workoutId").NewTimer())
-				using (Tracing.Source.StartActivity("LoadRecord").SetTag("table", "SyncHistoryItem"))
+				using (Tracing.Source.StartActivity("LoadRecord")?.SetTag("table", "SyncHistoryItem"))
 					syncRecord = syncHistory.AsQueryable().Where(i => i.Id == recentWorkout.Id).FirstOrDefault();
 
 				if ((syncRecord?.ConvertedToFit ?? false) && config.Garmin.IgnoreSyncHistory == false)
@@ -118,7 +118,7 @@ namespace PelotonToFitConsole
 				};
 
 				using (Metrics.WorkoutConversionDuration.WithLabels("fit").NewTimer())
-				using (Tracing.Source.StartActivity("Convert").SetTag("type", "fit"))
+				using (Tracing.Source.StartActivity("Convert")?.SetTag("type", "fit"))
 				{
 					var fitConverter = new FitConverter();
 					var convertedResponse = fitConverter.Convert(workout, workoutSamples, workoutSummary, config);
@@ -134,18 +134,16 @@ namespace PelotonToFitConsole
 				}
 
 				using (Metrics.DbActionDuration.WithLabels("upsert", "workoutId").NewTimer())
-				using (Tracing.Source.StartActivity("UpsertRecord").SetTag("table", "SyncHistoryItem"))
+				using (Tracing.Source.StartActivity("UpsertRecord")?.SetTag("table", "SyncHistoryItem"))
 					syncHistory.ReplaceOne(syncRecord.Id, syncRecord, upsert: true);
 			}
 
 			if (config.Garmin.Upload && converted.Any())
 			{
 				using (Metrics.WorkoutUploadDuration.WithLabels(converted.Count.ToString()).NewTimer())
-				using (Tracing.Source.StartActivity("Upload").SetTag("target", "garmin"))
+				using (Tracing.Source.StartActivity("Upload")?.SetTag("target", "garmin"))
 					GarminUploader.UploadToGarmin(converted.Select(c => c.Path).ToList(), config);
 			}
-
-			activity.Stop();
 		}
 
 		private static IMetricServer EnableMetricsServer(Configuration config)
