@@ -12,7 +12,6 @@ namespace Common
 			{
 				if (config.Application.DebugSeverity == Severity.Debug)
 					Console.Out.WriteLine($"{call.HttpRequestMessage.Method} {call.HttpRequestMessage.RequestUri} {call.HttpRequestMessage.Content}");
-
 				return Task.CompletedTask;
 			};
 

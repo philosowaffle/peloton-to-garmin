@@ -1,11 +1,15 @@
 ﻿using Common;
 using Garmin;
 using JsonFlatFileDataStore;
+using OpenTelemetry;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Peloton;
 using PelotonToFitConsole.Converter;
 using Prometheus;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,8 +29,11 @@ namespace PelotonToFitConsole
 			// TODO: Actually Verify Configuration validation
 			GarminUploader.ValidateConfig(config);
 			Metrics.ValidateConfig(config.Observability);
+			Tracing.ValidateConfig(config.Observability);
 
 			using (var metricsServer = EnableMetricsServer(config))
+			using (var tracingServer = EnableTracing(config))
+			using (Tracing.Source = new ActivitySource("P2G.Root"))
 			{
 				FlurlConfiguration.Configure(config);
 
@@ -51,12 +58,17 @@ namespace PelotonToFitConsole
 
 		static async Task RunAsync(Configuration config)
 		{
+			var activity = Tracing.Source.StartActivity(nameof(RunAsync));
+
 			var converted = new List<ConversionDetails>();
 			var store = new DataStore(config.Application.SyncHistoryDbPath);
 
 			IDocumentCollection<SyncHistoryItem> syncHistory = null;
 			using (Metrics.DbActionDuration.WithLabels("using", "syncHistoryTable").NewTimer())
+			using (var dbSapn = Tracing.Source.StartActivity("LoadTable").SetTag("table", "SyncHistoryItem"))
+			{
 				syncHistory = store.GetCollection<SyncHistoryItem>();
+			}
 
 			// TODO: Get workoutIds to convert
 			// -- first check local DB for most recent convert
@@ -72,12 +84,15 @@ namespace PelotonToFitConsole
 			if (config.Observability.Prometheus.Enabled)
 				Metrics.WorkoutsToConvert.Set(workoutsToConvert.Count());
 
+			using var processWorkoutsSpan = Tracing.Source.StartActivity("ProcessingWorkouts");
 			foreach (var recentWorkout in workoutsToConvert)
 			{
 				if (config.Observability.Prometheus.Enabled) Metrics.WorkoutsToConvert.Dec();
+				using var processWorkoutSpan = Tracing.Source.StartActivity("ProcessingWorkout");
 
 				SyncHistoryItem syncRecord = null;
 				using (Metrics.DbActionDuration.WithLabels("select", "workoutId").NewTimer())
+				using (Tracing.Source.StartActivity("LoadRecord").SetTag("table", "SyncHistoryItem"))
 					syncRecord = syncHistory.AsQueryable().Where(i => i.Id == recentWorkout.Id).FirstOrDefault();
 
 				if ((syncRecord?.ConvertedToFit ?? false) && config.Garmin.IgnoreSyncHistory == false)
@@ -103,6 +118,7 @@ namespace PelotonToFitConsole
 				};
 
 				using (Metrics.WorkoutConversionDuration.WithLabels("fit").NewTimer())
+				using (Tracing.Source.StartActivity("Convert").SetTag("type", "fit"))
 				{
 					var fitConverter = new FitConverter();
 					var convertedResponse = fitConverter.Convert(workout, workoutSamples, workoutSummary, config);
@@ -118,14 +134,18 @@ namespace PelotonToFitConsole
 				}
 
 				using (Metrics.DbActionDuration.WithLabels("upsert", "workoutId").NewTimer())
+				using (Tracing.Source.StartActivity("UpsertRecord").SetTag("table", "SyncHistoryItem"))
 					syncHistory.ReplaceOne(syncRecord.Id, syncRecord, upsert: true);
 			}
 
 			if (config.Garmin.Upload && converted.Any())
 			{
 				using (Metrics.WorkoutUploadDuration.WithLabels(converted.Count.ToString()).NewTimer())
+				using (Tracing.Source.StartActivity("Upload").SetTag("target", "garmin"))
 					GarminUploader.UploadToGarmin(converted.Select(c => c.Path).ToList(), config);
 			}
+
+			activity.Stop();
 		}
 
 		private static IMetricServer EnableMetricsServer(Configuration config)
@@ -140,6 +160,27 @@ namespace PelotonToFitConsole
 			}
 
 			return metricsServer;
+		}
+
+		private static TracerProvider EnableTracing(Configuration config)
+		{
+			TracerProvider tracing = null;
+			if (!config.Observability.Jaeger.Enabled)
+			{
+				tracing = Sdk.CreateTracerProviderBuilder()
+							.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("p2g"))
+							.AddSource("P2G.Root", "P2G.Http", "P2G.Convert", "P2G.DB", "P2G.Upload")
+							.AddJaegerExporter(o => 
+							{
+								o.AgentHost = config.Observability.Jaeger.AgentHost;
+								o.AgentPort = config.Observability.Jaeger.AgentPort.GetValueOrDefault();
+							})
+							.Build();
+
+				Console.Out.WriteLine($"Tracing started and exporting to: http://{config.Observability.Jaeger.AgentHost}:{config.Observability.Jaeger.AgentPort}");
+			}
+
+			return tracing;
 		}
 	}
 }
