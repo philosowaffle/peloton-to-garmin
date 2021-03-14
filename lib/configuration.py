@@ -39,6 +39,13 @@ class Configuration:
         args.add_argument("-enable_polling", help="True will automatically and periodically check for new activities.",dest="polling_enabled",type=str,default=os.environ.get('PTG_ENABLE_POLLING'))
         args.add_argument("-polling_interval_seconds",help="How frequently to poll for new activities if polling is enabled.",dest="polling_interval_seconds",type=int,default=os.environ.get('PTG_POLLING_INTERVAL_SECONDS'))
 
+        args.add_argument("-working", help="Directory for to-be-processed Peloton files", dest="working_dir", type=str, default=os.environ.get('P2G_WORKING_DIR'))
+        args.add_argument("-archive", help="Directory for archive post-processed Peloton files", dest="archive_dir", type=str, default=os.environ.get('P2G_ARCHIVE_DIR'))
+        args.add_argument("-skip_download", help="True = Use existing files in working dir rather than downloading new ones from Peloton", dest="skip_download", type=str, default=os.environ.get('P2G_SKIP_DOWNLOAD'))
+        args.add_argument("-retain_files", help="True = Retain Peloton files in working dir after processing", type=str, dest="retain_files", default=os.environ.get('P2G_RETAIN_FILES') )
+        args.add_argument("-archive_files", help="True = Move Peloton files to archive dir after processing", type=str, dest="archive_files", default=os.environ.get('P2G_ARCHIVE_FILES') )
+        args.add_argument("-archive_by_type", help="True = Archive to subdirs based on Peloton workout type", type=str, dest="archive_by_type", default=os.environ.get('P2G_ARCHIVE_BY_TYPE') )
+
         argResults = args.parse_args()
 
         self.loadLoggingConfig(argResults)
@@ -93,7 +100,7 @@ class Configuration:
         console_handler.setFormatter(formatter)
 
         self.logger.addHandler(file_handler)
-        self.logger.addHandler(console_handler)
+        #self.logger.addHandler(console_handler)
 
         self.logger.debug("Peloton to Garmin Magic :)")
 
@@ -116,9 +123,57 @@ class Configuration:
         else:
             self.output_directory = "output"
 
+        if argResults.skip_download is not None:
+            self.skip_download = argResults.skip_download == "true"
+        elif config.ConfigSectionMap("OUTPUT").get('skipdownload') is not None:
+            self.skip_download = config.ConfigSectionMap("OUTPUT")['skipdownload'] == "true"
+        else:
+            self.skip_download = False
+
+        if argResults.working_dir is not None:
+            self.working_dir = argResults.working_dir
+        elif config.ConfigSectionMap("OUTPUT").get('workingdirectory') is not None:
+            self.working_dir = config.ConfigSectionMap("OUTPUT")['workingdirectory']
+        else:
+            self.working_dir = "working"
+
+        if argResults.retain_files is not None:
+            self.retain_files = argResults.retain_files == "true"
+        elif config.ConfigSectionMap("OUTPUT").get('retainfiles') is not None:
+            self.retain_files = config.ConfigSectionMap("OUTPUT")['retainfiles'] == "true"
+        else:
+            self.retain_files = False
+
+        # archive_dir is optional
+        if argResults.archive_dir is not None:
+            self.archive_dir = argResults.archive_dir
+        elif config.ConfigSectionMap("OUTPUT").get('archivedirectory') is not None:
+            self.archive_dir = config.ConfigSectionMap("OUTPUT")['archivedirectory']
+        else:
+            self.archive_dir = None
+
+        if argResults.archive_files is not None:
+            self.archive_files = argResults.archive_files == "true"
+        elif config.ConfigSectionMap("OUTPUT").get('archivefiles') is not None:
+            self.archive_files = config.ConfigSectionMap("OUTPUT")['archivefiles'] == "true"
+        else:
+            self.archive_files = False
+
+        if argResults.archive_by_type is not None:
+            self.archive_by_type = argResults.archive_by_type == "true"
+        elif config.ConfigSectionMap("OUTPUT").get('archivebytype') is not None:
+            self.archive_by_type = config.ConfigSectionMap("OUTPUT")['archivebytype'] == "true"
+        else:
+            self.archive_by_type = False
+
+
         # Create directory if it does not exist
         if not os.path.exists(self.output_directory):
             os.makedirs(self.output_directory)
+        if not os.path.exists(self.working_dir):
+            os.makedirs(self.working_dir)
+        if self.archive_dir and self.archive_files and not os.path.exists(self.archive_dir):
+            os.makedirs(self.archive_dir)
 
         if argResults.email is not None:
             self.peloton_email = argResults.email
