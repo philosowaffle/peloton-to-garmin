@@ -9,7 +9,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Garmin", "Garmin\Garmin.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peloton", "Peloton\Peloton.csproj", "{0194BE87-68AC-4F02-B2A0-B35BEB2F5466}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{DC38F108-7BB1-4055-B913-4EA1547EEDDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{DC38F108-7BB1-4055-B913-4EA1547EEDDC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solution", ".solution", "{8DD30DF7-2D75-4164-B5DD-F4CF275EE001}"
+	ProjectSection(SolutionItems) = preProject
+		..\.gitignore = ..\.gitignore
+		configuration.example.json = configuration.example.json
+		PelotonToFitConsole\configuration.local.json = PelotonToFitConsole\configuration.local.json
+		..\docker-compose-fit.yaml = ..\docker-compose-fit.yaml
+		..\DockerfileFit_amd64 = ..\DockerfileFit_amd64
+		..\DockerfileFit_arm64 = ..\DockerfileFit_arm64
+		..\README.md = ..\README.md
+		..\requirements.txt = ..\requirements.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
