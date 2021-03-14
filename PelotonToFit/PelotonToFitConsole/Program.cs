@@ -163,11 +163,11 @@ namespace PelotonToFitConsole
 		private static TracerProvider EnableTracing(Configuration config)
 		{
 			TracerProvider tracing = null;
-			if (!config.Observability.Jaeger.Enabled)
+			if (config.Observability.Jaeger.Enabled)
 			{
 				tracing = Sdk.CreateTracerProviderBuilder()
 							.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("p2g"))
-							.AddSource("P2G.Root", "P2G.Http", "P2G.Convert", "P2G.DB", "P2G.Upload")
+							.AddSource("P2G.Root")
 							.AddJaegerExporter(o => 
 							{
 								o.AgentHost = config.Observability.Jaeger.AgentHost;
