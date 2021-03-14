@@ -3,7 +3,6 @@ using Garmin;
 using JsonFlatFileDataStore;
 using Peloton;
 using PelotonToFitConsole.Converter;
-using Prometheus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,18 +23,10 @@ namespace PelotonToFitConsole
 
 			// TODO: Configuration validation
 			GarminUploader.ValidateConfig(config);
-			IMetricServer metricsServer = null;
 			Metrics.ValidateConfig(config.Observability);
-			try
-			{
-				if (config.Observability.Prometheus.Enabled)
-				{
-					var port = config.Observability.Prometheus.Port ?? 4000;
-					metricsServer = new KestrelMetricServer(port: port);
-					metricsServer.Start();
-					Console.Out.WriteLine($"Metrics Server started and listening on: {port}");
-				}
 
+			using (var metricsServer = Metrics.EnableMetricsServer(config))
+			{
 				FlurlConfiguration.Configure(config);
 
 				if (config.Application.EnablePolling)
@@ -51,13 +42,6 @@ namespace PelotonToFitConsole
 				else
 				{
 					RunAsync(config).GetAwaiter().GetResult();
-				}
-			} finally
-			{
-				if (metricsServer is Object)
-				{
-					metricsServer.Stop();
-					metricsServer.Dispose();
 				}
 			}
 		}

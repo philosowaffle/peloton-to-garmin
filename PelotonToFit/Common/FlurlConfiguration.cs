@@ -12,6 +12,7 @@ namespace Common
 			{
 				if (config.Application.DebugSeverity == Severity.Debug)
 					Console.Out.WriteLine($"{call.HttpRequestMessage.Method} {call.HttpRequestMessage.RequestUri} {call.HttpRequestMessage.Content}");
+
 				return Task.CompletedTask;
 			};
 
@@ -19,12 +20,37 @@ namespace Common
 			{
 				if (config.Application.DebugSeverity == Severity.Debug)
 					Console.Out.WriteLine($"{call.HttpResponseMessage.StatusCode} {await call.HttpResponseMessage.Content.ReadAsStringAsync()}");
+
+				if (config.Observability.Prometheus.Enabled)
+				{
+					Metrics.HttpResponseCounter
+					.WithLabels(new string[] {
+						call.HttpRequestMessage.Method.ToString(),
+						call.HttpRequestMessage.RequestUri.ToString(),
+						call.HttpResponseMessage.StatusCode.ToString(),
+						call.Duration.GetValueOrDefault().TotalSeconds.ToString()
+					})
+					.Inc();
+				}
 			};
 
 			Func<FlurlCall, Task> onErrorAsync = async delegate (FlurlCall call)
 			{
 				Console.Out.WriteLine($"HTTP Call Failed.");
 				Console.Out.WriteLine($"{call.HttpResponseMessage.StatusCode} {await call.HttpResponseMessage.Content.ReadAsStringAsync()}");
+
+				if (config.Observability.Prometheus.Enabled)
+				{
+					Metrics.HttpErrorCounter
+					.WithLabels(new string[] {
+						call.HttpRequestMessage.Method.ToString(),
+						call.HttpRequestMessage.RequestUri.ToString(),
+						call.HttpResponseMessage.StatusCode.ToString(),
+						call.Duration.GetValueOrDefault().TotalSeconds.ToString(),
+						call.HttpResponseMessage.ReasonPhrase
+					})
+					.Inc();
+				}
 			};
 
 			FlurlHttp.Configure(settings =>
