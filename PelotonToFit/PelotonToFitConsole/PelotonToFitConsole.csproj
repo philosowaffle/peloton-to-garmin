@@ -6,6 +6,7 @@
     <AssemblyName>PelotonToFitConsole</AssemblyName>
     <RootNamespace>PelotonToFitConsole</RootNamespace>
     <RuntimeIdentifiers>win10-x64;osx.10.12-x64;debian.8-x64</RuntimeIdentifiers>
+    <StartupObject>PelotonToFitConsole.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

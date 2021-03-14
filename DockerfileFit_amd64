@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 
 COPY . /build
 WORKDIR /build

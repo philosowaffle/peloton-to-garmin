@@ -24,28 +24,41 @@ namespace PelotonToFitConsole
 
 			// TODO: Configuration validation
 			GarminUploader.ValidateConfig(config);
+			IMetricServer metricsServer = null;
 			Metrics.ValidateConfig(config.Observability);
-
-			if (config.Observability.Prometheus.Enabled)
+			try
 			{
-				var metricsServer = new KestrelMetricServer(port: config.Observability.Prometheus.Port ?? 4000);
-				metricsServer.Start();
-			}
-
-			FlurlConfiguration.Configure(config);
-
-			if (config.Application.EnablePolling)
-			{
-				while (true)
+				if (config.Observability.Prometheus.Enabled)
 				{
-					Metrics.PollsCounter.Inc();
-					RunAsync(config).GetAwaiter().GetResult();
-					Console.Out.WriteLine($"Sleeping for {config.Application.PollingIntervalSeconds} seconds...");
-					Thread.Sleep(config.Application.PollingIntervalSeconds * 1000);
+					var port = config.Observability.Prometheus.Port ?? 4000;
+					metricsServer = new KestrelMetricServer(port: port);
+					metricsServer.Start();
+					Console.Out.WriteLine($"Metrics Server started and listening on: {port}");
 				}
-			} else
+
+				FlurlConfiguration.Configure(config);
+
+				if (config.Application.EnablePolling)
+				{
+					while (true)
+					{
+						Metrics.PollsCounter.Inc();
+						RunAsync(config).GetAwaiter().GetResult();
+						Console.Out.WriteLine($"Sleeping for {config.Application.PollingIntervalSeconds} seconds...");
+						Thread.Sleep(config.Application.PollingIntervalSeconds * 1000);
+					}
+				}
+				else
+				{
+					RunAsync(config).GetAwaiter().GetResult();
+				}
+			} finally
 			{
-				RunAsync(config).GetAwaiter().GetResult();
+				if (metricsServer is Object)
+				{
+					metricsServer.Stop();
+					metricsServer.Dispose();
+				}
 			}
 		}
 
