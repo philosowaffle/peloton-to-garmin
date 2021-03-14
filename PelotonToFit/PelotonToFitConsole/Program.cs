@@ -22,7 +22,7 @@ namespace PelotonToFitConsole
 			if (!ConfigurationLoader.TryLoadConfigurationFile(out var config))
 				throw new ArgumentException("Failed to load configuration.");
 
-			// TODO: Configuration validation
+			// TODO: Actually Verify Configuration validation
 			GarminUploader.ValidateConfig(config);
 			Metrics.ValidateConfig(config.Observability);
 
@@ -35,14 +35,16 @@ namespace PelotonToFitConsole
 					while (true)
 					{
 						Metrics.PollsCounter.Inc();
-						RunAsync(config).GetAwaiter().GetResult();
+						using(Metrics.PollDuration.NewTimer())
+							RunAsync(config).GetAwaiter().GetResult();
 						Console.Out.WriteLine($"Sleeping for {config.Application.PollingIntervalSeconds} seconds...");
 						Thread.Sleep(config.Application.PollingIntervalSeconds * 1000);
 					}
 				}
 				else
 				{
-					RunAsync(config).GetAwaiter().GetResult();
+					using (Metrics.PollDuration.NewTimer())
+						RunAsync(config).GetAwaiter().GetResult();
 				}
 			}
 		}
@@ -51,7 +53,10 @@ namespace PelotonToFitConsole
 		{
 			var converted = new List<ConversionDetails>();
 			var store = new DataStore(config.Application.SyncHistoryDbPath);
-			var syncHistory = store.GetCollection<SyncHistoryItem>();
+
+			IDocumentCollection<SyncHistoryItem> syncHistory = null;
+			using (Metrics.DbActionDuration.WithLabels("using", "syncHistoryTable").NewTimer())
+				syncHistory = store.GetCollection<SyncHistoryItem>();
 
 			// TODO: Get workoutIds to convert
 			// -- first check local DB for most recent convert
@@ -129,9 +134,6 @@ namespace PelotonToFitConsole
 			if (config.Observability.Prometheus.Enabled)
 			{
 				var port = config.Observability.Prometheus.Port ?? 4000;
-				//var registry = new CollectorRegistry();
-				//var staticLabels = new Dictionary<string, string>() { { "app", "p2g" } };
-				//registry.SetStaticLabels(staticLabels);
 				metricsServer = new KestrelMetricServer(port: port);
 				metricsServer.Start();
 				Console.Out.WriteLine($"Metrics Server started and listening on: http://localhost:{port}/metrics");
