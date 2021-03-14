@@ -24,12 +24,12 @@ namespace Common
 				if (config.Observability.Prometheus.Enabled)
 				{
 					Metrics.HttpResponseCounter
-					.WithLabels(new string[] {
+					.WithLabels(
 						call.HttpRequestMessage.Method.ToString(),
 						call.HttpRequestMessage.RequestUri.ToString(),
 						call.HttpResponseMessage.StatusCode.ToString(),
 						call.Duration.GetValueOrDefault().TotalSeconds.ToString()
-					})
+					)
 					.Inc();
 				}
 			};
@@ -42,13 +42,13 @@ namespace Common
 				if (config.Observability.Prometheus.Enabled)
 				{
 					Metrics.HttpErrorCounter
-					.WithLabels(new string[] {
+					.WithLabels(
 						call.HttpRequestMessage.Method.ToString(),
 						call.HttpRequestMessage.RequestUri.ToString(),
 						call.HttpResponseMessage.StatusCode.ToString(),
 						call.Duration.GetValueOrDefault().TotalSeconds.ToString(),
 						call.HttpResponseMessage.ReasonPhrase
-					})
+					)
 					.Inc();
 				}
 			};
