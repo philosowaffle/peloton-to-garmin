@@ -51,11 +51,11 @@ class PelotonToGarmin:
             # Print basic summary about the workout here, because if we filter out the activity type
             # we won't otherwise see the activity.
             workoutSummary = tcx_builder.GetWorkoutSummary( workout )
-            logger.info( F"{workoutId} : {workoutSummary['workout_title']} ({workoutSummary['workout_type']}) at {workoutSummary['workout_started']}" )
+            logger.info( "{workoutId} : {title} ({type}) at {timestamp}".format(workoutId = workoutId, title = workoutSummary['workout_title'], type = workoutSummary['workout_type'], timestamp = workoutSummary['workout_started'] ) )
 
             # Skip the unwanted activities before downloading the rest of the data.
             if config.pelotonWorkoutTypes and not workoutSummary["workout_type"] in config.pelotonWorkoutTypes :
-                logger.info( F"Workout type: {workoutSummary['workout_type']} - skipping" )
+                logger.info( "Workout type: {type} - skipping".format(type = workoutSummary['workout_type']) )
                 continue
 
             logger.info("Get workout samples")
