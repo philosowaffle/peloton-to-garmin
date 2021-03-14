@@ -26,7 +26,9 @@ namespace Common
 					Metrics.HttpResponseCounter
 					.WithLabels(
 						call.HttpRequestMessage.Method.ToString(),
-						call.HttpRequestMessage.RequestUri.ToString(),
+						call.HttpRequestMessage.RequestUri.Host.ToString(),
+						call.HttpRequestMessage.RequestUri.AbsolutePath.ToString(),
+						call.HttpRequestMessage.RequestUri.Query.ToString(),
 						call.HttpResponseMessage.StatusCode.ToString(),
 						call.Duration.GetValueOrDefault().TotalSeconds.ToString()
 					)
@@ -44,7 +46,9 @@ namespace Common
 					Metrics.HttpErrorCounter
 					.WithLabels(
 						call.HttpRequestMessage.Method.ToString(),
-						call.HttpRequestMessage.RequestUri.ToString(),
+						call.HttpRequestMessage.RequestUri.Host.ToString(),
+						call.HttpRequestMessage.RequestUri.AbsolutePath.ToString(),
+						call.HttpRequestMessage.RequestUri.Query.ToString(),
 						call.HttpResponseMessage.StatusCode.ToString(),
 						call.Duration.GetValueOrDefault().TotalSeconds.ToString(),
 						call.HttpResponseMessage.ReasonPhrase

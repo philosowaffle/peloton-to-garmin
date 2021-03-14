@@ -8,7 +8,8 @@ namespace Common
 	{
 		// GENERAL
 		public static readonly Counter PollsCounter = PromMetrics.CreateCounter("polls_total", "The number of times the current process has polled for new data.");
-		
+		public static readonly Histogram PollDuration = PromMetrics.CreateHistogram("poll_duration_seconds", "Histogram of the entire poll run duration.");
+
 		// WORKOUT
 		public static readonly Histogram WorkoutConversionDuration = PromMetrics.CreateHistogram("workout_conversion_duration_seconds", "Histogram of workout conversion durations.", new HistogramConfiguration() 
 		{
@@ -23,12 +24,11 @@ namespace Common
 		// HTTP
 		public static readonly Counter HttpResponseCounter = PromMetrics.CreateCounter("http_responses", "The number of http responses.", new CounterConfiguration
 		{
-			LabelNames = new[] { "method", "uri", "status_code", "duration_in_seconds" }
+			LabelNames = new[] { "method", "host", "path", "query", "status_code", "duration_in_seconds" }
 		});
-
 		public static readonly Counter HttpErrorCounter = PromMetrics.CreateCounter("http_errors", "The number of errors encountered.", new CounterConfiguration
 		{
-			LabelNames = new[] { "method", "uri", "status_code", "duration_in_seconds", "message" }
+			LabelNames = new[] { "method", "host", "path", "query", "status_code", "duration_in_seconds", "message" }
 		});
 
 		// DB
