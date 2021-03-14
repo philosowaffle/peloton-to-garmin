@@ -3,6 +3,7 @@ using Garmin;
 using JsonFlatFileDataStore;
 using Peloton;
 using PelotonToFitConsole.Converter;
+using Prometheus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace PelotonToFitConsole
 			GarminUploader.ValidateConfig(config);
 			Metrics.ValidateConfig(config.Observability);
 
-			using (var metricsServer = Metrics.EnableMetricsServer(config))
+			using (var metricsServer = EnableMetricsServer(config))
 			{
 				FlurlConfiguration.Configure(config);
 
@@ -62,54 +63,80 @@ namespace PelotonToFitConsole
 			await pelotonApiClient.InitAuthAsync();
 			var recentWorkouts = await pelotonApiClient.GetWorkoutsAsync(config.Peloton.NumWorkoutsToDownload);
 
-			foreach (var recentWorkout in recentWorkouts.data.Where(w => w.Status == "COMPLETE"))
+			var workoutsToConvert = recentWorkouts.data.Where(w => w.Status == "COMPLETE");
+			if (config.Observability.Prometheus.Enabled)
+				Metrics.WorkoutsToConvert.Set(workoutsToConvert.Count());
+
+			foreach (var recentWorkout in workoutsToConvert)
 			{
+				if (config.Observability.Prometheus.Enabled) Metrics.WorkoutsToConvert.Dec();
+
 				var syncRecord = syncHistory.AsQueryable().Where(i => i.Id == recentWorkout.Id).FirstOrDefault();
 
 				if ((syncRecord?.ConvertedToFit ?? false) && config.Garmin.IgnoreSyncHistory == false)
 				{
-					if (config.Application.DebugSeverity != Severity.None) Console.Out.Write($"Workout {recentWorkout.Id} already synced, skipping..."); 
+					if (config.Application.DebugSeverity != Severity.None) Console.Out.Write($"Workout {recentWorkout.Id} already synced, skipping...");
 					continue;
 				}
 
-				var workout = await pelotonApiClient.GetWorkoutByIdAsync(recentWorkout.Id);
-				var workoutSamples = await pelotonApiClient.GetWorkoutSamplesByIdAsync(recentWorkout.Id);
-				var workoutSummary = await pelotonApiClient.GetWorkoutSummaryByIdAsync(recentWorkout.Id);
-
-				var startTimeInSeconds = workout.Start_Time;
-				var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-				dtDateTime = dtDateTime.AddSeconds(startTimeInSeconds).ToLocalTime();
-
-				syncRecord = new SyncHistoryItem()
+				using (Metrics.WorkoutConversionDuration.NewTimer())
 				{
-					Id = workout.Id,
-					WorkoutTitle = workout.Ride.Title,
-					WorkoutDate = dtDateTime,
-					DownloadDate = DateTime.Now
-				};
+					var workout = await pelotonApiClient.GetWorkoutByIdAsync(recentWorkout.Id);
+					var workoutSamples = await pelotonApiClient.GetWorkoutSamplesByIdAsync(recentWorkout.Id);
+					var workoutSummary = await pelotonApiClient.GetWorkoutSummaryByIdAsync(recentWorkout.Id);
 
-				// TODO: Convert workouts
-				// -- now, for each workout, convert to desired output
-				// -- convert can probably be async process as well
-				var fitConverter = new FitConverter();
-				var convertedResponse = fitConverter.Convert(workout, workoutSamples, workoutSummary, config);
-				syncRecord.ConvertedToFit = convertedResponse.Successful;
-				if (convertedResponse.Successful)
-				{
-					converted.Add(convertedResponse);
+					var startTimeInSeconds = workout.Start_Time;
+					var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+					dtDateTime = dtDateTime.AddSeconds(startTimeInSeconds).ToLocalTime();
+
+					syncRecord = new SyncHistoryItem()
+					{
+						Id = workout.Id,
+						WorkoutTitle = workout.Ride.Title,
+						WorkoutDate = dtDateTime,
+						DownloadDate = DateTime.Now
+					};
+
+					// TODO: Convert workouts
+					// -- now, for each workout, convert to desired output
+					// -- convert can probably be async process as well
+					var fitConverter = new FitConverter();
+					var convertedResponse = fitConverter.Convert(workout, workoutSamples, workoutSummary, config);
+					syncRecord.ConvertedToFit = convertedResponse.Successful;
+					if (convertedResponse.Successful)
+					{
+						converted.Add(convertedResponse);
+					}
+					else
+					{
+						Console.Out.WriteLine($"Failed to convert: {convertedResponse}");
+					}
+
+					syncHistory.ReplaceOne(syncRecord.Id, syncRecord, upsert: true);
 				}
-				else
-				{
-					Console.Out.WriteLine($"Failed to convert: {convertedResponse}");
-				}
-
-				syncHistory.ReplaceOne(syncRecord.Id, syncRecord, upsert: true);
 			}
 
 			if (config.Garmin.Upload && converted.Any())
 			{
 				var uploadSuccess = GarminUploader.UploadToGarmin(converted.Select(c => c.Path).ToList(), config);
 			}
+		}
+
+		private static IMetricServer EnableMetricsServer(Configuration config)
+		{
+			IMetricServer metricsServer = null;
+			if (config.Observability.Prometheus.Enabled)
+			{
+				var port = config.Observability.Prometheus.Port ?? 4000;
+				var registry = new CollectorRegistry();
+				var staticLabels = new Dictionary<string, string>() { { "app", "p2g" } };
+				registry.SetStaticLabels(staticLabels);
+				metricsServer = new KestrelMetricServer(port: port, registry: registry);
+				metricsServer.Start();
+				Console.Out.WriteLine($"Metrics Server started and listening on: http://localhost:{port}/metrics");
+			}
+
+			return metricsServer;
 		}
 	}
 }
