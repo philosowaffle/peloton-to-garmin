@@ -117,9 +117,18 @@ namespace Common
 		public ObservabilityConfig()
 		{
 			Prometheus = new PrometheusConfig();
+			Jaeger = new JaegerConfig();
 		}
 
 		public PrometheusConfig Prometheus { get; set; }
+		public JaegerConfig Jaeger { get; set; }
+	}
+
+	public class JaegerConfig
+	{
+		public bool Enabled { get; set; }
+		public string AgentHost { get; set; }
+		public int? AgentPort { get; set; }
 	}
 
 	public class PrometheusConfig

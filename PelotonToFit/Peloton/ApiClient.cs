@@ -1,5 +1,7 @@
-﻿using Flurl.Http;
+﻿using Common;
+using Flurl.Http;
 using Peloton.Dto;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Peloton
@@ -23,7 +25,9 @@ namespace Peloton
 
 		public async Task InitAuthAsync()
 		{
-			var response = await $"{AuthBaseUrl}"
+			using (var span = Tracing.Source.StartActivity("PelotonAuth"))
+			{
+				var response = await $"{AuthBaseUrl}"
 				.WithHeader("peloton-platform", "web")
 				.PostJsonAsync(new AuthRequest()
 				{
@@ -32,13 +36,16 @@ namespace Peloton
 				})
 				.ReceiveJson<AuthResponse>();
 
-			UserId = response.user_id;
-			SessionId = response.session_id;
+				UserId = response.user_id;
+				SessionId = response.session_id;
+			}
 		}
 
 		public Task<RecentWorkouts> GetWorkoutsAsync(int numWorkouts)
 		{
-			return $"{BaseUrl}/user/{UserId}/workouts"
+			using (var span = Tracing.Source.StartActivity("GetRecentWorkouts"))
+			{
+				return $"{BaseUrl}/user/{UserId}/workouts"
 				.WithCookie("peloton_session_id", SessionId)
 				.SetQueryParams(new
 				{
@@ -46,6 +53,7 @@ namespace Peloton
 					sort_by = "-created"
 				})
 				.GetJsonAsync<RecentWorkouts>();
+			}
 		}
 
 		public Task<Workout> GetWorkoutByIdAsync(string id)
