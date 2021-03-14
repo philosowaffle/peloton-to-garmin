@@ -25,7 +25,7 @@ namespace Peloton
 
 		public async Task InitAuthAsync()
 		{
-			using (var span = Tracing.Source.StartActivity("PelotonAuth"))
+			using (Tracing.Source.StartActivity("PelotonAuth"))
 			{
 				var response = await $"{AuthBaseUrl}"
 				.WithHeader("peloton-platform", "web")
@@ -43,7 +43,7 @@ namespace Peloton
 
 		public Task<RecentWorkouts> GetWorkoutsAsync(int numWorkouts)
 		{
-			using (var span = Tracing.Source.StartActivity("GetRecentWorkouts"))
+			using (Tracing.Source.StartActivity("GetRecentWorkouts"))
 			{
 				return $"{BaseUrl}/user/{UserId}/workouts"
 				.WithCookie("peloton_session_id", SessionId)
