@@ -59,7 +59,14 @@ def getInstructor(workout):
         if workout["ride"]["instructor"] is not None:
             return unidecode(" with " + workout["ride"]["instructor"]["name"])
     return ""
-    
+
+def getRideTitle(workout):
+    if workout["workout_type"] == "class":
+        instructor = getInstructor(workout)
+        rideTitle = unidecode(workout["ride"]["title"].replace("/","-").replace(":","-"))
+        return "{0}{1}".format(rideTitle, instructor)
+    return ""
+
 def getDistanceMeters(workoutSamples):
     try:
         distanceSlug = next((x for x in workoutSamples["summaries"] if x["slug"] == "distance"), None)
@@ -382,3 +389,29 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     outputDir = outputDir.replace("\"", "")
     tree.write(os.path.join(outputDir,filename), xml_declaration=True, encoding="UTF-8", method="xml")
     return title, filename, granular_garmin_activity_type
+
+
+
+def GetWorkoutSummary( workout ) :
+    # Extracts a few fields from the workout summary record for convenient access.
+    summary = {}
+
+    try:
+        summary[ "workout_type" ] = workout.get("fitness_discipline","")
+    except:
+        pass
+
+    try:
+        summary[ "workout_started" ] = ""
+        temp = workout["start_time"]
+        activity_started = datetime.fromtimestamp( temp )
+        summary[ "workout_started" ] = activity_started.strftime("%c")
+    except:
+        pass
+
+    try:
+        summary[ "workout_title" ] = getRideTitle(workout)
+    except:
+        pass
+
+    return summary

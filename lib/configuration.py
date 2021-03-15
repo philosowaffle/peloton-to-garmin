@@ -32,6 +32,7 @@ class Configuration:
         args.add_argument("-garmin_enable_upload",help="True will try to upload activities to Garmin", dest="garmin_enable_upload", type=str, default=os.environ.get('P2G_GARMIN_ENABLE_UPLOAD'))
         args.add_argument("-path",help="Path to output directory",dest="output_dir",type=str, default=os.environ.get('P2G_PATH'))
         args.add_argument("-num",help="Number of activities to download",dest="num_to_download",type=int, default=os.environ.get('P2G_NUM'))
+        args.add_argument("-workout_types",help="Process specified activity types only", dest="workout_types", type=str, default=os.environ.get('P2G_WORKOUT_TYPES'))
         args.add_argument("-log",help="Log file name",dest="log_file",type=str, default=os.environ.get('P2G_LOG'))
         args.add_argument("-loglevel",help="[DEBUG, INFO, ERROR]",dest="log_level",type=str, default=os.environ.get('P2G_LOG_LEVEL'))
         args.add_argument("-pause_on_finish",help="Do not automatically close the application on completion.", dest="pause_on_finish",type=str, default=os.environ.get('P2G_PAUSE_ON_FINISH'))
@@ -128,6 +129,17 @@ class Configuration:
             self.peloton_password = argResults.password
         else: 
             self.peloton_password = config.ConfigSectionMap("PELOTON").get('password')
+
+        # If set, the opt-in list of activities to include.  Peloton activity types not included
+        # in this list will be ignored (not saved, not uploaded).  Omit or leave blank to allow all.
+        if argResults.workout_types is not None:
+            pelotonWorkoutTypes = argResults.workout_types
+        else:
+            pelotonWorkoutTypes = config.ConfigSectionMap("PELOTON").get("workouttypes")
+        if pelotonWorkoutTypes is not None :
+            self.pelotonWorkoutTypes = [ item.strip().lower() for item in pelotonWorkoutTypes.split(",") ]
+        else:
+            self.pelotonWorkoutTypes = []
 
     def loadGarminConfig(self, argResults):
         if argResults.garmin_email is not None:
