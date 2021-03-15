@@ -76,8 +76,8 @@ namespace PelotonToFitConsole
 			foreach (var recentWorkout in workoutsToConvert)
 			{
 				Metrics.WorkoutsToConvert.Dec();
-				using var processWorkoutSpan = Tracing.Source.StartActivity("ProcessingWorkout")
-															.SetTag(Tracing.Category, Tracing.Default)
+				using var processWorkoutSpan = Tracing.Source.StartActivity("ProcessingWorkout")?
+															.SetTag(Tracing.Category, Tracing.Default)?
 															.SetTag(Tracing.WorkoutId, recentWorkout.Id);
 
 				SyncHistoryItem syncRecord = db.Get(recentWorkout.Id);
