@@ -1,6 +1,6 @@
 ﻿using Common;
+using Common.Database;
 using Garmin;
-using JsonFlatFileDataStore;
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -58,42 +58,29 @@ namespace PelotonToFitConsole
 
 		static async Task RunAsync(Configuration config)
 		{
-			using var activity = Tracing.Source.StartActivity(nameof(RunAsync));
+			using var activity = Tracing.Source.StartActivity(nameof(RunAsync))?
+												.SetTag(Tracing.Category, Tracing.Default);
 
 			var converted = new List<ConversionDetails>();
-			var store = new DataStore(config.Application.SyncHistoryDbPath);
+			var db = new DbClient(config);
 
-			IDocumentCollection<SyncHistoryItem> syncHistory = null;
-			using (Metrics.DbActionDuration.WithLabels("using", "syncHistoryTable").NewTimer())
-			using (Tracing.Source.StartActivity("LoadTable")?.SetTag("table", "SyncHistoryItem"))
-			{
-				syncHistory = store.GetCollection<SyncHistoryItem>();
-			}
-
-			// TODO: Get workoutIds to convert
-			// -- first check local DB for most recent convert
-			// -- then query Peloton and look back until we find that id
-			// -- grab all activities since then
-			// -- logic to override via NUM instead??
-			// -- need to handle when we purge the db and have no history, should it try to process all activities again?
 			var pelotonApiClient = new ApiClient(config.Peloton.Email, config.Peloton.Password);
 			await pelotonApiClient.InitAuthAsync();
 			var recentWorkouts = await pelotonApiClient.GetWorkoutsAsync(config.Peloton.NumWorkoutsToDownload);
 
 			var workoutsToConvert = recentWorkouts.data.Where(w => w.Status == "COMPLETE");
-			if (config.Observability.Prometheus.Enabled)
-				Metrics.WorkoutsToConvert.Set(workoutsToConvert.Count());
+			Metrics.WorkoutsToConvert.Set(workoutsToConvert.Count());
+			using var processWorkoutsSpan = Tracing.Source.StartActivity("ProcessingWorkouts")?
+															.SetTag(Tracing.Category, Tracing.Default);
 
-			using var processWorkoutsSpan = Tracing.Source.StartActivity("ProcessingWorkouts");
 			foreach (var recentWorkout in workoutsToConvert)
 			{
-				if (config.Observability.Prometheus.Enabled) Metrics.WorkoutsToConvert.Dec();
-				using var processWorkoutSpan = Tracing.Source.StartActivity("ProcessingWorkout");
+				Metrics.WorkoutsToConvert.Dec();
+				using var processWorkoutSpan = Tracing.Source.StartActivity("ProcessingWorkout")
+															.SetTag(Tracing.Category, Tracing.Default)
+															.SetTag(Tracing.WorkoutId, recentWorkout.Id);
 
-				SyncHistoryItem syncRecord = null;
-				using (Metrics.DbActionDuration.WithLabels("select", "workoutId").NewTimer())
-				using (Tracing.Source.StartActivity("LoadRecord")?.SetTag("table", "SyncHistoryItem"))
-					syncRecord = syncHistory.AsQueryable().Where(i => i.Id == recentWorkout.Id).FirstOrDefault();
+				SyncHistoryItem syncRecord = db.Get(recentWorkout.Id);
 
 				if ((syncRecord?.ConvertedToFit ?? false) && config.Garmin.IgnoreSyncHistory == false)
 				{
@@ -117,33 +104,22 @@ namespace PelotonToFitConsole
 					DownloadDate = DateTime.Now
 				};
 
-				using (Metrics.WorkoutConversionDuration.WithLabels("fit").NewTimer())
-				using (Tracing.Source.StartActivity("Convert")?.SetTag("type", "fit"))
+				var fitConverter = new FitConverter();
+				var convertedResponse = fitConverter.Convert(workout, workoutSamples, workoutSummary, config);
+				syncRecord.ConvertedToFit = convertedResponse.Successful;
+				if (convertedResponse.Successful)
 				{
-					var fitConverter = new FitConverter();
-					var convertedResponse = fitConverter.Convert(workout, workoutSamples, workoutSummary, config);
-					syncRecord.ConvertedToFit = convertedResponse.Successful;
-					if (convertedResponse.Successful)
-					{
-						converted.Add(convertedResponse);
-					}
-					else
-					{
-						Console.Out.WriteLine($"Failed to convert: {convertedResponse}");
-					}
+					converted.Add(convertedResponse);
+				}
+				else
+				{
+					Console.Out.WriteLine($"Failed to convert: {convertedResponse}");
 				}
 
-				using (Metrics.DbActionDuration.WithLabels("upsert", "workoutId").NewTimer())
-				using (Tracing.Source.StartActivity("UpsertRecord")?.SetTag("table", "SyncHistoryItem"))
-					syncHistory.ReplaceOne(syncRecord.Id, syncRecord, upsert: true);
+				db.Upsert(syncRecord);
 			}
 
-			if (config.Garmin.Upload && converted.Any())
-			{
-				using (Metrics.WorkoutUploadDuration.WithLabels(converted.Count.ToString()).NewTimer())
-				using (Tracing.Source.StartActivity("Upload")?.SetTag("target", "garmin"))
-					GarminUploader.UploadToGarmin(converted.Select(c => c.Path).ToList(), config);
-			}
+			GarminUploader.UploadToGarmin(converted.Select(c => c.Path).ToList(), config);
 		}
 
 		private static IMetricServer EnableMetricsServer(Configuration config)

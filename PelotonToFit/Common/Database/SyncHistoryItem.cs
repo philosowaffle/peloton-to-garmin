@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PelotonToFitConsole
+namespace Common.Database
 {
 	public class SyncHistoryItem
 	{

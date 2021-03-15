@@ -7,6 +7,19 @@ namespace Common
 	{
 		public static ActivitySource Source;
 
+		public static string Category = "category";
+		public static string Route = "route";
+		public static string App = "app";
+		public static string WorkoutId = "workout_id";
+		public static string Table = "table";
+		public static string Format = "format";
+
+		public static string Default = "default";
+		public static string Db = "db";
+		public static string Http = "http";
+		public static string Fit = "fit";
+		
+
 		public static bool ValidateConfig(ObservabilityConfig config)
 		{
 			if (!config.Jaeger.Enabled)
