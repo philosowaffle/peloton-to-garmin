@@ -1,7 +1,6 @@
 import requests, json
 import logging
 import sys
-from datetime import datetime
 from . import util
 
 class PelotonApi:
