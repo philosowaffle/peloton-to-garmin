@@ -14,7 +14,7 @@
             ],
         },
         {
-            "name": "Run, Upload",
+            "name": "Upload",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/peloton-to-garmin.py",
@@ -24,7 +24,7 @@
             ],
         },
         {
-            "name": "Run, Upload, Archive",
+            "name": "Archive, Upload",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/peloton-to-garmin.py",
@@ -37,7 +37,7 @@
             ],
         },
         {
-            "name": "Run, Retain, Archive",
+            "name": "Archive, Retain",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/peloton-to-garmin.py",
@@ -49,7 +49,7 @@
             ],
         },
         {
-            "name": "Run, Retain, Skip Download",
+            "name": "Skip Download, Retain",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/peloton-to-garmin.py",
@@ -60,7 +60,7 @@
             ],
         },
         {
-            "name": "Run, Archive",
+            "name": "Archive",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/peloton-to-garmin.py",
@@ -68,9 +68,10 @@
             "args": [
                 "-archive_files", "true",
                 "-archive_by_type", "true"
+            ]
         },
         {
-            "name": "Run, Upload, Archive",
+            "name": "Archive, Upload",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/peloton-to-garmin.py",
