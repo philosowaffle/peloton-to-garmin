@@ -97,6 +97,7 @@ There are multiple ways to configure values, the precedence order is:
 |[PELOTON] Email|-email EMAIL|P2G_PELOTON_EMAIL|Peloton email address|
 |[PELOTON] Password|-password PASWORD|P2G_PELOTON_PASS| Peloton password|
 |[PELOTON] NumActivities|-num #|P2G_NUM|Batch size of activities to grab at one time|
+|[PELOTON] WorkoutTypes|-workout_types &lt;types&gt;|P2G_WORKOUT_TYPES|If set, take only Peloton workouts of the specified types (see below)
 |[GARMIN] UploadEnabled|-garmin_enable_upload true/false|P2G_GARMIN_ENABLE_UPLOAD|Automatically upload to Garmin Connect|
 |[GARMIN] Email|-garmin_email EMAIL|P2G_GARMIN_EMAIL|Garmin Email|
 |[GARMIN] Password|-garmin_password PASSWORD|P2G_GARMIN_PASS|Garmin Password|
@@ -106,7 +107,6 @@ There are multiple ways to configure values, the precedence order is:
 |[DEBUG] PauseOnFinish|-pause_on_finish true/false|P2G_PAUSE_ON_FINISH|Do not automatically close the application on completion.|
 |[LOGGER] LogFile|-log|P2G_LOG|Log file path|
 |[LOGGER] LogLevel|-loglevel|P2G_LOG_LEVEL|DEBUG, INFO, ERROR|
-
 ### Command Line Arguments
 
 Usage:  
@@ -121,6 +121,19 @@ Examples:
         * `peloton-to-garmin.py -num 10`  
   * To pass your email and passowrd:  
         * `peloton-to-garmin.py -email you@email.com -password mypassword`  
+
+### Restricting Peloton workout types
+By default, all Peloton workouts are processed.  However, you can optionally filter for only specific types of workouts, such as only cycling and running; all other workouts will be skipped.
+
+Specify a comma-separated list of workout types you want to allow.  The values may be one or more of the following: cardio, circuit, cycling, meditation, running, strength, stretching, walking, yoga
+
+Example:
+`-workout_types cardio,cycling,running,strength`
+
+Use cases:
+* You take a wide variety of Peloton classes, including meditation and yoga, but you only want to upload cycling classes.
+* You want to avoid double-counting activities you already track directly on a Garmin device, such as outdoor running workouts.
+
 
 ## Supported Python/OS
 
