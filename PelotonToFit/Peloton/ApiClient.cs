@@ -1,7 +1,6 @@
 ﻿using Common;
 using Flurl.Http;
 using Peloton.Dto;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Peloton
@@ -25,9 +24,12 @@ namespace Peloton
 
 		public async Task InitAuthAsync()
 		{
-			using (Tracing.Source.StartActivity("PelotonAuth"))
-			{
-				var response = await $"{AuthBaseUrl}"
+			using var tracer = Tracing.Source.StartActivity(nameof(InitAuthAsync))?
+				.SetTag(Tracing.Category, Tracing.Http)?
+				.SetTag(Tracing.Route, AuthBaseUrl)?
+				.SetTag(Tracing.App, "peloton");
+
+			var response = await $"{AuthBaseUrl}"
 				.WithHeader("peloton-platform", "web")
 				.PostJsonAsync(new AuthRequest()
 				{
@@ -36,28 +38,36 @@ namespace Peloton
 				})
 				.ReceiveJson<AuthResponse>();
 
-				UserId = response.user_id;
-				SessionId = response.session_id;
-			}
+			UserId = response.user_id;
+			SessionId = response.session_id;
+
 		}
 
 		public Task<RecentWorkouts> GetWorkoutsAsync(int numWorkouts)
 		{
-			using (Tracing.Source.StartActivity("GetRecentWorkouts"))
+			using var tracer = Tracing.Source.StartActivity(nameof(GetWorkoutsAsync))?
+				.SetTag(Tracing.Category, Tracing.Http)?
+				.SetTag(Tracing.Route, $"{BaseUrl}/user/{UserId}/workouts")?
+				.SetTag(Tracing.App, "peloton");
+
+			return $"{BaseUrl}/user/{UserId}/workouts"
+			.WithCookie("peloton_session_id", SessionId)
+			.SetQueryParams(new
 			{
-				return $"{BaseUrl}/user/{UserId}/workouts"
-				.WithCookie("peloton_session_id", SessionId)
-				.SetQueryParams(new
-				{
-					limit = numWorkouts,
-					sort_by = "-created"
-				})
-				.GetJsonAsync<RecentWorkouts>();
-			}
+				limit = numWorkouts,
+				sort_by = "-created"
+			})
+			.GetJsonAsync<RecentWorkouts>();
 		}
 
 		public Task<Workout> GetWorkoutByIdAsync(string id)
 		{
+			using var tracer = Tracing.Source.StartActivity(nameof(GetWorkoutByIdAsync))?
+				.SetTag(Tracing.Category, Tracing.Http)?
+				.SetTag(Tracing.Route, $"{BaseUrl}/workout/{id}")?
+				.SetTag(Tracing.WorkoutId, id)?
+				.SetTag(Tracing.App, "peloton");
+
 			return $"{BaseUrl}/workout/{id}"
 				.WithCookie("peloton_session_id", SessionId)
 				.SetQueryParams(new
@@ -69,6 +79,12 @@ namespace Peloton
 
 		public Task<WorkoutSamples> GetWorkoutSamplesByIdAsync(string id)
 		{
+			using var tracer = Tracing.Source.StartActivity(nameof(GetWorkoutSamplesByIdAsync))?
+				.SetTag(Tracing.Category, Tracing.Http)?
+				.SetTag(Tracing.Route, $"{BaseUrl}/workout/{id}/performance_graph")?
+				.SetTag(Tracing.WorkoutId, id)?
+				.SetTag(Tracing.App, "peloton");
+
 			return $"{BaseUrl}/workout/{id}/performance_graph"
 				.WithCookie("peloton_session_id", SessionId)
 				.SetQueryParams(new
@@ -80,6 +96,12 @@ namespace Peloton
 
 		public Task<WorkoutSummary> GetWorkoutSummaryByIdAsync(string id)
 		{
+			using var tracer = Tracing.Source.StartActivity(nameof(GetWorkoutSummaryByIdAsync))?
+				.SetTag(Tracing.Category, Tracing.Http)?
+				.SetTag(Tracing.Route, $"{BaseUrl}/workout/{id}/summary")?
+				.SetTag(Tracing.WorkoutId, id)?
+				.SetTag(Tracing.App, "peloton");
+
 			return $"{BaseUrl}/workout/{id}/summary"
 				.WithCookie("peloton_session_id", SessionId)
 				.GetJsonAsync<WorkoutSummary>();

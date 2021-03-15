@@ -1,10 +1,12 @@
 ﻿using Common;
 using Dynastream.Fit;
 using Peloton.Dto;
+using Prometheus;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Metrics = Common.Metrics;
 
 namespace PelotonToFitConsole.Converter
 {
@@ -19,6 +21,14 @@ namespace PelotonToFitConsole.Converter
 
 		public ConversionDetails Convert(Workout workout, WorkoutSamples workoutSamples, WorkoutSummary workoutSummary, Configuration config)
 		{
+			using var metrics = Metrics.WorkoutConversionDuration
+										.WithLabels("fit")
+										.NewTimer();
+			using var tracing = Tracing.Source.StartActivity(nameof(Convert))?
+												.SetTag(Tracing.Category, Tracing.Default)?
+												.SetTag(Tracing.Format,Tracing.Fit)
+												.SetTag(Tracing.WorkoutId, workout.Id);
+
 			var output = new ConversionDetails() { Successful = true };
 
 			// MESSAGE ORDER MATTERS

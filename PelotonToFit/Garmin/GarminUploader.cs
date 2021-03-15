@@ -1,18 +1,27 @@
-﻿
-using Common;
+﻿using Common;
+using Prometheus;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Metrics = Common.Metrics;
 
 namespace Garmin
 {
 	public static class GarminUploader
 	{
-
 		public static bool UploadToGarmin(ICollection<string> filePaths, Configuration config)
 		{
+			if (!config.Garmin.Upload || !filePaths.Any())
+				return true;
+
+			using var metrics = Metrics.WorkoutUploadDuration
+								.WithLabels(filePaths.Count.ToString()).NewTimer();
+			using var tracer = Tracing.Source.StartActivity(nameof(UploadToGarmin))?
+								.SetTag(Tracing.Category, Tracing.Http)?
+								.SetTag(Tracing.App, "gupload");
+
 			ProcessStartInfo start = new ProcessStartInfo();
 			start.FileName = "gupload";
 
@@ -25,10 +34,10 @@ namespace Garmin
 				Console.WriteLine($"File Paths: {paths}");
 				Console.WriteLine($"Full command: {cmd.Replace(config.Garmin.Email, "**email**").Replace(config.Garmin.Password, "**password**")}");
 			}
-			
+
 			start.Arguments = cmd;
 			start.UseShellExecute = false;
-			start.CreateNoWindow = true; 
+			start.CreateNoWindow = true;
 			start.RedirectStandardOutput = true;
 			start.RedirectStandardError = true;
 			using (Process process = Process.Start(start))
@@ -48,6 +57,7 @@ namespace Garmin
 					}
 				}
 			}
+
 			return true;
 		}
 
