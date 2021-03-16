@@ -1,54 +1,9 @@
-﻿using System.Text.Json;
-using System;
+﻿using System;
 using System.IO;
 using System.Text.Json.Serialization;
 
 namespace Common
 {
-	public static class ConfigurationLoader
-	{
-		public static bool TryLoadConfigurationFile(out Configuration config)
-		{
-			config = new Configuration();
-
-			var configFilePath = Path.Join(Environment.CurrentDirectory, "configuration.local.json");
-			if (!File.Exists(configFilePath))
-			{
-				Console.Out.WriteLine($"Failed to find file: {configFilePath}");
-				Console.Out.WriteLine($"Creating file: {configFilePath}");
-				Console.Out.WriteLine();
-				Console.Out.WriteLine("***Please modify the file listed above with your configuration values and run the application again.***");
-				Console.Out.WriteLine();
-				File.WriteAllText(configFilePath, JsonSerializer.Serialize(config, new JsonSerializerOptions() { WriteIndented = true }));
-				return false;
-			}
-
-			try
-			{
-				using (var reader = new StreamReader(configFilePath))
-				{
-					config = JsonSerializer.Deserialize<Configuration>(reader.ReadToEnd(), new JsonSerializerOptions() { ReadCommentHandling = JsonCommentHandling.Skip });
-				}
-				
-				// write data back to the file so that any newly added config values exist for the future
-				if (config.DoNotEdit_ConfigVersion != Configuration.CurrentConfigVersion)
-				{
-					config.DoNotEdit_ConfigVersion = Configuration.CurrentConfigVersion;
-					File.WriteAllText(configFilePath, JsonSerializer.Serialize(config, new JsonSerializerOptions() { WriteIndented = true }));
-				}
-
-				return true;
-			}
-			catch (Exception e)
-			{
-				Console.Out.WriteLine($"Failed to parse: {configFilePath}");
-				Console.Out.WriteLine($"Exception is: {e.Message}");
-				Console.Out.Write(e);
-				return false;
-			}
-		}
-	}
-
 	public class Configuration
 	{
 		[JsonIgnore]
@@ -56,23 +11,19 @@ namespace Common
 
 		public Configuration()
 		{
-			Application = new ApplicationConfig() 
-			{
-				SyncHistoryDbPath = Path.Join(Environment.CurrentDirectory, "syncHistory.json")
-			};
-
-			Peloton = new PelotonConfig();
-			Garmin = new GarminConfig();
-			Observability = new ObservabilityConfig();
+			App = new App();
+			Peloton = new Peloton();
+			Garmin = new Garmin();
+			Observability = new Observability();
 
 			_configVersion = 0;
 		}
 
-		public ApplicationConfig Application { get; set; }
-		public PelotonConfig Peloton { get; set; }
-		public GarminConfig Garmin { get; set; }
+		public App App { get; set; }
+		public Peloton Peloton { get; set; }
+		public Garmin Garmin { get; set; }
 
-		public ObservabilityConfig Observability { get; set; }
+		public Observability Observability { get; set; }
 
 		private int? _configVersion = null;
 		public int DoNotEdit_ConfigVersion 
@@ -82,13 +33,19 @@ namespace Common
 		}
 	}
 
-	public class ApplicationConfig
+	public class App
 	{
-		/// <summary>
-		/// Test comment.
-		/// </summary>
-		public Severity DebugSeverity { get; set; }
+		public App()
+		{
+			OutputDirectory = Path.Join(Environment.CurrentDirectory, "output");
+			SyncHistoryDbPath = Path.Join(Environment.CurrentDirectory, "syncHistory.json");
+
+			EnablePolling = true;
+			PollingIntervalSeconds = 3600;
+		}
+
 		public string OutputDirectory { get; set; }
+		
 		public string SyncHistoryDbPath { get; set; }
 		public bool EnablePolling { get; set; }
 		public int PollingIntervalSeconds { get; set; }
@@ -97,14 +54,19 @@ namespace Common
 		public string FitDirectory => Path.Join(OutputDirectory, "fit");
 	}
 
-	public class PelotonConfig
+	public class Peloton
 	{
+		public Peloton()
+		{
+			NumWorkoutsToDownload = 5;
+		}
+
 		public string Email { get; set; }
 		public string Password { get; set; }
 		public int NumWorkoutsToDownload { get; set; }
 	}
 
-	public class GarminConfig
+	public class Garmin
 	{
 		public string Email { get; set; }
 		public string Password { get; set; }
@@ -112,26 +74,29 @@ namespace Common
 		public bool IgnoreSyncHistory { get; set; }
 	}
 
-	public class ObservabilityConfig
+	public class Observability
 	{
-		public ObservabilityConfig()
+		public Observability()
 		{
-			Prometheus = new PrometheusConfig();
-			Jaeger = new JaegerConfig();
+			Prometheus = new Prometheus();
+			Jaeger = new Jaeger();
+			LogLevel = Severity.None;
 		}
 
-		public PrometheusConfig Prometheus { get; set; }
-		public JaegerConfig Jaeger { get; set; }
+		public Severity LogLevel { get; set; }
+
+		public Prometheus Prometheus { get; set; }
+		public Jaeger Jaeger { get; set; }
 	}
 
-	public class JaegerConfig
+	public class Jaeger
 	{
 		public bool Enabled { get; set; }
 		public string AgentHost { get; set; }
 		public int? AgentPort { get; set; }
 	}
 
-	public class PrometheusConfig
+	public class Prometheus
 	{
 		public bool Enabled { get; set; }
 		public int? Port { get; set; }

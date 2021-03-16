@@ -10,14 +10,14 @@ namespace Common
 		{
 			Func<FlurlCall, Task> beforeCallAsync = delegate (FlurlCall call)
 			{
-				if (config.Application.DebugSeverity == Severity.Debug)
+				if (config.Observability.LogLevel == Severity.Debug)
 					Console.Out.WriteLine($"{call.HttpRequestMessage.Method} {call.HttpRequestMessage.RequestUri} {call.HttpRequestMessage.Content}");
 				return Task.CompletedTask;
 			};
 
 			Func<FlurlCall, Task> afterCallAsync = async delegate (FlurlCall call)
 			{
-				if (config.Application.DebugSeverity == Severity.Debug)
+				if (config.Observability.LogLevel == Severity.Debug)
 					Console.Out.WriteLine($"{call.HttpResponseMessage.StatusCode} {await call.HttpResponseMessage.Content.ReadAsStringAsync()}");
 
 				if (config.Observability.Prometheus.Enabled)

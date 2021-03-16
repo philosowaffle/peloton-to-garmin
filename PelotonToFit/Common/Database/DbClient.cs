@@ -15,11 +15,11 @@ namespace Common.Database
 			using var metrics = Metrics.DbActionDuration
 										.WithLabels("using", "syncHistoryTable")
 										.NewTimer();
-			using var tracing = Tracing.Source.StartActivity("LoadTable")?
+			using var tracing = Tracing.Source?.StartActivity("LoadTable")?
 										.SetTag(Tracing.Table, "SyncHistoryItem")?
 										.SetTag(Tracing.Category, Tracing.Db);
 
-				_database = new DataStore(configuration.Application.SyncHistoryDbPath);
+				_database = new DataStore(configuration.App.SyncHistoryDbPath);
 				_syncHistoryTable = new Lazy<IDocumentCollection<SyncHistoryItem>>(() => _database.GetCollection<SyncHistoryItem>());
 		}
 
@@ -28,7 +28,7 @@ namespace Common.Database
 			using var metrics = Metrics.DbActionDuration
 										.WithLabels("select", "workoutId")
 										.NewTimer();
-			using var tracing = Tracing.Source.StartActivity("select")?
+			using var tracing = Tracing.Source?.StartActivity("select")?
 											.SetTag(Tracing.Table, "SyncHistoryItem")?
 											.SetTag(Tracing.WorkoutId, id)?
 											.SetTag(Tracing.Category, Tracing.Db);
@@ -41,7 +41,7 @@ namespace Common.Database
 			using var metrics = Metrics.DbActionDuration
 										.WithLabels("upsert", "workoutId")
 										.NewTimer();
-			using var tracing = Tracing.Source.StartActivity("upsert")?
+			using var tracing = Tracing.Source?.StartActivity("upsert")?
 											.SetTag(Tracing.Table, "SyncHistoryItem")?
 											.SetTag(Tracing.WorkoutId, item.Id)?
 											.SetTag(Tracing.Category, Tracing.Db);

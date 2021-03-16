@@ -24,7 +24,7 @@ namespace PelotonToFitConsole.Converter
 			using var metrics = Metrics.WorkoutConversionDuration
 										.WithLabels("fit")
 										.NewTimer();
-			using var tracing = Tracing.Source.StartActivity(nameof(Convert))?
+			using var tracing = Tracing.Source?.StartActivity(nameof(Convert))?
 												.SetTag(Tracing.Category, Tracing.Default)?
 												.SetTag(Tracing.Format,Tracing.Fit)
 												.SetTag(Tracing.WorkoutId, workout.Id);
@@ -129,10 +129,10 @@ namespace PelotonToFitConsole.Converter
 
 			messages.Add(activityMesg);
 
-			if (!Directory.Exists(config.Application.FitDirectory))
-				Directory.CreateDirectory(config.Application.FitDirectory);
+			if (!Directory.Exists(config.App.FitDirectory))
+				Directory.CreateDirectory(config.App.FitDirectory);
 
-			using (FileStream fitDest = new FileStream(Path.Join(config.Application.FitDirectory, $"{title}.fit"), FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
+			using (FileStream fitDest = new FileStream(Path.Join(config.App.FitDirectory, $"{title}.fit"), FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
 			{
 				Encode encoder = new Encode(ProtocolVersion.V20);
 				encoder.Open(fitDest);
@@ -142,7 +142,7 @@ namespace PelotonToFitConsole.Converter
 				}
 				encoder.Close();
 
-				if (config.Application.DebugSeverity == Severity.Info)
+				if (config.Observability.LogLevel == Severity.Info)
 					Console.WriteLine($"Encoded FIT file {fitDest.Name}");
 
 				output.Path = fitDest.Name;
