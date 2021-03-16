@@ -1,26 +1,32 @@
 ﻿using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using System;
+using Serilog;
 using System.Diagnostics;
 
 namespace Common
 {
-	public static class Tracing
+	public static class TagKey
 	{
-		public static ActivitySource Source;
-
 		public static string Category = "category";
 		public static string Route = "route";
 		public static string App = "app";
 		public static string WorkoutId = "workout_id";
 		public static string Table = "table";
 		public static string Format = "format";
+	}
 
-		public static string Default = "default";
+	public static class TagValue 
+	{
+		public static string Default = "app";
 		public static string Db = "db";
 		public static string Http = "http";
 		public static string Fit = "fit";
+	}
+
+	public static class Tracing
+	{
+		public static ActivitySource Source;
 
 		public static TracerProvider EnableTracing(Jaeger config)
 		{
@@ -29,7 +35,7 @@ namespace Common
 			{
 				tracing = Sdk.CreateTracerProviderBuilder()
 							.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("p2g"))
-							.AddSource("P2G.Root")
+							.AddSource("ROOT")
 							.AddJaegerExporter(o =>
 							{
 								o.AgentHost = config.AgentHost;
@@ -37,10 +43,26 @@ namespace Common
 							})
 							.Build();
 
-				Console.Out.WriteLine($"Tracing started and exporting to: http://{config.AgentHost}:{config.AgentPort}");
+				Log.Information("Tracing started and exporting to: http://{0}:{1}", config.AgentHost, config.AgentPort);
 			}
 
 			return tracing;
+		}
+
+		public static Activity Trace(string name, string category = "app")
+		{
+			return Source?.StartActivity(name)?.SetTag(TagKey.Category, category)
+					?? new Activity(name).SetTag(TagKey.Category, category);
+		}
+
+		public static Activity WithWorkoutId(this Activity activity, string workoutId)
+		{
+			return activity.SetTag(TagKey.WorkoutId, workoutId);
+		}
+
+		public static Activity WithTable(this Activity activity, string table)
+		{
+			return activity.SetTag(TagKey.Table, table);
 		}
 
 		public static bool ValidateConfig(Observability config)
@@ -50,13 +72,13 @@ namespace Common
 
 			if (string.IsNullOrEmpty(config.Jaeger.AgentHost))
 			{
-				Console.Out.WriteLine($"Agent Host must be set: {nameof(config)}.{nameof(config.Jaeger.AgentHost)}.");
+				Log.Error("Agent Host must be set: {0}.{1}.", nameof(config), nameof(config.Jaeger.AgentHost));
 				return false;
 			}
 
 			if (config.Jaeger.AgentPort is null || config.Jaeger.AgentPort <= 0)
 			{
-				Console.Out.WriteLine($"Agent Port must be set: {nameof(config)}.{nameof(config.Jaeger.AgentPort)}.");
+				Log.Error("Agent Port must be set: {0}.{1}.", nameof(config), nameof(config.Jaeger.AgentPort));
 				return false;
 			}
 

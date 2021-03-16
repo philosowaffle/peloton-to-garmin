@@ -1,4 +1,5 @@
 ﻿using Flurl.Http;
+using Serilog;
 using System;
 using System.Threading.Tasks;
 
@@ -10,15 +11,13 @@ namespace Common
 		{
 			Func<FlurlCall, Task> beforeCallAsync = delegate (FlurlCall call)
 			{
-				if (config.Observability.LogLevel == Severity.Debug)
-					Console.Out.WriteLine($"{call.HttpRequestMessage.Method} {call.HttpRequestMessage.RequestUri} {call.HttpRequestMessage.Content}");
+				Log.Debug("{0} {1} {2}", call.HttpRequestMessage.Method, call.HttpRequestMessage.RequestUri, call.HttpRequestMessage.Content);
 				return Task.CompletedTask;
 			};
 
 			Func<FlurlCall, Task> afterCallAsync = async delegate (FlurlCall call)
 			{
-				if (config.Observability.LogLevel == Severity.Debug)
-					Console.Out.WriteLine($"{call.HttpResponseMessage.StatusCode} {await call.HttpResponseMessage.Content.ReadAsStringAsync()}");
+				Log.Debug("{0} {1}", call.HttpResponseMessage.StatusCode, await call.HttpResponseMessage.Content.ReadAsStringAsync());
 
 				if (config.Observability.Prometheus.Enabled)
 				{
@@ -37,8 +36,7 @@ namespace Common
 
 			Func<FlurlCall, Task> onErrorAsync = async delegate (FlurlCall call)
 			{
-				Console.Out.WriteLine($"HTTP Call Failed.");
-				Console.Out.WriteLine($"{call.HttpResponseMessage.StatusCode} {await call.HttpResponseMessage.Content.ReadAsStringAsync()}");
+				Log.Error("Http Call Failed. {0} {1}", call.HttpResponseMessage.StatusCode, await call.HttpResponseMessage.Content.ReadAsStringAsync());
 
 				if (config.Observability.Prometheus.Enabled)
 				{

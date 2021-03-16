@@ -1,21 +1,45 @@
 {
-    "Application": {
-      "DebugSeverity": 0,
-      "OutputDirectory": "/output",
-      "ProcessedHistoryFilePath": null,
-      "EnablePolling": true,
-      "PollingIntervalSeconds": 3600,
-      "SyncHistoryDbPath": "syncHistory.json"
+  "App": {
+    "OutputDirectory": "./Output",
+    "SyncHistoryDbPath": "./Output/syncHistory.json",
+    "EnablePolling": true,
+    "PollingIntervalSeconds": 30
+  },
+
+  "Peloton": {
+    "Email": "peloton@gmail.com",
+    "Password": "peloton",
+    "NumWorkoutsToDownload": 1
+  },
+
+  "Garmin": {
+    "Email": "garmin@gmail.com",
+    "Password": "garmin",
+    "Upload": false,
+    "IgnoreSyncHistory": false
+  },
+
+  "Observability": {
+    "Prometheus": {
+      "Enabled": false,
+      "Port": 4000
     },
-    "Peloton": {
-      "Email": "fillInYourEmail",
-      "Password": null,
-      "NumWorkoutsToDownload": 5
+
+    "Jaeger": {
+      "Enabled": false,
+      "AgentHost": "localhost",
+      "AgentPort": 6831
     },
-    "Garmin": {
-      "Email": "fillInYourEmail",
-      "Password": null,
-      "Upload": true
-    },
-    "DoNotEdit_ConfigVersion": 1
-  }
+
+    "Serilog": {
+        "Using":  [ "Serilog.Sinks.Console", "Serilog.Sinks.RollingFile" ],
+        "MinimumLevel": "Information",
+        "WriteTo": [
+          { "Name": "Console" },
+          { "Name": "File", "Args": { "path": "./Output/log.txt" } }
+        ]
+      },
+  },
+
+  "DoNotEdit_ConfigVersion": 2
+}

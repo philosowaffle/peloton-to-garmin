@@ -2,6 +2,7 @@
 using Dynastream.Fit;
 using Peloton.Dto;
 using Prometheus;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,10 +25,9 @@ namespace PelotonToFitConsole.Converter
 			using var metrics = Metrics.WorkoutConversionDuration
 										.WithLabels("fit")
 										.NewTimer();
-			using var tracing = Tracing.Source?.StartActivity(nameof(Convert))?
-												.SetTag(Tracing.Category, Tracing.Default)?
-												.SetTag(Tracing.Format,Tracing.Fit)
-												.SetTag(Tracing.WorkoutId, workout.Id);
+			using var tracing = Tracing.Trace("Convert")
+										.WithWorkoutId(workout.Id)
+										.SetTag(TagKey.Format, TagValue.Fit);
 
 			var output = new ConversionDetails() { Successful = true };
 
@@ -142,8 +142,7 @@ namespace PelotonToFitConsole.Converter
 				}
 				encoder.Close();
 
-				if (config.Observability.LogLevel == Severity.Info)
-					Console.WriteLine($"Encoded FIT file {fitDest.Name}");
+				Log.Information("Encoded FIT file {0}", fitDest.Name);
 
 				output.Path = fitDest.Name;
 			}
@@ -184,10 +183,10 @@ namespace PelotonToFitConsole.Converter
 		}
 		private static void Write(object sender, MesgEventArgs e)
 		{
-			Console.Out.WriteLine($"{e.mesg.Name}::");
+			Log.Debug($"{e.mesg.Name}::");
 			foreach (var f in e.mesg.Fields)
 			{
-				Console.Out.WriteLine($"{f.Name}::{f.GetValue()}");
+				Log.Debug($"{f.Name}::{f.GetValue()}");
 			}
 		}
 
@@ -195,11 +194,11 @@ namespace PelotonToFitConsole.Converter
 		{
 			var lapmesg = e.mesg as LapMesg;
 
-			Console.Out.WriteLine("LAP::");
-			Console.Out.WriteLine($"{lapmesg.GetWktStepIndex()}");
+			Log.Debug("LAP::");
+			Log.Debug($"{lapmesg.GetWktStepIndex()}");
 			foreach (var f in lapmesg.Fields)
 			{
-				Console.Out.WriteLine($"{f.Name}:{f.GetValue()}");
+				Log.Debug($"{f.Name}:{f.GetValue()}");
 			}
 		}
 
@@ -207,10 +206,10 @@ namespace PelotonToFitConsole.Converter
 		{
 			var lapmesg = e.mesg as WorkoutMesg;
 
-			Console.Out.WriteLine("WORKOUT::");
+			Log.Debug("WORKOUT::");
 			foreach (var f in lapmesg.Fields)
 			{
-				Console.Out.WriteLine($"{f.Name}:{f.GetValue()}");
+				Log.Debug($"{f.Name}:{f.GetValue()}");
 			}
 		}
 
@@ -218,10 +217,10 @@ namespace PelotonToFitConsole.Converter
 		{
 			var lapmesg = e.mesg as WorkoutStepMesg;
 
-			Console.Out.WriteLine("WORKOUTSTEP::");
+			Log.Debug("WORKOUTSTEP::");
 			foreach (var f in lapmesg.Fields)
 			{
-				Console.Out.WriteLine($"{f.Name}:{f.GetValue()}");
+				Log.Debug($"{f.Name}:{f.GetValue()}");
 			}
 		}
 

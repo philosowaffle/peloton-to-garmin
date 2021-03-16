@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Peloton;
 using PelotonToFitConsole.Converter;
 using Prometheus;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -34,39 +35,51 @@ namespace PelotonToFitConsole
 			configProviders.GetSection(nameof(Garmin)).Bind(config.Garmin);
 			configProviders.GetSection(nameof(Observability)).Bind(config.Observability);
 
-			// TODO: Actually Verify Configuration validation
-			GarminUploader.ValidateConfig(config.Garmin);
-			Metrics.ValidateConfig(config.Observability);
-			Tracing.ValidateConfig(config.Observability);
+			// TODO: document how to configure this and which sinks are supported
+			// https://github.com/serilog/serilog-settings-configuration
+			Log.Logger = new LoggerConfiguration()
+				.ReadFrom.Configuration(configProviders, sectionName: $"{nameof(Observability)}:Serilog")
+				.CreateLogger();
 
-			using var metrics = Metrics.EnableMetricsServer(config.Observability.Prometheus);
-			using var tracing = Tracing.EnableTracing(config.Observability.Jaeger);
-			using var tracingSource = new ActivitySource("P2G.ROOT");
-
-			FlurlConfiguration.Configure(config);
-
-			if (config.App.EnablePolling)
+			try
 			{
-				while (true)
+				// TODO: Actually Verify Configuration validation
+				GarminUploader.ValidateConfig(config.Garmin);
+				Metrics.ValidateConfig(config.Observability);
+				Tracing.ValidateConfig(config.Observability);
+
+				using var metrics = Metrics.EnableMetricsServer(config.Observability.Prometheus);
+				using var tracing = Tracing.EnableTracing(config.Observability.Jaeger);
+				using var tracingSource = new ActivitySource("ROOT");
+
+				FlurlConfiguration.Configure(config);
+
+				if (config.App.EnablePolling)
 				{
-					Metrics.PollsCounter.Inc();
-					using(Metrics.PollDuration.NewTimer())
+					while (true)
+					{
+						Metrics.PollsCounter.Inc();
+						using (Metrics.PollDuration.NewTimer())
+							RunAsync(config).GetAwaiter().GetResult();
+						Log.Information("Sleeping for {0} seconds...", config.App.PollingIntervalSeconds);
+						Thread.Sleep(config.App.PollingIntervalSeconds * 1000);
+					}
+				}
+				else
+				{
+					using (Metrics.PollDuration.NewTimer())
 						RunAsync(config).GetAwaiter().GetResult();
-					Console.Out.WriteLine($"Sleeping for {config.App.PollingIntervalSeconds} seconds...");
-					Thread.Sleep(config.App.PollingIntervalSeconds * 1000);
 				}
 			}
-			else
+			finally
 			{
-				using (Metrics.PollDuration.NewTimer())
-					RunAsync(config).GetAwaiter().GetResult();
+				Log.CloseAndFlush();
 			}
 		}
 
 		static async Task RunAsync(Configuration config)
 		{
-			using var activity = Tracing.Source?.StartActivity(nameof(RunAsync))?
-												.SetTag(Tracing.Category, Tracing.Default);
+			using var activity = Tracing.Trace(nameof(RunAsync));
 
 			var converted = new List<ConversionDetails>();
 			var db = new DbClient(config);
@@ -77,21 +90,18 @@ namespace PelotonToFitConsole
 
 			var workoutsToConvert = recentWorkouts.data.Where(w => w.Status == "COMPLETE");
 			Metrics.WorkoutsToConvert.Set(workoutsToConvert.Count());
-			using var processWorkoutsSpan = Tracing.Source?.StartActivity("ProcessingWorkouts")?
-															.SetTag(Tracing.Category, Tracing.Default);
+			using var processWorkoutsSpan = Tracing.Trace("ProcessingWorkouts");
 
 			foreach (var recentWorkout in workoutsToConvert)
 			{
 				Metrics.WorkoutsToConvert.Dec();
-				using var processWorkoutSpan = Tracing.Source?.StartActivity("ProcessingWorkout")?
-															.SetTag(Tracing.Category, Tracing.Default)?
-															.SetTag(Tracing.WorkoutId, recentWorkout.Id);
+				using var processWorkoutSpan = Tracing.Trace("ProcessingWorkout").WithWorkoutId(recentWorkout.Id);
 
 				SyncHistoryItem syncRecord = db.Get(recentWorkout.Id);
 
 				if ((syncRecord?.ConvertedToFit ?? false) && config.Garmin.IgnoreSyncHistory == false)
 				{
-					if (config.Observability.LogLevel != Severity.None) Console.Out.Write($"Workout {recentWorkout.Id} already synced, skipping...");
+					Log.Information("Workout {0} already synced, skipping.", recentWorkout.Id);
 					continue;
 				}
 
@@ -120,7 +130,7 @@ namespace PelotonToFitConsole
 				}
 				else
 				{
-					Console.Out.WriteLine($"Failed to convert: {convertedResponse}");
+					Log.Error("Failed to convert: {0}", convertedResponse);
 				}
 
 				db.Upsert(syncRecord);
