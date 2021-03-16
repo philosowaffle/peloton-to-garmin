@@ -1,5 +1,6 @@
 ﻿using Common;
 using Prometheus;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,9 +19,8 @@ namespace Garmin
 
 			using var metrics = Metrics.WorkoutUploadDuration
 								.WithLabels(filePaths.Count.ToString()).NewTimer();
-			using var tracer = Tracing.Source.StartActivity(nameof(UploadToGarmin))?
-								.SetTag(Tracing.Category, Tracing.Http)?
-								.SetTag(Tracing.App, "gupload");
+			using var tracer = Tracing.Trace(nameof(UploadToGarmin), TagValue.Http)
+										.SetTag(TagKey.App, "gupload");
 
 			ProcessStartInfo start = new ProcessStartInfo();
 			start.FileName = "gupload";
@@ -28,12 +28,7 @@ namespace Garmin
 			var paths = String.Join(" ", filePaths.Select(p => $"\"{p}\""));
 			var cmd = $"-u {config.Garmin.Email} -p {config.Garmin.Password} {paths}";
 
-			if (config.Observability.LogLevel == Severity.Debug)
-			{
-				Console.WriteLine("Uploading to Garmin with the following parameters:");
-				Console.WriteLine($"File Paths: {paths}");
-				Console.WriteLine($"Full command: {cmd.Replace(config.Garmin.Email, "**email**").Replace(config.Garmin.Password, "**password**")}");
-			}
+			Log.Debug("Uploading to Garmin with the following parameters: {0} {1}", paths, cmd.Replace(config.Garmin.Email, "**email**").Replace(config.Garmin.Password, "**password**"));
 
 			start.Arguments = cmd;
 			start.UseShellExecute = false;
@@ -47,12 +42,11 @@ namespace Garmin
 					string stderr = process.StandardError.ReadToEnd();
 					string result = reader.ReadToEnd();
 
-					if (config.Observability.LogLevel == Severity.Debug)
-						Console.Out.WriteLine(result);
+					Log.Debug(result);
 
 					if (!string.IsNullOrEmpty(stderr))
 					{
-						Console.Out.WriteLine(stderr);
+						Log.Error(stderr);
 						return false;
 					}
 				}
@@ -67,13 +61,13 @@ namespace Garmin
 
 			if (string.IsNullOrEmpty(config.Email))
 			{
-				Console.Out.WriteLine($"Garmin Email required, check your configuration {nameof(Garmin)}.{nameof(config.Email)} is set.");
+				Log.Error("Garmin Email required, check your configuration {0}.{1} is set.", nameof(Garmin), nameof(config.Email));
 				return false;
 			}
 
 			if (string.IsNullOrEmpty(config.Password))
 			{
-				Console.Out.WriteLine($"Garmin Password required, check your configuration {nameof(Garmin)}.{nameof(config.Password)} is set.");
+				Log.Error("Garmin Password required, check your configuration {0}.{1} is set.", nameof(Garmin), nameof(config.Password));
 				return false;
 			}
 

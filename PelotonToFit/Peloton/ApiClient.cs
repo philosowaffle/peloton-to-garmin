@@ -24,10 +24,9 @@ namespace Peloton
 
 		public async Task InitAuthAsync()
 		{
-			using var tracer = Tracing.Source?.StartActivity(nameof(InitAuthAsync))?
-				.SetTag(Tracing.Category, Tracing.Http)?
-				.SetTag(Tracing.Route, AuthBaseUrl)?
-				.SetTag(Tracing.App, "peloton");
+			using var tracer = Tracing.Trace(nameof(InitAuthAsync), TagValue.Http)
+										.SetTag(TagKey.Route, AuthBaseUrl)?
+										.SetTag(TagKey.App, "peloton");
 
 			var response = await $"{AuthBaseUrl}"
 				.WithHeader("peloton-platform", "web")
@@ -45,10 +44,9 @@ namespace Peloton
 
 		public Task<RecentWorkouts> GetWorkoutsAsync(int numWorkouts)
 		{
-			using var tracer = Tracing.Source?.StartActivity(nameof(GetWorkoutsAsync))?
-				.SetTag(Tracing.Category, Tracing.Http)?
-				.SetTag(Tracing.Route, $"{BaseUrl}/user/{UserId}/workouts")?
-				.SetTag(Tracing.App, "peloton");
+			using var tracer = Tracing.Trace(nameof(GetWorkoutsAsync), TagValue.Http)
+										.SetTag(TagKey.Route, $"{BaseUrl}/user/{UserId}/workouts")?
+										.SetTag(TagKey.App, "peloton");
 
 			return $"{BaseUrl}/user/{UserId}/workouts"
 			.WithCookie("peloton_session_id", SessionId)
@@ -62,11 +60,10 @@ namespace Peloton
 
 		public Task<Workout> GetWorkoutByIdAsync(string id)
 		{
-			using var tracer = Tracing.Source?.StartActivity(nameof(GetWorkoutByIdAsync))?
-				.SetTag(Tracing.Category, Tracing.Http)?
-				.SetTag(Tracing.Route, $"{BaseUrl}/workout/{id}")?
-				.SetTag(Tracing.WorkoutId, id)?
-				.SetTag(Tracing.App, "peloton");
+			using var tracer = Tracing.Trace(nameof(GetWorkoutByIdAsync), TagValue.Http)
+										.WithWorkoutId(id)
+										.SetTag(TagKey.Route, $"{BaseUrl}/workout/{id}")
+										.SetTag(TagKey.App, "peloton");
 
 			return $"{BaseUrl}/workout/{id}"
 				.WithCookie("peloton_session_id", SessionId)
@@ -79,11 +76,10 @@ namespace Peloton
 
 		public Task<WorkoutSamples> GetWorkoutSamplesByIdAsync(string id)
 		{
-			using var tracer = Tracing.Source?.StartActivity(nameof(GetWorkoutSamplesByIdAsync))?
-				.SetTag(Tracing.Category, Tracing.Http)?
-				.SetTag(Tracing.Route, $"{BaseUrl}/workout/{id}/performance_graph")?
-				.SetTag(Tracing.WorkoutId, id)?
-				.SetTag(Tracing.App, "peloton");
+			using var tracer = Tracing.Trace(nameof(GetWorkoutSamplesByIdAsync), TagValue.Http)
+										.WithWorkoutId(id)
+										.SetTag(TagKey.Route, $"{BaseUrl}/workout/{id}/performance_graph")
+										.SetTag(TagKey.App, "peloton");
 
 			return $"{BaseUrl}/workout/{id}/performance_graph"
 				.WithCookie("peloton_session_id", SessionId)
@@ -96,11 +92,10 @@ namespace Peloton
 
 		public Task<WorkoutSummary> GetWorkoutSummaryByIdAsync(string id)
 		{
-			using var tracer = Tracing.Source?.StartActivity(nameof(GetWorkoutSummaryByIdAsync))?
-				.SetTag(Tracing.Category, Tracing.Http)?
-				.SetTag(Tracing.Route, $"{BaseUrl}/workout/{id}/summary")?
-				.SetTag(Tracing.WorkoutId, id)?
-				.SetTag(Tracing.App, "peloton");
+			using var tracer = Tracing.Trace(nameof(GetWorkoutSummaryByIdAsync), TagValue.Http)
+										.WithWorkoutId(id)
+										.SetTag(TagKey.Route, $"{BaseUrl}/workout/{id}/summary")
+										.SetTag(TagKey.App, "peloton");
 
 			return $"{BaseUrl}/workout/{id}/summary"
 				.WithCookie("peloton_session_id", SessionId)

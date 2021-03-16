@@ -15,12 +15,10 @@ namespace Common.Database
 			using var metrics = Metrics.DbActionDuration
 										.WithLabels("using", "syncHistoryTable")
 										.NewTimer();
-			using var tracing = Tracing.Source?.StartActivity("LoadTable")?
-										.SetTag(Tracing.Table, "SyncHistoryItem")?
-										.SetTag(Tracing.Category, Tracing.Db);
+			using var tracing = Tracing.Trace("LoadTable", TagValue.Db).WithWorkoutId("SyncHistoryItem");
 
-				_database = new DataStore(configuration.App.SyncHistoryDbPath);
-				_syncHistoryTable = new Lazy<IDocumentCollection<SyncHistoryItem>>(() => _database.GetCollection<SyncHistoryItem>());
+			_database = new DataStore(configuration.App.SyncHistoryDbPath);
+			_syncHistoryTable = new Lazy<IDocumentCollection<SyncHistoryItem>>(() => _database.GetCollection<SyncHistoryItem>());
 		}
 
 		public SyncHistoryItem Get(string id)
@@ -28,10 +26,9 @@ namespace Common.Database
 			using var metrics = Metrics.DbActionDuration
 										.WithLabels("select", "workoutId")
 										.NewTimer();
-			using var tracing = Tracing.Source?.StartActivity("select")?
-											.SetTag(Tracing.Table, "SyncHistoryItem")?
-											.SetTag(Tracing.WorkoutId, id)?
-											.SetTag(Tracing.Category, Tracing.Db);
+			using var tracing = Tracing.Trace("select", TagValue.Db)
+										.WithTable("SyncHistoryItem")
+										.WithWorkoutId(id);
 
 				return _syncHistoryTable.Value.AsQueryable().Where(i => i.Id == id).FirstOrDefault();
 		}
@@ -41,10 +38,9 @@ namespace Common.Database
 			using var metrics = Metrics.DbActionDuration
 										.WithLabels("upsert", "workoutId")
 										.NewTimer();
-			using var tracing = Tracing.Source?.StartActivity("upsert")?
-											.SetTag(Tracing.Table, "SyncHistoryItem")?
-											.SetTag(Tracing.WorkoutId, item.Id)?
-											.SetTag(Tracing.Category, Tracing.Db);
+			using var tracing = Tracing.Trace("upsert", TagValue.Db)?
+											.WithTable("SyncHistoryItem")
+											.WithWorkoutId(item.Id);
 
 			_syncHistoryTable.Value.ReplaceOne(item.Id, item, upsert: true);
 		}
