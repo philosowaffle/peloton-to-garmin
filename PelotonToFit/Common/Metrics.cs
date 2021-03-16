@@ -37,7 +37,21 @@ namespace Common
 			LabelNames = new[] { "action", "queryName" }
 		});
 
-		public static bool ValidateConfig(ObservabilityConfig config)
+		public static IMetricServer EnableMetricsServer(Prometheus config)
+		{
+			IMetricServer metricsServer = null;
+			if (config.Enabled)
+			{
+				var port = config.Port ?? 4000;
+				metricsServer = new KestrelMetricServer(port: port);
+				metricsServer.Start();
+				Console.Out.WriteLine($"Metrics Server started and listening on: http://localhost:{port}/metrics");
+			}
+
+			return metricsServer;
+		}
+
+		public static bool ValidateConfig(Observability config)
 		{
 			if (!config.Prometheus.Enabled)
 				return true;

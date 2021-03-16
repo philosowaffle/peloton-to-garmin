@@ -1,4 +1,7 @@
-﻿using System;
+﻿using OpenTelemetry;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using System;
 using System.Diagnostics;
 
 namespace Common
@@ -18,9 +21,29 @@ namespace Common
 		public static string Db = "db";
 		public static string Http = "http";
 		public static string Fit = "fit";
-		
 
-		public static bool ValidateConfig(ObservabilityConfig config)
+		public static TracerProvider EnableTracing(Jaeger config)
+		{
+			TracerProvider tracing = null;
+			if (config.Enabled)
+			{
+				tracing = Sdk.CreateTracerProviderBuilder()
+							.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("p2g"))
+							.AddSource("P2G.Root")
+							.AddJaegerExporter(o =>
+							{
+								o.AgentHost = config.AgentHost;
+								o.AgentPort = config.AgentPort.GetValueOrDefault();
+							})
+							.Build();
+
+				Console.Out.WriteLine($"Tracing started and exporting to: http://{config.AgentHost}:{config.AgentPort}");
+			}
+
+			return tracing;
+		}
+
+		public static bool ValidateConfig(Observability config)
 		{
 			if (!config.Jaeger.Enabled)
 				return true;

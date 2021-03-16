@@ -24,7 +24,7 @@ namespace Peloton
 
 		public async Task InitAuthAsync()
 		{
-			using var tracer = Tracing.Source.StartActivity(nameof(InitAuthAsync))?
+			using var tracer = Tracing.Source?.StartActivity(nameof(InitAuthAsync))?
 				.SetTag(Tracing.Category, Tracing.Http)?
 				.SetTag(Tracing.Route, AuthBaseUrl)?
 				.SetTag(Tracing.App, "peloton");
@@ -45,7 +45,7 @@ namespace Peloton
 
 		public Task<RecentWorkouts> GetWorkoutsAsync(int numWorkouts)
 		{
-			using var tracer = Tracing.Source.StartActivity(nameof(GetWorkoutsAsync))?
+			using var tracer = Tracing.Source?.StartActivity(nameof(GetWorkoutsAsync))?
 				.SetTag(Tracing.Category, Tracing.Http)?
 				.SetTag(Tracing.Route, $"{BaseUrl}/user/{UserId}/workouts")?
 				.SetTag(Tracing.App, "peloton");
@@ -62,7 +62,7 @@ namespace Peloton
 
 		public Task<Workout> GetWorkoutByIdAsync(string id)
 		{
-			using var tracer = Tracing.Source.StartActivity(nameof(GetWorkoutByIdAsync))?
+			using var tracer = Tracing.Source?.StartActivity(nameof(GetWorkoutByIdAsync))?
 				.SetTag(Tracing.Category, Tracing.Http)?
 				.SetTag(Tracing.Route, $"{BaseUrl}/workout/{id}")?
 				.SetTag(Tracing.WorkoutId, id)?
@@ -79,7 +79,7 @@ namespace Peloton
 
 		public Task<WorkoutSamples> GetWorkoutSamplesByIdAsync(string id)
 		{
-			using var tracer = Tracing.Source.StartActivity(nameof(GetWorkoutSamplesByIdAsync))?
+			using var tracer = Tracing.Source?.StartActivity(nameof(GetWorkoutSamplesByIdAsync))?
 				.SetTag(Tracing.Category, Tracing.Http)?
 				.SetTag(Tracing.Route, $"{BaseUrl}/workout/{id}/performance_graph")?
 				.SetTag(Tracing.WorkoutId, id)?
@@ -96,7 +96,7 @@ namespace Peloton
 
 		public Task<WorkoutSummary> GetWorkoutSummaryByIdAsync(string id)
 		{
-			using var tracer = Tracing.Source.StartActivity(nameof(GetWorkoutSummaryByIdAsync))?
+			using var tracer = Tracing.Source?.StartActivity(nameof(GetWorkoutSummaryByIdAsync))?
 				.SetTag(Tracing.Category, Tracing.Http)?
 				.SetTag(Tracing.Route, $"{BaseUrl}/workout/{id}/summary")?
 				.SetTag(Tracing.WorkoutId, id)?

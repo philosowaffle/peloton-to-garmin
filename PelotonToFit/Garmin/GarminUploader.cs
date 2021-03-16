@@ -28,7 +28,7 @@ namespace Garmin
 			var paths = String.Join(" ", filePaths.Select(p => $"\"{p}\""));
 			var cmd = $"-u {config.Garmin.Email} -p {config.Garmin.Password} {paths}";
 
-			if (config.Application.DebugSeverity == Severity.Debug)
+			if (config.Observability.LogLevel == Severity.Debug)
 			{
 				Console.WriteLine("Uploading to Garmin with the following parameters:");
 				Console.WriteLine($"File Paths: {paths}");
@@ -47,7 +47,7 @@ namespace Garmin
 					string stderr = process.StandardError.ReadToEnd();
 					string result = reader.ReadToEnd();
 
-					if (config.Application.DebugSeverity == Severity.Debug)
+					if (config.Observability.LogLevel == Severity.Debug)
 						Console.Out.WriteLine(result);
 
 					if (!string.IsNullOrEmpty(stderr))
@@ -61,19 +61,19 @@ namespace Garmin
 			return true;
 		}
 
-		public static bool ValidateConfig(Configuration config)
+		public static bool ValidateConfig(Common.Garmin config)
 		{
-			if (config.Garmin.Upload == false) return true;
+			if (config.Upload == false) return true;
 
-			if (string.IsNullOrEmpty(config.Garmin.Email))
+			if (string.IsNullOrEmpty(config.Email))
 			{
-				Console.Out.WriteLine($"Garmin Email required, check your configuration {nameof(config.Garmin)}.{nameof(config.Garmin.Email)} is set.");
+				Console.Out.WriteLine($"Garmin Email required, check your configuration {nameof(Garmin)}.{nameof(config.Email)} is set.");
 				return false;
 			}
 
-			if (string.IsNullOrEmpty(config.Garmin.Password))
+			if (string.IsNullOrEmpty(config.Password))
 			{
-				Console.Out.WriteLine($"Garmin Password required, check your configuration {nameof(config.Garmin)}.{nameof(config.Garmin.Password)} is set.");
+				Console.Out.WriteLine($"Garmin Password required, check your configuration {nameof(Garmin)}.{nameof(config.Password)} is set.");
 				return false;
 			}
 

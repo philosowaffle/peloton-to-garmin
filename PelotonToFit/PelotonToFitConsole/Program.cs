@@ -1,15 +1,14 @@
 ﻿using Common;
 using Common.Database;
 using Garmin;
-using OpenTelemetry;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
+using Microsoft.Extensions.Configuration;
 using Peloton;
 using PelotonToFitConsole.Converter;
 using Prometheus;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,42 +22,50 @@ namespace PelotonToFitConsole
 		{
 			Console.WriteLine("Peloton To FIT");
 
-			if (!ConfigurationLoader.TryLoadConfigurationFile(out var config))
-				throw new ArgumentException("Failed to load configuration.");
+			IConfiguration configProviders = new ConfigurationBuilder()
+				.AddJsonFile(Path.Join(Environment.CurrentDirectory, "configuration.local.json"), optional: true, reloadOnChange: true)
+				.AddEnvironmentVariables()
+				.AddCommandLine(args)
+				.Build();
+
+			var config = new Configuration();
+			configProviders.GetSection(nameof(App)).Bind(config.App);
+			configProviders.GetSection(nameof(Peloton)).Bind(config.Peloton);
+			configProviders.GetSection(nameof(Garmin)).Bind(config.Garmin);
+			configProviders.GetSection(nameof(Observability)).Bind(config.Observability);
 
 			// TODO: Actually Verify Configuration validation
-			GarminUploader.ValidateConfig(config);
+			GarminUploader.ValidateConfig(config.Garmin);
 			Metrics.ValidateConfig(config.Observability);
 			Tracing.ValidateConfig(config.Observability);
 
-			using (var metricsServer = EnableMetricsServer(config))
-			using (var tracingServer = EnableTracing(config))
-			using (Tracing.Source = new ActivitySource("P2G.Root"))
-			{
-				FlurlConfiguration.Configure(config);
+			using var metrics = Metrics.EnableMetricsServer(config.Observability.Prometheus);
+			using var tracing = Tracing.EnableTracing(config.Observability.Jaeger);
+			using var tracingSource = new ActivitySource("P2G.ROOT");
 
-				if (config.Application.EnablePolling)
+			FlurlConfiguration.Configure(config);
+
+			if (config.App.EnablePolling)
+			{
+				while (true)
 				{
-					while (true)
-					{
-						Metrics.PollsCounter.Inc();
-						using(Metrics.PollDuration.NewTimer())
-							RunAsync(config).GetAwaiter().GetResult();
-						Console.Out.WriteLine($"Sleeping for {config.Application.PollingIntervalSeconds} seconds...");
-						Thread.Sleep(config.Application.PollingIntervalSeconds * 1000);
-					}
-				}
-				else
-				{
-					using (Metrics.PollDuration.NewTimer())
+					Metrics.PollsCounter.Inc();
+					using(Metrics.PollDuration.NewTimer())
 						RunAsync(config).GetAwaiter().GetResult();
+					Console.Out.WriteLine($"Sleeping for {config.App.PollingIntervalSeconds} seconds...");
+					Thread.Sleep(config.App.PollingIntervalSeconds * 1000);
 				}
+			}
+			else
+			{
+				using (Metrics.PollDuration.NewTimer())
+					RunAsync(config).GetAwaiter().GetResult();
 			}
 		}
 
 		static async Task RunAsync(Configuration config)
 		{
-			using var activity = Tracing.Source.StartActivity(nameof(RunAsync))?
+			using var activity = Tracing.Source?.StartActivity(nameof(RunAsync))?
 												.SetTag(Tracing.Category, Tracing.Default);
 
 			var converted = new List<ConversionDetails>();
@@ -70,13 +77,13 @@ namespace PelotonToFitConsole
 
 			var workoutsToConvert = recentWorkouts.data.Where(w => w.Status == "COMPLETE");
 			Metrics.WorkoutsToConvert.Set(workoutsToConvert.Count());
-			using var processWorkoutsSpan = Tracing.Source.StartActivity("ProcessingWorkouts")?
+			using var processWorkoutsSpan = Tracing.Source?.StartActivity("ProcessingWorkouts")?
 															.SetTag(Tracing.Category, Tracing.Default);
 
 			foreach (var recentWorkout in workoutsToConvert)
 			{
 				Metrics.WorkoutsToConvert.Dec();
-				using var processWorkoutSpan = Tracing.Source.StartActivity("ProcessingWorkout")?
+				using var processWorkoutSpan = Tracing.Source?.StartActivity("ProcessingWorkout")?
 															.SetTag(Tracing.Category, Tracing.Default)?
 															.SetTag(Tracing.WorkoutId, recentWorkout.Id);
 
@@ -84,7 +91,7 @@ namespace PelotonToFitConsole
 
 				if ((syncRecord?.ConvertedToFit ?? false) && config.Garmin.IgnoreSyncHistory == false)
 				{
-					if (config.Application.DebugSeverity != Severity.None) Console.Out.Write($"Workout {recentWorkout.Id} already synced, skipping...");
+					if (config.Observability.LogLevel != Severity.None) Console.Out.Write($"Workout {recentWorkout.Id} already synced, skipping...");
 					continue;
 				}
 
@@ -120,41 +127,6 @@ namespace PelotonToFitConsole
 			}
 
 			GarminUploader.UploadToGarmin(converted.Select(c => c.Path).ToList(), config);
-		}
-
-		private static IMetricServer EnableMetricsServer(Configuration config)
-		{
-			IMetricServer metricsServer = null;
-			if (config.Observability.Prometheus.Enabled)
-			{
-				var port = config.Observability.Prometheus.Port ?? 4000;
-				metricsServer = new KestrelMetricServer(port: port);
-				metricsServer.Start();
-				Console.Out.WriteLine($"Metrics Server started and listening on: http://localhost:{port}/metrics");
-			}
-
-			return metricsServer;
-		}
-
-		private static TracerProvider EnableTracing(Configuration config)
-		{
-			TracerProvider tracing = null;
-			if (config.Observability.Jaeger.Enabled)
-			{
-				tracing = Sdk.CreateTracerProviderBuilder()
-							.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("p2g"))
-							.AddSource("P2G.Root")
-							.AddJaegerExporter(o => 
-							{
-								o.AgentHost = config.Observability.Jaeger.AgentHost;
-								o.AgentPort = config.Observability.Jaeger.AgentPort.GetValueOrDefault();
-							})
-							.Build();
-
-				Console.Out.WriteLine($"Tracing started and exporting to: http://{config.Observability.Jaeger.AgentHost}:{config.Observability.Jaeger.AgentPort}");
-			}
-
-			return tracing;
 		}
 	}
 }
