@@ -20,6 +20,7 @@
   },
 
   "Observability": {
+
     "Prometheus": {
       "Enabled": false,
       "Port": 4000
@@ -32,13 +33,27 @@
     },
 
     "Serilog": {
-        "Using":  [ "Serilog.Sinks.Console", "Serilog.Sinks.RollingFile" ],
-        "MinimumLevel": "Information",
-        "WriteTo": [
-          { "Name": "Console" },
-          { "Name": "File", "Args": { "path": "./Output/log.txt" } }
-        ]
-      },
+      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.RollingFile", "Serilog.Sinks.Seq", "Serilog.Sinks.Elasticsearch" ],
+      "MinimumLevel": "Information",
+      "WriteTo": [
+        { "Name": "Console" },
+        {
+          "Name": "File",
+          "Args": { "path": "./Output/log.txt" }
+        },
+        {
+          "Name": "Seq",
+          "Args": { "serverUrl": "http://localhost:5341" }
+        },
+        {
+          "Name": "Elasticsearch",
+          "Args": {
+            "nodeUris": "http://localhost:9200",
+            "indexFormat": "p2g-logs-{0:yyyy.MM.DD}"
+          }
+        }
+      ]
+    },
   },
 
   "DoNotEdit_ConfigVersion": 2
