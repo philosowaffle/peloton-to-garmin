@@ -82,51 +82,26 @@ namespace PelotonToFitConsole
 		static async Task RunAsync(Configuration config)
 		{
 			using var activity = Tracing.Trace(nameof(RunAsync));
-			Log.Information("test");
 
 			var converted = new List<ConversionDetails>();
 			var db = new DbClient(config);
-
 			var pelotonApiClient = new ApiClient(config.Peloton.Email, config.Peloton.Password);
-			await pelotonApiClient.InitAuthAsync();
-			var recentWorkouts = await pelotonApiClient.GetWorkoutsAsync(config.Peloton.NumWorkoutsToDownload);
+			var peloton = new PelotonData(config, pelotonApiClient, db);
 
-			var workoutsToConvert = recentWorkouts.data.Where(w => w.Status == "COMPLETE");
-			Metrics.WorkoutsToConvert.Set(workoutsToConvert.Count());
+			var workoutDatas = await peloton.DownloadLatestWorkoutDataAsync();
+
+			Metrics.WorkoutsToConvert.Set(workoutDatas.Count());
+			
 			using var processWorkoutsSpan = Tracing.Trace("ProcessingWorkouts");
 
-			foreach (var recentWorkout in workoutsToConvert)
+			foreach (var workoutData in workoutDatas)
 			{
 				Metrics.WorkoutsToConvert.Dec();
-				using var processWorkoutSpan = Tracing.Trace("ProcessingWorkout").WithWorkoutId(recentWorkout.Id);
-
-				SyncHistoryItem syncRecord = db.Get(recentWorkout.Id);
-
-				if ((syncRecord?.ConvertedToFit ?? false) && config.Garmin.IgnoreSyncHistory == false)
-				{
-					Log.Information("Workout {0} already synced, skipping.", recentWorkout.Id);
-					continue;
-				}
-
-				var workout = await pelotonApiClient.GetWorkoutByIdAsync(recentWorkout.Id);
-				var workoutSamples = await pelotonApiClient.GetWorkoutSamplesByIdAsync(recentWorkout.Id);
-				var workoutSummary = await pelotonApiClient.GetWorkoutSummaryByIdAsync(recentWorkout.Id);
-
-				var startTimeInSeconds = workout.Start_Time;
-				var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-				dtDateTime = dtDateTime.AddSeconds(startTimeInSeconds).ToLocalTime();
-
-				syncRecord = new SyncHistoryItem()
-				{
-					Id = workout.Id,
-					WorkoutTitle = workout.Ride.Title,
-					WorkoutDate = dtDateTime,
-					DownloadDate = DateTime.Now
-				};
+				using var processWorkoutSpan = Tracing.Trace("ProcessingWorkout").WithWorkoutId(workoutData.Workout.Id);
 
 				var fitConverter = new FitConverter();
-				var convertedResponse = fitConverter.Convert(workout, workoutSamples, workoutSummary, config);
-				syncRecord.ConvertedToFit = convertedResponse.Successful;
+				var convertedResponse = fitConverter.Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.WorkoutSummary, config);
+				workoutData.SyncHistoryItem.ConvertedToFit = convertedResponse.Successful;
 				if (convertedResponse.Successful)
 				{
 					converted.Add(convertedResponse);
@@ -136,7 +111,7 @@ namespace PelotonToFitConsole
 					Log.Error("Failed to convert: {0}", convertedResponse);
 				}
 
-				db.Upsert(syncRecord);
+				db.Upsert(workoutData.SyncHistoryItem);
 			}
 
 			GarminUploader.UploadToGarmin(converted.Select(c => c.Path).ToList(), config);

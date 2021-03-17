@@ -24,6 +24,9 @@ namespace Peloton
 
 		public async Task InitAuthAsync()
 		{
+			if (!string.IsNullOrEmpty(UserId) && !string.IsNullOrEmpty(SessionId))
+				return;
+
 			var response = await $"{AuthBaseUrl}"
 				.WithHeader("peloton-platform", "web")
 				.PostJsonAsync(new AuthRequest()

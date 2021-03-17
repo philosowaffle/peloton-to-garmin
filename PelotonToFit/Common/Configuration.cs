@@ -40,6 +40,7 @@ namespace Common
 
 		[JsonIgnore]
 		public string FitDirectory => Path.Join(OutputDirectory, "fit");
+		public string PelotonDirectory => Path.Join(OutputDirectory, "peloton");
 	}
 
 	public class Peloton
