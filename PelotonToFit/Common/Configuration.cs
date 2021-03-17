@@ -6,17 +6,12 @@ namespace Common
 {
 	public class Configuration
 	{
-		[JsonIgnore]
-		public static readonly int CurrentConfigVersion = 2;
-
 		public Configuration()
 		{
 			App = new App();
 			Peloton = new Peloton();
 			Garmin = new Garmin();
 			Observability = new Observability();
-
-			_configVersion = 0;
 		}
 
 		public App App { get; set; }
@@ -24,13 +19,6 @@ namespace Common
 		public Garmin Garmin { get; set; }
 
 		public Observability Observability { get; set; }
-
-		private int? _configVersion = null;
-		public int DoNotEdit_ConfigVersion 
-		{
-			get { return _configVersion ?? CurrentConfigVersion; }
-			set { _configVersion = value; }
-		}
 	}
 
 	public class App

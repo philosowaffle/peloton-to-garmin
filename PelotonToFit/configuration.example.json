@@ -33,7 +33,7 @@
     },
 
     "Serilog": {
-      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.RollingFile", "Serilog.Sinks.Seq", "Serilog.Sinks.Elasticsearch" ],
+      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File", "Serilog.Sinks.Elasticsearch" ],
       "MinimumLevel": "Information",
       "WriteTo": [
         { "Name": "Console" },
@@ -42,18 +42,14 @@
           "Args": { "path": "./Output/log.txt" }
         },
         {
-          "Name": "Seq",
-          "Args": { "serverUrl": "http://localhost:5341" }
-        },
-        {
           "Name": "Elasticsearch",
           "Args": {
-            "nodeUris": "http://localhost:9200",
-            "indexFormat": "p2g-logs-{0:yyyy.MM.DD}"
+            "nodeUris": "http://192.168.1.95:9200",
+            "indexFormat": "p2g-logs-{0:yyyy.MM.dd}"
           }
         }
       ]
-    },
+    }
   },
 
   "DoNotEdit_ConfigVersion": 2

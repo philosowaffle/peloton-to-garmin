@@ -6,6 +6,7 @@ using Peloton;
 using PelotonToFitConsole.Converter;
 using Prometheus;
 using Serilog;
+using Serilog.Enrichers.Span;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -39,6 +40,7 @@ namespace PelotonToFitConsole
 			// https://github.com/serilog/serilog-settings-configuration
 			Log.Logger = new LoggerConfiguration()
 				.ReadFrom.Configuration(configProviders, sectionName: $"{nameof(Observability)}:Serilog")
+				.Enrich.WithSpan()
 				.CreateLogger();
 
 			try
@@ -80,6 +82,7 @@ namespace PelotonToFitConsole
 		static async Task RunAsync(Configuration config)
 		{
 			using var activity = Tracing.Trace(nameof(RunAsync));
+			Log.Information("test");
 
 			var converted = new List<ConversionDetails>();
 			var db = new DbClient(config);

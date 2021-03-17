@@ -35,7 +35,8 @@ namespace Common
 			{
 				tracing = Sdk.CreateTracerProviderBuilder()
 							.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("p2g"))
-							.AddSource("ROOT")
+							.AddHttpClientInstrumentation()
+							.AddSource("P2G")
 							.AddJaegerExporter(o =>
 							{
 								o.AgentHost = config.AgentHost;
@@ -51,8 +52,8 @@ namespace Common
 
 		public static Activity Trace(string name, string category = "app")
 		{
-			return Source?.StartActivity(name)?.SetTag(TagKey.Category, category)
-					?? new Activity(name).SetTag(TagKey.Category, category);
+			return Activity.Current?.Source.StartActivity(name)?.SetTag(TagKey.Category, category)
+					?? new ActivitySource("P2G").StartActivity(name).SetTag(TagKey.Category, category);
 		}
 
 		public static Activity WithWorkoutId(this Activity activity, string workoutId)
