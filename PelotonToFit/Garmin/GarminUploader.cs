@@ -2,33 +2,57 @@
 using Prometheus;
 using Serilog;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Metrics = Common.Metrics;
+using Metrics = Prometheus.Metrics;
 
 namespace Garmin
 {
-	public static class GarminUploader
+	public class GarminUploader
 	{
-		public static bool UploadToGarmin(ICollection<string> filePaths, Configuration config)
+		private static readonly Histogram WorkoutUploadDuration = Metrics.CreateHistogram("p2g_workout_upload_duration_seconds", "Histogram of workout upload durations.", new HistogramConfiguration()
 		{
-			if (!config.Garmin.Upload || !filePaths.Any())
-				return true;
+			LabelNames = new[] { "count" }
+		});
 
-			using var metrics = Metrics.WorkoutUploadDuration
-								.WithLabels(filePaths.Count.ToString()).NewTimer();
-			using var tracer = Tracing.Trace(nameof(UploadToGarmin), TagValue.Http)
+		private readonly Configuration _config;
+
+		public GarminUploader(Configuration config)
+		{
+			_config = config;
+		}
+
+		public void UploadToGarmin()
+		{
+			if (!_config.Garmin.Upload) return;
+
+			if (!Directory.Exists(_config.App.UploadDirectory))
+			{
+				Log.Information("No upload directory found. Nothing to do.");
+				return;
+			}
+
+			var files = Directory.GetFiles(_config.App.UploadDirectory);
+
+			if (files.Length == 0)
+			{
+				Log.Information("No files to upload in output directory. Nothing to do.");
+				return;
+			}
+
+			using var metrics = WorkoutUploadDuration
+								.WithLabels(files.Count().ToString()).NewTimer();
+			using var tracer = Tracing.Trace(nameof(UploadToGarmin))
 										.SetTag(TagKey.App, "gupload");
 
 			ProcessStartInfo start = new ProcessStartInfo();
 			start.FileName = "gupload";
 
-			var paths = String.Join(" ", filePaths.Select(p => $"\"{p}\""));
-			var cmd = $"-u {config.Garmin.Email} -p {config.Garmin.Password} {paths}";
+			var paths = String.Join(" ", files.Select(p => $"\"{p}\""));
+			var cmd = $"-u {_config.Garmin.Email} -p {_config.Garmin.Password} {paths}";
 
-			Log.Debug("Uploading to Garmin with the following parameters: {0} {1}", paths, cmd.Replace(config.Garmin.Email, "**email**").Replace(config.Garmin.Password, "**password**"));
+			Log.Debug("Uploading to Garmin with the following parameters: {0} {1}", paths, cmd.Replace(_config.Garmin.Email, "**email**").Replace(_config.Garmin.Password, "**password**"));
 
 			start.Arguments = cmd;
 			start.UseShellExecute = false;
@@ -46,13 +70,10 @@ namespace Garmin
 
 					if (!string.IsNullOrEmpty(stderr))
 					{
-						Log.Error(stderr);
-						return false;
+						Log.Error(stderr, "Error returned from gupload tool.");
 					}
 				}
 			}
-
-			return true;
 		}
 
 		public static bool ValidateConfig(Common.Garmin config)

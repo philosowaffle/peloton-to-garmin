@@ -1,9 +1,16 @@
 {
   "App": {
     "OutputDirectory": "./Output",
+    "WorkingDirectory": "./working",
     "SyncHistoryDbPath": "./Output/syncHistory.json",
     "EnablePolling": true,
     "PollingIntervalSeconds": 30
+  },
+
+   "Format": {
+    "Fit": true,
+    "Json": false,
+    "Backup": false
   },
 
   "Peloton": {
@@ -15,8 +22,7 @@
   "Garmin": {
     "Email": "garmin@gmail.com",
     "Password": "garmin",
-    "Upload": false,
-    "IgnoreSyncHistory": false
+    "Upload": false
   },
 
   "Observability": {
@@ -50,7 +56,5 @@
         }
       ]
     }
-  },
-
-  "DoNotEdit_ConfigVersion": 2
+  }
 }

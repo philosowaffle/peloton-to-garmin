@@ -9,7 +9,6 @@ namespace Common
 	public static class TagKey
 	{
 		public static string Category = "category";
-		public static string Route = "route";
 		public static string App = "app";
 		public static string WorkoutId = "workout_id";
 		public static string Table = "table";
@@ -20,7 +19,6 @@ namespace Common
 	{
 		public static string Default = "app";
 		public static string Db = "db";
-		public static string Http = "http";
 		public static string Fit = "fit";
 	}
 

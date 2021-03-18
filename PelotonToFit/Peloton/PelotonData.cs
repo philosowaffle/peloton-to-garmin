@@ -1,18 +1,26 @@
 ﻿using Common;
 using Common.Database;
-using Peloton.Dto;
+using Common.Dto;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Prometheus;
 using Serilog;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Metrics = Prometheus.Metrics;
 
 namespace Peloton
 {
 	public class PelotonData
 	{
+		public static readonly Counter WorkoutsDownloaded = Metrics.CreateCounter("p2g_peloton_workouts_downloaded", "The number of workouts downloaded from peloton.");
+		public static readonly Counter WorkoutsArchived = Metrics.CreateCounter("p2g_peloton_workouts_archived", "The number of workouts archived from peloton.");
+		public static readonly Histogram WorkoutsDownloadDuration = Metrics.CreateHistogram("p2g_peloton_workouts_download_duration_seconds", "Histogram of the entire time to download all recent workout data.");
+		public static readonly Histogram WorkoutDownloadDuration = Metrics.CreateHistogram("p2g_peloton_workout_download_duration_seconds", "Histogram of the entire time to download a single workouts data.");
+
 		private Configuration _config;
 		private ApiClient _pelotonApi;
 		private DbClient _dbClient;
@@ -24,42 +32,32 @@ namespace Peloton
 			_dbClient = dbClient;
 		}
 
-		public async Task<ICollection<WorkoutData>> DownloadLatestWorkoutDataAsync() 
+		public async Task DownloadLatestWorkoutDataAsync() 
 		{
-			if (_config.Peloton.NumWorkoutsToDownload <= 0) return new List<WorkoutData>();
+			if (_config.Peloton.NumWorkoutsToDownload <= 0) return;
 
 			using var tracing = Tracing.Trace(nameof(DownloadLatestWorkoutDataAsync));
-
-			var items = new List<WorkoutData>();
 
 			await _pelotonApi.InitAuthAsync();
 			var recentWorkouts = await _pelotonApi.GetWorkoutsAsync(_config.Peloton.NumWorkoutsToDownload);
 			var completedWorkouts = recentWorkouts.data.Where(w => w.Status == "COMPLETE");
 
-			var outputDir = _config.App.PelotonDirectory;
-			if (!Directory.Exists(outputDir))
-			{
-				Log.Debug("Creating directory {@Directory}", outputDir);
-				Directory.CreateDirectory(outputDir);
-			}
+			var workingDir = _config.App.DownloadDirectory;
+			FileHandling.MkDirIfNotEists(workingDir);
 
-			foreach(var recentWorkout in recentWorkouts.data)
+			using var timer = WorkoutsDownloadDuration.NewTimer();
+			foreach (var recentWorkout in recentWorkouts.data)
 			{
 				var workoutId = recentWorkout.Id;
 
 				SyncHistoryItem syncRecord = _dbClient.Get(recentWorkout.Id);
-				if ((syncRecord?.ConvertedToFit ?? false) && _config.Garmin.IgnoreSyncHistory == false)
+				if ((syncRecord?.DownloadDate is object))
 				{
-					Log.Information("Workout {0} already synced, skipping.", recentWorkout.Id);
+					Log.Information("Workout {@WorkoutId} already downloaded, skipping.", recentWorkout.Id);
 					continue;
 				}
 
-				var workoutDir = Path.Join(outputDir, workoutId);
-				if (!Directory.Exists(workoutDir))
-				{
-					Log.Debug("Creating directory {@Directory}", workoutDir);
-					Directory.CreateDirectory(workoutDir);
-				}
+				using var workoutTimer = WorkoutDownloadDuration.NewTimer();
 
 				var workoutTask = _pelotonApi.GetWorkoutByIdAsync(recentWorkout.Id);
 				var workoutSamplesTask = _pelotonApi.GetWorkoutSamplesByIdAsync(recentWorkout.Id);
@@ -71,41 +69,37 @@ namespace Peloton
 				var workoutSamples = workoutSamplesTask.GetAwaiter().GetResult();
 				var workoutSummary = workoutSummaryTask.GetAwaiter().GetResult();
 
-				Log.Debug("Write peloton workout files.");
-				File.WriteAllText(Path.Join(workoutDir, $"{workoutId}_workout.json"), JsonSerializer.Serialize(workout, new JsonSerializerOptions() { WriteIndented = true }));
-				File.WriteAllText(Path.Join(workoutDir, $"{workoutId}_workoutSamples.json"), JsonSerializer.Serialize(workoutSamples, new JsonSerializerOptions() { WriteIndented = true }));
-				File.WriteAllText(Path.Join(workoutDir, $"{workoutId}_workoutSummary.json"), JsonSerializer.Serialize(workoutSummary, new JsonSerializerOptions() { WriteIndented = true }));
+				WorkoutsDownloaded.Inc();
 
-				var startTimeInSeconds = workout.Start_Time;
-				var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-				dtDateTime = dtDateTime.AddSeconds(startTimeInSeconds).ToLocalTime();
+				dynamic data = new JObject();
+				data.Workout = workout;
+				data.WorkoutSamples = workoutSamples;
+				data.WorkoutSummary = workoutSummary; 
 
-				var workoutData = new WorkoutData() 
+				if (_config.Format.Json) SaveRawData(data, workoutId);
+
+				Log.Debug("Write peloton workout details to file for {@WorkoutId}.", workoutId);
+				File.WriteAllText(Path.Join(workingDir, $"{workoutId}_workout.json"), data.ToString());
+
+				P2GWorkout deSerializedData = System.Text.Json.JsonSerializer.Deserialize<P2GWorkout>(data.ToString(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
+				var syncHistoryItem = new SyncHistoryItem(deSerializedData.Workout)
 				{
-					Workout = workout,
-					WorkoutSamples = workoutSamples,
-					WorkoutSummary = workoutSummary,
-					SyncHistoryItem = new SyncHistoryItem()
-					{
-						Id = workout.Id,
-						WorkoutTitle = workout.Ride.Title,
-						WorkoutDate = dtDateTime,
-						DownloadDate = DateTime.Now,
-					}
+					DownloadDate = DateTime.Now,
 				};
 
-				items.Add(workoutData);
+				_dbClient.Upsert(syncHistoryItem);
 			}
-
-			return items;
 		}
-	}
 
-	public class WorkoutData
-	{
-		public Workout Workout { get; set; }
-		public WorkoutSamples WorkoutSamples { get; set; }
-		public WorkoutSummary WorkoutSummary { get; set; }
-		public SyncHistoryItem SyncHistoryItem { get; set; }
+		private void SaveRawData(dynamic data, string workoutId)
+		{
+			var outputDir = _config.App.JsonDirectory;
+			FileHandling.MkDirIfNotEists(outputDir);
+
+			Log.Debug("Write peloton json to file for {@WorkoutId}", workoutId);
+			File.WriteAllText(Path.Join(outputDir, $"{workoutId}_workout.json"), System.Text.Json.JsonSerializer.Serialize(data, new JsonSerializerOptions() { WriteIndented = true }));
+			WorkoutsArchived.Inc();
+		}
 	}
 }

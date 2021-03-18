@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Peloton.Dto
+namespace Common.Dto
 {
 	public class RecentWorkouts
 	{

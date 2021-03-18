@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Text.Json.Serialization;
 
 namespace Common
 {
@@ -9,12 +8,14 @@ namespace Common
 		public Configuration()
 		{
 			App = new App();
+			Format = new Format();
 			Peloton = new Peloton();
 			Garmin = new Garmin();
 			Observability = new Observability();
 		}
 
 		public App App { get; set; }
+		public Format Format { get; set; }
 		public Peloton Peloton { get; set; }
 		public Garmin Garmin { get; set; }
 
@@ -26,6 +27,7 @@ namespace Common
 		public App()
 		{
 			OutputDirectory = Path.Join(Environment.CurrentDirectory, "output");
+			WorkingDirectory = Path.Join(Environment.CurrentDirectory, "working");
 			SyncHistoryDbPath = Path.Join(Environment.CurrentDirectory, "syncHistory.json");
 
 			EnablePolling = true;
@@ -33,14 +35,25 @@ namespace Common
 		}
 
 		public string OutputDirectory { get; set; }
+		public string WorkingDirectory { get; set; }
 		
 		public string SyncHistoryDbPath { get; set; }
 		public bool EnablePolling { get; set; }
 		public int PollingIntervalSeconds { get; set; }
 
-		[JsonIgnore]
 		public string FitDirectory => Path.Join(OutputDirectory, "fit");
-		public string PelotonDirectory => Path.Join(OutputDirectory, "peloton");
+		public string JsonDirectory => Path.Join(OutputDirectory, "json");
+		public string FailedDirectory => Path.Join(OutputDirectory, "failed");
+		public string DownloadDirectory => Path.Join(WorkingDirectory, "downloaded");
+		public string UploadDirectory => Path.Join(WorkingDirectory, "upload");
+
+	}
+
+	public class Format
+	{
+		public bool Fit { get; set; }
+		public bool Json { get; set; }
+		public bool Backup { get; set; }
 	}
 
 	public class Peloton
@@ -53,6 +66,7 @@ namespace Common
 		public string Email { get; set; }
 		public string Password { get; set; }
 		public int NumWorkoutsToDownload { get; set; }
+		public bool SaveJson { get; set; }
 	}
 
 	public class Garmin
@@ -60,7 +74,6 @@ namespace Common
 		public string Email { get; set; }
 		public string Password { get; set; }
 		public bool Upload { get; set; }
-		public bool IgnoreSyncHistory { get; set; }
 	}
 
 	public class Observability

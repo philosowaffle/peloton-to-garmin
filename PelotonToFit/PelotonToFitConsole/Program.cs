@@ -8,18 +8,19 @@ using Prometheus;
 using Serilog;
 using Serilog.Enrichers.Span;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Metrics = Common.Metrics;
+using Metrics = Prometheus.Metrics;
 
 namespace PelotonToFitConsole
 {
 	class Program
 	{
+		private static readonly Counter PollsCounter = Metrics.CreateCounter("p2g_polls_total", "The number of times the current process has polled for new data.");
+		private static readonly Histogram PollDuration = Metrics.CreateHistogram("p2g_poll_duration_seconds", "Histogram of the entire poll run duration.");
+
 		static void Main(string[] args)
 		{
 			Console.WriteLine("Peloton To FIT");
@@ -32,6 +33,7 @@ namespace PelotonToFitConsole
 
 			var config = new Configuration();
 			configProviders.GetSection(nameof(App)).Bind(config.App);
+			configProviders.GetSection(nameof(Format)).Bind(config.Format);
 			configProviders.GetSection(nameof(Peloton)).Bind(config.Peloton);
 			configProviders.GetSection(nameof(Garmin)).Bind(config.Garmin);
 			configProviders.GetSection(nameof(Observability)).Bind(config.Observability);
@@ -47,10 +49,10 @@ namespace PelotonToFitConsole
 			{
 				// TODO: Actually Verify Configuration validation
 				GarminUploader.ValidateConfig(config.Garmin);
-				Metrics.ValidateConfig(config.Observability);
+				Common.Metrics.ValidateConfig(config.Observability);
 				Tracing.ValidateConfig(config.Observability);
 
-				using var metrics = Metrics.EnableMetricsServer(config.Observability.Prometheus);
+				using var metrics = Common.Metrics.EnableMetricsServer(config.Observability.Prometheus);
 				using var tracing = Tracing.EnableTracing(config.Observability.Jaeger);
 				using var tracingSource = new ActivitySource("ROOT");
 
@@ -60,17 +62,14 @@ namespace PelotonToFitConsole
 				{
 					while (true)
 					{
-						Metrics.PollsCounter.Inc();
-						using (Metrics.PollDuration.NewTimer())
-							RunAsync(config).GetAwaiter().GetResult();
+						RunAsync(config).GetAwaiter().GetResult();
 						Log.Information("Sleeping for {0} seconds...", config.App.PollingIntervalSeconds);
 						Thread.Sleep(config.App.PollingIntervalSeconds * 1000);
 					}
 				}
 				else
 				{
-					using (Metrics.PollDuration.NewTimer())
-						RunAsync(config).GetAwaiter().GetResult();
+					RunAsync(config).GetAwaiter().GetResult();
 				}
 			}
 			finally
@@ -81,40 +80,23 @@ namespace PelotonToFitConsole
 
 		static async Task RunAsync(Configuration config)
 		{
+			PollsCounter.Inc();
+			using var timer = PollDuration.NewTimer();
 			using var activity = Tracing.Trace(nameof(RunAsync));
 
-			var converted = new List<ConversionDetails>();
 			var db = new DbClient(config);
 			var pelotonApiClient = new ApiClient(config.Peloton.Email, config.Peloton.Password);
 			var peloton = new PelotonData(config, pelotonApiClient, db);
 
-			var workoutDatas = await peloton.DownloadLatestWorkoutDataAsync();
+			await peloton.DownloadLatestWorkoutDataAsync();
 
-			Metrics.WorkoutsToConvert.Set(workoutDatas.Count());
-			
-			using var processWorkoutsSpan = Tracing.Trace("ProcessingWorkouts");
+			var fitConverter = new FitConverter(config, db);
+			fitConverter.Convert();
 
-			foreach (var workoutData in workoutDatas)
-			{
-				Metrics.WorkoutsToConvert.Dec();
-				using var processWorkoutSpan = Tracing.Trace("ProcessingWorkout").WithWorkoutId(workoutData.Workout.Id);
+			var garminUploader = new GarminUploader(config);
+			garminUploader.UploadToGarmin();
 
-				var fitConverter = new FitConverter();
-				var convertedResponse = fitConverter.Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.WorkoutSummary, config);
-				workoutData.SyncHistoryItem.ConvertedToFit = convertedResponse.Successful;
-				if (convertedResponse.Successful)
-				{
-					converted.Add(convertedResponse);
-				}
-				else
-				{
-					Log.Error("Failed to convert: {0}", convertedResponse);
-				}
-
-				db.Upsert(workoutData.SyncHistoryItem);
-			}
-
-			GarminUploader.UploadToGarmin(converted.Select(c => c.Path).ToList(), config);
+			FileHandling.Cleanup(config.App.WorkingDirectory);
 		}
 	}
 }
