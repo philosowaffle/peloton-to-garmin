@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace Peloton.Dto
+namespace Common.Dto
 {
 	public class Ride
 	{
@@ -40,9 +39,9 @@ namespace Peloton.Dto
 		// live stream url
 		// location
 		public ICollection<string> Metrics { get; set; } // enum
-		// original air time
-		// overall rating avg
-		// overall rating count
+														 // original air time
+														 // overall rating avg
+														 // overall rating count
 		public int Pedaling_Start_Offset { get; set; }
 		public int Pedaling_End_Offset { get; set; }
 		public int Pedaling_Duration { get; set; }

@@ -1,5 +1,7 @@
 ﻿using Common;
+using Common.Dto;
 using Flurl.Http;
+using Newtonsoft.Json.Linq;
 using Peloton.Dto;
 using System.Threading.Tasks;
 
@@ -53,7 +55,7 @@ namespace Peloton
 			.GetJsonAsync<RecentWorkouts>();
 		}
 
-		public Task<Workout> GetWorkoutByIdAsync(string id)
+		public Task<JObject> GetWorkoutByIdAsync(string id)
 		{
 			return $"{BaseUrl}/workout/{id}"
 				.WithCookie("peloton_session_id", SessionId)
@@ -61,10 +63,10 @@ namespace Peloton
 				{
 					joins = "ride,ride.instructor"
 				})
-				.GetJsonAsync<Workout>();
+				.GetJsonAsync<JObject>();
 		}
 
-		public Task<WorkoutSamples> GetWorkoutSamplesByIdAsync(string id)
+		public Task<JObject> GetWorkoutSamplesByIdAsync(string id)
 		{
 			return $"{BaseUrl}/workout/{id}/performance_graph"
 				.WithCookie("peloton_session_id", SessionId)
@@ -72,14 +74,14 @@ namespace Peloton
 				{
 					every_n=1
 				})
-				.GetJsonAsync<WorkoutSamples>();
+				.GetJsonAsync<JObject>();
 		}
 
-		public Task<WorkoutSummary> GetWorkoutSummaryByIdAsync(string id)
+		public Task<JObject> GetWorkoutSummaryByIdAsync(string id)
 		{
 			return $"{BaseUrl}/workout/{id}/summary"
 				.WithCookie("peloton_session_id", SessionId)
-				.GetJsonAsync<WorkoutSummary>();
+				.GetJsonAsync<JObject>();
 		}
 	}
 }

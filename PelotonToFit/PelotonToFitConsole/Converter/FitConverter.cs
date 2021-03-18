@@ -1,13 +1,15 @@
 ﻿using Common;
+using Common.Database;
+using Common.Dto;
 using Dynastream.Fit;
-using Peloton.Dto;
 using Prometheus;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Metrics = Common.Metrics;
+using System.Text.Json;
+using Metrics = Prometheus.Metrics;
 
 namespace PelotonToFitConsole.Converter
 {
@@ -20,17 +22,143 @@ namespace PelotonToFitConsole.Converter
 		private static readonly float _metersPerMile = 1609.34f;
 		private static readonly string _spaceSeparator = "_";
 
-		public ConversionDetails Convert(Workout workout, WorkoutSamples workoutSamples, WorkoutSummary workoutSummary, Configuration config)
+		private static readonly Histogram WorkoutsConversionDuration = Metrics.CreateHistogram("p2g_fit_workouts_conversion_duration_seconds", "Histogram of all workout conversion duration.");
+		public static readonly Histogram WorkoutConversionDuration = Metrics.CreateHistogram("p2g_fit_workout_conversion_duration_seconds", "Histogram of a workout conversion durations.");
+		public static readonly Gauge WorkoutsToConvert = Metrics.CreateGauge("p2g_workout_conversion_pending", "The number of workouts pending conversion to output format.");
+		public static readonly Counter WorkoutsConverted = Metrics.CreateCounter("p2g_fit_workouts_converted_total", "The number of workouts converted.");
+
+		private Configuration _config;
+		private DbClient _dbClient;
+
+		public FitConverter(Configuration config, DbClient dbClient)
 		{
-			using var metrics = Metrics.WorkoutConversionDuration
-										.WithLabels("fit")
-										.NewTimer();
-			using var tracing = Tracing.Trace("Convert")
-										.WithWorkoutId(workout.Id)
+			_config = config;
+			_dbClient = dbClient;
+		}
+
+		public void Convert()
+		{
+			if (!_config.Format.Fit) return;
+			
+			if (!Directory.Exists(_config.App.DownloadDirectory))
+			{
+				Log.Information("No working directory found. Nothing to do.");
+				return;
+			}
+
+			var files = Directory.GetFiles(_config.App.DownloadDirectory);
+
+			if (files.Length == 0)
+			{
+				Log.Information("No files to convert in working directory. Nothing to do.");
+				return;
+			}
+
+			FileHandling.MkDirIfNotEists(_config.App.FitDirectory);
+			FileHandling.MkDirIfNotEists(_config.App.UploadDirectory);
+
+			// Foreach file in directory
+			WorkoutsToConvert.Set(files.Count());
+			using var timer = WorkoutsConversionDuration.NewTimer();
+			foreach (var file in files)
+			{
+				using var workoutTimer = WorkoutConversionDuration.NewTimer();
+
+				// load file and deserialize
+				P2GWorkout workoutData = null;
+				try
+				{
+					using (var reader = new StreamReader(file))
+					{
+						workoutData = JsonSerializer.Deserialize<P2GWorkout>(reader.ReadToEnd(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+					}
+				} catch (Exception e)
+				{
+					Log.Error(e, "Failed to load and parse workout data {@File}", file);
+					FileHandling.MoveFailedFile(file, _config.App.FailedDirectory);
+					WorkoutsToConvert.Dec();
+					continue;
+				}
+
+				using var tracing = Tracing.Trace("Convert")
+										.WithWorkoutId(workoutData.Workout.Id)
 										.SetTag(TagKey.Format, TagValue.Fit);
 
-			var output = new ConversionDetails() { Successful = true };
+				// call internal convert method
+				var converted = Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.WorkoutSummary);
 
+				if (string.IsNullOrEmpty(converted.Item1))
+				{
+					Log.Error("Failed to convert workout data {@File}", file);
+					FileHandling.MoveFailedFile(file, _config.App.FailedDirectory);
+					WorkoutsToConvert.Dec();
+					continue;
+				}
+
+				// write converted to output dir for upload
+				var path = Path.Join(_config.App.UploadDirectory, $"{converted.Item1}.fit");
+				try
+				{
+					using (FileStream fitDest = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
+					{
+						Encode encoder = new Encode(ProtocolVersion.V20);
+						encoder.Open(fitDest);
+						foreach (Mesg message in converted.Item2)
+						{
+							encoder.Write(message);
+						}
+						encoder.Close();
+
+						Log.Information("Encoded FIT file {0}", fitDest.Name);
+					}
+
+				} catch (Exception e)
+				{
+					Log.Error(e, "Failed to write fit file for {@File}", converted.Item1);
+					WorkoutsToConvert.Dec();
+					continue;
+				}
+
+				// copy converted to backup dir for archive
+				// TODO: put this behind a config flag
+				if (_config.Format.Backup)
+				{
+					try
+					{
+						var backupDest = Path.Join(_config.App.FitDirectory, $"{converted.Item1}.fit");
+						System.IO.File.Copy(path, backupDest, overwrite: true);
+						Log.Information("Backed up FIT file {0}", backupDest);
+					}
+					catch (Exception e)
+					{
+						Log.Error(e, "Failed to copy fit file for {@File}", converted.Item1);
+						continue;
+					}
+				}
+
+				// update db item with fit conversion date
+				SyncHistoryItem syncRecord = _dbClient.Get(workoutData.Workout.Id);
+				if (syncRecord?.DownloadDate is null)
+				{
+					var startTimeInSeconds = workoutData.Workout.Start_Time;
+					var dtDateTime = new System.DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+					dtDateTime = dtDateTime.AddSeconds(startTimeInSeconds).ToLocalTime();
+
+					syncRecord = new SyncHistoryItem(workoutData.Workout)
+					{
+						DownloadDate = System.DateTime.Now
+					};
+				}
+
+				syncRecord.ConvertedToFit = true;
+				_dbClient.Upsert(syncRecord);
+				WorkoutsToConvert.Dec();
+				WorkoutsConverted.Inc();
+			}
+		}
+
+		private Tuple<string, ICollection<Mesg>> Convert(Workout workout, WorkoutSamples workoutSamples, WorkoutSummary workoutSummary)
+		{
 			// MESSAGE ORDER MATTERS
 			var messages = new List<Mesg>();
 
@@ -41,13 +169,10 @@ namespace PelotonToFitConsole.Converter
 			var sport = GetGarminSport(workout);
 			var subSport = GetGarminSubSport(workout);
 
-			output.Name = title;
-
 			if (sport == Sport.Invalid)
 			{
-				output.Successful = false;
-				output.Errors.Add(new ConversionError() { Message = $"Unsupported Sport Type - Skipping", Details = $"Sport: {workout.Fitness_Discipline}" });
-				return output;
+				Log.Error("Unsupported Sport Type - Skipping {@Sport}", workout.Fitness_Discipline);
+				return new Tuple<string, ICollection<Mesg>>(string.Empty, null);
 			}
 
 			var fileIdMesg = new FileIdMesg();
@@ -129,24 +254,7 @@ namespace PelotonToFitConsole.Converter
 
 			messages.Add(activityMesg);
 
-			if (!Directory.Exists(config.App.FitDirectory))
-				Directory.CreateDirectory(config.App.FitDirectory);
-
-			using (FileStream fitDest = new FileStream(Path.Join(config.App.FitDirectory, $"{title}.fit"), FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
-			{
-				Encode encoder = new Encode(ProtocolVersion.V20);
-				encoder.Open(fitDest);
-				foreach (Mesg message in messages)
-				{
-					encoder.Write(message);
-				}
-				encoder.Close();
-
-				Log.Information("Encoded FIT file {0}", fitDest.Name);
-
-				output.Path = fitDest.Name;
-			}
-			return output;
+			return new Tuple<string, ICollection<Mesg>>(title, messages);
 		}
 
 		public void Decode(string filePath)

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Peloton.Dto
+namespace Common.Dto
 {
 	public class Segment
 	{

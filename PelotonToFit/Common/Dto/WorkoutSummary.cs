@@ -1,4 +1,4 @@
-﻿namespace Peloton.Dto
+﻿namespace Common.Dto
 {
 	public class WorkoutSummary
 	{
@@ -14,7 +14,7 @@
 		public double Max_Cadence { get; set; }
 		public double Avg_Cadence { get; set; }
 		public double Resistance { get; set; }
-		public double Max_Resistance {get; set;}
+		public double Max_Resistance { get; set; }
 		public double Avg_Resistance { get; set; }
 		public double Speed { get; set; }
 		public double Max_Speed { get; set; }

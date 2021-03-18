@@ -1,12 +1,23 @@
 ﻿using Flurl.Http;
+using Prometheus;
 using Serilog;
 using System;
 using System.Threading.Tasks;
+using PromMetrics = Prometheus.Metrics;
 
 namespace Common
 {
 	public static class FlurlConfiguration
 	{
+		private static readonly Counter HttpResponseCounter = PromMetrics.CreateCounter("p2g_http_responses", "The number of http responses.", new CounterConfiguration
+		{
+			LabelNames = new[] { "method", "host", "path", "query", "status_code", "duration_in_seconds" }
+		});
+		private static readonly Counter HttpErrorCounter = PromMetrics.CreateCounter("p2g_http_errors", "The number of errors encountered.", new CounterConfiguration
+		{
+			LabelNames = new[] { "method", "host", "path", "query", "status_code", "duration_in_seconds", "message" }
+		});
+
 		public static void Configure(Configuration config)
 		{
 			Func<FlurlCall, Task> beforeCallAsync = delegate (FlurlCall call)
@@ -21,7 +32,7 @@ namespace Common
 
 				if (config.Observability.Prometheus.Enabled)
 				{
-					Metrics.HttpResponseCounter
+					HttpResponseCounter
 					.WithLabels(
 						call.HttpRequestMessage.Method.ToString(),
 						call.HttpRequestMessage.RequestUri.Host.ToString(),
@@ -40,7 +51,7 @@ namespace Common
 
 				if (config.Observability.Prometheus.Enabled)
 				{
-					Metrics.HttpErrorCounter
+					HttpErrorCounter
 					.WithLabels(
 						call.HttpRequestMessage.Method.ToString(),
 						call.HttpRequestMessage.RequestUri.Host.ToString(),
