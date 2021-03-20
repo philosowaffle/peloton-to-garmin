@@ -13,19 +13,19 @@ using Metrics = Prometheus.Metrics;
 
 namespace PelotonToFitConsole.Converter
 {
-	public class FitConverter : IConverter
+	public class FitConverter : Converter
 	{
 		private static readonly float _softwareVersion = 1.0f;
 		private static readonly ushort _productId = 0;
 		private static readonly ushort _manufacturerId = Manufacturer.Development;
 		private static readonly uint _serialNumber = 1234098765;
-		private static readonly float _metersPerMile = 1609.34f;
+		
 		private static readonly string _spaceSeparator = "_";
 
 		private static readonly Histogram WorkoutsConversionDuration = Metrics.CreateHistogram("p2g_fit_workouts_conversion_duration_seconds", "Histogram of all workout conversion duration.");
-		public static readonly Histogram WorkoutConversionDuration = Metrics.CreateHistogram("p2g_fit_workout_conversion_duration_seconds", "Histogram of a workout conversion durations.");
-		public static readonly Gauge WorkoutsToConvert = Metrics.CreateGauge("p2g_workout_conversion_pending", "The number of workouts pending conversion to output format.");
-		public static readonly Counter WorkoutsConverted = Metrics.CreateCounter("p2g_fit_workouts_converted_total", "The number of workouts converted.");
+		private static readonly Histogram WorkoutConversionDuration = Metrics.CreateHistogram("p2g_fit_workout_conversion_duration_seconds", "Histogram of a workout conversion durations.");
+		private static readonly Gauge WorkoutsToConvert = Metrics.CreateGauge("p2g_fit_workout_conversion_pending", "The number of workouts pending conversion to output format.");
+		private static readonly Counter WorkoutsConverted = Metrics.CreateCounter("p2g_fit_workouts_converted_total", "The number of workouts converted.");
 
 		private Configuration _config;
 		private DbClient _dbClient;
@@ -36,7 +36,7 @@ namespace PelotonToFitConsole.Converter
 			_dbClient = dbClient;
 		}
 
-		public void Convert()
+		public override void Convert()
 		{
 			if (!_config.Format.Fit) return;
 			
@@ -55,7 +55,10 @@ namespace PelotonToFitConsole.Converter
 			}
 
 			FileHandling.MkDirIfNotEists(_config.App.FitDirectory);
-			FileHandling.MkDirIfNotEists(_config.App.UploadDirectory);
+
+			var prepUpload = _config.Garmin.Upload && _config.Garmin.FormatToUpload == "fit";
+			if (prepUpload)
+				FileHandling.MkDirIfNotEists(_config.App.UploadDirectory);
 
 			// Foreach file in directory
 			WorkoutsToConvert.Set(files.Count());
@@ -95,8 +98,8 @@ namespace PelotonToFitConsole.Converter
 					continue;
 				}
 
-				// write converted to output dir for upload
-				var path = Path.Join(_config.App.UploadDirectory, $"{converted.Item1}.fit");
+				// write to output dir
+				var path = Path.Join(_config.App.WorkingDirectory, $"{converted.Item1}.fit");
 				try
 				{
 					using (FileStream fitDest = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
@@ -112,22 +115,38 @@ namespace PelotonToFitConsole.Converter
 						Log.Information("Encoded FIT file {0}", fitDest.Name);
 					}
 
-				} catch (Exception e)
+				}
+				catch (Exception e)
 				{
 					Log.Error(e, "Failed to write fit file for {@File}", converted.Item1);
 					WorkoutsToConvert.Dec();
 					continue;
 				}
 
-				// copy converted to backup dir for archive
-				// TODO: put this behind a config flag
-				if (_config.Format.Backup)
+				// copy to local save
+				if (_config.Format.SaveLocalCopy)
 				{
 					try
 					{
 						var backupDest = Path.Join(_config.App.FitDirectory, $"{converted.Item1}.fit");
 						System.IO.File.Copy(path, backupDest, overwrite: true);
 						Log.Information("Backed up FIT file {0}", backupDest);
+					}
+					catch (Exception e)
+					{
+						Log.Error(e, "Failed to copy fit file for {@File}", converted.Item1);
+						continue;
+					}
+				}
+
+				// copy to upload dir
+				if (prepUpload)
+				{
+					try
+					{
+						var uploadDest = Path.Join(_config.App.UploadDirectory, $"{converted.Item1}.fit");
+						System.IO.File.Copy(path, uploadDest, overwrite: true);
+						Log.Debug("Prepped FIT file {@Path} for upload.", uploadDest);
 					}
 					catch (Exception e)
 					{
@@ -257,7 +276,7 @@ namespace PelotonToFitConsole.Converter
 			return new Tuple<string, ICollection<Mesg>>(title, messages);
 		}
 
-		public void Decode(string filePath)
+		public override void Decode(string filePath)
 		{
 			Decode decoder = new Decode();
 			MesgBroadcaster mesgBroadcaster = new MesgBroadcaster();
@@ -334,9 +353,7 @@ namespace PelotonToFitConsole.Converter
 
 		private Dynastream.Fit.DateTime GetStartTime(Workout workout)
 		{
-			var startTimeInSeconds = workout.Start_Time;
-			var dtDateTime = new System.DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-			dtDateTime = dtDateTime.AddSeconds(startTimeInSeconds).ToUniversalTime();
+			var dtDateTime = base.GetStartTime(workout);
 			return new Dynastream.Fit.DateTime(dtDateTime);
 		}
 
@@ -451,47 +468,6 @@ namespace PelotonToFitConsole.Converter
 			}
 		}
 
-		private float ConvertDistanceToMeters(double value, string unit)
-		{
-			switch (unit)
-			{
-				case "km":
-					return (float)value * 1000;
-				case "mi":
-					return (float)value * _metersPerMile;
-				case "ft":
-					return (float)value * 0.3048f;
-				default:
-					return (float)value;
-			}
-		}
-
-		private float GetTotalDistance(WorkoutSamples workoutSamples)
-		{
-			var summaries = workoutSamples.Summaries;
-			var distanceSummary = summaries.FirstOrDefault(s => s.Slug == "distance");
-			if (distanceSummary is null)
-				return 0.0f;
-
-			var unit = distanceSummary.Display_Unit;
-			return ConvertDistanceToMeters(distanceSummary.Value, unit);
-		}
-
-		private float ConvertToMetersPerSecond(double value, WorkoutSamples workoutSamples)
-		{
-			var summaries = workoutSamples.Summaries;
-			var distanceSummary = summaries.FirstOrDefault(s => s.Slug == "distance");
-			if (distanceSummary is null)
-				return (float)value;
-
-			var unit = distanceSummary.Display_Unit;
-			var metersPerHour = ConvertDistanceToMeters(value, unit);
-			var metersPerMinute = metersPerHour / 60;
-			var metersPerSecond = metersPerMinute / 60;
-
-			return metersPerSecond;
-		}
-
 		private SessionMesg GetSessionMesg(Workout workout, WorkoutSamples workoutSamples, WorkoutSummary workoutSummary, Dynastream.Fit.DateTime startTime, Dynastream.Fit.DateTime endTime, ushort numLaps)
 		{
 			var sessionMesg = new SessionMesg();
@@ -516,6 +492,8 @@ namespace PelotonToFitConsole.Converter
 			sessionMesg.SetMaxHeartRate((byte)workoutSummary.Max_Heart_Rate);
 			sessionMesg.SetAvgCadence((byte)workoutSummary.Avg_Cadence);
 			sessionMesg.SetMaxCadence((byte)workoutSummary.Max_Cadence);
+			sessionMesg.SetMaxSpeed(GetMaxSpeedMetersPerSecond(workoutSamples));
+			sessionMesg.SetAvgSpeed(GetAvgSpeedMetersPerSecond(workoutSamples));
 			
 			// HR zones
 			//if (workoutSamples.Metrics.Any())
@@ -625,12 +603,5 @@ namespace PelotonToFitConsole.Converter
 			return stepsAndLaps;
 		}
 
-		private string GetTitle(Workout workout)
-		{
-			return $"{workout.Ride.Title} with {workout.Ride.Instructor.Name}"
-				.Replace(" ", "_")
-				.Replace("/", "-")
-				.Replace(":", "-");
-		}
 	}
 }

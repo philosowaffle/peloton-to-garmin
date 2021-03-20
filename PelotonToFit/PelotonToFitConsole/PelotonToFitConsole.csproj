@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <Folder Include="Output\json\" />
+    <Folder Include="Output\tcx\" />
   </ItemGroup>
 
 </Project>

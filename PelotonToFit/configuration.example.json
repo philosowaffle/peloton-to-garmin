@@ -7,10 +7,11 @@
     "PollingIntervalSeconds": 86400
   },
 
-   "Format": {
+  "Format": {
     "Fit": true,
     "Json": false,
-    "Backup": false
+    "Tcx": false,
+    "SaveLocalCopy": false
   },
 
   "Peloton": {
@@ -23,7 +24,8 @@
   "Garmin": {
     "Email": "garmin@gmail.com",
     "Password": "garmin",
-    "Upload": false
+    "Upload": false,
+    "FormatToUpload": "fit"
   },
 
   "Observability": {

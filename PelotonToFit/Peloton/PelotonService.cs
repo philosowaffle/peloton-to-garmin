@@ -88,7 +88,7 @@ namespace Peloton
 				data.WorkoutSamples = workoutSamples;
 				data.WorkoutSummary = workoutSummary; 
 
-				if (_config.Format.Json) SaveRawData(data, workoutId);
+				if (_config.Format.Json && _config.Format.SaveLocalCopy) SaveRawData(data, workoutId);
 
 				Log.Debug("Write peloton workout details to file for {@WorkoutId}.", workoutId);
 				File.WriteAllText(Path.Join(workingDir, $"{workoutId}_workout.json"), data.ToString());
