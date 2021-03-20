@@ -14,7 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Metrics = Prometheus.Metrics;
 
-namespace PelotonToFitConsole
+namespace PelotonToGarminConsole
 {
 	class Program
 	{
