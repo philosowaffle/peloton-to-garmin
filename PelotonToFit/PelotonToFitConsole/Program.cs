@@ -93,6 +93,9 @@ namespace PelotonToFitConsole
 			var fitConverter = new FitConverter(config, db);
 			fitConverter.Convert();
 
+			var tcxConverter = new TcxConverter(config, db);
+			tcxConverter.Convert();
+
 			var garminUploader = new GarminUploader(config);
 			garminUploader.UploadToGarmin();
 

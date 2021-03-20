@@ -44,6 +44,7 @@ namespace Common
 
 		public string FitDirectory => Path.Join(OutputDirectory, "fit");
 		public string JsonDirectory => Path.Join(OutputDirectory, "json");
+		public string TcxDirectory => Path.Join(OutputDirectory, "tcx");
 		public string FailedDirectory => Path.Join(OutputDirectory, "failed");
 		public string DownloadDirectory => Path.Join(WorkingDirectory, "downloaded");
 		public string UploadDirectory => Path.Join(WorkingDirectory, "upload");
@@ -54,7 +55,8 @@ namespace Common
 	{
 		public bool Fit { get; set; }
 		public bool Json { get; set; }
-		public bool Backup { get; set; }
+		public bool Tcx { get; set; }
+		public bool SaveLocalCopy { get; set; }
 	}
 
 	public class Peloton
@@ -75,6 +77,7 @@ namespace Common
 		public string Email { get; set; }
 		public string Password { get; set; }
 		public bool Upload { get; set; }
+		public string FormatToUpload { get; set; }
 	}
 
 	public class Observability
