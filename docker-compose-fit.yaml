@@ -6,5 +6,4 @@ services:
     image: philosowaffle/peloton-to-garmin:fitvLatest
     volumes:
       # You may need to grant read/write permissions on the following.
-      - ./config:/app/config
-      - ./output:/app/output
+      - ./app:/app
