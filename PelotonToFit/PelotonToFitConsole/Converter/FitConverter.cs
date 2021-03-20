@@ -348,6 +348,8 @@ namespace PelotonToFitConsole.Converter
 			var cadenceMetrics = allMetrics.FirstOrDefault(m => m.Slug == "cadence");
 			var speedMetrics = allMetrics.FirstOrDefault(m => m.Slug == "speed");
 			var resistanceMetrics = allMetrics.FirstOrDefault(m => m.Slug == "resistance");
+			var locationMetrics = workoutSamples.Location_Data?.SelectMany(x => x.Coordinates).ToArray();
+			var altitudeMetrics = allMetrics.FirstOrDefault(m => m.Slug == "altitude");
 
 			var recordsTimeStamp = new Dynastream.Fit.DateTime(startTime);
 			if (workoutSamples.Seconds_Since_Pedaling_Start is object)
@@ -374,6 +376,20 @@ namespace PelotonToFitConsole.Converter
 						var resistancePercent = resistanceMetrics.Values[i] / 1;
 						record.SetResistance((byte)(254 * resistancePercent));
 					}
+
+					if (altitudeMetrics is object && i < altitudeMetrics.Values.Length)
+					{
+						var altitude = ConvertDistanceToMeters(altitudeMetrics.Values[i], altitudeMetrics.Display_Unit);						
+						record.SetAltitude(altitude);
+					}
+
+					if (locationMetrics is object && i < locationMetrics.Length)
+					{
+						// unit is semicircles
+						record.SetPositionLat(ConvertDegreesToSemicircles(locationMetrics[i].Latitude));
+						record.SetPositionLong(ConvertDegreesToSemicircles(locationMetrics[i].Longitude));
+					}
+
 					messages.Add(record);
 					recordsTimeStamp.Add(1);
 				}
@@ -382,20 +398,29 @@ namespace PelotonToFitConsole.Converter
 			return recordsTimeStamp;
 		}
 
+		private int ConvertDegreesToSemicircles(float degrees)
+		{
+			return (int)(degrees * (Math.Pow(2, 31) / 180));
+		}
+
 		private Sport GetGarminSport(Workout workout)
 		{
 			var fitnessDiscipline = workout.Fitness_Discipline;
 			switch (fitnessDiscipline)
 			{
 				case "cycling":
+				case "bike_bootcamp":
 					return Sport.Cycling;
 				case "running":
 					return Sport.Running;
 				case "walking":
 					return Sport.Walking;
+				case "cardio":
+				case "circuit":
 				case "strength":
+				case "stretching":
 				case "yoga":
-					return Sport.Generic;
+					return Sport.Training;
 				default:
 					return Sport.Invalid;
 			}
@@ -407,16 +432,19 @@ namespace PelotonToFitConsole.Converter
 			switch (fitnessDiscipline)
 			{
 				case "cycling":
+				case "bike_bootcamp":
 					return SubSport.IndoorCycling;
 				case "running":
 					return SubSport.IndoorRunning;
 				case "walking":
 					return SubSport.IndoorWalking;
 				case "cardio":
+				case "circuit":
 					return SubSport.CardioTraining;
 				case "strength":
 					return SubSport.StrengthTraining;
 				case "yoga":
+				case "stretching":
 					return SubSport.Yoga;
 				default:
 					return SubSport.Generic;
@@ -431,6 +459,8 @@ namespace PelotonToFitConsole.Converter
 					return (float)value * 1000;
 				case "mi":
 					return (float)value * _metersPerMile;
+				case "ft":
+					return (float)value * 0.3048f;
 				default:
 					return (float)value;
 			}
