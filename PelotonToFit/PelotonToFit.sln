@@ -28,6 +28,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solution", ".solution", "{
 		..\.github\workflows\tag-release.yml = ..\.github\workflows\tag-release.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conversion", "Conversion\Conversion.csproj", "{31BB1515-5895-4ADC-83C6-53E53FD254B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{DC38F108-7BB1-4055-B913-4EA1547EEDDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC38F108-7BB1-4055-B913-4EA1547EEDDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC38F108-7BB1-4055-B913-4EA1547EEDDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31BB1515-5895-4ADC-83C6-53E53FD254B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31BB1515-5895-4ADC-83C6-53E53FD254B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31BB1515-5895-4ADC-83C6-53E53FD254B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31BB1515-5895-4ADC-83C6-53E53FD254B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace PelotonToFitConsole.Converter
+namespace Conversion
 {
 	public interface IConverter
 	{
