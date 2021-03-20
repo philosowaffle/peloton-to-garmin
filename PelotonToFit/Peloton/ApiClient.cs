@@ -1,5 +1,4 @@
-﻿using Common;
-using Common.Dto;
+﻿using Common.Dto;
 using Flurl.Http;
 using Newtonsoft.Json.Linq;
 using Peloton.Dto;
@@ -31,6 +30,9 @@ namespace Peloton
 
 			var response = await $"{AuthBaseUrl}"
 				.WithHeader("peloton-platform", "web")
+				.WithHeader("DNT", "1")
+				.WithHeader("Accept-Language", "en-US")
+				.WithHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36")
 				.PostJsonAsync(new AuthRequest()
 				{
 					username_or_email = _userEmail,
