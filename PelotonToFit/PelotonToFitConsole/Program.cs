@@ -86,7 +86,7 @@ namespace PelotonToFitConsole
 
 			var db = new DbClient(config);
 			var pelotonApiClient = new ApiClient(config.Peloton.Email, config.Peloton.Password);
-			var peloton = new PelotonData(config, pelotonApiClient, db);
+			var peloton = new PelotonService(config, pelotonApiClient, db);
 
 			await peloton.DownloadLatestWorkoutDataAsync();
 

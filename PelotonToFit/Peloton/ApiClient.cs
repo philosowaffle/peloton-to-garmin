@@ -2,6 +2,8 @@
 using Flurl.Http;
 using Newtonsoft.Json.Linq;
 using Peloton.Dto;
+using Serilog;
+using System;
 using System.Threading.Tasks;
 
 namespace Peloton
@@ -28,7 +30,9 @@ namespace Peloton
 			if (!string.IsNullOrEmpty(UserId) && !string.IsNullOrEmpty(SessionId))
 				return;
 
-			var response = await $"{AuthBaseUrl}"
+			try
+			{
+				var response = await $"{AuthBaseUrl}"
 				.WithHeader("peloton-platform", "web")
 				.WithHeader("DNT", "1")
 				.WithHeader("Accept-Language", "en-US")
@@ -40,9 +44,13 @@ namespace Peloton
 				})
 				.ReceiveJson<AuthResponse>();
 
-			UserId = response.user_id;
-			SessionId = response.session_id;
-
+				UserId = response.user_id;
+				SessionId = response.session_id;
+			} catch(Exception e)
+			{
+				Log.Error(e, "Failed to authenticate with Peloton.");
+				throw;
+			}
 		}
 
 		public Task<RecentWorkouts> GetWorkoutsAsync(int numWorkouts)

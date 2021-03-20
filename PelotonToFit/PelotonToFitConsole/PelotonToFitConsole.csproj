@@ -27,4 +27,8 @@
     <ProjectReference Include="..\Peloton\Peloton.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Output\json\" />
+  </ItemGroup>
+
 </Project>
