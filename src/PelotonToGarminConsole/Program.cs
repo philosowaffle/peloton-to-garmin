@@ -52,6 +52,13 @@ namespace PelotonToGarminConsole
 				Common.Metrics.ValidateConfig(config.Observability);
 				Tracing.ValidateConfig(config.Observability);
 
+				if (config.Peloton.NumWorkoutsToDownload <= 0)
+				{
+					Console.Write("How many workouts to grab? ");
+					int num = Convert.ToInt32(Console.ReadLine());
+					config.Peloton.NumWorkoutsToDownload = num;
+				}
+
 				using var metrics = Common.Metrics.EnableMetricsServer(config.Observability.Prometheus);
 				using var tracing = Tracing.EnableTracing(config.Observability.Jaeger);
 				using var tracingSource = new ActivitySource("ROOT");
