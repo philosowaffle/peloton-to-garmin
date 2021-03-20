@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 
 COPY . /build
 WORKDIR /build
-RUN dotnet publish /build/PelotonToFit/PelotonToFitConsole/PelotonToFitConsole.csproj -c Release -r linux-musl-arm64 -o /build/published
+RUN dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-musl-arm64 -o /build/published
 
 FROM mcr.microsoft.com/dotnet/runtime:3.1-alpine-arm64v8
 
@@ -16,7 +16,15 @@ WORKDIR /app
 COPY --from=build /build/published .
 COPY --from=build /build/requirements.txt ./requirements.txt
 COPY --from=build /build/LICENSE /app/LICENSE
-COPY --from=build /build/PelotonToFit/configuration.example.json ./configuration.local.json
+
+RUN mkdir -p /app/output
+RUN mkdir -p /app/working
+RUN mkdir -p /app/config
+
+RUN touch /app/config/syncHistory.json
+RUN echo "{}" >> /app/config/syncHistory.json
+
+COPY --from=build /build/configuration.example.json /app/config/configuration.local.json
 
 RUN pip3 install -r requirements.txt
 RUN ls -l

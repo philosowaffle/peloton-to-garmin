@@ -3,32 +3,42 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PelotonToFitConsole", "PelotonToFitConsole\PelotonToFitConsole.csproj", "{808B1164-D94D-456F-B0AF-E5DDE4B82B4A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PelotonToGarminConsole", "src\PelotonToGarminConsole\PelotonToGarminConsole.csproj", "{808B1164-D94D-456F-B0AF-E5DDE4B82B4A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Garmin", "Garmin\Garmin.csproj", "{3E0E0007-E67A-44BA-B819-40C6E2C2EC8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Garmin", "src\Garmin\Garmin.csproj", "{3E0E0007-E67A-44BA-B819-40C6E2C2EC8C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peloton", "Peloton\Peloton.csproj", "{0194BE87-68AC-4F02-B2A0-B35BEB2F5466}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peloton", "src\Peloton\Peloton.csproj", "{0194BE87-68AC-4F02-B2A0-B35BEB2F5466}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{DC38F108-7BB1-4055-B913-4EA1547EEDDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "src\Common\Common.csproj", "{DC38F108-7BB1-4055-B913-4EA1547EEDDC}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solution", ".solution", "{8DD30DF7-2D75-4164-B5DD-F4CF275EE001}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conversion", "src\Conversion\Conversion.csproj", "{31BB1515-5895-4ADC-83C6-53E53FD254B0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solution", ".solution", "{EAA7A07D-19F0-4D55-A52E-CFC1C9CEBEAB}"
 	ProjectSection(SolutionItems) = preProject
-		..\.gitignore = ..\.gitignore
+		.gitignore = .gitignore
 		configuration.example.json = configuration.example.json
-		PelotonToFitConsole\configuration.local.json = PelotonToFitConsole\configuration.local.json
-		..\docker-compose-fit.yaml = ..\docker-compose-fit.yaml
-		..\.github\workflows\docker_fit_amd64_latest.yml = ..\.github\workflows\docker_fit_amd64_latest.yml
-		..\.github\workflows\docker_fit_arm64_latest.yml = ..\.github\workflows\docker_fit_arm64_latest.yml
-		..\DockerfileFit_amd64 = ..\DockerfileFit_amd64
-		..\DockerfileFit_arm64 = ..\DockerfileFit_arm64
-		..\.github\workflows\pr-test.yml = ..\.github\workflows\pr-test.yml
-		..\.github\workflows\publish.yml = ..\.github\workflows\publish.yml
-		..\README.md = ..\README.md
-		..\requirements.txt = ..\requirements.txt
-		..\.github\workflows\tag-release.yml = ..\.github\workflows\tag-release.yml
+		configuration.local.json = configuration.local.json
+		CONTRIBUTING.md = CONTRIBUTING.md
+		LICENSE = LICENSE
+		README.md = README.md
+		requirements.txt = requirements.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conversion", "Conversion\Conversion.csproj", "{31BB1515-5895-4ADC-83C6-53E53FD254B0}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".gitworkflows", ".gitworkflows", "{614A75B3-E4D8-4F29-A06A-C087159AF0B3}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\docker_fit_amd64_latest.yml = .github\workflows\docker_fit_amd64_latest.yml
+		.github\workflows\docker_fit_arm64_latest.yml = .github\workflows\docker_fit_arm64_latest.yml
+		.github\workflows\pr-test.yml = .github\workflows\pr-test.yml
+		.github\workflows\publish.yml = .github\workflows\publish.yml
+		.github\workflows\tag-release.yml = .github\workflows\tag-release.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{A7F642D9-7954-4547-84DB-67A04AE1043D}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose-fit.yaml = docker-compose-fit.yaml
+		DockerfileFit_amd64 = DockerfileFit_amd64
+		DockerfileFit_arm64 = DockerfileFit_arm64
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +69,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{614A75B3-E4D8-4F29-A06A-C087159AF0B3} = {EAA7A07D-19F0-4D55-A52E-CFC1C9CEBEAB}
+		{A7F642D9-7954-4547-84DB-67A04AE1043D} = {EAA7A07D-19F0-4D55-A52E-CFC1C9CEBEAB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1DBD48F5-054F-4C40-A97A-DE31B9132FCB}

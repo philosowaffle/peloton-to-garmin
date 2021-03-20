@@ -1,13 +1,10 @@
 version: "3.5"
-   
+
 services:
   p2g:
-    container_name: p2g-fit
+    container_name: p2g
     image: philosowaffle/peloton-to-garmin:fitvLatest
     volumes:
       # You may need to grant read/write permissions on the following.
-      # touch configuration.local.json
-      - ./configuration.local.json:/app/configuration.local.json
-      - ./output:/output
-      # touch syncHistory.json
-      - ./syncHistory.json:/app/syncHistory.db
+      - ./config:/app/config
+      - ./output:/app/output

@@ -118,3 +118,4 @@ configuration.local.json
 # Dev Files
 tests/testOutput/
 tests/database.json
+/.vs/PelotonToGarmin
