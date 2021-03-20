@@ -11,6 +11,7 @@ namespace Common.Dto
 	{
 		public string Id { get; set; }
 		public string Status { get; set; }
+		public string Fitness_Discipline { get; set; }
 	}
 
 	public class Workout

@@ -1,10 +1,10 @@
 {
   "App": {
-    "OutputDirectory": "./Output",
+    "OutputDirectory": "./output",
     "WorkingDirectory": "./working",
-    "SyncHistoryDbPath": "./Output/syncHistory.json",
+    "SyncHistoryDbPath": "./output/syncHistory.json",
     "EnablePolling": true,
-    "PollingIntervalSeconds": 30
+    "PollingIntervalSeconds": 3600
   },
 
    "Format": {
@@ -16,7 +16,8 @@
   "Peloton": {
     "Email": "peloton@gmail.com",
     "Password": "peloton",
-    "NumWorkoutsToDownload": 1
+    "NumWorkoutsToDownload": 1,
+    "ExcludeWorkoutTypes": [ "meditation" ]
   },
 
   "Garmin": {

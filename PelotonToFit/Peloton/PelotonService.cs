@@ -1,7 +1,6 @@
 ﻿using Common;
 using Common.Database;
 using Common.Dto;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Prometheus;
 using Serilog;
@@ -14,7 +13,7 @@ using Metrics = Prometheus.Metrics;
 
 namespace Peloton
 {
-	public class PelotonData
+	public class PelotonService
 	{
 		public static readonly Counter WorkoutsDownloaded = Metrics.CreateCounter("p2g_peloton_workouts_downloaded", "The number of workouts downloaded from peloton.");
 		public static readonly Counter WorkoutsArchived = Metrics.CreateCounter("p2g_peloton_workouts_archived", "The number of workouts archived from peloton.");
@@ -25,7 +24,7 @@ namespace Peloton
 		private ApiClient _pelotonApi;
 		private DbClient _dbClient;
 
-		public PelotonData(Configuration config, ApiClient pelotonApi, DbClient dbClient)
+		public PelotonService(Configuration config, ApiClient pelotonApi, DbClient dbClient)
 		{
 			_config = config;
 			_pelotonApi = pelotonApi;
@@ -39,21 +38,34 @@ namespace Peloton
 			using var tracing = Tracing.Trace(nameof(DownloadLatestWorkoutDataAsync));
 
 			await _pelotonApi.InitAuthAsync();
+
 			var recentWorkouts = await _pelotonApi.GetWorkoutsAsync(_config.Peloton.NumWorkoutsToDownload);
-			var completedWorkouts = recentWorkouts.data.Where(w => w.Status == "COMPLETE");
+			var completedWorkouts = recentWorkouts.data.Where(w => 
+			{
+				if (w.Status == "COMPLETE") return true;
+				Log.Debug("Skipping in progress workout. {@WorkoutId} {@WorkoutStatus} {@WorkoutType}", w.Id, w.Status, w.Fitness_Discipline);
+				return false;
+			});
+
+			var filteredWorkouts = completedWorkouts.Where(w => 
+			{
+				if (!_config.Peloton.ExcludeWorkoutTypes.Contains(w.Fitness_Discipline)) return true;
+				Log.Debug("Skipping excluded workout type. {@WorkoutId} {@WorkoutStatus} {@WorkoutType}", w.Id, w.Status, w.Fitness_Discipline);
+				return false;
+			});
 
 			var workingDir = _config.App.DownloadDirectory;
 			FileHandling.MkDirIfNotEists(workingDir);
 
 			using var timer = WorkoutsDownloadDuration.NewTimer();
-			foreach (var recentWorkout in recentWorkouts.data)
+			foreach (var recentWorkout in filteredWorkouts)
 			{
 				var workoutId = recentWorkout.Id;
 
 				SyncHistoryItem syncRecord = _dbClient.Get(recentWorkout.Id);
 				if ((syncRecord?.DownloadDate is object))
 				{
-					Log.Information("Workout {@WorkoutId} already downloaded, skipping.", recentWorkout.Id);
+					Log.Debug("Workout {@WorkoutId} already downloaded, skipping.", recentWorkout.Id);
 					continue;
 				}
 
@@ -81,7 +93,7 @@ namespace Peloton
 				Log.Debug("Write peloton workout details to file for {@WorkoutId}.", workoutId);
 				File.WriteAllText(Path.Join(workingDir, $"{workoutId}_workout.json"), data.ToString());
 
-				P2GWorkout deSerializedData = System.Text.Json.JsonSerializer.Deserialize<P2GWorkout>(data.ToString(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+				P2GWorkout deSerializedData = JsonSerializer.Deserialize<P2GWorkout>(data.ToString(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 
 				var syncHistoryItem = new SyncHistoryItem(deSerializedData.Workout)
 				{
@@ -98,7 +110,7 @@ namespace Peloton
 			FileHandling.MkDirIfNotEists(outputDir);
 
 			Log.Debug("Write peloton json to file for {@WorkoutId}", workoutId);
-			File.WriteAllText(Path.Join(outputDir, $"{workoutId}_workout.json"), System.Text.Json.JsonSerializer.Serialize(data, new JsonSerializerOptions() { WriteIndented = true }));
+			File.WriteAllText(Path.Join(outputDir, $"{workoutId}_workout.json"), data.ToString());
 			WorkoutsArchived.Inc();
 		}
 	}
