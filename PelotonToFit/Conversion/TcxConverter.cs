@@ -10,7 +10,7 @@ using System.Text.Json;
 using System.Xml.Linq;
 using Metrics = Prometheus.Metrics;
 
-namespace PelotonToFitConsole.Converter
+namespace Conversion
 {
 	public class TcxConverter : Converter
 	{
@@ -18,7 +18,6 @@ namespace PelotonToFitConsole.Converter
 		private static readonly Histogram WorkoutConversionDuration = Metrics.CreateHistogram("p2g_tcx_workout_conversion_duration_seconds", "Histogram of a workout conversion durations.");
 		private static readonly Gauge WorkoutsToConvert = Metrics.CreateGauge("p2g_tcx_workout_conversion_pending", "The number of workouts pending conversion to output format.");
 		private static readonly Counter WorkoutsConverted = Metrics.CreateCounter("p2g_tcx_workouts_converted_total", "The number of workouts converted.");
-
 
 		private Configuration _config;
 		private DbClient _dbClient;
@@ -29,6 +28,7 @@ namespace PelotonToFitConsole.Converter
 			_dbClient = dbClient;
 		}
 
+		// TODO: refactor some of this to abstract base since this logic is almost identical between converters
 		public override void Convert()
 		{
 			if (!_config.Format.Tcx) return;
@@ -168,7 +168,7 @@ namespace PelotonToFitConsole.Converter
 			var sport = GetSport(workout);
 			var subSport = GetSubSport(workout);
 			var startTime = GetStartTime(workout);
-			
+
 			var lx = new XElement(activityExtensions + "TPX");
 			lx.Add(new XElement(activityExtensions + "TotalPower", summary.Total_Work));
 			lx.Add(new XElement(activityExtensions + "MaximumCadence", summary.Max_Cadence));

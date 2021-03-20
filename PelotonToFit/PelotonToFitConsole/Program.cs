@@ -1,9 +1,9 @@
 ﻿using Common;
 using Common.Database;
+using Conversion;
 using Garmin;
 using Microsoft.Extensions.Configuration;
 using Peloton;
-using PelotonToFitConsole.Converter;
 using Prometheus;
 using Serilog;
 using Serilog.Enrichers.Span;
