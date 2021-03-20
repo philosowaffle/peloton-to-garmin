@@ -10,6 +10,7 @@ namespace Common.Database
 		public DateTime DownloadDate { get; set; }
 		public DateTime WorkoutDate { get; set; }
 		public bool ConvertedToFit { get; set; }
+		public bool ConvertedToTcx { get; set; }
 
 		public SyncHistoryItem() { }
 

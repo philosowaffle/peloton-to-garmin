@@ -1,28 +1,31 @@
 {
   "App": {
-    "OutputDirectory": "./Output",
+    "OutputDirectory": "./output",
     "WorkingDirectory": "./working",
-    "SyncHistoryDbPath": "./Output/syncHistory.json",
+    "SyncHistoryDbPath": "./output/syncHistory.json",
     "EnablePolling": true,
-    "PollingIntervalSeconds": 30
+    "PollingIntervalSeconds": 86400
   },
 
-   "Format": {
+  "Format": {
     "Fit": true,
     "Json": false,
-    "Backup": false
+    "Tcx": false,
+    "SaveLocalCopy": false
   },
 
   "Peloton": {
     "Email": "peloton@gmail.com",
     "Password": "peloton",
-    "NumWorkoutsToDownload": 1
+    "NumWorkoutsToDownload": 1,
+    "ExcludeWorkoutTypes": [ "meditation" ]
   },
 
   "Garmin": {
     "Email": "garmin@gmail.com",
     "Password": "garmin",
-    "Upload": false
+    "Upload": false,
+    "FormatToUpload": "fit"
   },
 
   "Observability": {

@@ -20,6 +20,7 @@ namespace Common
 		public static string Default = "app";
 		public static string Db = "db";
 		public static string Fit = "fit";
+		public static string Tcx = "tcx";
 	}
 
 	public static class Tracing

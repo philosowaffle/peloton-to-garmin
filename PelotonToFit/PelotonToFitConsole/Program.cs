@@ -1,9 +1,9 @@
 ﻿using Common;
 using Common.Database;
+using Conversion;
 using Garmin;
 using Microsoft.Extensions.Configuration;
 using Peloton;
-using PelotonToFitConsole.Converter;
 using Prometheus;
 using Serilog;
 using Serilog.Enrichers.Span;
@@ -75,6 +75,7 @@ namespace PelotonToFitConsole
 			finally
 			{
 				Log.CloseAndFlush();
+				Console.ReadLine();
 			}
 		}
 
@@ -86,12 +87,15 @@ namespace PelotonToFitConsole
 
 			var db = new DbClient(config);
 			var pelotonApiClient = new ApiClient(config.Peloton.Email, config.Peloton.Password);
-			var peloton = new PelotonData(config, pelotonApiClient, db);
+			var peloton = new PelotonService(config, pelotonApiClient, db);
 
 			await peloton.DownloadLatestWorkoutDataAsync();
 
 			var fitConverter = new FitConverter(config, db);
 			fitConverter.Convert();
+
+			var tcxConverter = new TcxConverter(config, db);
+			tcxConverter.Convert();
 
 			var garminUploader = new GarminUploader(config);
 			garminUploader.UploadToGarmin();
