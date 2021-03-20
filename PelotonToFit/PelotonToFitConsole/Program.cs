@@ -75,6 +75,7 @@ namespace PelotonToFitConsole
 			finally
 			{
 				Log.CloseAndFlush();
+				Console.ReadLine();
 			}
 		}
 
