@@ -28,4 +28,4 @@ RUN echo "{}" >> /app/syncHistory.json
 
 RUN pip3 install -r requirements.txt
 RUN ls -l
-ENTRYPOINT ["/app/PelotonToGarminConsole"]
+ENTRYPOINT ["./","PelotonToGarminConsole"]
