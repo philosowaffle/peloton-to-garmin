@@ -23,7 +23,7 @@ jobs:
         dotnet-version: ${{ matrix.dotnet }}
         
     - name: Publish ${{matrix.os}}
-      run: dotnet publish ${{ github.workspace }}\src\PelotonToGarminConsole.csproj -c Release -r ${{ matrix.os }} -o \dist\${{ matrix.os }}
+      run: dotnet publish ${{ github.workspace }}\src\PelotonToGarminConsole\PelotonToGarminConsole.csproj -c Release -r ${{ matrix.os }} -o \dist\${{ matrix.os }}
       
     - name: Create Archive ${{ matrix.os }}
       uses: papeloto/action-zip@v1
