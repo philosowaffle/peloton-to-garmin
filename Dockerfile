@@ -7,7 +7,7 @@ RUN dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.cspr
 FROM mcr.microsoft.com/dotnet/runtime:5.0-alpine
 
 ENV PYTHONUNBUFFERED=1
-RUN apk add --update --no-cache bash python3 && ln -sf python3 /usr/bin/python
+RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
 RUN python3 -m ensurepip
 RUN pip3 install --no-cache --upgrade pip setuptools
 
@@ -18,14 +18,13 @@ COPY --from=build /build/requirements.txt ./requirements.txt
 COPY --from=build /build/LICENSE ./LICENSE
 COPY --from=build /build/configuration.example.json ./configuration.local.json
 
-RUN mkdir -p ./output
-RUN mkdir -p ./working
+RUN mkdir output
+RUN mkdir working
 
-RUN touch ./syncHistory.json
-RUN echo "{}" >> ./syncHistory.json
+RUN touch syncHistory.json
+RUN echo "{}" >> syncHistory.json
 
 RUN pip3 install -r requirements.txt
-RUN chmod 777 ./PelotonToGarminConsole
 
 RUN ls -l
-CMD ["./PelotonToGarminConsole"]
+ENTRYPOINT ["./PelotonToGarminConsole"]
