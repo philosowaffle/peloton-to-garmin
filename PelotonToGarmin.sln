@@ -34,7 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".gitworkflows", ".gitworkfl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{A7F642D9-7954-4547-84DB-67A04AE1043D}"
 	ProjectSection(SolutionItems) = preProject
-		docker-compose-fit.yaml = docker-compose-fit.yaml
+		docker-compose.yaml = docker-compose.yaml
 		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
