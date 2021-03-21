@@ -28,4 +28,4 @@ RUN pip3 install -r requirements.txt
 RUN chmod 777 ./PelotonToGarminConsole
 
 RUN ls -l
-ENTRYPOINT ["dotnet","PelotonToGarminConsole.dll"]
+ENTRYPOINT ["./PelotonToGarminConsole"]
