@@ -1,8 +1,10 @@
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 
+ARG DOTNETRUNTIME
+
 COPY . /build
 WORKDIR /build
-RUN dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-musl-arm64 -o /build/published
+RUN dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r $DOTNETRUNTIME -o /build/published
 
 FROM mcr.microsoft.com/dotnet/runtime:5.0-alpine
 
@@ -16,14 +18,13 @@ WORKDIR /app
 COPY --from=build /build/published .
 COPY --from=build /build/requirements.txt ./requirements.txt
 COPY --from=build /build/LICENSE /app/LICENSE
+COPY --from=build /build/configuration.example.json /app/configuration.local.json
 
 RUN mkdir -p /app/output
 RUN mkdir -p /app/working
 
 RUN touch /app/syncHistory.json
 RUN echo "{}" >> /app/syncHistory.json
-
-COPY --from=build /build/configuration.example.json /app/configuration.local.json
 
 RUN pip3 install -r requirements.txt
 RUN ls -l
