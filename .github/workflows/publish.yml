@@ -29,7 +29,7 @@ jobs:
       uses: papeloto/action-zip@v1
       with:
        files: \dist\${{ matrix.os }}\
-       dest: \dist\${{ matrix.os }}.zip
+       dest: ${{ github.workspace }}\dist\${{ matrix.os }}.zip
        
     - name: Commit changes ${{ matrix.os }}
       uses: EndBug/add-and-commit@v7.0.0
