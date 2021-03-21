@@ -26,8 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solution", ".solution", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".gitworkflows", ".gitworkflows", "{614A75B3-E4D8-4F29-A06A-C087159AF0B3}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\docker_fit_amd64_latest.yml = .github\workflows\docker_fit_amd64_latest.yml
-		.github\workflows\docker_fit_arm64_latest.yml = .github\workflows\docker_fit_arm64_latest.yml
+		.github\workflows\docker_latest.yml = .github\workflows\docker_latest.yml
 		.github\workflows\pr-test.yml = .github\workflows\pr-test.yml
 		.github\workflows\publish.yml = .github\workflows\publish.yml
 		.github\workflows\tag-release.yml = .github\workflows\tag-release.yml
@@ -36,8 +35,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{A7F642D9-7954-4547-84DB-67A04AE1043D}"
 	ProjectSection(SolutionItems) = preProject
 		docker-compose-fit.yaml = docker-compose-fit.yaml
-		DockerfileFit_amd64 = DockerfileFit_amd64
-		DockerfileFit_arm64 = DockerfileFit_arm64
+		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
 Global
