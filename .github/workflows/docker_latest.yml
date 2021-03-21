@@ -39,7 +39,6 @@ jobs:
         with:
           push: true
           file: ./Dockerfile
-          build-args: DOTNETRUNTIME=${{ matrix.dotnet_runtime }}
           tags: philosowaffle/peloton-to-garmin:fitvLatest
           platforms: linux/arm64,linux/amd64
           cache-from: type=local,src=/tmp/.buildx-cache
