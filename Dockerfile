@@ -17,15 +17,17 @@ WORKDIR /app
 
 COPY --from=build /build/published .
 COPY --from=build /build/requirements.txt ./requirements.txt
-COPY --from=build /build/LICENSE /app/LICENSE
-COPY --from=build /build/configuration.example.json /app/configuration.local.json
+COPY --from=build /build/LICENSE ./LICENSE
+COPY --from=build /build/configuration.example.json ./configuration.local.json
 
-RUN mkdir -p /app/output
-RUN mkdir -p /app/working
+RUN mkdir -p ./output
+RUN mkdir -p ./working
 
-RUN touch /app/syncHistory.json
-RUN echo "{}" >> /app/syncHistory.json
+RUN touch ./syncHistory.json
+RUN echo "{}" >> ./syncHistory.json
 
 RUN pip3 install -r requirements.txt
+RUN chmod 777 ./PelotonToGarminConsole
+
 RUN ls -l
 ENTRYPOINT ["./PelotonToGarminConsole"]
