@@ -29,12 +29,12 @@ jobs:
       uses: papeloto/action-zip@v1
       with:
        files: \dist\${{ matrix.os }}\
-       dest: ${{ github.workspace }}\dist\${{ matrix.os }}.zip
+       dest: \dist\${{ matrix.os }}.zip
 
     - name: Commit changes ${{ matrix.os }}
       uses: EndBug/add-and-commit@v7.0.0
       with:
         message: "Create ${{ matrix.os }} distro"
-        add: ${{ github.workspace }}\dist\${{ matrix.os }}.zip
+        add: \dist\${{ matrix.os }}.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
