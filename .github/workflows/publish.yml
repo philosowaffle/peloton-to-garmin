@@ -1,4 +1,4 @@
-name: Publish
+name: Publish Distro
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
       with:
        files: \dist\${{ matrix.os }}\
        dest: ${{ github.workspace }}\dist\${{ matrix.os }}.zip
-       
+
     - name: Commit changes ${{ matrix.os }}
       uses: EndBug/add-and-commit@v7.0.0
       with:
