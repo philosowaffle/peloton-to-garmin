@@ -38,6 +38,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{A7F642
 		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dist", "dist", "{0F682AD5-F664-4DB3-80B9-AE5F04E1166E}"
+	ProjectSection(SolutionItems) = preProject
+		dist\linux-x64.zip = dist\linux-x64.zip
+		dist\osx-x64.zip = dist\osx-x64.zip
+		dist\win10-x64.zip = dist\win10-x64.zip
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +78,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{614A75B3-E4D8-4F29-A06A-C087159AF0B3} = {EAA7A07D-19F0-4D55-A52E-CFC1C9CEBEAB}
 		{A7F642D9-7954-4547-84DB-67A04AE1043D} = {EAA7A07D-19F0-4D55-A52E-CFC1C9CEBEAB}
+		{0F682AD5-F664-4DB3-80B9-AE5F04E1166E} = {EAA7A07D-19F0-4D55-A52E-CFC1C9CEBEAB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1DBD48F5-054F-4C40-A97A-DE31B9132FCB}
