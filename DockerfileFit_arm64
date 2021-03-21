@@ -27,4 +27,4 @@ COPY --from=build /build/configuration.example.json /app/configuration.local.jso
 
 RUN pip3 install -r requirements.txt
 RUN ls -l
-ENTRYPOINT ["./app/PelotonToGarminConsole"]
+ENTRYPOINT ["./PelotonToGarminConsole"]
