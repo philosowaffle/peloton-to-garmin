@@ -35,6 +35,6 @@ jobs:
       uses: EndBug/add-and-commit@v7.0.0
       with:
         message: "Create ${{ matrix.os }} distro"
-        add: \dist\${{ matrix.os }}.zip
+        add: ${{ github.workspace }}\dist\${{ matrix.os }}.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

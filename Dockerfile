@@ -1,10 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 
-ARG DOTNETRUNTIME
-
 COPY . /build
 WORKDIR /build
-RUN dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r $DOTNETRUNTIME -o /build/published
+RUN dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -o /build/published
 
 FROM mcr.microsoft.com/dotnet/runtime:5.0-alpine
 
@@ -30,4 +28,4 @@ RUN pip3 install -r requirements.txt
 RUN chmod 777 ./PelotonToGarminConsole
 
 RUN ls -l
-ENTRYPOINT ["./PelotonToGarminConsole"]
+ENTRYPOINT ["dotnet","PelotonToGarminConsole.dll"]
