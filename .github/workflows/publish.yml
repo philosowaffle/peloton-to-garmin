@@ -1,6 +1,9 @@
 name: Publish
 
 on:
+  push:
+    branches:
+    - fitFiles
   workflow_dispatch:
 
 jobs:
@@ -9,8 +12,8 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        dotnet: ['3.1']
-        os: [linux-x64, win10-x64, osx-x64]
+        dotnet: ['5.0']
+        os: [ 'linux-x64', 'win10-x64', 'osx-x64' ]
 
     steps:
     - uses: actions/checkout@v2
@@ -20,7 +23,7 @@ jobs:
         dotnet-version: ${{ matrix.dotnet }}
         
     - name: Publish ${{matrix.os}}
-      run: dotnet publish ${{ github.workspace }}\PelotonToFit\PelotonToFitConsole.csproj -c Release -r ${{ matrix.os }} -o \dist\${{ matrix.os }}
+      run: dotnet publish ${{ github.workspace }}\src\PelotonToGarminConsole.csproj -c Release -r ${{ matrix.os }} -o \dist\${{ matrix.os }}
       
     - name: Create Archive ${{ matrix.os }}
       uses: papeloto/action-zip@v1
