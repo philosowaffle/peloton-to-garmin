@@ -2,12 +2,12 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 
 COPY . /build
 WORKDIR /build
-RUN dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-musl-arm64 -o /build/published
+RUN dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -o /build/published
 
-FROM mcr.microsoft.com/dotnet/runtime:5.0-alpine
+FROM mcr.microsoft.com/dotnet/runtime:5.0
 
 ENV PYTHONUNBUFFERED=1
-RUN apk add --update --no-cache bash python3 && ln -sf python3 /usr/bin/python
+RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
 RUN python3 -m ensurepip
 RUN pip3 install --no-cache --upgrade pip setuptools
 
