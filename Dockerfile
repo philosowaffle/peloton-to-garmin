@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 
 COPY . /build
 WORKDIR /build
-RUN dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -o /build/published
+RUN dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-musl-arm64 -o /build/published
 
 FROM mcr.microsoft.com/dotnet/runtime:5.0-alpine
 
