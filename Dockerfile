@@ -3,6 +3,8 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 COPY . /build
 WORKDIR /build
 
+RUN apk add --update --no-cache bash
+
 ARG TARGETPLATFORM
 
 RUN echo $TARGETPLATFORM
