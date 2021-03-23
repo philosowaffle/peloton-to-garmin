@@ -52,17 +52,17 @@ namespace Common
 		public static Activity Trace(string name, string category = "app")
 		{
 			return Activity.Current?.Source.StartActivity(name)?.SetTag(TagKey.Category, category)
-					?? new ActivitySource("P2G").StartActivity(name).SetTag(TagKey.Category, category);
+					?? new ActivitySource("P2G")?.StartActivity(name)?.SetTag(TagKey.Category, category);
 		}
 
 		public static Activity WithWorkoutId(this Activity activity, string workoutId)
 		{
-			return activity.SetTag(TagKey.WorkoutId, workoutId);
+			return activity?.SetTag(TagKey.WorkoutId, workoutId);
 		}
 
 		public static Activity WithTable(this Activity activity, string table)
 		{
-			return activity.SetTag(TagKey.Table, table);
+			return activity?.SetTag(TagKey.Table, table);
 		}
 
 		public static bool ValidateConfig(Observability config)
