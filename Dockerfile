@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 COPY . /build
 WORKDIR /build
 
-RUN apt install bash
+SHELL ["/bin/bash", "-c"]
 
 ARG TARGETPLATFORM
 
