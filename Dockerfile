@@ -6,7 +6,7 @@ WORKDIR /build
 ARG TARGETPLATFORM
 
 RUN echo $TARGETPLATFORM
-RUN if [ "$TARGETPLATFORM" = "linux/arm64"] ; then \
+RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
 		dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-musl-arm64 -o /build/published ; \
 	else \
 		dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-musl-x64 -o /build/published ; \
