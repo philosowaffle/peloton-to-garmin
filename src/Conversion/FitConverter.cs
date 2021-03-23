@@ -85,8 +85,8 @@ namespace Conversion
 				}
 
 				using var tracing = Tracing.Trace("Convert")
-										.WithWorkoutId(workoutData.Workout.Id)
-										.SetTag(TagKey.Format, TagValue.Fit);
+										?.WithWorkoutId(workoutData.Workout.Id)
+										?.SetTag(TagKey.Format, TagValue.Fit);
 
 				// call internal convert method
 				var converted = Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.WorkoutSummary);
