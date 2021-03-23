@@ -3,13 +3,14 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 COPY . /build
 WORKDIR /build
 
+ARG $TARGETPLATFORM
+
 RUN echo $TARGETPLATFORM
 RUN if [ "$TARGETPLATFORM" = "linux/arm64"] ; then \
 		dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-musl-arm64 -o /build/published ; \
 	else \
 		dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-musl-x64 -o /build/published ; \
 	fi
-
 
 FROM mcr.microsoft.com/dotnet/runtime:5.0-alpine
 
