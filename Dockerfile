@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 COPY . /build
 WORKDIR /build
 
-ARG $TARGETPLATFORM
+ARG TARGETPLATFORM
 
 RUN echo $TARGETPLATFORM
 RUN if [ "$TARGETPLATFORM" = "linux/arm64"] ; then \
