@@ -43,12 +43,16 @@
 
     "Serilog": {
       "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File", "Serilog.Sinks.Elasticsearch" ],
-      "MinimumLevel": "Information",
+      "MinimumLevel": "Debug",
       "WriteTo": [
         { "Name": "Console" },
         {
           "Name": "File",
-          "Args": { "path": "./Output/log.txt" }
+          "Args": {
+            "path": "./output/log.txt",
+            "rollingInterval": "Day",
+            "retainedFileCountLimit": 7
+          }
         },
         {
           "Name": "Elasticsearch",
