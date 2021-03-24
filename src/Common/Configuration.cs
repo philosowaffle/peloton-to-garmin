@@ -65,6 +65,7 @@ namespace Common
 	{
 		public Peloton()
 		{
+			ExcludeWorkoutTypes = new List<string>();
 			NumWorkoutsToDownload = 5;
 		}
 

@@ -38,7 +38,7 @@ namespace Common
 			} 
 			catch (Exception e) {
 				Log.Error(e, "Failed to clean up working directory: {@Directory}", workingDir);
-			}			
+			}
 		}
 	}
 }

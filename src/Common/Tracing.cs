@@ -2,6 +2,7 @@
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
+using System;
 using System.Diagnostics;
 
 namespace Common
@@ -43,7 +44,7 @@ namespace Common
 							})
 							.Build();
 
-				Log.Information("Tracing started and exporting to: http://{0}:{1}", config.AgentHost, config.AgentPort);
+				Log.Information("Tracing started and exporting to: http://{@Host}:{@Port}", config.AgentHost, config.AgentPort);
 			}
 
 			return tracing;
@@ -72,14 +73,14 @@ namespace Common
 
 			if (string.IsNullOrEmpty(config.Jaeger.AgentHost))
 			{
-				Log.Error("Agent Host must be set: {0}.{1}.", nameof(config), nameof(config.Jaeger.AgentHost));
-				return false;
+				Log.Error("Agent Host must be set: {@Config}.{@ConfigSection}.", nameof(config), nameof(config.Jaeger.AgentHost));
+				throw new ArgumentException("Agent Host must be set.", nameof(config.Jaeger.AgentHost));
 			}
 
 			if (config.Jaeger.AgentPort is null || config.Jaeger.AgentPort <= 0)
 			{
-				Log.Error("Agent Port must be set: {0}.{1}.", nameof(config), nameof(config.Jaeger.AgentPort));
-				return false;
+				Log.Error("Agent Port must be set: {@Config}.{@ConfigSection}.", nameof(config), nameof(config.Jaeger.AgentPort));
+				throw new ArgumentException("Agent Port must be a valid port.", nameof(config.Jaeger.AgentPort));
 			}
 
 			return true;
