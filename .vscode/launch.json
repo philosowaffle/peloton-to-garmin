@@ -5,54 +5,81 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Launch",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/peloton-to-garmin.py"
-        },
-        {
-            "name": "Python: Attach",
-            "type": "python",
-            "request": "attach",
-            "localRoot": "${workspaceFolder}",
-            "remoteRoot": "${workspaceFolder}",
-            "port": 3000,
-            "secret": "my_secret",
-            "host": "localhost"
-        },
-        {
-            "name": "Python: Terminal (integrated)",
+            "name": "Run",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/peloton-to-garmin.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Python: Terminal (external)",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/peloton-to-garmin.py",
-            "console": "externalTerminal"
-        },
-        {
-            "name": "Python: All debug Options",
-            "type": "python",
-            "request": "launch",
-            "python": "${command:python.interpreterPath}",
-            "program": "${file}",
-            "module": "module.name",
-            "env": {
-                "VAR1": "1",
-                "VAR2": "2"
-            },
-            "envFile": "${workspaceFolder}/.env",
+            "console": "integratedTerminal",
             "args": [
-                "arg1",
-                "arg2"
             ],
-            "debugOptions": [
-                "RedirectOutput"
+        },
+        {
+            "name": "Upload",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/peloton-to-garmin.py",
+            "console": "integratedTerminal",
+            "args": [
+                "-garmin_enable_upload", "true"
+            ],
+        },
+        {
+            "name": "Archive, Upload",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/peloton-to-garmin.py",
+            "console": "integratedTerminal",
+            "args": [
+                "-garmin_enable_upload", "true",
+                "-retain_files", "false",
+                "-archive_files", "true",
+                "-archive_by_type", "true"
+            ],
+        },
+        {
+            "name": "Archive, Retain",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/peloton-to-garmin.py",
+            "console": "integratedTerminal",
+            "args": [
+                "-retain_files", "true",
+                "-archive_files", "true",
+                "-archive_by_type", "true"
+            ],
+        },
+        {
+            "name": "Skip Download, Retain",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/peloton-to-garmin.py",
+            "console": "integratedTerminal",
+            "args": [
+                "-retain_files", "true",
+                "-skip_download", "true"
+            ],
+        },
+        {
+            "name": "Archive",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/peloton-to-garmin.py",
+            "console": "integratedTerminal",
+            "args": [
+                "-archive_files", "true",
+                "-archive_by_type", "true"
             ]
-        }
+        },
+        {
+            "name": "Archive, Upload",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/peloton-to-garmin.py",
+            "console": "integratedTerminal",
+            "args": [
+                "-garmin_enable_upload", "true",
+                "-archive_files", "true"
+            ],
+        },
     ]
 }

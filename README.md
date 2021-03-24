@@ -16,6 +16,7 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 1. [Docker](#docker)
 1. [Configuration](#configuration)
 1. [Database](#database)
+1. [For Developers](#for-developers)
 1. [Use At Own Risk](#warnings)
 
 <a href="https://www.buymeacoffee.com/philosowaffle" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/black_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
@@ -134,7 +135,6 @@ Use cases:
 * You take a wide variety of Peloton classes, including meditation and yoga, but you only want to upload cycling classes.
 * You want to avoid double-counting activities you already track directly on a Garmin device, such as outdoor running workouts.
 
-
 ## Supported Python/OS
 
 The matrix of supported Python versions and OS's can be found [here](https://github.com/philosowaffle/peloton-to-garmin/blob/master/.github/workflows/pr-test.yml#L17).
@@ -152,3 +152,14 @@ Garmin Upload feature is provided by the library: https://github.com/La0/garmin-
 ## Warnings
 
 ⚠️ WARNING!!! Your username and password for Peloton and Garmin Connect are stored in clear text, WHICH IS NOT SECURE. If you have concerns about storing your credentials in an unsecure file, do not use this option.
+
+## For Developers
+The processing of the Peloton workouts is now done in two separate steps:
+1. Downloading of workouts from Peloton.  Workouts are saved in JSON files in a working directory.
+2. Processing of all files available in the working directory.  This includes generating the TCX output file, and queuing for upload to Garmin.  Workout files are removed from the working directory.
+
+The workout files saved in step #1 can be optionally retained (not removed in step #2) and/or copied to a separate archive directory.  Additionally, you have the option to skip step #1 entirely, i.e. don't download anything from Peloton, but only use whatever files are already in the working directory.
+
+These features may be useful to developers.  You can preserve the Peloton data files for review or study, and more importantly, build up a library of workouts files.  With these files, you can more easily work on new development, without re-downloading Peloton workouts each time you run (and being dependent upon what those workouts are).  One could also share these workouts with other developers.
+
+Please refer to `configuration.py` for more information regarding these settings: `-working`, `-archive`, `-skip_download`, `-retain_files`, `-archive_files`, `-archive_by_type`
