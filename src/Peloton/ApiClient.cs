@@ -33,10 +33,8 @@ namespace Peloton
 			try
 			{
 				var response = await $"{AuthBaseUrl}"
-				.WithHeader("peloton-platform", "web")
-				.WithHeader("DNT", "1")
 				.WithHeader("Accept-Language", "en-US")
-				.WithHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36")
+				.WithHeader("User-Agent", "PostmanRuntime/7.26.10")
 				.PostJsonAsync(new AuthRequest()
 				{
 					username_or_email = _userEmail,
