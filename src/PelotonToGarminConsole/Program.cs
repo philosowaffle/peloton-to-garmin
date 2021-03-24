@@ -37,6 +37,7 @@ namespace PelotonToGarminConsole
 			configProviders.GetSection(nameof(Peloton)).Bind(config.Peloton);
 			configProviders.GetSection(nameof(Garmin)).Bind(config.Garmin);
 			configProviders.GetSection(nameof(Observability)).Bind(config.Observability);
+			configProviders.GetSection(nameof(Developer)).Bind(config.Developer);
 
 			// TODO: document how to configure this and which sinks are supported
 			// https://github.com/serilog/serilog-settings-configuration
