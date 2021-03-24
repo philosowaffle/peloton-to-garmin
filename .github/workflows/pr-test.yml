@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        dotnet: [ '2.2.103', '3.0', '3.1.x' ]
+        dotnet: [ '3.1.x', '5.0' ]
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
@@ -24,3 +24,5 @@ jobs:
       run: dotnet restore PelotonToFit\PelotonToFitConsole.csproj
     - name: Build
       run: dotnet build PelotonToFit\PelotonToFit.sln --configuration Release --no-restore
+    - name: Test
+      run: dotnet test

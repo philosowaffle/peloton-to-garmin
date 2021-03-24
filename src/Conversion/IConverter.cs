@@ -1,4 +1,5 @@
 ﻿using Common.Dto;
+using Serilog;
 using System;
 using System.Linq;
 
@@ -40,6 +41,7 @@ namespace Conversion
 				case "ft":
 					return (float)value * 0.3048f;
 				default:
+					Log.Debug("Found unkown distance unit {@Unit}", unit);
 					return (float)value;
 			}
 		}
@@ -49,7 +51,10 @@ namespace Conversion
 			var summaries = workoutSamples.Summaries;
 			var distanceSummary = summaries.FirstOrDefault(s => s.Slug == "distance");
 			if (distanceSummary is null)
+			{
+				Log.Debug("No distance slug found. Defaulting to 0.");
 				return 0.0f;
+			}
 
 			var unit = distanceSummary.Display_Unit;
 			return ConvertDistanceToMeters(distanceSummary.Value, unit);
@@ -60,7 +65,10 @@ namespace Conversion
 			var summaries = workoutSamples.Summaries;
 			var distanceSummary = summaries.FirstOrDefault(s => s.Slug == "distance");
 			if (distanceSummary is null)
+			{
+				Log.Debug("No distance slug found for unit. Defaulting distance to original value: {@Distance}", value);
 				return (float)value;
+			}
 
 			var unit = distanceSummary.Display_Unit;
 			var metersPerHour = ConvertDistanceToMeters(value, unit);
@@ -75,7 +83,10 @@ namespace Conversion
 			var summaries = workoutSamples.Metrics;
 			var speedSummary = summaries.FirstOrDefault(s => s.Slug == "speed");
 			if (speedSummary is null)
+			{
+				Log.Debug("No speed slug found. Defaulting to 0.");
 				return 0.0f;
+			}
 
 			return ConvertToMetersPerSecond(speedSummary.Max_Value, workoutSamples);
 		}
@@ -85,7 +96,10 @@ namespace Conversion
 			var summaries = workoutSamples.Metrics;
 			var speedSummary = summaries.FirstOrDefault(s => s.Slug == "speed");
 			if (speedSummary is null)
+			{
+				Log.Debug("No speed slug found. Defaulting to 0.");
 				return 0.0f;
+			}
 
 			return ConvertToMetersPerSecond(speedSummary.Average_Value, workoutSamples);
 		}
