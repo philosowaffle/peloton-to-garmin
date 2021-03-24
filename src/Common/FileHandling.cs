@@ -31,8 +31,14 @@ namespace Common
 
 		public static void Cleanup(string workingDir)
 		{
-			Log.Debug("Deleting working directory.");
-			Directory.Delete(workingDir, recursive: true);
+			try
+			{
+				Log.Debug("Deleting working directory.");
+				Directory.Delete(workingDir, recursive: true);
+			} 
+			catch (Exception e) {
+				Log.Error(e, "Failed to clean up working directory: {@Directory}", workingDir);
+			}			
 		}
 	}
 }

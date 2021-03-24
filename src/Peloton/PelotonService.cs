@@ -49,7 +49,7 @@ namespace Peloton
 
 			var filteredWorkouts = completedWorkouts.Where(w => 
 			{
-				if (!_config.Peloton.ExcludeWorkoutTypes.Contains(w.Fitness_Discipline)) return true;
+				if (!_config.Peloton.ExcludeWorkoutTypes?.Contains(w.Fitness_Discipline) ?? true) return true;
 				Log.Debug("Skipping excluded workout type. {@WorkoutId} {@WorkoutStatus} {@WorkoutType}", w.Id, w.Status, w.Fitness_Discipline);
 				return false;
 			});
