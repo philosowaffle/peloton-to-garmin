@@ -1,5 +1,6 @@
 ﻿using Prometheus;
 using Serilog;
+using System;
 
 namespace Common
 {
@@ -26,8 +27,8 @@ namespace Common
 
 			if (config.Prometheus.Port.HasValue && config.Prometheus.Port <= 0)
 			{
-				Log.Error("Prometheus Port must be a valid port: {0}.{1}.", nameof(config), nameof(config.Prometheus.Port));
-				return false;
+				Log.Error("Prometheus Port must be a valid port: {@Config}.{@ConfigSecion}.", nameof(config), nameof(config.Prometheus.Port));
+				throw new ArgumentException("Prometheus Port must be a valid port.", nameof(config.Prometheus.Port));
 			}
 
 			return true;

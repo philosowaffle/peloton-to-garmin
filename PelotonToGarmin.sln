@@ -44,6 +44,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dist", "dist", "{0F682AD5-F
 		dist\win10-x64.zip = dist\win10-x64.zip
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,10 @@ Global
 		{31BB1515-5895-4ADC-83C6-53E53FD254B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31BB1515-5895-4ADC-83C6-53E53FD254B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31BB1515-5895-4ADC-83C6-53E53FD254B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

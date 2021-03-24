@@ -1,5 +1,6 @@
 ﻿using JsonFlatFileDataStore;
 using Prometheus;
+using Serilog;
 using System;
 using System.Linq;
 using PromMetrics = Prometheus.Metrics;
@@ -36,7 +37,15 @@ namespace Common.Database
 										.WithTable("SyncHistoryItem")
 										.WithWorkoutId(id);
 
+			try
+			{
 				return _syncHistoryTable.Value.AsQueryable().Where(i => i.Id == id).FirstOrDefault();
+			} 
+			catch (Exception e)
+			{
+				Log.Error(e, "Failed to get workout from db: {@WorkoutId}", id);
+				return null;
+			}
 		}
 
 		public void Upsert(SyncHistoryItem item)
@@ -48,7 +57,14 @@ namespace Common.Database
 											.WithTable("SyncHistoryItem")
 											.WithWorkoutId(item.Id);
 
-			_syncHistoryTable.Value.ReplaceOne(item.Id, item, upsert: true);
+			try
+			{
+				_syncHistoryTable.Value.ReplaceOne(item.Id, item, upsert: true);
+			}
+			catch (Exception e)
+			{
+				Log.Error(e, "Failed to upsert workout to db: {@WorkoutId}", item?.Id);
+			}
 		}
 	}
 }

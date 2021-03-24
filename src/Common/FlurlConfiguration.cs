@@ -20,13 +20,13 @@ namespace Common
 
 		public static void Configure(Configuration config)
 		{
-			Func<FlurlCall, Task> beforeCallAsync = delegate (FlurlCall call)
+			Func<FlurlCall, Task> beforeCallAsync = (FlurlCall call) =>
 			{
 				Log.Debug("{0} {1} {2}", call.HttpRequestMessage.Method, call.HttpRequestMessage.RequestUri, call.HttpRequestMessage.Content);
 				return Task.CompletedTask;
 			};
 
-			Func<FlurlCall, Task> afterCallAsync = async delegate (FlurlCall call)
+			Func<FlurlCall, Task> afterCallAsync = async (FlurlCall call) =>
 			{
 				Log.Debug("{0} {1}", call.HttpResponseMessage.StatusCode, await call.HttpResponseMessage.Content.ReadAsStringAsync());
 
@@ -35,9 +35,9 @@ namespace Common
 					HttpResponseCounter
 					.WithLabels(
 						call.HttpRequestMessage.Method.ToString(),
-						call.HttpRequestMessage.RequestUri.Host.ToString(),
-						call.HttpRequestMessage.RequestUri.AbsolutePath.ToString(),
-						call.HttpRequestMessage.RequestUri.Query.ToString(),
+						call.HttpRequestMessage.RequestUri.Host,
+						call.HttpRequestMessage.RequestUri.AbsolutePath,
+						call.HttpRequestMessage.RequestUri.Query,
 						call.HttpResponseMessage.StatusCode.ToString(),
 						call.Duration.GetValueOrDefault().TotalSeconds.ToString()
 					)
@@ -45,7 +45,7 @@ namespace Common
 				}
 			};
 
-			Func<FlurlCall, Task> onErrorAsync = async delegate (FlurlCall call)
+			Func<FlurlCall, Task> onErrorAsync = async (FlurlCall call) =>
 			{
 				Log.Error("Http Call Failed. {0} {1}", call.HttpResponseMessage.StatusCode, await call.HttpResponseMessage.Content.ReadAsStringAsync());
 
@@ -54,9 +54,9 @@ namespace Common
 					HttpErrorCounter
 					.WithLabels(
 						call.HttpRequestMessage.Method.ToString(),
-						call.HttpRequestMessage.RequestUri.Host.ToString(),
-						call.HttpRequestMessage.RequestUri.AbsolutePath.ToString(),
-						call.HttpRequestMessage.RequestUri.Query.ToString(),
+						call.HttpRequestMessage.RequestUri.Host,
+						call.HttpRequestMessage.RequestUri.AbsolutePath,
+						call.HttpRequestMessage.RequestUri.Query,
 						call.HttpResponseMessage.StatusCode.ToString(),
 						call.Duration.GetValueOrDefault().TotalSeconds.ToString(),
 						call.HttpResponseMessage.ReasonPhrase
