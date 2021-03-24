@@ -25,7 +25,7 @@ namespace Peloton
 			_userPassword = password;
 		}
 
-		public async Task InitAuthAsync()
+		public async Task InitAuthAsync(string overrideUserAgent = null)
 		{
 			if (!string.IsNullOrEmpty(UserId) && !string.IsNullOrEmpty(SessionId))
 				return;
@@ -34,7 +34,7 @@ namespace Peloton
 			{
 				var response = await $"{AuthBaseUrl}"
 				.WithHeader("Accept-Language", "en-US")
-				.WithHeader("User-Agent", "PostmanRuntime/7.26.10")
+				.WithHeader("User-Agent", overrideUserAgent ?? "PostmanRuntime/7.26.10")
 				.PostJsonAsync(new AuthRequest()
 				{
 					username_or_email = _userEmail,

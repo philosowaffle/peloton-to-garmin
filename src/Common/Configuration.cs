@@ -13,6 +13,7 @@ namespace Common
 			Peloton = new Peloton();
 			Garmin = new Garmin();
 			Observability = new Observability();
+			Developer = new Developer();
 		}
 
 		public App App { get; set; }
@@ -21,6 +22,7 @@ namespace Common
 		public Garmin Garmin { get; set; }
 
 		public Observability Observability { get; set; }
+		public Developer Developer { get; set; }
 	}
 
 	public class App
@@ -103,5 +105,10 @@ namespace Common
 	{
 		public bool Enabled { get; set; }
 		public int? Port { get; set; }
+	}
+
+	public class Developer
+	{
+		public string UserAgent { get; set; }
 	}
 }
