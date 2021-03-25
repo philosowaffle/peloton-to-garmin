@@ -5,6 +5,12 @@ on:
   push:
     branches:
     - fitFiles
+    paths-ignore:
+    - 'dist/**'
+    - '.github/**'
+    - '**.md'
+    - '.gitignore'
+    - 'docker-compose.yaml'
 
 jobs:
   publish:
