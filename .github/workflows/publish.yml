@@ -11,6 +11,7 @@ jobs:
 
     runs-on: windows-latest
     strategy:
+      max-parallel: 1
       matrix:
         dotnet: ['5.0']
         os: [ 'linux-x64', 'win10-x64', 'osx-x64' ]
