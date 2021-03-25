@@ -42,5 +42,6 @@ jobs:
       with:
         message: "Create ${{ matrix.os }} distro"
         add: ${{ github.workspace }}\dist\${{ matrix.os }}.zip
+        pull_strategy: '--rebase'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
