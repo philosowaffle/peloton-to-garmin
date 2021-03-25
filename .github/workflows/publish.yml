@@ -23,7 +23,7 @@ jobs:
         dotnet-version: ${{ matrix.dotnet }}
     
     - name: Clean
-      run: dotnet clean
+      run: dotnet clean --configuration Release && dotnet nuget locals all --clear
     
     - name: Restore
       run: dotnet restore
