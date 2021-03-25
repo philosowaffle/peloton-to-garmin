@@ -1,6 +1,9 @@
 name: Publish Distro
 
 on:
+  push:
+    branches:
+    - fitFiles
   workflow_dispatch:
 
 jobs:
