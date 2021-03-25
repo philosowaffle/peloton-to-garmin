@@ -4,13 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-    - 'fitFiles'
-    paths-ignore:
-    - 'dist/**'
-    - '**.md'
-    - '.gitignore'
-    - 'docker-compose.yaml'
-    - '.github/**'
+    - fitFiles
 
 jobs:
   publish:
