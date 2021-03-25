@@ -5,7 +5,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>PelotonToGarminConsole</AssemblyName>
     <RootNamespace>PelotonToGarminConsole</RootNamespace>
-    <RuntimeIdentifiers>win10-x64;osx.10.12-x64;debian.8-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win10-x64;osx-x64;linux-x64</RuntimeIdentifiers>
     <StartupObject>PelotonToGarminConsole.Program</StartupObject>
     <PackageProjectUrl>https://github.com/philosowaffle/peloton-to-garmin</PackageProjectUrl>
     <RepositoryUrl>https://github.com/philosowaffle/peloton-to-garmin</RepositoryUrl>
