@@ -1,6 +1,7 @@
 name: Publish Docker Latest
 
 on:
+  workflow_dispatch:
   push:
     branches:
     - fitFiles
