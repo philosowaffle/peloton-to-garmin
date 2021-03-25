@@ -27,7 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".gitworkflows", ".gitworkfl
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\docker_latest.yml = .github\workflows\docker_latest.yml
 		.github\workflows\pr-test.yml = .github\workflows\pr-test.yml
-		.github\workflows\publish.yml = .github\workflows\publish.yml
+		.github\workflows\publish_distros.yml = .github\workflows\publish_distros.yml
 		.github\workflows\tag-release.yml = .github\workflows\tag-release.yml
 	EndProjectSection
 EndProject
@@ -44,7 +44,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dist", "dist", "{0F682AD5-F
 		dist\win10-x64.zip = dist\win10-x64.zip
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
