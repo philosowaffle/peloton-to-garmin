@@ -6,12 +6,12 @@ on:
     - fitFiles
     paths-ignore:
     - 'dist/**'
-    - README.md
-    - CONTRIBUTING.md
-    - LICENSE.md
-    - .gitignore
-    - docker-compose.yaml
-    - .github/**
+    - 'README.md'
+    - 'CONTRIBUTING.md'
+    - 'LICENSE.md'
+    - '.gitignore'
+    - 'docker-compose.yaml'
+    - '.github/**'
   workflow_dispatch:
 
 jobs:
