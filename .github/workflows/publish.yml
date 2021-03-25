@@ -29,7 +29,7 @@ jobs:
       run: dotnet restore
         
     - name: Publish ${{matrix.os}}
-      run: dotnet publish ${{ github.workspace }}\src\PelotonToGarminConsole\PelotonToGarminConsole.csproj -c Release -r ${{ matrix.os }} -o ${{ github.workspace }}\dist\${{ matrix.os }}
+      run: dotnet publish ${{ github.workspace }}\src\PelotonToGarminConsole\PelotonToGarminConsole.csproj --no-restore -c Release -r ${{ matrix.os }} -o ${{ github.workspace }}\dist\${{ matrix.os }}
       
     - name: Create Archive ${{ matrix.os }}
       uses: papeloto/action-zip@v1
