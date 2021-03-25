@@ -5,11 +5,10 @@ on:
     branches: [ master ]
     paths-ignore:
     - 'dist/**'
+    - '.github/**'
     - '**.md'
     - '.gitignore'
     - 'docker-compose.yaml'
-    - '.github/**'
-  workflow_dispatch:
 
 jobs:
   build-and-test:
