@@ -7,7 +7,7 @@ on:
     - fitFiles
     paths-ignore:
     - 'dist/**'
-    - '.github/**'
+    #- '.github/**'
     - '**.md'
     - '.gitignore'
     - 'docker-compose.yaml'
@@ -37,6 +37,13 @@ jobs:
         
     - name: Publish ${{matrix.os}}
       run: dotnet publish ${{ github.workspace }}\src\PelotonToGarminConsole\PelotonToGarminConsole.csproj --no-restore -c Release -r ${{ matrix.os }} -o ${{ github.workspace }}\dist\${{ matrix.os }}
+
+    - uses: actions/checkout@master
+    - name: Copy Config to Distro
+      uses: canastro/copy-file-action@master
+      with:
+        source: "configuration.example.json"
+        target: \dist\${{ matrix.os }}\configuration.local.json
       
     - name: Create Archive ${{ matrix.os }}
       uses: papeloto/action-zip@v1
