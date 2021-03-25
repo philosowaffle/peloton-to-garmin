@@ -1,18 +1,16 @@
 name: Publish Distro
 
 on:
+  workflow_dispatch:
   push:
     branches:
     - fitFiles
     paths-ignore:
     - 'dist/**'
-    - 'README.md'
-    - 'CONTRIBUTING.md'
-    - 'LICENSE.md'
+    - '**.md'
     - '.gitignore'
     - 'docker-compose.yaml'
     - '.github/**'
-  workflow_dispatch:
 
 jobs:
   publish:
