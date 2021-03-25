@@ -3,6 +3,14 @@ name: PR Test
 on:
   pull_request:
     branches: [ master ]
+    paths-ignore:
+    - 'dist/**'
+    - README.md
+    - CONTRIBUTING.md
+    - LICENSE.md
+    - .gitignore
+    - docker-compose.yaml
+    - .github/**
   workflow_dispatch:
 
 jobs:
