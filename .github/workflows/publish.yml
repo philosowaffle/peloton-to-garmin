@@ -5,12 +5,6 @@ on:
   push:
     branches:
     - fitFiles
-    paths-ignore:
-    - 'dist/**'
-    - '**.md'
-    - '.gitignore'
-    - 'docker-compose.yaml'
-    - '.github/**'
 
 jobs:
   publish:
@@ -27,15 +21,21 @@ jobs:
       uses: actions/setup-dotnet@v1.7.2
       with:
         dotnet-version: ${{ matrix.dotnet }}
+    
+    - name: Clean
+      run: dotnet clean
+    
+    - name: Restore
+      run: dotnet restore
         
     - name: Publish ${{matrix.os}}
-      run: dotnet publish ${{ github.workspace }}\src\PelotonToGarminConsole\PelotonToGarminConsole.csproj -c Release -r ${{ matrix.os }} -o \dist\${{ matrix.os }}
+      run: dotnet publish ${{ github.workspace }}\src\PelotonToGarminConsole\PelotonToGarminConsole.csproj --no-restore -c Release -r ${{ matrix.os }} -o ${{ github.workspace }}\dist\${{ matrix.os }}
       
     - name: Create Archive ${{ matrix.os }}
       uses: papeloto/action-zip@v1
       with:
-       files: \dist\${{ matrix.os }}\
-       dest: \dist\${{ matrix.os }}.zip
+       files: ${{ github.workspace }}\dist\${{ matrix.os }}\
+       dest: ${{ github.workspace }}\dist\${{ matrix.os }}.zip
 
     - name: Commit changes ${{ matrix.os }}
       uses: EndBug/add-and-commit@v7.0.0
