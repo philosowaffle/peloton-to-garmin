@@ -4,7 +4,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Garmin
@@ -24,6 +24,8 @@ namespace Garmin
 
 		private readonly Configuration _config;
 
+		private CookieJar _jar;
+
 		public ApiClient(Configuration config)
 		{
 			_config = config;
@@ -37,14 +39,12 @@ namespace Garmin
 		{
 			var userAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/50.0";
 
-			CookieJar jar = null;
 			dynamic ssoHostResponse = null;
 			try
 			{
 				ssoHostResponse = await URL_HOSTNAME
 								.WithHeader("User-Agent", userAgent)
-								.SetQueryParams()
-								.WithCookies(out jar)
+								.WithCookies(out _jar)
 								.GetJsonAsync<dynamic>();
 			} catch (FlurlHttpException e)
 			{
@@ -54,7 +54,7 @@ namespace Garmin
 
 			var ssoHostName = ssoHostResponse.host;
 
-			dynamic queryParams = new 
+			object queryParams = new
 			{
 				clientId = "GarminConnect",
 				connectLegalTerms = "true",
@@ -76,9 +76,9 @@ namespace Garmin
 				mfaRequired = "false",
 				mobile = "false",
 				openCreateAccount = "false",
-				privateStatementUrl = "https://www.garmin.com/fr-FR/privacy/connect/",
+				privacyStatementUrl = "https://www.garmin.com/fr-FR/privacy/connect/",
 				redirectAfterAccountCreationUrl = "https://connect.garmin.com/modern/",
-				redirectAfterAccountLoginurl = "https://connect.garmin.com/modern/",
+				redirectAfterAccountLoginUrl = "https://connect.garmin.com/modern/",
 				rememberMeChecked = "false",
 				rememberMeShown = "true",
 				rememberMyBrowserChecked = "false",
@@ -93,8 +93,114 @@ namespace Garmin
 				webhost = ssoHostName
 			};
 
+			string loginForm = null;
+			try
+			{
+				loginForm = await URL_LOGIN
+							.WithHeader("User-Agent", userAgent)
+							.SetQueryParams(queryParams)
+							.WithCookies(_jar)
+							.GetStringAsync();
+			} catch (FlurlHttpException e)
+			{
+				Log.Error(e, "No login form.");
+				throw;
+			}
 
+			// Lookup CSRF token
+			var regex = new Regex("<input type=\\\"hidden\\\" name=\\\"_csrf\\\" value=\\\"(\\w+)\\\" />");
+			var csrfTokenMatch = regex.Match(loginForm);
 
+			if (!csrfTokenMatch.Success)
+			{
+				Log.Error("No CSRF token.");
+				throw new Exception("Failed to find CSRF token from Garmin.");
+			}
+
+			var csrfToken = csrfTokenMatch.Groups[1].Value;
+
+			object loginData = new
+			{
+				embed = "false",
+				username = _config.Garmin.Email,
+				password = _config.Garmin.Password,
+				_csrf = csrfToken
+			};
+
+			string authResponse = null;
+
+			try
+			{
+				authResponse = await URL_LOGIN
+								.WithHeader("Host", URL_HOST_SSO)
+								.WithHeader("Referer", URL_SSO_SIGNIN)
+								//.WithHeader("User-Agent", userAgent)
+								.SetQueryParams(queryParams)
+								.WithCookies(_jar)
+								.PostJsonAsync(loginData)
+								.ReceiveString();
+			} catch (FlurlHttpException e)
+			{
+				Log.Error(e, "Authentication Failed.");
+				throw;
+			}
+
+			// Check we have SSO guid in the cookies
+			if (!_jar.Any(c => c.Name == "GARMIN-SSO-GUID"))
+			{
+				Log.Error("Missing Garmin auth cookie.");
+				throw new Exception("Failed to find Garmin auth cookie.");
+			}
+
+			// Try to find the full post login url in response
+			var regex2 = new Regex("var response_url(\\s+) = (\\\"|\\').*?ticket=(?P<ticket>[\\w\\\\-]+)(\\\"|\\')");
+			var match = regex2.Match(authResponse);
+			if (!match.Success)
+			{
+				Log.Error("Missing service ticket.");
+				throw new Exception("Failed to find service ticket.");
+			}
+
+			var ticket = match.Groups.GetValueOrDefault("ticket").Value;
+			if (string.IsNullOrEmpty(ticket))
+			{
+				Log.Error("Failed to parse service ticket.");
+				throw new Exception("Failed to parse service ticket.");
+			}
+
+			queryParams = new {
+				ticket = ticket
+			};
+
+			// Second Auth Step
+			// Needs a service ticket from the previous step
+
+			try
+			{
+				var authResponse2 = URL_POST_LOGIN
+							.WithHeader("User-Agent", userAgent)
+							.WithHeader("Host", URL_HOST_CONNECT)
+							.SetQueryParams(queryParams)
+							.WithCookies(_jar)
+							.GetStringAsync();
+			} catch (FlurlHttpException e)
+			{
+				Log.Error(e, "Second auth step failed.");
+				throw;
+			}
+			
+			// Check login
+			try
+			{
+				var response = URL_PROFILE
+							.WithHeader("User-Agent", userAgent)
+							.WithCookies(_jar)
+							.GetJsonAsync();
+			} catch (FlurlHttpException e)
+			{
+				Log.Error(e, "Login check failed.");
+				throw;
+			}
 		}
 	}
 }
