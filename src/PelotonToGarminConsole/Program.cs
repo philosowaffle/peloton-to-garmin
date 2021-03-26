@@ -48,6 +48,9 @@ namespace PelotonToGarminConsole
 
 			try
 			{
+				//var g = new Garmin.ApiClient(config);
+				//Task.Run(() => g.InitAuth()).GetAwaiter().GetResult();
+
 				// TODO: Actually Verify Configuration validation
 				GarminUploader.ValidateConfig(config.Garmin);
 				Common.Metrics.ValidateConfig(config.Observability);
@@ -94,7 +97,7 @@ namespace PelotonToGarminConsole
 			using var activity = Tracing.Trace(nameof(RunAsync));
 
 			var db = new DbClient(config);
-			var pelotonApiClient = new ApiClient(config.Peloton.Email, config.Peloton.Password);
+			var pelotonApiClient = new Peloton.ApiClient(config.Peloton.Email, config.Peloton.Password);
 			var peloton = new PelotonService(config, pelotonApiClient, db);
 
 			await peloton.DownloadLatestWorkoutDataAsync();
