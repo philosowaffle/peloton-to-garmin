@@ -11,6 +11,8 @@ import time
 import shutil
 import os
 import glob
+import re
+
 
 from lib import configuration
 from lib import pelotonApi
@@ -158,6 +160,25 @@ class PelotonToGarmin:
 
             try:
                 title, filename, garmin_activity_type = tcx_builder.workoutSamplesToTCX(workout, workoutSummary, workoutSamples, config.output_directory)
+                logger.info("Fixing File: " + filename)
+                
+                with open("device.info","r") as file:
+                    deviceinfo = file.read()
+
+                with open("author.info","r") as file:
+                    authorinfo = file.read()
+
+                with open(config.output_directory+"/"+filename,"r") as file:
+                    filedata = file.read()
+
+                filedata = filedata.replace(".0</","</")
+                filedata = filedata.replace("</Activity>", deviceinfo + "</Activity>")
+                filedata = filedata.replace("</TrainingCenterDatabase>",authorinfo + "</TrainingCenterDatabase>")
+                filedata = filedata.replace("activityExtensions","ns3")
+                filedata = re.sub(r"[.]\d+</Watts>","</Watts>", filedata)
+                with open(config.output_directory + "/" +filename,"w") as file:
+                    file.write(filedata)
+
                 logger.info("Wrote TCX file: " + filename)
             except Exception as e:
                 logger.error("Failed to write TCX file for workout {} - Exception: {}".format(workoutId, e))
