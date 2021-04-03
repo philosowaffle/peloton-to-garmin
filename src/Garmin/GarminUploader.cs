@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Metrics = Prometheus.Metrics;
 
 namespace Garmin
@@ -17,10 +18,12 @@ namespace Garmin
 		});
 
 		private readonly Configuration _config;
+		private readonly ApiClient _api;
 
 		public GarminUploader(Configuration config)
 		{
 			_config = config;
+			_api = new ApiClient(config);
 		}
 
 		public void UploadToGarmin()
@@ -43,6 +46,24 @@ namespace Garmin
 
 			using var metrics = WorkoutUploadDuration
 								.WithLabels(files.Count().ToString()).NewTimer();
+
+			UploadViaPython(files);
+			//Task.Run(() => Upload(files)).GetAwaiter().GetResult();
+
+		}
+
+		private async Task Upload(string[] files)
+		{
+			await _api.InitAuth();
+			
+			foreach (var file in files)
+			{
+				await _api.UploadActivity("someName", file, _config.Format.Fit ? ".fit" : ".tcx");
+			}
+		}
+
+		private void UploadViaPython(string[] files)
+		{
 			using var tracer = Tracing.Trace(nameof(UploadToGarmin))
 										.SetTag(TagKey.App, "gupload");
 
