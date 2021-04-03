@@ -60,7 +60,7 @@ namespace Garmin
 				connectLegalTerms = "true",
 				consumeServiceTicket = "false",
 				createAccountShown = "true",
-				cssUrl = "https://connect.garmin.com/guath-custom-v1.2-min.css",
+				cssUrl = "https://connect.garmin.com/gauth-custom-v1.2-min.css",
 				displayNameShown = "false",
 				embedWidget = "false",
 				gauthHost = "https://sso.garmin.com/sso",
@@ -74,6 +74,7 @@ namespace Garmin
 				locale = "fr_FR",
 				locationPromptShown = "true",
 				mfaRequired = "false",
+				performMFACheck = "false",
 				mobile = "false",
 				openCreateAccount = "false",
 				privacyStatementUrl = "https://www.garmin.com/fr-FR/privacy/connect/",
@@ -90,7 +91,8 @@ namespace Garmin
 				showTermsOfUse = "false",
 				source = "https://connect.garmin.com/signin/",
 				useCustomHeader = "false",
-				webhost = ssoHostName
+				//webhost = ssoHostName.ToString()
+				webhost = "https://connect.garmin.com/modern/"
 			};
 
 			string loginForm = null;
@@ -134,10 +136,10 @@ namespace Garmin
 				authResponse = await URL_LOGIN
 								.WithHeader("Host", URL_HOST_SSO)
 								.WithHeader("Referer", URL_SSO_SIGNIN)
-								//.WithHeader("User-Agent", userAgent)
+								.WithHeader("User-Agent", userAgent)
 								.SetQueryParams(queryParams)
 								.WithCookies(_jar)
-								.PostJsonAsync(loginData)
+								.PostUrlEncodedAsync(loginData)
 								.ReceiveString();
 			} catch (FlurlHttpException e)
 			{
@@ -153,7 +155,7 @@ namespace Garmin
 			}
 
 			// Try to find the full post login url in response
-			var regex2 = new Regex("var response_url(\\s+) = (\\\"|\\').*?ticket=(?P<ticket>[\\w\\\\-]+)(\\\"|\\')");
+			var regex2 = new Regex("var response_url(\\s+) = (\\\"|\\').*?ticket=(?<ticket>[\\w\\-]+)(\\\"|\\')");
 			var match = regex2.Match(authResponse);
 			if (!match.Success)
 			{
@@ -174,7 +176,6 @@ namespace Garmin
 
 			// Second Auth Step
 			// Needs a service ticket from the previous step
-
 			try
 			{
 				var authResponse2 = URL_POST_LOGIN
@@ -201,6 +202,27 @@ namespace Garmin
 				Log.Error(e, "Login check failed.");
 				throw;
 			}
+		}
+
+		// TODO: I bet we can do multiple files at once
+		public async Task<string> UploadActivity(string name, string filePath, string format)
+		{
+			var response = await $"{URL_UPLOAD}/{format}"
+				.WithCookies(_jar)
+				.PostMultipartAsync((data) => 
+				{
+					data.AddFile(name, filePath);
+				})
+				.ReceiveJson();
+
+			var result = response.detailedImportResult;
+			if (result.successes.Length == 0)
+			{
+				// handle different error states
+				// log and throw, will trap at next level up
+			}
+
+			return result.succeses[0].internalId.ToString();
 		}
 	}
 }
