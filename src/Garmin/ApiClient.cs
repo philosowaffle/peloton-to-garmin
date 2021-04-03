@@ -211,15 +211,24 @@ namespace Garmin
 				.WithCookies(_jar)
 				.PostMultipartAsync((data) => 
 				{
-					data.AddFile(name, filePath);
+					data.AddFile("file", filePath, fileName: "someFile.fit", contentType: "application/octet-stream");
 				})
 				.ReceiveJson();
 
 			var result = response.detailedImportResult;
 			if (result.successes.Length == 0)
 			{
-				// handle different error states
-				// log and throw, will trap at next level up
+				if (result.failures.Length > 0)
+				{
+					if (result.failures[0].messages[0].code == 202)
+					{
+						Log.Information("Activity already uploaded {garminWorkoutId}", result.failures[0].internalId);
+					}
+					else
+					{
+						Log.Error("Failed to upload activity to Garmin. Message: {errorMessage}", result);
+					}
+				}
 			}
 
 			return result.succeses[0].internalId.ToString();
