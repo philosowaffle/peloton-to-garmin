@@ -21,6 +21,7 @@ namespace Garmin
 		private const string URL_UPLOAD = "https://connect.garmin.com/modern/proxy/upload-service/upload";
 		private const string URL_ACTIVITY_BASE = "https://connect.garmin.com/modern/proxy/activity-service/activity";
 		private const string URL_ACTIVITY_TYPES = "https://connect.garmin.com/modern/proxy/activity-service/activity/activityTypes";
+		private const string USERAGENT = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/50.0";
 
 		private readonly Configuration _config;
 
@@ -37,13 +38,11 @@ namespace Garmin
 		/// </summary>
 		public async Task InitAuth()
 		{
-			var userAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/50.0";
-
 			dynamic ssoHostResponse = null;
 			try
 			{
 				ssoHostResponse = await URL_HOSTNAME
-								.WithHeader("User-Agent", userAgent)
+								.WithHeader("User-Agent", USERAGENT)
 								.WithCookies(out _jar)
 								.GetJsonAsync<dynamic>();
 			} catch (FlurlHttpException e)
@@ -99,7 +98,7 @@ namespace Garmin
 			try
 			{
 				loginForm = await URL_LOGIN
-							.WithHeader("User-Agent", userAgent)
+							.WithHeader("User-Agent", USERAGENT)
 							.SetQueryParams(queryParams)
 							.WithCookies(_jar)
 							.GetStringAsync();
@@ -136,7 +135,7 @@ namespace Garmin
 				authResponse = await URL_LOGIN
 								.WithHeader("Host", URL_HOST_SSO)
 								.WithHeader("Referer", URL_SSO_SIGNIN)
-								.WithHeader("User-Agent", userAgent)
+								.WithHeader("User-Agent", USERAGENT)
 								.SetQueryParams(queryParams)
 								.WithCookies(_jar)
 								.PostUrlEncodedAsync(loginData)
@@ -179,7 +178,7 @@ namespace Garmin
 			try
 			{
 				var authResponse2 = URL_POST_LOGIN
-							.WithHeader("User-Agent", userAgent)
+							.WithHeader("User-Agent", USERAGENT)
 							.WithHeader("Host", URL_HOST_CONNECT)
 							.SetQueryParams(queryParams)
 							.WithCookies(_jar)
@@ -194,7 +193,7 @@ namespace Garmin
 			try
 			{
 				var response = URL_PROFILE
-							.WithHeader("User-Agent", userAgent)
+							.WithHeader("User-Agent", USERAGENT)
 							.WithCookies(_jar)
 							.GetJsonAsync();
 			} catch (FlurlHttpException e)
@@ -209,9 +208,11 @@ namespace Garmin
 		{
 			var response = await $"{URL_UPLOAD}/{format}"
 				.WithCookies(_jar)
+				.WithHeader("NK", "NT")
+				//.WithHeader("User-Agent", USERAGENT)
 				.PostMultipartAsync((data) => 
 				{
-					data.AddFile("file", filePath, fileName: "someFile.fit", contentType: "application/octet-stream");
+					data.AddFile("file", filePath, contentType: "application/octet-stream");
 				})
 				.ReceiveJson();
 
