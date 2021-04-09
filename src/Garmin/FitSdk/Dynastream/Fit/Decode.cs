@@ -282,12 +282,12 @@ namespace Dynastream.Fit
                 Debug.WriteLine("{0} caught and ignored. ", e.GetType().Name);
                 throw new FitException("Decode:Read - Unexpected End of File at stream position" + fitStream.Position, e);
             }
-            catch (FitException e)
+            catch (FitException)
             {
                 // When attempting to decode files with invalid data size this indicates the EOF.
                 if (!invalidDataSize)
                 {
-                    throw e;
+                    throw;
                 }
             }
             return readOK;

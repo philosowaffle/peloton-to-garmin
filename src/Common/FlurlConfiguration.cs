@@ -28,7 +28,7 @@ namespace Common
 
 			Func<FlurlCall, Task> afterCallAsync = async (FlurlCall call) =>
 			{
-				Log.Debug("{0} {1}", call.HttpResponseMessage.StatusCode, await call.HttpResponseMessage.Content.ReadAsStringAsync());
+				Log.Debug("{0} {1}", call.HttpResponseMessage?.StatusCode, await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
 
 				if (config.Observability.Prometheus.Enabled)
 				{
@@ -47,7 +47,7 @@ namespace Common
 
 			Func<FlurlCall, Task> onErrorAsync = async (FlurlCall call) =>
 			{
-				Log.Error("Http Call Failed. {0} {1}", call.HttpResponseMessage.StatusCode, await call.HttpResponseMessage.Content.ReadAsStringAsync());
+				Log.Error("Http Call Failed. {0} {1}", call.HttpResponseMessage?.StatusCode, await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
 
 				if (config.Observability.Prometheus.Enabled)
 				{
