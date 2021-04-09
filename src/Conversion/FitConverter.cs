@@ -241,25 +241,35 @@ namespace Conversion
 
 			AddMetrics(messages, workoutSamples, startTime);
 
-			var stepsAndLaps = GetWorkoutStepsAndLaps(workoutSamples, startTime, sport, subSport);
+			var workoutSteps = new List<WorkoutStepMesg>();
+			var laps = new List<LapMesg>();
+			if (workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "cadence")?.Graph_Data is object)
+			{
+				var stepsAndLaps = GetWorkoutStepsAndLaps(workoutSamples, startTime, sport, subSport);
+				workoutSteps = stepsAndLaps.Values.Select(v => v.Item1).ToList();
+				laps = stepsAndLaps.Values.Select(v => v.Item2).ToList();
+			} else
+			{
+				laps = GetWorkoutLaps(workoutSamples, startTime, sport, subSport).ToList();
+			}	
 
 			var workoutMesg = new WorkoutMesg();
 			workoutMesg.SetWktName(title.Replace(_spaceSeparator, " "));
 			workoutMesg.SetCapabilities(32);
 			workoutMesg.SetSport(sport);
 			workoutMesg.SetSubSport(subSport);
-			workoutMesg.SetNumValidSteps((ushort)stepsAndLaps.Keys.Count);
+			workoutMesg.SetNumValidSteps((ushort)workoutSteps.Count);
 			messages.Add(workoutMesg);
 
 			// add steps in order
-			foreach (var tuple in stepsAndLaps.Values)
-				messages.Add(tuple.Item1);
+			foreach (var step in workoutSteps)
+				messages.Add(step);
 
 			// Add laps in order
-			foreach (var tuple in stepsAndLaps.Values)
-				messages.Add(tuple.Item2);
+			foreach (var lap in laps)
+				messages.Add(lap);
 
-			messages.Add(GetSessionMesg(workout, workoutSamples, workoutSummary, startTime, endTime, (ushort)stepsAndLaps.Keys.Count));
+			messages.Add(GetSessionMesg(workout, workoutSamples, workoutSummary, startTime, endTime, (ushort)laps.Count));
 
 			var activityMesg = new ActivityMesg();
 			activityMesg.SetTimestamp(endTime);
@@ -523,12 +533,10 @@ namespace Conversion
 		{
 			var stepsAndLaps = new Dictionary<int, Tuple<WorkoutStepMesg, LapMesg>>();
 
-			if (workoutSamples is null
-				|| workoutSamples.Target_Performance_Metrics is null
-				|| workoutSamples.Target_Performance_Metrics.Target_Graph_Metrics is null)
+			if (workoutSamples is null)
 				return stepsAndLaps;
 
-			var cadenceTargets = workoutSamples.Target_Performance_Metrics.Target_Graph_Metrics.FirstOrDefault(w => w.Type == "cadence").Graph_Data;
+			var cadenceTargets = workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "cadence")?.Graph_Data;
 
 			if (cadenceTargets is null)
 				return stepsAndLaps;
@@ -604,5 +612,56 @@ namespace Conversion
 			return stepsAndLaps;
 		}
 
+		public ICollection<LapMesg> GetWorkoutLaps(WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime, Sport sport, SubSport subSport)
+		{
+			var stepsAndLaps = new List<LapMesg>();
+
+			if (workoutSamples is null)
+				return stepsAndLaps;
+
+			ushort stepIndex = 0;
+			var speedMetrics = workoutSamples.Metrics.FirstOrDefault(m => m.Slug == "speed");
+			if (workoutSamples.Segment_List.Any())
+			{
+				var totalElapsedTime = 0;
+				foreach (var segment in workoutSamples.Segment_List)
+				{
+					var lapStartTime = new Dynastream.Fit.DateTime(startTime);
+					lapStartTime.Add(segment.Start_Time_Offset);
+
+					totalElapsedTime += segment.Length;
+
+					var lapMesg = new LapMesg();
+					lapMesg.SetStartTime(lapStartTime);
+					lapMesg.SetMessageIndex(stepIndex);
+					lapMesg.SetEvent(Event.Lap);
+					lapMesg.SetLapTrigger(LapTrigger.Time);
+					lapMesg.SetSport(sport);
+					lapMesg.SetSubSport(subSport);
+
+					lapMesg.SetTotalElapsedTime(segment.Length);
+					lapMesg.SetTotalTimerTime(segment.Length);
+
+					var startIndex = segment.Start_Time_Offset;
+					var endIndex = segment.Start_Time_Offset + segment.Length;
+					var lapDistanceInMeters = 0f;
+					for (int i = startIndex; i < endIndex; i++)
+					{
+						if (speedMetrics is object && i < speedMetrics.Values.Length)
+						{
+							var currentSpeedInMPS = ConvertToMetersPerSecond(speedMetrics.Values[i], workoutSamples);
+							lapDistanceInMeters += 1 * currentSpeedInMPS;
+						}
+					}
+
+					lapMesg.SetTotalDistance(lapDistanceInMeters);
+					stepsAndLaps.Add(lapMesg);
+
+					stepIndex++;
+				}
+			}
+
+			return stepsAndLaps;
+		}
 	}
 }
