@@ -1,164 +1,29 @@
 ﻿using Common;
 using Common.Database;
 using Common.Dto;
-using Prometheus;
-using Serilog;
 using System;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Xml.Linq;
-using Metrics = Prometheus.Metrics;
 
 namespace Conversion
 {
-	public class TcxConverter : Converter
+	public class TcxConverter : Converter<XElement>
 	{
-		private static readonly Histogram WorkoutsConversionDuration = Metrics.CreateHistogram("p2g_tcx_workouts_conversion_duration_seconds", "Histogram of all workout conversion duration.");
-		private static readonly Histogram WorkoutConversionDuration = Metrics.CreateHistogram("p2g_tcx_workout_conversion_duration_seconds", "Histogram of a workout conversion durations.");
-		private static readonly Gauge WorkoutsToConvert = Metrics.CreateGauge("p2g_tcx_workout_conversion_pending", "The number of workouts pending conversion to output format.");
-		private static readonly Counter WorkoutsConverted = Metrics.CreateCounter("p2g_tcx_workouts_converted_total", "The number of workouts converted.");
+		public TcxConverter(Configuration config, DbClient dbClient) : base(config, dbClient) { }
 
-		private Configuration _config;
-		private DbClient _dbClient;
-
-		public TcxConverter(Configuration config, DbClient dbClient)
-		{
-			_config = config;
-			_dbClient = dbClient;
-		}
-
-		// TODO: refactor some of this to abstract base since this logic is almost identical between converters
 		public override void Convert()
 		{
 			if (!_config.Format.Tcx) return;
 
-			if (!Directory.Exists(_config.App.DownloadDirectory))
-			{
-				Log.Information("No working directory found. Nothing to do.");
-				return;
-			}
-
-			var files = Directory.GetFiles(_config.App.DownloadDirectory);
-
-			if (files.Length == 0)
-			{
-				Log.Information("No files to convert in working directory. Nothing to do.");
-				return;
-			}
-
-			FileHandling.MkDirIfNotEists(_config.App.TcxDirectory);
-
-			var prepUpload = _config.Garmin.Upload && _config.Garmin.FormatToUpload == "tcx";
-			if (prepUpload)
-				FileHandling.MkDirIfNotEists(_config.App.UploadDirectory);
-
-			WorkoutsToConvert.Set(files.Count());
-			using var timer = WorkoutsConversionDuration.NewTimer();
-			foreach (var file in files)
-			{
-				using var workoutTimer = WorkoutConversionDuration.NewTimer();
-
-				// load file and deserialize
-				P2GWorkout workoutData = null;
-				try
-				{
-					using (var reader = new StreamReader(file))
-					{
-						workoutData = JsonSerializer.Deserialize<P2GWorkout>(reader.ReadToEnd(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
-					}
-				}
-				catch (Exception e)
-				{
-					Log.Error(e, "Failed to load and parse workout data {@File}", file);
-					FileHandling.MoveFailedFile(file, _config.App.FailedDirectory);
-					WorkoutsToConvert.Dec();
-					continue;
-				}
-
-				using var tracing = Tracing.Trace("Convert")
-										.WithWorkoutId(workoutData.Workout.Id)
-										.SetTag(TagKey.Format, TagValue.Tcx);
-
-				// call internal convert method
-				var converted = Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.WorkoutSummary);
-
-				if (converted is null)
-				{
-					Log.Error("Failed to convert workout data {@File}", file);
-					FileHandling.MoveFailedFile(file, _config.App.FailedDirectory);
-					WorkoutsToConvert.Dec();
-					continue;
-				}
-
-				// write to output dir
-				var title = GetTitle(workoutData.Workout);
-				var path = Path.Join(_config.App.WorkingDirectory, $"{title}.tcx");
-				try
-				{
-					converted.Save(path);
-				}
-				catch (Exception e)
-				{
-					Log.Error(e, "Failed to write tcx file for {@File}", title);
-					WorkoutsToConvert.Dec();
-					continue;
-				}
-
-				// copy to local save
-				if (_config.Format.SaveLocalCopy)
-				{
-					try
-					{
-						var backupDest = Path.Join(_config.App.TcxDirectory, $"{title}.tcx");
-						File.Copy(path, backupDest, overwrite: true);
-						Log.Information("Backed up TCX file {0}", backupDest);
-					}
-					catch (Exception e)
-					{
-						Log.Error(e, "Failed to copy tcx file for {@File}", title);
-						continue;
-					}
-				}
-
-				// copy to upload dir
-				if (prepUpload)
-				{
-					try
-					{
-						var uploadDest = Path.Join(_config.App.UploadDirectory, $"{title}.tcx");
-						File.Copy(path, uploadDest, overwrite: true);
-						Log.Debug("Prepped TCX file {@Path} for upload.", uploadDest);
-					}
-					catch (Exception e)
-					{
-						Log.Error(e, "Failed to copy tcx file for {@File}", title);
-						continue;
-					}
-				}
-
-				// update db item with tcx conversion
-				SyncHistoryItem syncRecord = _dbClient.Get(workoutData.Workout.Id);
-				if (syncRecord?.DownloadDate is null)
-				{
-					var startTimeInSeconds = workoutData.Workout.Start_Time;
-					var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-					dtDateTime = dtDateTime.AddSeconds(startTimeInSeconds).ToLocalTime();
-
-					syncRecord = new SyncHistoryItem(workoutData.Workout)
-					{
-						DownloadDate = DateTime.Now
-					};
-				}
-
-				syncRecord.ConvertedToTcx = true;
-				_dbClient.Upsert(syncRecord);
-				WorkoutsToConvert.Dec();
-				WorkoutsConverted.Inc();
-			}
+			base.Convert("tcx");
 		}
 
-		private XElement Convert(Workout workout, WorkoutSamples samples, WorkoutSummary summary)
+		protected override void Save(XElement data, string path)
+		{
+			data.Save(path);
+		}
+
+		protected override XElement Convert(Workout workout, WorkoutSamples samples, WorkoutSummary summary)
 		{
 			XNamespace ns1 = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2";
 			XNamespace activityExtensions = "http://www.garmin.com/xmlschemas/ActivityExtension/v2";

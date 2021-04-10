@@ -2,18 +2,15 @@
 using Common.Database;
 using Common.Dto;
 using Dynastream.Fit;
-using Prometheus;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
-using Metrics = Prometheus.Metrics;
 
 namespace Conversion
 {
-	public class FitConverter : Converter
+	public class FitConverter : Converter<Tuple<string, ICollection<Mesg>>>
 	{
 		private static readonly float _softwareVersion = 1.0f;
 		private static readonly ushort _productId = 0;
@@ -21,163 +18,32 @@ namespace Conversion
 		private static readonly uint _serialNumber = 1234098765;
 
 		private static readonly string _spaceSeparator = "_";
-
-		private static readonly Histogram WorkoutsConversionDuration = Metrics.CreateHistogram("p2g_fit_workouts_conversion_duration_seconds", "Histogram of all workout conversion duration.");
-		private static readonly Histogram WorkoutConversionDuration = Metrics.CreateHistogram("p2g_fit_workout_conversion_duration_seconds", "Histogram of a workout conversion durations.");
-		private static readonly Gauge WorkoutsToConvert = Metrics.CreateGauge("p2g_fit_workout_conversion_pending", "The number of workouts pending conversion to output format.");
-		private static readonly Counter WorkoutsConverted = Metrics.CreateCounter("p2g_fit_workouts_converted_total", "The number of workouts converted.");
-
-		private Configuration _config;
-		private DbClient _dbClient;
-
-		public FitConverter(Configuration config, DbClient dbClient)
-		{
-			_config = config;
-			_dbClient = dbClient;
-		}
+		public FitConverter(Configuration config, DbClient dbClient) : base(config, dbClient) { }
 
 		public override void Convert()
 		{
 			if (!_config.Format.Fit) return;
 
-			if (!Directory.Exists(_config.App.DownloadDirectory))
+			base.Convert("fit");
+		}
+
+		protected override void Save(Tuple<string, ICollection<Mesg>> data, string path)
+		{
+			using (FileStream fitDest = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
 			{
-				Log.Information("No working directory found. Nothing to do.");
-				return;
-			}
-
-			var files = Directory.GetFiles(_config.App.DownloadDirectory);
-
-			if (files.Length == 0)
-			{
-				Log.Information("No files to convert in working directory. Nothing to do.");
-				return;
-			}
-
-			FileHandling.MkDirIfNotEists(_config.App.FitDirectory);
-
-			var prepUpload = _config.Garmin.Upload && _config.Garmin.FormatToUpload == "fit";
-			if (prepUpload)
-				FileHandling.MkDirIfNotEists(_config.App.UploadDirectory);
-
-			// Foreach file in directory
-			WorkoutsToConvert.Set(files.Count());
-			using var timer = WorkoutsConversionDuration.NewTimer();
-			foreach (var file in files)
-			{
-				using var workoutTimer = WorkoutConversionDuration.NewTimer();
-
-				// load file and deserialize
-				P2GWorkout workoutData = null;
-				try
+				Encode encoder = new Encode(ProtocolVersion.V20);
+				encoder.Open(fitDest);
+				foreach (Mesg message in data.Item2)
 				{
-					using (var reader = new StreamReader(file))
-					{
-						workoutData = JsonSerializer.Deserialize<P2GWorkout>(reader.ReadToEnd(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
-					}
+					encoder.Write(message);
 				}
-				catch (Exception e)
-				{
-					Log.Error(e, "Failed to load and parse workout data {@File}", file);
-					FileHandling.MoveFailedFile(file, _config.App.FailedDirectory);
-					WorkoutsToConvert.Dec();
-					continue;
-				}
+				encoder.Close();
 
-				using var tracing = Tracing.Trace("Convert")
-										?.WithWorkoutId(workoutData.Workout.Id)
-										?.SetTag(TagKey.Format, TagValue.Fit);
-
-				// call internal convert method
-				var converted = Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.WorkoutSummary);
-
-				if (string.IsNullOrEmpty(converted.Item1))
-				{
-					Log.Error("Failed to convert workout data {@File}", file);
-					FileHandling.MoveFailedFile(file, _config.App.FailedDirectory);
-					WorkoutsToConvert.Dec();
-					continue;
-				}
-
-				// write to output dir
-				var path = Path.Join(_config.App.WorkingDirectory, $"{converted.Item1}.fit");
-				try
-				{
-					using (FileStream fitDest = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
-					{
-						Encode encoder = new Encode(ProtocolVersion.V20);
-						encoder.Open(fitDest);
-						foreach (Mesg message in converted.Item2)
-						{
-							encoder.Write(message);
-						}
-						encoder.Close();
-
-						Log.Information("Encoded FIT file {0}", fitDest.Name);
-					}
-
-				}
-				catch (Exception e)
-				{
-					Log.Error(e, "Failed to write fit file for {@File}", converted.Item1);
-					WorkoutsToConvert.Dec();
-					continue;
-				}
-
-				// copy to local save
-				if (_config.Format.SaveLocalCopy)
-				{
-					try
-					{
-						var backupDest = Path.Join(_config.App.FitDirectory, $"{converted.Item1}.fit");
-						System.IO.File.Copy(path, backupDest, overwrite: true);
-						Log.Information("Backed up FIT file {0}", backupDest);
-					}
-					catch (Exception e)
-					{
-						Log.Error(e, "Failed to copy fit file for {@File}", converted.Item1);
-						continue;
-					}
-				}
-
-				// copy to upload dir
-				if (prepUpload)
-				{
-					try
-					{
-						var uploadDest = Path.Join(_config.App.UploadDirectory, $"{converted.Item1}.fit");
-						System.IO.File.Copy(path, uploadDest, overwrite: true);
-						Log.Debug("Prepped FIT file {@Path} for upload.", uploadDest);
-					}
-					catch (Exception e)
-					{
-						Log.Error(e, "Failed to copy fit file for {@File}", converted.Item1);
-						continue;
-					}
-				}
-
-				// update db item with fit conversion date
-				SyncHistoryItem syncRecord = _dbClient.Get(workoutData.Workout.Id);
-				if (syncRecord?.DownloadDate is null)
-				{
-					var startTimeInSeconds = workoutData.Workout.Start_Time;
-					var dtDateTime = new System.DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-					dtDateTime = dtDateTime.AddSeconds(startTimeInSeconds).ToLocalTime();
-
-					syncRecord = new SyncHistoryItem(workoutData.Workout)
-					{
-						DownloadDate = System.DateTime.Now
-					};
-				}
-
-				syncRecord.ConvertedToFit = true;
-				_dbClient.Upsert(syncRecord);
-				WorkoutsToConvert.Dec();
-				WorkoutsConverted.Inc();
+				Log.Information("Encoded FIT file {0}", fitDest.Name);
 			}
 		}
 
-		private Tuple<string, ICollection<Mesg>> Convert(Workout workout, WorkoutSamples workoutSamples, WorkoutSummary workoutSummary)
+		protected override Tuple<string, ICollection<Mesg>> Convert(Workout workout, WorkoutSamples workoutSamples, WorkoutSummary workoutSummary)
 		{
 			// MESSAGE ORDER MATTERS
 			var messages = new List<Mesg>();
