@@ -204,15 +204,19 @@ namespace Garmin
 		}
 
 		// TODO: I bet we can do multiple files at once
+		// https://github.com/tmenier/Flurl/issues/608
 		public async Task<string> UploadActivity(string name, string filePath, string format)
 		{
 			var response = await $"{URL_UPLOAD}/{format}"
 				.WithCookies(_jar)
 				.WithHeader("NK", "NT")
-				//.WithHeader("User-Agent", USERAGENT)
+				.WithHeader("Accept", "*/*")
+				.WithHeader("User-Agent", USERAGENT)
+				.ConfigureRequest(c => { c.Redirects.Enabled=true; c.Redirects.ForwardAuthorizationHeader = true; })
+				
 				.PostMultipartAsync((data) => 
 				{
-					data.AddFile("file", filePath, contentType: "application/octet-stream");
+					data.AddFile("\"file\"", path: filePath, contentType: "application/octet-stream", fileName:"\"my_file.fit\"");
 				})
 				.ReceiveJson();
 
