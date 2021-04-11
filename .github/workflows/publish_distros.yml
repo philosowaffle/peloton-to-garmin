@@ -40,7 +40,7 @@ jobs:
       run: dotnet restore
         
     - name: Publish ${{matrix.os}}
-      run: dotnet publish ${{ github.workspace }}\src\PelotonToGarminConsole\PelotonToGarminConsole.csproj --no-restore -c Release -r ${{ matrix.os }} -o ${{ github.workspace }}\dist\${{ matrix.os }}
+      run: dotnet publish ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --no-restore -c Release -r ${{ matrix.os }} -o ${{ github.workspace }}/dist/${{ matrix.os }}
 
     - uses: actions/checkout@master
     - name: Copy Config to Distro
