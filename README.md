@@ -1,4 +1,4 @@
-![Peloton To Garmin Logo](/images/logo/readme_banner.png?raw=true "Peloton to Garmin Logo")
+![Peloton To Garmin Banner](/images/logo/readme_banner.png?raw=true "Peloton to Garmin Banner")
 [![GitHub license](https://img.shields.io/github/license/philosowaffle/peloton-to-garmin.svg)](https://github.com/philosowaffle/peloton-to-garmin/blob/master/LICENSE)
 [![GitHub Release](https://img.shields.io/github/release/philosowaffle/peloton-to-garmin.svg?style=flat)]()
 [![Github all releases](https://img.shields.io/github/downloads/philosowaffle/peloton-to-garmin/total.svg)](https://GitHub.com/philosowaffle/peloton-to-garmin/releases/)
@@ -17,6 +17,8 @@ Convert workout data from Peloton into a format that can be uploaded to Garmin.
 
 
 Head on over to the [Wiki](https://github.com/philosowaffle/peloton-to-garmin/wiki/v2.x.x) to get started!
+
+![Example Cycling Workout](/images/example_cycle.png?raw=true "Example Cycling Workout")
 
 ## Supported Platforms
 
