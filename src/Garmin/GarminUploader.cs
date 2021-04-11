@@ -77,7 +77,7 @@ namespace Garmin
 				cmd = $"-u {_config.Garmin.Email} -p {_config.Garmin.Password} {paths}";
 			} else
 			{
-				paths = String.Join(" ", files.Select(f => $"\"{Path.Join("..", "..", f)}\""));
+				paths = String.Join(" ", files.Select(f => $"\"{Path.GetFullPath(f)}\""));
 				start.FileName = Path.Join(Environment.CurrentDirectory, "python", "upload", "upload.exe");
 				cmd = $"-ge {_config.Garmin.Email} -gp {_config.Garmin.Password} -f {paths}";
 			}
