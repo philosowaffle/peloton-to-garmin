@@ -1,10 +1,11 @@
 {
   "App": {
     "OutputDirectory": "./output",
-    "WorkingDirectory": "./working",
+    "WorkingDirectory": "working",
     "SyncHistoryDbPath": "./syncHistory.json",
     "EnablePolling": true,
-    "PollingIntervalSeconds": 86400
+    "PollingIntervalSeconds": 86400,
+    "PythonAndGUploadInstalled": true
   },
 
   "Format": {

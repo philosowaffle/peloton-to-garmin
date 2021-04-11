@@ -43,6 +43,7 @@ namespace Common
 		public string SyncHistoryDbPath { get; set; }
 		public bool EnablePolling { get; set; }
 		public int PollingIntervalSeconds { get; set; }
+		public bool PythonAndGUploadInstalled { get; set; }
 
 		public string FitDirectory => Path.Join(OutputDirectory, "fit");
 		public string JsonDirectory => Path.Join(OutputDirectory, "json");
