@@ -58,8 +58,8 @@
      inkscape:document-rotation="0"
      inkscape:current-layer="layer1"
      inkscape:document-units="mm"
-     inkscape:cy="1023.5582"
-     inkscape:cx="239.45145"
+     inkscape:cy="1080.8716"
+     inkscape:cx="148.15776"
      inkscape:zoom="1.4142136"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
@@ -180,6 +180,8 @@
       </g>
     </g>
     <g
+       inkscape:export-ydpi="96"
+       inkscape:export-xdpi="96"
        transform="matrix(0.43243244,0,0,0.43243244,121.93341,477.31404)"
        id="g983">
       <circle
@@ -775,6 +777,8 @@
       </g>
     </g>
     <g
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
        transform="matrix(0.16216216,0,0,0.16216216,45.256827,623.52554)"
        id="g1207">
       <circle

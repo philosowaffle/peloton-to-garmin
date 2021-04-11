@@ -109,6 +109,9 @@ config.local.ini
 bak_config.ini
 configuration.local.json
 
+# Python Build
+python/__pycache__/
+python/build/
 
 # dotnet
 */**/.vs/*

@@ -8,6 +8,7 @@ on:
     paths-ignore:
     - 'dist/**'
     - '.github/**'
+    - 'images/**'
     - '**.md'
     - '.gitignore'
     - 'docker-compose.yaml'

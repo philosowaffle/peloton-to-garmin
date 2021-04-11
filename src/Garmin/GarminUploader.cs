@@ -66,14 +66,23 @@ namespace Garmin
 		{
 			using var tracer = Tracing.Trace(nameof(UploadToGarmin))
 										.SetTag(TagKey.App, "gupload");
-
+			
 			ProcessStartInfo start = new ProcessStartInfo();
-			start.FileName = "gupload";
-
 			var paths = String.Join(" ", files.Select(p => $"\"{p}\""));
-			var cmd = $"-u {_config.Garmin.Email} -p {_config.Garmin.Password} {paths}";
+			var cmd = string.Empty;
 
-			Log.Debug("Uploading to Garmin with the following parameters: {0} {1}", paths, cmd.Replace(_config.Garmin.Email, "**email**").Replace(_config.Garmin.Password, "**password**"));
+			if (_config.App.PythonAndGUploadInstalled)
+			{
+				start.FileName = "gupload";
+				cmd = $"-u {_config.Garmin.Email} -p {_config.Garmin.Password} {paths}";
+			} else
+			{
+				paths = String.Join(" ", files.Select(f => $"\"{Path.Join("..", "..", f)}\""));
+				start.FileName = Path.Join(Environment.CurrentDirectory, "python", "upload", "upload.exe");
+				cmd = $"-ge {_config.Garmin.Email} -gp {_config.Garmin.Password} -f {paths}";
+			}
+
+			Log.Debug("Uploading to Garmin with the following parameters: {0} {1}", start.FileName, cmd.Replace(_config.Garmin.Email, "**email**").Replace(_config.Garmin.Password, "**password**"));
 
 			start.Arguments = cmd;
 			start.UseShellExecute = false;
@@ -91,7 +100,7 @@ namespace Garmin
 
 					if (!string.IsNullOrEmpty(stderr))
 					{
-						Log.Error(stderr, "Error returned from gupload tool.");
+						Log.Error(stderr, "Error returned from garmin upload process.");
 					}
 				}
 			}

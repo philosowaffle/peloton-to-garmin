@@ -7,6 +7,7 @@ on:
     - fitFiles
     paths-ignore:
     - 'dist/**'
+    - 'images/**'
     #- '.github/**'
     - '**.md'
     - '.gitignore'
@@ -19,7 +20,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        dotnet: ['5.0']
+        dotnet: ['5.0.201']
         os: [ 'win10-x64' ]
         #os: [ 'linux-x64', 'win10-x64', 'osx-x64' ]
 
@@ -45,6 +46,13 @@ jobs:
       with:
         source: "configuration.example.json"
         target: \dist\${{ matrix.os }}\configuration.local.json
+
+    - uses: actions/checkout@master
+    - name: Copy Python to Distro
+      uses: canastro/copy-file-action@master
+      with:
+        source: ${{ github.workspace }}\python\upload\
+        target: \dist\${{ matrix.os }}\python\upload
       
     - name: Create Archive ${{ matrix.os }}
       uses: papeloto/action-zip@v1
