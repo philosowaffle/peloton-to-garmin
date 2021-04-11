@@ -7,7 +7,9 @@ on:
     - fitFiles
     paths-ignore:
     - 'dist/**'
-    - '.github/**'
+    - '.github/workflows/publish_distros.yml'
+    - '.github/workflows/pr-test.yml'
+    - '.github/workflows/tag-release.yml'
     - 'images/**'
     - '**.md'
     - '.gitignore'
