@@ -119,6 +119,5 @@ python/build/
 */**/obj/*
 
 # Dev Files
-tests/testOutput/
-tests/database.json
 /.vs/PelotonToGarmin
+/src/PelotonToGarminConsole/python/**
