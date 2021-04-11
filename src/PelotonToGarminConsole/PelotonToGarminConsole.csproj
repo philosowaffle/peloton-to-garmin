@@ -36,4 +36,8 @@
     <Exec Command="xcopy /R /S &quot;$(SolutionDir)python\upload\&quot; &quot;$(ProjectDir)python\upload\&quot;" />
   </Target>
 
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <RemoveDir Directories="$(ProjectDir)python\upload\" />
+  </Target>
+
 </Project>
