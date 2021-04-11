@@ -8,7 +8,9 @@ on:
     paths-ignore:
     - 'dist/**'
     - 'images/**'
-    #- '.github/**'
+    - '.github/workflows/docker_latest.yml'
+    - '.github/workflows/pr-test.yml'
+    - '.github/workflows/tag-release.yml'
     - '**.md'
     - '.gitignore'
     - 'docker-compose.yaml'
@@ -16,7 +18,7 @@ on:
 jobs:
   publish:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
       matrix:
