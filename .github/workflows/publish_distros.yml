@@ -47,25 +47,25 @@ jobs:
       uses: canastro/copy-file-action@master
       with:
         source: "configuration.example.json"
-        target: \dist\${{ matrix.os }}\configuration.local.json
+        target: /dist/${{ matrix.os }}/configuration.local.json
 
     - uses: actions/checkout@master
     - name: Copy Python to Distro
       uses: canastro/copy-file-action@master
       with:
-        source: ${{ github.workspace }}\python\upload\
-        target: \dist\${{ matrix.os }}\python\upload
+        source: ${{ github.workspace }}/python/upload/
+        target: /dist/${{ matrix.os }}/python/upload
       
     - name: Create Archive ${{ matrix.os }}
       uses: papeloto/action-zip@v1
       with:
-       files: \dist\${{ matrix.os }}\
-       dest: \dist\${{ matrix.os }}.zip
+       files: /dist/${{ matrix.os }}/
+       dest: /dist/${{ matrix.os }}.zip
 
     - name: Commit changes ${{ matrix.os }}
       uses: EndBug/add-and-commit@v7.0.0
       with:
         message: "Create ${{ matrix.os }} distro"
-        add: ${{ github.workspace }}\dist\${{ matrix.os }}.zip
+        add: ${{ github.workspace }}/dist/${{ matrix.os }}.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
