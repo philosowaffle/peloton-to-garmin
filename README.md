@@ -81,6 +81,8 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 
 ## Docker
 
+> If you are planning to use Docker, please consider being a beta tester for [P2G version 2](https://github.com/philosowaffle/peloton-to-garmin/tree/fitFiles). This beta release only supports Docker for right now, but otherwise has feature parity with v1 + additional new features.  If you choose to run v2, join the [discussion and post feedback](https://github.com/philosowaffle/peloton-to-garmin/discussions/77).
+
 The image can be pulled from [Docker Hub](https://hub.docker.com/r/philosowaffle/peloton-to-garmin) or [Github Packages](https://github.com/philosowaffle/peloton-to-garmin/packages). See the [Configuration](#configuration) section for a list of all environment variables that can be provided to the container.  A sample docker-compose file can be found [here](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker-compose.yaml).
 
 * `docker pull philosowaffle/peloton-to-garmin`
