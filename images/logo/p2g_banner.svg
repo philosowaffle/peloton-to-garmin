@@ -7,66 +7,66 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   inkscape:export-ydpi="300"
-   inkscape:export-xdpi="300"
-   inkscape:export-filename="G:\Code\Git\peloton-to-garmin\images\logo\github_1280x640.png"
-   width="338.66669mm"
-   height="169.33333mm"
-   viewBox="0 0 338.66669 169.33333"
-   version="1.1"
-   id="svg8"
+   sodipodi:docname="p2g_banner.svg"
    inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   sodipodi:docname="p2g_banner.svg">
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 412.75379 95.99457"
+   height="95.994568mm"
+   width="412.75378mm"
+   inkscape:export-filename="G:\Code\Git\peloton-to-garmin\images\logo\github_1280x640.png"
+   inkscape:export-xdpi="300"
+   inkscape:export-ydpi="300">
   <defs
      id="defs2">
     <linearGradient
-       id="linearGradient2861"
-       y2="22.6"
-       gradientUnits="userSpaceOnUse"
-       x2="15.373"
-       gradientTransform="matrix(0.25251039,0,0,0.25251039,22.712061,154.6754)"
+       x1="15.373"
        y1="5.0472002"
-       x1="15.373">
+       gradientTransform="matrix(0.25251039,0,0,0.25251039,22.712061,154.6754)"
+       x2="15.373"
+       gradientUnits="userSpaceOnUse"
+       y2="22.6"
+       id="linearGradient2861">
       <stop
-         id="stop3535"
+         offset="0"
          style="stop-color:#93b9dd"
-         offset="0" />
+         id="stop3535" />
       <stop
-         id="stop3545"
+         offset="1"
          style="stop-color:#6396cd"
-         offset="1" />
+         id="stop3545" />
     </linearGradient>
     <linearGradient
        id="linearGradient4873">
       <stop
-         id="stop4875"
+         offset="0"
          style="stop-color:white"
-         offset="0" />
+         id="stop4875" />
       <stop
-         id="stop4877"
+         offset="1"
          style="stop-color:white;stop-opacity:0"
-         offset="1" />
+         id="stop4877" />
     </linearGradient>
   </defs>
   <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="0.70710678"
-     inkscape:cx="638.8865"
-     inkscape:cy="333.82679"
-     inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
-     inkscape:document-rotation="0"
-     showgrid="false"
-     inkscape:window-width="2005"
-     inkscape:window-height="1147"
-     inkscape:window-x="2673"
+     inkscape:window-maximized="0"
      inkscape:window-y="57"
-     inkscape:window-maximized="0" />
+     inkscape:window-x="2673"
+     inkscape:window-height="1147"
+     inkscape:window-width="2005"
+     showgrid="false"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="mm"
+     inkscape:cy="93.885351"
+     inkscape:cx="838.88772"
+     inkscape:zoom="0.70710678"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -75,116 +75,169 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
+     transform="translate(77.061978,-667.44679)"
      id="layer1"
-     transform="translate(63.217422,-456.41074)">
+     inkscape:groupmode="layer"
+     inkscape:label="Layer 1">
     <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:13.9201px;line-height:1.25;font-family:sans-serif;fill:#ff2f1e;fill-opacity:1;stroke:none;stroke-width:0.348003"
-       x="113.78497"
+       id="text1864"
        y="178.15776"
-       id="text1864"><tspan
-         sodipodi:role="line"
-         id="tspan1862"
-         x="113.78497"
+       x="113.78497"
+       style="font-style:normal;font-weight:normal;font-size:13.9201px;line-height:1.25;font-family:sans-serif;fill:#ff2f1e;fill-opacity:1;stroke:none;stroke-width:0.348003"
+       xml:space="preserve"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Magneto;-inkscape-font-specification:Magneto;fill:#ff2f1e;fill-opacity:1;stroke-width:0.348003"
          y="178.15776"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Magneto;-inkscape-font-specification:Magneto;fill:#ff2f1e;fill-opacity:1;stroke-width:0.348003" /></text>
+         x="113.78497"
+         id="tspan1862"
+         sodipodi:role="line" /></text>
     <rect
-       y="457.54633"
-       x="-62.081837"
-       height="167.06216"
-       width="336.39551"
+       style="fill:none;stroke:#beb8eb;stroke-width:2.27117;paint-order:markers stroke fill;stop-color:#000000"
        id="rect948"
-       style="fill:none;stroke:#beb8eb;stroke-width:2.27117;paint-order:markers stroke fill;stop-color:#000000" />
+       width="336.39551"
+       height="167.06216"
+       x="-62.081837"
+       y="457.54633" />
     <g
-       transform="translate(-3.0032227e-5,1.154541e-5)"
-       id="g895">
+       id="g895"
+       transform="translate(-3.0032227e-5,1.154541e-5)">
       <circle
-         style="fill:#beb8eb;fill-opacity:1;stroke-width:7.9393"
-         id="circle1870"
-         cx="106.11595"
+         r="78.316666"
          cy="541.07739"
-         r="78.316666" />
+         cx="106.11595"
+         id="circle1870"
+         style="fill:#beb8eb;fill-opacity:1;stroke-width:7.9393" />
       <g
-         style="fill:#808080"
+         id="g878"
          transform="matrix(6.9102974,0,0,6.9102974,-602.77912,-713.35932)"
-         id="g878">
+         style="fill:#808080">
         <text
-           id="text868"
-           y="183.17152"
+           xml:space="preserve"
+           style="font-style:normal;font-weight:normal;font-size:13.9201px;line-height:1.25;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none;stroke-width:0.348003"
            x="94.720291"
-           style="font-style:normal;font-weight:normal;font-size:13.9201px;line-height:1.25;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none;stroke-width:0.348003"
-           xml:space="preserve"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Magneto;-inkscape-font-specification:Magneto;fill:#808080;fill-opacity:1;stroke-width:0.348003"
-             y="183.17152"
-             x="94.720291"
+           y="183.17152"
+           id="text868"><tspan
+             sodipodi:role="line"
              id="tspan866"
-             sodipodi:role="line">P</tspan></text>
+             x="94.720291"
+             y="183.17152"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Magneto;-inkscape-font-specification:Magneto;fill:#808080;fill-opacity:1;stroke-width:0.348003">P</tspan></text>
         <text
-           id="text872"
-           y="189.16095"
-           x="98.590172"
+           xml:space="preserve"
            style="font-style:normal;font-weight:normal;font-size:13.9201px;line-height:1.25;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none;stroke-width:0.348003"
-           xml:space="preserve"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Magneto;-inkscape-font-specification:Magneto;fill:#808080;fill-opacity:1;stroke-width:0.348003"
-             y="189.16095"
-             x="98.590172"
+           x="98.590172"
+           y="189.16095"
+           id="text872"><tspan
+             sodipodi:role="line"
              id="tspan870"
-             sodipodi:role="line">G</tspan></text>
+             x="98.590172"
+             y="189.16095"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Magneto;-inkscape-font-specification:Magneto;fill:#808080;fill-opacity:1;stroke-width:0.348003">G</tspan></text>
         <text
-           id="text876"
-           y="181.83357"
-           x="101.11954"
+           xml:space="preserve"
            style="font-style:normal;font-weight:normal;font-size:3.96808px;line-height:1.25;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none;stroke-width:0.0992023"
-           xml:space="preserve"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Magneto;-inkscape-font-specification:Magneto;fill:#808080;fill-opacity:1;stroke-width:0.0992023"
-             y="181.83357"
-             x="101.11954"
+           x="101.11954"
+           y="181.83357"
+           id="text876"><tspan
+             sodipodi:role="line"
              id="tspan874"
-             sodipodi:role="line">2</tspan></text>
+             x="101.11954"
+             y="181.83357"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Magneto;-inkscape-font-specification:Magneto;fill:#808080;fill-opacity:1;stroke-width:0.0992023">2</tspan></text>
       </g>
       <g
-         id="g1878"
-         transform="matrix(6.9102974,0,0,6.9102974,-603.83746,-714.94683)">
+         transform="matrix(6.9102974,0,0,6.9102974,-603.83746,-714.94683)"
+         id="g1878">
         <text
-           xml:space="preserve"
-           style="font-style:normal;font-weight:normal;font-size:13.9201px;line-height:1.25;font-family:sans-serif;fill:#ff2f1e;fill-opacity:1;stroke:none;stroke-width:0.348003"
-           x="94.720291"
+           id="text1852"
            y="183.17152"
-           id="text1852"><tspan
-             sodipodi:role="line"
-             id="tspan1850"
-             x="94.720291"
+           x="94.720291"
+           style="font-style:normal;font-weight:normal;font-size:13.9201px;line-height:1.25;font-family:sans-serif;fill:#ff2f1e;fill-opacity:1;stroke:none;stroke-width:0.348003"
+           xml:space="preserve"><tspan
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Magneto;-inkscape-font-specification:Magneto;fill:#ff2f1e;fill-opacity:1;stroke-width:0.348003"
              y="183.17152"
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Magneto;-inkscape-font-specification:Magneto;fill:#ff2f1e;fill-opacity:1;stroke-width:0.348003">P</tspan></text>
+             x="94.720291"
+             id="tspan1850"
+             sodipodi:role="line">P</tspan></text>
         <text
-           xml:space="preserve"
-           style="font-style:normal;font-weight:normal;font-size:13.9201px;line-height:1.25;font-family:sans-serif;fill:#007ec1;fill-opacity:1;stroke:none;stroke-width:0.348003"
-           x="98.590172"
+           id="text1856"
            y="189.16095"
-           id="text1856"><tspan
-             sodipodi:role="line"
-             id="tspan1854"
-             x="98.590172"
+           x="98.590172"
+           style="font-style:normal;font-weight:normal;font-size:13.9201px;line-height:1.25;font-family:sans-serif;fill:#007ec1;fill-opacity:1;stroke:none;stroke-width:0.348003"
+           xml:space="preserve"><tspan
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Magneto;-inkscape-font-specification:Magneto;fill:#007ec1;fill-opacity:1;stroke-width:0.348003"
              y="189.16095"
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Magneto;-inkscape-font-specification:Magneto;fill:#007ec1;fill-opacity:1;stroke-width:0.348003">G</tspan></text>
+             x="98.590172"
+             id="tspan1854"
+             sodipodi:role="line">G</tspan></text>
+        <text
+           id="text1868"
+           y="181.83357"
+           x="101.11954"
+           style="font-style:normal;font-weight:normal;font-size:3.96808px;line-height:1.25;font-family:sans-serif;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.0992023"
+           xml:space="preserve"><tspan
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Magneto;-inkscape-font-specification:Magneto;fill:#ffffff;fill-opacity:1;stroke-width:0.0992023"
+             y="181.83357"
+             x="101.11954"
+             id="tspan1866"
+             sodipodi:role="line">2</tspan></text>
+      </g>
+    </g>
+    <g
+       inkscape:export-ydpi="96"
+       inkscape:export-xdpi="96"
+       id="g1030">
+      <rect
+         style="fill:none;stroke:#beb8eb;stroke-width:1.88389;paint-order:markers stroke fill;stop-color:#000000"
+         id="rect855"
+         width="410.8699"
+         height="94.11068"
+         x="-76.120033"
+         y="668.38873" />
+      <g
+         id="g1019"
+         transform="translate(10.150639,-13.032012)">
         <text
            xml:space="preserve"
-           style="font-style:normal;font-weight:normal;font-size:3.96808px;line-height:1.25;font-family:sans-serif;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.0992023"
-           x="101.11954"
-           y="181.83357"
-           id="text1868"><tspan
+           style="font-size:32.3058px;line-height:1.25;font-family:'18thCentury';-inkscape-font-specification:'18thCentury, Normal';letter-spacing:0px;word-spacing:0px;fill:#ff2f1e;fill-opacity:1;stroke-width:0.593448"
+           x="-18.740778"
+           y="738.38843"
+           id="text895"><tspan
              sodipodi:role="line"
-             id="tspan1866"
-             x="101.11954"
-             y="181.83357"
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Magneto;-inkscape-font-specification:Magneto;fill:#ffffff;fill-opacity:1;stroke-width:0.0992023">2</tspan></text>
+             id="tspan893"
+             x="-18.740778"
+             y="738.38843"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Magneto;-inkscape-font-specification:Magneto;fill:#ff2f1e;fill-opacity:1;stroke-width:0.593448">Peloton</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-size:32.3058px;line-height:1.25;font-family:'18thCentury';-inkscape-font-specification:'18thCentury, Normal';letter-spacing:0px;word-spacing:0px;fill:#007ec1;fill-opacity:1;stroke-width:0.593448"
+           x="124.15493"
+           y="737.58575"
+           id="text903"><tspan
+             sodipodi:role="line"
+             id="tspan901"
+             x="124.15493"
+             y="737.58575"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Magneto;-inkscape-font-specification:Magneto;fill:#007ec1;fill-opacity:1;stroke-width:0.593448">Garmin</tspan></text>
+        <g
+           transform="matrix(1.3390232,0,0,1.3390232,-37.748152,-246.68253)"
+           id="g1000">
+          <rect
+             style="fill:#ffffff;fill-opacity:1;stroke:#beb8eb;stroke-width:0.750937;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill;stop-color:#000000"
+             id="rect978"
+             width="4.4707279"
+             height="1.7227879"
+             x="111.71932"
+             y="727.79498" />
+          <path
+             style="fill:#ffffff;fill-opacity:1;stroke:#beb8eb;stroke-width:0.521813;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 116.5337,725.60042 v 6.11188 l 4.09278,-3.32879 z"
+             id="path980" />
+        </g>
       </g>
     </g>
   </g>
