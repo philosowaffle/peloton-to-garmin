@@ -9,6 +9,8 @@
     <StartupObject>PelotonToGarminConsole.Program</StartupObject>
     <PackageProjectUrl>https://github.com/philosowaffle/peloton-to-garmin</PackageProjectUrl>
     <RepositoryUrl>https://github.com/philosowaffle/peloton-to-garmin</RepositoryUrl>
+    <Authors>Bailey Belvis</Authors>
+    <ApplicationIcon>256x256.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
