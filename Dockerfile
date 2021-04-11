@@ -24,7 +24,7 @@ RUN pip3 install --no-cache --upgrade pip setuptools
 WORKDIR /app
 
 COPY --from=build /build/published .
-COPY --from=build /build/requirements.txt ./requirements.txt
+COPY --from=build /build/python/requirements.txt ./requirements.txt
 COPY --from=build /build/LICENSE ./LICENSE
 COPY --from=build /build/configuration.example.json ./configuration.local.json
 
