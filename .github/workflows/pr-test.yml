@@ -3,13 +3,11 @@ name: PR Test
 on:
   pull_request:
     branches: [ master ]
-    paths-ignore:
-    - 'dist/**'
-    - '.github/**'
-    - 'images/**'
-    - '**.md'
-    - '.gitignore'
-    - 'docker-compose.yaml'
+    paths:
+    - 'src/**'
+    - 'python/upload/**'
+    - 'UnitTests/**'
+    - 'PelotonToGarmin.sln'
 
 jobs:
   build-and-test:

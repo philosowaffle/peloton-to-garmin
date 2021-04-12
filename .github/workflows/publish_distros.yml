@@ -5,15 +5,12 @@ on:
   push:
     branches:
     - fitFiles
-    paths-ignore:
-    - 'dist/**'
-    - 'images/**'
-    - '.github/workflows/docker_latest.yml'
-    - '.github/workflows/pr-test.yml'
-    - '.github/workflows/tag-release.yml'
-    - '**.md'
-    - '.gitignore'
-    - 'docker-compose.yaml'
+    paths:
+    - 'src/**'
+    - 'python/upload/**'
+    - 'UnitTests/**'
+    - 'PelotonToGarmin.sln'
+    - 'configuration.example.json'
 
 jobs:
   publish:
@@ -42,19 +39,11 @@ jobs:
     - name: Publish ${{matrix.os}}
       run: dotnet publish ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --no-restore -c Release -r ${{ matrix.os }} -o ${{ github.workspace }}/dist/${{ matrix.os }}
 
-    - uses: actions/checkout@master
     - name: Copy Config to Distro
-      uses: canastro/copy-file-action@master
-      with:
-        source: "configuration.example.json"
-        target: /dist/${{ matrix.os }}/configuration.local.json
+      run: cp ${{ github.workspace }}/configuration.example.json ${{ github.workspace }}/dist/${{ matrix.os }}/configuration.local.json
 
-    - uses: actions/checkout@master
     - name: Copy Python to Distro
-      uses: canastro/copy-file-action@master
-      with:
-        source: ${{ github.workspace }}/python/upload/
-        target: /dist/${{ matrix.os }}/python/upload
+      run: cp -R ${{ github.workspace }}/python ${{ github.workspace }}/dist/${{ matrix.os }}
       
     - name: Create Archive ${{ matrix.os }}
       uses: papeloto/action-zip@v1
