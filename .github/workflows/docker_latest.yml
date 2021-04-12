@@ -5,15 +5,11 @@ on:
   push:
     branches:
     - fitFiles
-    paths-ignore:
-    - 'dist/**'
-    - '.github/workflows/publish_distros.yml'
-    - '.github/workflows/pr-test.yml'
-    - '.github/workflows/tag-release.yml'
-    - 'images/**'
-    - '**.md'
-    - '.gitignore'
-    - 'docker-compose.yaml'
+    paths:
+    - 'src/**'
+    - 'PelotonToGarmin.sln'
+    - 'Dockerfile'
+    - 'configuration.example.json'
 
 jobs:
   push_to_registry:
