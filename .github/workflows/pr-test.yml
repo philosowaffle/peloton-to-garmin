@@ -3,12 +3,6 @@ name: PR Test
 on:
   pull_request:
     branches: [ master ]
-    paths:
-    - 'src/**'
-    - 'python/upload/**'
-    - 'UnitTests/**'
-    - 'PelotonToGarmin.sln'
-    - - '.github/workflows/pr_test.yml'
 
 jobs:
   build-and-test:
