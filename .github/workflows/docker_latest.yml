@@ -10,6 +10,7 @@ on:
     - 'PelotonToGarmin.sln'
     - 'Dockerfile'
     - 'configuration.example.json'
+    - '.gitworkflows/docker_latest.yml'
 
 jobs:
   push_to_registry:
