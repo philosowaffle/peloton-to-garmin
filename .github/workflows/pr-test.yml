@@ -8,7 +8,7 @@ on:
     - 'python/upload/**'
     - 'UnitTests/**'
     - 'PelotonToGarmin.sln'
-    - - '.gitworkflows/pr_test.yml'
+    - - '.github/workflows/pr_test.yml'
 
 jobs:
   build-and-test:

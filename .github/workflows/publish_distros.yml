@@ -11,7 +11,7 @@ on:
     - 'UnitTests/**'
     - 'PelotonToGarmin.sln'
     - 'configuration.example.json'
-    - '.gitworkflows/publish_distros.yml'
+    - '.github/workflows/publish_distros.yml'
 
 jobs:
   publish:
