@@ -28,7 +28,7 @@ namespace Conversion
 			LabelNames = new string[] { "type" }
 		});
 
-		private static readonly float _metersPerMile = 1609.34f;
+		public static readonly float _metersPerMile = 1609.34f;
 
 		protected Configuration _config;
 		protected DbClient _dbClient;
@@ -190,7 +190,7 @@ namespace Conversion
 
 		protected float ConvertDistanceToMeters(double value, string unit)
 		{
-			switch (unit)
+			switch (unit.ToLower())
 			{
 				case "km":
 					return (float)value * 1000;
