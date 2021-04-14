@@ -107,7 +107,7 @@ There are multiple ways to configure values, the precedence order is:
 |[PTOG] EnablePolling|-enable_polling true/false|PTG_ENABLE_POLLING|Automatically and periodically check for new activities|
 |[PTOG] PollingIntervalSeconds|-polling_interval_seconds #|PTG_POLLING_INTERVAL_SECONDS|How frequently to poll for new activities if pollingis enabled.|
 |[OUTPUT] Directory|-path PATH|P2G_PATH|Path to output directory, this is where the TCX files are written|
-|[DEBUG] PauseOnFinish|-pause_on_finish true/false|P2G_PAUSE_ON_FINISH|Do not automatically close the application on completion.|
+|[DEBUG] PauseOnFinish|-pause_on_finish true/false|P2G_PAUSE_ON_FINISH|Do not automatically close the application on completion. For polling mode, setting to false allows continous running without user input.|
 |[LOGGER] LogFile|-log|P2G_LOG|Log file path|
 |[LOGGER] LogLevel|-loglevel|P2G_LOG_LEVEL|DEBUG, INFO, ERROR|
 ### Command Line Arguments
