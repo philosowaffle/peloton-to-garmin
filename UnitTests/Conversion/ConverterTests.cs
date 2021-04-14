@@ -1,21 +1,117 @@
-﻿using Common.Dto;
+﻿using Common;
+using Common.Database;
+using Common.Dto;
+using Conversion;
+using FluentAssertions;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UnitTests.Conversion
 {
 	public class ConverterTests
 	{
 		[Test]
-		public void GetStartTime()
+		public void GetStartTimeTest()
 		{
-			var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-			//return origin.AddSeconds(timestamp);
-			Assert.Pass();
+			var epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+			var nowCst = DateTime.Now;
+			TimeSpan diff = nowCst.ToUniversalTime() - epoch;
+			var seconds = (long)Math.Floor(diff.TotalSeconds);
+
+			var config = new Configuration();
+			var converter = new ConverterInstance(config, new DbClient(config));
+
+			var wokout = new Workout()
+			{
+				Start_Time = seconds
+			};
+
+			var startTime = converter.GetStartTime1(wokout);
+			startTime.Should().BeCloseTo(nowCst.ToUniversalTime(), new TimeSpan(0,0,59));
+		}
+
+		[Test]
+		public void GetTimeStampTest([Values(0,10)] long offset)
+		{
+			var now = DateTime.Parse("2021-04-01 03:14:12");
+
+			var config = new Configuration();
+			var converter = new ConverterInstance(config, new DbClient(config));
+
+			var timeStamp = converter.GetTimeStamp1(now, offset);
+
+			if (offset == 0)
+			{
+				timeStamp.Should().Be("2021-04-01T03:14:12Z");
+			} else
+			{
+				timeStamp.Should().Be("2021-04-01T03:14:22Z");
+			}
+		}
+
+		[Test]
+		public void ConvertDistanceToMetersTest([Values("km","mi","ft", "KM","unknown")]string unit)
+		{
+			var config = new Configuration();
+			var converter = new ConverterInstance(config, new DbClient(config));
+
+			var value = 8677;
+			var converted = converter.ConvertDistanceToMeters1(value, unit);
+			switch (unit.ToLower())
+			{
+				case "km":
+					converted.Should().Be((float)value * 1000);
+					break;
+				case "mi":
+					converted.Should().Be((float)value * ConverterInstance._metersPerMile);
+					break;
+				case "ft":
+					converted.Should().Be((float)value * 0.3048f);
+					break;
+				default:
+					converted.Should().Be((float)value);
+					break;
+			}
+		}
+
+		private class ConverterInstance : Converter<string>
+		{
+			public ConverterInstance(Configuration config, DbClient dbClient) : base(config, dbClient) { }
+
+			public override void Convert()
+			{
+				throw new NotImplementedException();
+			}
+
+			public override void Decode(string filePath)
+			{
+				throw new NotImplementedException();
+			}
+
+			protected override string Convert(Workout workout, WorkoutSamples workoutSamples, WorkoutSummary workoutSummary)
+			{
+				throw new NotImplementedException();
+			}
+
+			protected override void Save(string data, string path)
+			{
+				throw new NotImplementedException();
+			}
+
+			public DateTime GetStartTime1(Workout workout)
+			{
+				return this.GetStartTime(workout);
+			}
+
+			public string GetTimeStamp1(DateTime startTime, long offset)
+			{
+				return this.GetTimeStamp(startTime, offset);
+			}
+
+			public float ConvertDistanceToMeters1(double value, string unit)
+			{
+				return this.ConvertDistanceToMeters(value, unit);
+			}
 		}
 	}
 }
