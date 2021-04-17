@@ -25,7 +25,7 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 
 ### Quick Start
 
-> If you are planning to use the Windows exe, please consider being a beta tester for [P2G version 2](https://github.com/philosowaffle/peloton-to-garmin/tree/fitFiles). This beta release has feature parity with v1 + additional new features.  You can find the latest v2 executable [here](https://github.com/philosowaffle/peloton-to-garmin/tree/fitFiles/dist).  If you choose to run v2, join the [discussion and post feedback](https://github.com/philosowaffle/peloton-to-garmin/discussions/77). 
+> If you are planning to use the Windows exe, please consider being a beta tester for [P2G version 2](https://github.com/philosowaffle/peloton-to-garmin/tree/v2). This beta release has feature parity with v1 + additional new features.  You can find the latest v2 executable [here](https://github.com/philosowaffle/peloton-to-garmin/tree/v2/dist).  If you choose to run v2, join the [discussion and post feedback](https://github.com/philosowaffle/peloton-to-garmin/discussions/77). 
 
 1. Find the latest release [here](https://github.com/philosowaffle/peloton-to-garmin/releases)
 1. Download the file `peloton-to-garmin-windows.zip`
@@ -83,7 +83,7 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 
 ## Docker
 
-> If you are planning to use Docker, please consider being a beta tester for [P2G version 2](https://github.com/philosowaffle/peloton-to-garmin/tree/fitFiles). This beta release has feature parity with v1 + additional new features.  If you choose to run v2, join the [discussion and post feedback](https://github.com/philosowaffle/peloton-to-garmin/discussions/77).
+> If you are planning to use Docker, please consider being a beta tester for [P2G version 2](https://github.com/philosowaffle/peloton-to-garmin/tree/v2). This beta release has feature parity with v1 + additional new features.  If you choose to run v2, join the [discussion and post feedback](https://github.com/philosowaffle/peloton-to-garmin/discussions/77).
 
 The image can be pulled from [Docker Hub](https://hub.docker.com/r/philosowaffle/peloton-to-garmin) or [Github Packages](https://github.com/philosowaffle/peloton-to-garmin/packages). See the [Configuration](#configuration) section for a list of all environment variables that can be provided to the container.  A sample docker-compose file can be found [here](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker-compose.yaml).
 
