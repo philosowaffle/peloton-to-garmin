@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-    - fitFiles
+    - v2
     paths:
     - 'src/**'
     - 'PelotonToGarmin.sln'

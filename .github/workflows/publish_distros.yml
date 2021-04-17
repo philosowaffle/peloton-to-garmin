@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-    - fitFiles
+    - v2
     paths:
     - 'src/**'
     - 'python/upload/**'
@@ -21,8 +21,7 @@ jobs:
       max-parallel: 1
       matrix:
         dotnet: ['5.0.201']
-        os: [ 'win10-x64' ]
-        #os: [ 'linux-x64', 'win10-x64', 'osx-x64' ]
+        os: [ 'win10-x64', 'osx-x64' ]
 
     steps:
     - uses: actions/checkout@v2
@@ -44,6 +43,7 @@ jobs:
       run: cp ${{ github.workspace }}/configuration.example.json ${{ github.workspace }}/dist/${{ matrix.os }}/configuration.local.json
 
     - name: Copy Python to Distro
+      if: ${{ matrix.os == 'win10-x64' }}
       run: cp -R ${{ github.workspace }}/python ${{ github.workspace }}/dist/${{ matrix.os }}
       
     - name: Create Archive ${{ matrix.os }}
