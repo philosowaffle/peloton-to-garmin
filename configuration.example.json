@@ -1,7 +1,7 @@
 {
   "App": {
     "OutputDirectory": "./output",
-    "WorkingDirectory": "working",
+    "WorkingDirectory": "./working",
     "SyncHistoryDbPath": "./syncHistory.json",
     "EnablePolling": true,
     "PollingIntervalSeconds": 86400,
@@ -43,8 +43,8 @@
     },
 
     "Serilog": {
-      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File", "Serilog.Sinks.Elasticsearch" ],
-      "MinimumLevel": "Debug",
+      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File"],
+      "MinimumLevel": "Information",
       "WriteTo": [
         { "Name": "Console" },
         {
@@ -53,13 +53,6 @@
             "path": "./output/log.txt",
             "rollingInterval": "Day",
             "retainedFileCountLimit": 7
-          }
-        },
-        {
-          "Name": "Elasticsearch",
-          "Args": {
-            "nodeUris": "http://192.168.1.95:9200",
-            "indexFormat": "p2g-logs-{0:yyyy.MM.dd}"
           }
         }
       ]
