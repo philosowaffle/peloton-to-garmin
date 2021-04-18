@@ -66,6 +66,11 @@ namespace Common
 			return activity?.SetTag(TagKey.Table, table);
 		}
 
+		public static Activity WithTag(this Activity activity, string key, string value)
+		{
+			return activity?.SetTag(key, value);
+		}
+
 		public static bool ValidateConfig(Observability config)
 		{
 			if (!config.Jaeger.Enabled)

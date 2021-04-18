@@ -65,7 +65,7 @@ namespace Garmin
 		private void UploadViaPython(string[] files)
 		{
 			using var tracer = Tracing.Trace(nameof(UploadToGarmin))
-										.SetTag(TagKey.App, "gupload");
+										.WithTag(TagKey.App, "gupload");
 			
 			ProcessStartInfo start = new ProcessStartInfo();
 			var paths = String.Join(" ", files.Select(p => $"\"{p}\""));
@@ -96,11 +96,16 @@ namespace Garmin
 					string stderr = process.StandardError.ReadToEnd();
 					string result = reader.ReadToEnd();
 
-					Log.Debug(result);
+					if (!string.IsNullOrEmpty(result))
+						Log.Debug(result);
 
+					// Despite coming from StandardError, this is not necessarily an error, just the output
 					if (!string.IsNullOrEmpty(stderr))
+						Log.Information("GUpload: {Output}", stderr);
+
+					if (process.ExitCode != 0)
 					{
-						Log.Error(stderr, "Error returned from garmin upload process.");
+						throw new GarminUploadException("Failed to upload workouts.", process.ExitCode);
 					}
 				}
 			}
