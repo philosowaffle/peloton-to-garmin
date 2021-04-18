@@ -24,27 +24,35 @@ namespace PelotonToGarminConsole
 		static void Main(string[] args)
 		{
 			Console.WriteLine("Peloton To FIT");
+			var config = new Configuration();
 
-			IConfiguration configProviders = new ConfigurationBuilder()
+			try
+			{
+				IConfiguration configProviders = new ConfigurationBuilder()
 				.AddJsonFile(Path.Join(Environment.CurrentDirectory, "configuration.local.json"), optional: true, reloadOnChange: true)
 				.AddEnvironmentVariables()
 				.AddCommandLine(args)
 				.Build();
 
-			var config = new Configuration();
-			configProviders.GetSection(nameof(App)).Bind(config.App);
-			configProviders.GetSection(nameof(Format)).Bind(config.Format);
-			configProviders.GetSection(nameof(Peloton)).Bind(config.Peloton);
-			configProviders.GetSection(nameof(Garmin)).Bind(config.Garmin);
-			configProviders.GetSection(nameof(Observability)).Bind(config.Observability);
-			configProviders.GetSection(nameof(Developer)).Bind(config.Developer);
+				
+				configProviders.GetSection(nameof(App)).Bind(config.App);
+				configProviders.GetSection(nameof(Format)).Bind(config.Format);
+				configProviders.GetSection(nameof(Peloton)).Bind(config.Peloton);
+				configProviders.GetSection(nameof(Garmin)).Bind(config.Garmin);
+				configProviders.GetSection(nameof(Observability)).Bind(config.Observability);
+				configProviders.GetSection(nameof(Developer)).Bind(config.Developer);
 
-			// TODO: document how to configure this and which sinks are supported
-			// https://github.com/serilog/serilog-settings-configuration
-			Log.Logger = new LoggerConfiguration()
-				.ReadFrom.Configuration(configProviders, sectionName: $"{nameof(Observability)}:Serilog")
-				.Enrich.WithSpan()
-				.CreateLogger();
+				// TODO: document how to configure this and which sinks are supported
+				// https://github.com/serilog/serilog-settings-configuration
+				Log.Logger = new LoggerConfiguration()
+					.ReadFrom.Configuration(configProviders, sectionName: $"{nameof(Observability)}:Serilog")
+					.Enrich.WithSpan()
+					.CreateLogger();
+			} catch (Exception e)
+			{
+				Log.Error(e, "Exception during config setup.");
+				throw;
+			}			
 
 			try
 			{
@@ -82,6 +90,11 @@ namespace PelotonToGarminConsole
 				{
 					RunAsync(config).GetAwaiter().GetResult();
 				}
+			}
+			catch (Exception e)
+			{
+				Log.Error(e, "Uncaught Exception.");
+				throw;
 			}
 			finally
 			{
