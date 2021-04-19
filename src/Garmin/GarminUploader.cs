@@ -82,6 +82,7 @@ namespace Garmin
 				cmd = $"-ge {_config.Garmin.Email} -gp {_config.Garmin.Password} -f {paths}";
 			}
 
+			Log.Information("Beginning Garmin Upload.");
 			Log.Debug("Uploading to Garmin with the following parameters: {0} {1}", start.FileName, cmd.Replace(_config.Garmin.Email, "**email**").Replace(_config.Garmin.Password, "**password**"));
 
 			start.Arguments = cmd;
@@ -89,25 +90,25 @@ namespace Garmin
 			start.CreateNoWindow = true;
 			start.RedirectStandardOutput = true;
 			start.RedirectStandardError = true;
-			using (Process process = Process.Start(start))
+
+			if (files.Length > 20)
+				Log.Information("Detected large number of files for upload to Garmin. Please be patient, this could take a while.");
+			using var process = Process.Start(start);
+			process.WaitForExit();
+
+			var stderr = process.StandardError.ReadToEnd();
+			var stdout = process.StandardOutput.ReadToEnd();
+
+			if (!string.IsNullOrEmpty(stdout))
+				Log.Debug(stdout);
+
+			// Despite coming from StandardError, this is not necessarily an error, just the output
+			if (!string.IsNullOrEmpty(stderr))
+				Log.Information("GUpload: {Output}", stderr);
+
+			if (process.HasExited && process.ExitCode != 0)
 			{
-				using (StreamReader reader = process.StandardOutput)
-				{
-					string stderr = process.StandardError.ReadToEnd();
-					string result = reader.ReadToEnd();
-
-					if (!string.IsNullOrEmpty(result))
-						Log.Debug(result);
-
-					// Despite coming from StandardError, this is not necessarily an error, just the output
-					if (!string.IsNullOrEmpty(stderr))
-						Log.Information("GUpload: {Output}", stderr);
-
-					if (process.ExitCode != 0)
-					{
-						throw new GarminUploadException("Failed to upload workouts.", process.ExitCode);
-					}
-				}
+				throw new GarminUploadException("GUpload returned an error code. Failed to upload workouts.", process.ExitCode);
 			}
 		}
 
