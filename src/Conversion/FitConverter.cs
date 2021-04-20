@@ -418,7 +418,7 @@ namespace Conversion
 
 			foreach (var secondSinceStart in workoutSamples.Seconds_Since_Pedaling_Start)
 			{
-				var index = secondSinceStart - 1;
+				var index = secondSinceStart <= 0 ? 0 : secondSinceStart - 1;
 				duration++;
 
 				if (speedMetrics is object && index < speedMetrics.Values.Length)
@@ -427,8 +427,8 @@ namespace Conversion
 					lapDistanceInMeters += 1 * currentSpeedInMPS;
 				}
 
-				var currentCadenceLower = (uint)cadenceTargets.Lower[index];
-				var currentCadenceUpper = (uint)cadenceTargets.Upper[index];
+				var currentCadenceLower = index < cadenceTargets.Lower.Length ? (uint)cadenceTargets.Lower[index] : 0;
+				var currentCadenceUpper = index < cadenceTargets.Upper.Length ? (uint)cadenceTargets.Upper[index] : 0;
 
 				if (currentCadenceLower != previousCadenceLower
 					|| currentCadenceUpper != previousCadenceUpper)

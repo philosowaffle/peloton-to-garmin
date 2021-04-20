@@ -94,12 +94,19 @@ namespace Conversion
 										.WithTag(TagKey.Format, format);
 
 				// call internal convert method
-				var converted = Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.WorkoutSummary);
+				T converted = default;
 				var workoutTitle = GetTitle(workoutData.Workout);
+				try
+				{
+					converted = Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.WorkoutSummary);
+					
+				} catch (Exception e)
+				{
+					Log.Error(e, "Failed to convert workout data {@Workout} {@File}", workoutTitle, file);
+				}				
 
 				if (converted is null)
 				{
-					Log.Error("Failed to convert workout data {@File}", file);
 					FileHandling.MoveFailedFile(file, _config.App.FailedDirectory);
 					WorkoutsToConvert.Dec();
 					continue;
