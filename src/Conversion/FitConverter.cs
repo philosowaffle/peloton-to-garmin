@@ -146,7 +146,8 @@ namespace Conversion
 			activityMesg.SetEventType(EventType.Stop);
 
 			var timezoneOffset = (int)TimeZoneInfo.Local.BaseUtcOffset.TotalSeconds;
-			activityMesg.SetLocalTimestamp((uint)((int)endTime.GetTimeStamp() + timezoneOffset));
+			var timeStamp = (uint)((int)endTime.GetTimeStamp() + timezoneOffset);
+			activityMesg.SetLocalTimestamp(timeStamp);
 
 			messages.Add(activityMesg);
 
