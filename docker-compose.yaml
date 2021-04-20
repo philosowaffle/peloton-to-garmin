@@ -4,6 +4,8 @@ services:
   p2g:
     container_name: p2g
     image: philosowaffle/peloton-to-garmin:fitvLatest
+    environment:
+      - TZ=America/Chicago
     volumes:
       - ./configuration.local.json:/app/configuration.local.json
       - ./output:/app/output
