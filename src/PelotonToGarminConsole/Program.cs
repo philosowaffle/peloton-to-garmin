@@ -124,7 +124,10 @@ namespace PelotonToGarminConsole
 			var garminUploader = new GarminUploader(config);
 			garminUploader.UploadToGarmin();
 
-			FileHandling.Cleanup(config.App.WorkingDirectory);
+			FileHandling.Cleanup(config.App.DownloadDirectory);
+			FileHandling.Cleanup(config.App.UploadDirectory);
+			foreach (var file in Directory.GetFiles(config.App.WorkingDirectory))
+				File.Delete(file);
 		}
 	}
 }

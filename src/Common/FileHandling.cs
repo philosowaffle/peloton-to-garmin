@@ -19,8 +19,9 @@ namespace Common
 		{
 			try
 			{
-				Log.Debug("Moving failed file from {@FromPath} to {@ToPath}", fromPath, toPath);
 				MkDirIfNotEists(toPath);
+				toPath = Path.Join(toPath, Path.GetFileName(fromPath));
+				Log.Debug("Moving failed file from {@FromPath} to {@ToPath}", fromPath, toPath);
 				File.Copy(fromPath, toPath, overwrite: true);
 
 			} catch (Exception e)
@@ -29,15 +30,18 @@ namespace Common
 			}
 		}
 
-		public static void Cleanup(string workingDir)
+		public static void Cleanup(string dir)
 		{
+			if (!Directory.Exists(dir))
+				return;
+
 			try
 			{
-				Log.Debug("Deleting working directory.");
-				Directory.Delete(workingDir, recursive: true);
+				Log.Debug("Deleting directory.");
+				Directory.Delete(dir, recursive: true);
 			} 
 			catch (Exception e) {
-				Log.Error(e, "Failed to clean up working directory: {@Directory}", workingDir);
+				Log.Error(e, "Failed to clean up working directory: {@Directory}", dir);
 			}
 		}
 	}
