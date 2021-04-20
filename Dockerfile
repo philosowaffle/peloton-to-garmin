@@ -17,7 +17,7 @@ RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
 FROM mcr.microsoft.com/dotnet/runtime:5.0-alpine
 
 ENV PYTHONUNBUFFERED=1
-RUN apk add --update --no-cache bash python3 && ln -sf python3 /usr/bin/python
+RUN apk add --update --no-cache bash python3 tzdata && ln -sf python3 /usr/bin/python
 RUN python3 -m ensurepip
 RUN pip3 install --no-cache --upgrade pip setuptools
 
