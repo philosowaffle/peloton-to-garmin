@@ -20,14 +20,14 @@ namespace UnitTests.Common
 		}
 
 		[Test]
-		public void ValidateConfig_ValidHostPort_ReturnsTrue()
+		public void ValidateConfig_ValidHostPort_DoesNotThrow()
 		{
 			var config = new Observability();
 			config.Jaeger.Enabled = true;
 			config.Jaeger.AgentPort = 8000;
 			config.Jaeger.AgentHost = "host";
 
-			Tracing.ValidateConfig(config).Should().BeTrue();
+			Tracing.ValidateConfig(config);
 		}
 
 		[Test]
@@ -43,12 +43,12 @@ namespace UnitTests.Common
 		}
 
 		[Test]
-		public void ValidateConfig_Disabled_ReturnsTrue()
+		public void ValidateConfig_Disabled_DoesNotThrow()
 		{
 			var config = new Observability();
 			config.Jaeger.Enabled = false;
 
-			Tracing.ValidateConfig(config).Should().BeTrue();
+			Tracing.ValidateConfig(config);
 		}
 	}
 }
