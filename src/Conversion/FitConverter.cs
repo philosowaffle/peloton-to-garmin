@@ -13,8 +13,8 @@ namespace Conversion
 	public class FitConverter : Converter<Tuple<string, ICollection<Mesg>>>
 	{
 		private static readonly float _softwareVersion = 1.0f;
-		private static readonly ushort _productId = 0;
-		private static readonly ushort _manufacturerId = Manufacturer.Development;
+		private static readonly ushort _productId = GarminProduct.Fenix6S;
+		private static readonly ushort _manufacturerId = Manufacturer.Garmin;
 		private static readonly uint _serialNumber = 1234098765;
 
 		private static readonly string _spaceSeparator = "_";
@@ -79,9 +79,10 @@ namespace Conversion
 			var deviceInfoMesg = new DeviceInfoMesg();
 			deviceInfoMesg.SetTimestamp(startTime);
 			deviceInfoMesg.SetSerialNumber(_serialNumber);
-			deviceInfoMesg.SetManufacturer(Manufacturer.Garmin);
+			deviceInfoMesg.SetManufacturer(_manufacturerId);
 			deviceInfoMesg.SetProduct(_productId);
 			deviceInfoMesg.SetSoftwareVersion(_softwareVersion);
+			deviceInfoMesg.SetDeviceIndex(0);
 			deviceInfoMesg.SetProductName("PelotonToGarmin"); // Max 20 Chars
 			messages.Add(deviceInfoMesg);
 
