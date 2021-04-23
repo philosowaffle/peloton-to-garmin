@@ -9,9 +9,9 @@ namespace Common.Database
 {
 	public class DbClient
 	{
-		private static readonly Counter DbActionDuration = PromMetrics.CreateCounter("p2g_db_action_duration_seconds", "Counter of db actions.", new CounterConfiguration()
+		private static readonly Histogram DbActionDuration = PromMetrics.CreateHistogram("p2g_db_duration_seconds", "Counter of db actions.", new HistogramConfiguration()
 		{
-			LabelNames = new[] { "action", "queryName" }
+			LabelNames = new[] { Metrics.Label.DbMethod, Metrics.Label.DbQuery }
 		});
 
 		private DataStore _database;

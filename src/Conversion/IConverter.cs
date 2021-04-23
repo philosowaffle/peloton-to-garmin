@@ -19,13 +19,9 @@ namespace Conversion
 
 	public abstract class Converter<T> : IConverter
 	{
-		private static readonly Gauge WorkoutsToConvert = Metrics.CreateGauge("p2g_workout_conversion_pending", "The number of workouts pending conversion to output format.",new GaugeConfiguration() 
+		private static readonly Histogram WorkoutsConverted = Metrics.CreateHistogram("p2g_workouts_converted_duration_seconds", "The number of workouts converted.", new HistogramConfiguration()
 		{
-			LabelNames = new string[] { "type" }
-		});
-		private static readonly Counter WorkoutsConverted = Metrics.CreateCounter("p2g_workouts_converted", "The number of workouts converted.", new CounterConfiguration()
-		{
-			LabelNames = new string[] { "type" }
+			LabelNames = new string[] { Common.Metrics.Label.FileType }
 		});
 
 		public static readonly float _metersPerMile = 1609.34f;
@@ -66,8 +62,6 @@ namespace Conversion
 				FileHandling.MkDirIfNotEists(_config.App.UploadDirectory);
 
 			// Foreach file in directory
-			WorkoutsToConvert.WithLabels(format).Set(files.Count());
-			using var timer = WorkoutsConverted.WithLabels(format).NewTimer();
 			foreach (var file in files)
 			{
 				using var workoutTimer = WorkoutsConverted.WithLabels(format).NewTimer();
@@ -85,7 +79,6 @@ namespace Conversion
 				{
 					Log.Error(e, "Failed to load and parse workout data {@File}", file);
 					FileHandling.MoveFailedFile(file, _config.App.FailedDirectory);
-					WorkoutsToConvert.Dec();
 					continue;
 				}
 
@@ -108,7 +101,6 @@ namespace Conversion
 				if (converted is null)
 				{
 					FileHandling.MoveFailedFile(file, _config.App.FailedDirectory);
-					WorkoutsToConvert.Dec();
 					continue;
 				}
 
@@ -121,7 +113,6 @@ namespace Conversion
 				catch (Exception e)
 				{
 					Log.Error(e, "Failed to write {@Format} file for {@Workout}", format, workoutTitle);
-					WorkoutsToConvert.Dec();
 					continue;
 				}
 
@@ -178,8 +169,6 @@ namespace Conversion
 				syncRecord.ConvertedToFit = syncRecord.ConvertedToFit || format == "fit";
 				syncRecord.ConvertedToTcx = syncRecord.ConvertedToTcx || format == "tcx";
 				_dbClient.Upsert(syncRecord);
-				WorkoutsToConvert.Dec();
-				WorkoutsConverted.Inc();
 			}
 		}
 

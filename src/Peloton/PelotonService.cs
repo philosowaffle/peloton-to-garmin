@@ -15,9 +15,6 @@ namespace Peloton
 {
 	public class PelotonService
 	{
-		public static readonly Counter WorkoutsDownloaded = Metrics.CreateCounter("p2g_peloton_workouts_downloaded", "The number of workouts downloaded from peloton.");
-		public static readonly Counter WorkoutsArchived = Metrics.CreateCounter("p2g_peloton_workouts_archived", "The number of workouts archived from peloton.");
-		public static readonly Histogram WorkoutsDownloadDuration = Metrics.CreateHistogram("p2g_peloton_workouts_download_duration_seconds", "Histogram of the entire time to download all recent workout data.");
 		public static readonly Histogram WorkoutDownloadDuration = Metrics.CreateHistogram("p2g_peloton_workout_download_duration_seconds", "Histogram of the entire time to download a single workouts data.");
 
 		private Configuration _config;
@@ -57,7 +54,6 @@ namespace Peloton
 			var workingDir = _config.App.DownloadDirectory;
 			FileHandling.MkDirIfNotEists(workingDir);
 
-			using var timer = WorkoutsDownloadDuration.NewTimer();
 			foreach (var recentWorkout in filteredWorkouts)
 			{
 				var workoutId = recentWorkout.Id;
@@ -80,8 +76,6 @@ namespace Peloton
 				var workout = workoutTask.GetAwaiter().GetResult();
 				var workoutSamples = workoutSamplesTask.GetAwaiter().GetResult();
 				var workoutSummary = workoutSummaryTask.GetAwaiter().GetResult();
-
-				WorkoutsDownloaded.Inc();
 
 				dynamic data = new JObject();
 				data.Workout = workout;
@@ -111,7 +105,6 @@ namespace Peloton
 
 			Log.Debug("Write peloton json to file for {@WorkoutId}", workoutId);
 			File.WriteAllText(Path.Join(outputDir, $"{workoutId}_workout.json"), data.ToString());
-			WorkoutsArchived.Inc();
 		}
 	}
 }

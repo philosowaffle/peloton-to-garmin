@@ -13,7 +13,7 @@ namespace Common
 		public static string App = "app";
 		public static string WorkoutId = "workout_id";
 		public static string Table = "table";
-		public static string Format = "format";
+		public static string Format = "file_type";
 	}
 
 	public static class TagValue 

@@ -14,7 +14,7 @@ namespace Garmin
 	{
 		private static readonly Histogram WorkoutUploadDuration = Metrics.CreateHistogram("p2g_workout_upload_duration_seconds", "Histogram of workout upload durations.", new HistogramConfiguration()
 		{
-			LabelNames = new[] { "count" }
+			LabelNames = new[] { Common.Metrics.Label.Count }
 		});
 
 		private readonly Configuration _config;
