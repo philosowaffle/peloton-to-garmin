@@ -61,10 +61,21 @@ def getInstructor(workout):
     return ""
 
 def getRideTitle(workout):
-    if workout["workout_type"] == "class":
+    title = ""
+    try:
         instructor = getInstructor(workout)
         rideTitle = unidecode(workout["ride"]["title"].replace("/","-").replace(":","-"))
-        return "{0}{1}".format(rideTitle, instructor)
+        title = "{0}{1}".format(rideTitle, instructor)
+    except:
+        pass
+
+    return title
+
+def getWorkoutDescription(workout):
+    # Just Ride workouts do not have a description.
+    if workout["workout_type"] != "freestyle":
+        if workout["ride"]["description"] is not None:
+            return unidecode(workout["ride"]["description"])
     return ""
 
 def getDistanceMeters(workoutSamples):
@@ -137,6 +148,11 @@ def getGarminActivityType(workout):
     
     return sport, granular_garmin_activity_type
 
+def getWorkoutFilename( workout, file_extension ) :
+    startTimeInSeconds = workout['start_time']
+    title = getRideTitle(workout)
+    filename = "{0}-{1}-{2}.{ext}".format(startTimeInSeconds, title, workout['id'], ext = file_extension )
+    return filename
 
 def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
 
@@ -178,13 +194,11 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     triggerMethod = etree.Element("TriggerMethod")
     triggerMethod.text = "Manual"
 
-    instructor = getInstructor(workout)
-    rideTitle = unidecode(workout["ride"]["title"].replace("/","-").replace(":","-"))
-    title = "{0}{1}".format(rideTitle, instructor)
+    title = getRideTitle(workout)
 
     try:
         notes = etree.Element("Notes")
-        notes.text = "{} - {}".format(title, workout["ride"]["description"])
+        notes.text = "{} - {}".format(title, getWorkoutDescription(workout))
     except Exception as e:
         logger.error("Failed to Parse Description - Exception: {}".format(e))
 
@@ -383,8 +397,9 @@ def workoutSamplesToTCX(workout, workoutSummary, workoutSamples, outputDir):
     root.append(activities)
     tree = etree.ElementTree(root)
 
-    
-    filename = "{0}-{1}-{2}.tcx".format(startTimeInSeconds, title, workout['id'])
+
+    #filename = "{0}-{1}-{2}.tcx".format(startTimeInSeconds, title, workout['id'])
+    filename = getWorkoutFilename( workout, "tcx" )
 
     outputDir = outputDir.replace("\"", "")
     tree.write(os.path.join(outputDir,filename), xml_declaration=True, encoding="UTF-8", method="xml")
