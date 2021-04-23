@@ -5,6 +5,7 @@ using Conversion;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 
 namespace UnitTests.Conversion
 {
@@ -74,6 +75,154 @@ namespace UnitTests.Conversion
 			}
 		}
 
+		[Test]
+		public void GetTotalDistanceTest_NullSummary_Should_Return0()
+		{
+			var workoutSample = new WorkoutSamples();
+			workoutSample.Summaries = null;
+
+			var config = new Configuration();
+			var converter = new ConverterInstance(config, new DbClient(config));
+
+			var converted = converter.GetTotalDistance1(workoutSample);
+			converted.Should().Be(0.0f);
+		}
+
+		[Test]
+		public void GetTotalDistanceTest_NoDistanceSlug_Should_Return0()
+		{
+			var workoutSample = new WorkoutSamples();
+			workoutSample.Summaries = new List<Summary>() { new Summary() { Slug = "notDistance" } };
+
+			var config = new Configuration();
+			var converter = new ConverterInstance(config, new DbClient(config));
+
+			var converted = converter.GetTotalDistance1(workoutSample);
+			converted.Should().Be(0.0f);
+		}
+
+		[Test]
+		public void GetTotalDistanceTest_Distance_Is_Converted_To_Meters([Values("mi", "ft", "km")] string unit)
+		{
+			var distance = 145;
+			var workoutSample = new WorkoutSamples();
+			workoutSample.Summaries = new List<Summary>() 
+			{ 
+				new Summary() { Slug = "distance", Display_Unit = unit, Value = distance } 
+			};
+
+			var config = new Configuration();
+			var converter = new ConverterInstance(config, new DbClient(config));
+			var expectedDistance = converter.ConvertDistanceToMeters1(distance, unit);
+
+			var converted = converter.GetTotalDistance1(workoutSample);
+			converted.Should().Be(expectedDistance);
+		}
+
+		[Test]
+		public void ConvertToMetersPerSecondTest_NullSummary_Should_Return_Original_Value()
+		{
+			var workoutSample = new WorkoutSamples();
+			workoutSample.Summaries = null;
+
+			var config = new Configuration();
+			var converter = new ConverterInstance(config, new DbClient(config));
+
+			var value = 145;
+			var converted = converter.ConvertToMetersPerSecond1(value, workoutSample);
+			converted.Should().Be(value);
+		}
+
+		[Test]
+		public void ConvertToMetersPerSecondTest_Is_Converted_To_MetersPerSecond([Values("mi", "ft", "km")] string unit)
+		{
+			var value = 145;
+			var workoutSample = new WorkoutSamples();
+			workoutSample.Summaries = new List<Summary>()
+			{
+				new Summary() { Slug = "distance", Display_Unit = unit, Value = value }
+			};
+
+			var config = new Configuration();
+			var converter = new ConverterInstance(config, new DbClient(config));
+
+			var metersPerHour = converter.ConvertDistanceToMeters1(value, unit);
+			var metersPerMinute = metersPerHour / 60;
+			var metersPerSecond = metersPerMinute / 60;
+			var converted = converter.ConvertToMetersPerSecond1(value, workoutSample);
+			converted.Should().Be(metersPerSecond);
+		}
+
+		[Test]
+		public void GetMaxSpeedMetersPerSecond_NullMetrics_Returns0()
+		{
+			var workoutSample = new WorkoutSamples();
+			workoutSample.Metrics = null;
+
+			var config = new Configuration();
+			var converter = new ConverterInstance(config, new DbClient(config));
+
+			var converted = converter.GetMaxSpeedMetersPerSecond1(workoutSample);
+			converted.Should().Be(0.0f);
+		}
+
+		[Test]
+		public void GetMaxSpeedMetersPerSecond_MaxSpeed_Is_Converted([Values("mi", "ft", "km")] string unit)
+		{
+			var speed = 15.2;
+			var workoutSample = new WorkoutSamples();
+			workoutSample.Metrics = new List<Metric>()
+			{
+				new Metric() { Slug = "speed", Display_Unit = unit, Max_Value = speed }
+			};
+			workoutSample.Summaries = new List<Summary>()
+			{
+				new Summary() { Slug = "distance", Display_Unit = unit }
+			};
+
+			var config = new Configuration();
+			var converter = new ConverterInstance(config, new DbClient(config));
+			var expectedDistance = converter.ConvertToMetersPerSecond1(speed, workoutSample);
+
+			var converted = converter.GetMaxSpeedMetersPerSecond1(workoutSample);
+			converted.Should().Be(expectedDistance);
+		}
+
+		[Test]
+		public void GetAvgSpeedMetersPerSecond_NullMetrics_Returns0()
+		{
+			var workoutSample = new WorkoutSamples();
+			workoutSample.Metrics = null;
+
+			var config = new Configuration();
+			var converter = new ConverterInstance(config, new DbClient(config));
+
+			var converted = converter.GetAvgSpeedMetersPerSecond1(workoutSample);
+			converted.Should().Be(0.0f);
+		}
+
+		[Test]
+		public void GetAvgSpeedMetersPerSecond_MaxSpeed_Is_Converted([Values("mi", "ft", "km")] string unit)
+		{
+			var speed = 15.2;
+			var workoutSample = new WorkoutSamples();
+			workoutSample.Metrics = new List<Metric>()
+			{
+				new Metric() { Slug = "speed", Display_Unit = unit, Average_Value = speed }
+			};
+			workoutSample.Summaries = new List<Summary>()
+			{
+				new Summary() { Slug = "distance", Display_Unit = unit }
+			};
+
+			var config = new Configuration();
+			var converter = new ConverterInstance(config, new DbClient(config));
+			var expectedDistance = converter.ConvertToMetersPerSecond1(speed, workoutSample);
+
+			var converted = converter.GetAvgSpeedMetersPerSecond1(workoutSample);
+			converted.Should().Be(expectedDistance);
+		}
+
 		private class ConverterInstance : Converter<string>
 		{
 			public ConverterInstance(Configuration config, DbClient dbClient) : base(config, dbClient) { }
@@ -111,6 +260,26 @@ namespace UnitTests.Conversion
 			public float ConvertDistanceToMeters1(double value, string unit)
 			{
 				return this.ConvertDistanceToMeters(value, unit);
+			}
+
+			public float GetTotalDistance1(WorkoutSamples workoutSamples)
+			{
+				return base.GetTotalDistance(workoutSamples);
+			}
+
+			public float ConvertToMetersPerSecond1(double value, WorkoutSamples workoutSamples)
+			{
+				return base.ConvertToMetersPerSecond(value, workoutSamples);
+			}
+
+			public float GetMaxSpeedMetersPerSecond1(WorkoutSamples workoutSamples)
+			{
+				return base.GetMaxSpeedMetersPerSecond(workoutSamples);
+			}
+
+			public float GetAvgSpeedMetersPerSecond1(WorkoutSamples workoutSamples)
+			{
+				return base.GetAvgSpeedMetersPerSecond(workoutSamples);
 			}
 		}
 	}

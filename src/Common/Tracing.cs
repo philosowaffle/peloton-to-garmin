@@ -71,24 +71,22 @@ namespace Common
 			return activity?.SetTag(key, value);
 		}
 
-		public static bool ValidateConfig(Observability config)
+		public static void ValidateConfig(Observability config)
 		{
 			if (!config.Jaeger.Enabled)
-				return true;
+				return;
 
 			if (string.IsNullOrEmpty(config.Jaeger.AgentHost))
 			{
-				Log.Error("Agent Host must be set: {@Config}.{@ConfigSection}.", nameof(config), nameof(config.Jaeger.AgentHost));
+				Log.Error("Agent Host must be set: {@ConfigSection}.{@ConfigProperty}.", nameof(config), nameof(config.Jaeger.AgentHost));
 				throw new ArgumentException("Agent Host must be set.", nameof(config.Jaeger.AgentHost));
 			}
 
 			if (config.Jaeger.AgentPort is null || config.Jaeger.AgentPort <= 0)
 			{
-				Log.Error("Agent Port must be set: {@Config}.{@ConfigSection}.", nameof(config), nameof(config.Jaeger.AgentPort));
+				Log.Error("Agent Port must be set: {@ConfigSection}.{@ConfigProperty}.", nameof(config), nameof(config.Jaeger.AgentPort));
 				throw new ArgumentException("Agent Port must be a valid port.", nameof(config.Jaeger.AgentPort));
 			}
-
-			return true;
 		}
 	}
 }

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using Metrics = Prometheus.Metrics;
+using Summary = Common.Dto.Summary;
 
 namespace Conversion
 {
@@ -213,13 +214,8 @@ namespace Conversion
 
 		protected float GetTotalDistance(WorkoutSamples workoutSamples)
 		{
-			var summaries = workoutSamples.Summaries;
-			var distanceSummary = summaries.FirstOrDefault(s => s.Slug == "distance");
-			if (distanceSummary is null)
-			{
-				Log.Debug("No distance slug found. Defaulting to 0.");
-				return 0.0f;
-			}
+			var distanceSummary = GetDistanceSummary(workoutSamples);
+			if (distanceSummary is null) return 0.0f;
 
 			var unit = distanceSummary.Display_Unit;
 			return ConvertDistanceToMeters(distanceSummary.Value, unit);
@@ -227,13 +223,8 @@ namespace Conversion
 
 		protected float ConvertToMetersPerSecond(double value, WorkoutSamples workoutSamples)
 		{
-			var summaries = workoutSamples.Summaries;
-			var distanceSummary = summaries.FirstOrDefault(s => s.Slug == "distance");
-			if (distanceSummary is null)
-			{
-				Log.Debug("No distance slug found for unit. Defaulting distance to original value: {@Distance}", value);
-				return (float)value;
-			}
+			var distanceSummary = GetDistanceSummary(workoutSamples);
+			if (distanceSummary is null) return (float)value;
 
 			var unit = distanceSummary.Display_Unit;
 			var metersPerHour = ConvertDistanceToMeters(value, unit);
@@ -243,30 +234,51 @@ namespace Conversion
 			return metersPerSecond;
 		}
 
+		private Summary GetDistanceSummary(WorkoutSamples workoutSamples)
+		{
+			if (workoutSamples?.Summaries is null)
+			{
+				Log.Debug("No workout Summaries found.");
+				return null;
+			}
+
+			var summaries = workoutSamples.Summaries;
+			var distanceSummary = summaries.FirstOrDefault(s => s.Slug == "distance");
+			if (distanceSummary is null)
+				Log.Debug("No distance slug found.");
+
+			return distanceSummary;
+		}
+
 		protected float GetMaxSpeedMetersPerSecond(WorkoutSamples workoutSamples)
 		{
-			var summaries = workoutSamples.Metrics;
-			var speedSummary = summaries.FirstOrDefault(s => s.Slug == "speed");
-			if (speedSummary is null)
-			{
-				Log.Debug("No speed slug found. Defaulting to 0.");
-				return 0.0f;
-			}
+			var speedSummary = GetSpeedSummary(workoutSamples);
+			if (speedSummary is null) return 0.0f;
 
 			return ConvertToMetersPerSecond(speedSummary.Max_Value, workoutSamples);
 		}
 
 		protected float GetAvgSpeedMetersPerSecond(WorkoutSamples workoutSamples)
 		{
-			var summaries = workoutSamples.Metrics;
-			var speedSummary = summaries.FirstOrDefault(s => s.Slug == "speed");
-			if (speedSummary is null)
-			{
-				Log.Debug("No speed slug found. Defaulting to 0.");
-				return 0.0f;
-			}
+			var speedSummary = GetSpeedSummary(workoutSamples);
+			if (speedSummary is null) return 0.0f;
 
 			return ConvertToMetersPerSecond(speedSummary.Average_Value, workoutSamples);
+		}
+
+		private Metric GetSpeedSummary(WorkoutSamples workoutSamples)
+		{
+			if (workoutSamples?.Metrics is null)
+			{
+				Log.Debug("No workout Metrics found.");
+				return null;
+			}
+
+			var speedSummary = workoutSamples.Metrics.FirstOrDefault(s => s.Slug == "speed");
+			if (speedSummary is null)
+				Log.Debug("No speed slug found.");
+
+			return speedSummary;
 		}
 
 		protected string GetTitle(Workout workout)
