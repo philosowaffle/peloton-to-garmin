@@ -32,7 +32,7 @@ namespace Conversion
 
 			var sport = GetSport(workout);
 			var subSport = GetSubSport(workout);
-			var startTime = GetStartTime(workout);
+			var startTime = GetStartTimeUtc(workout);
 
 			var lx = new XElement(activityExtensions + "TPX");
 			lx.Add(new XElement(activityExtensions + "TotalPower", summary.Total_Work));
