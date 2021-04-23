@@ -9,13 +9,17 @@ namespace Common
 {
 	public static class FlurlConfiguration
 	{
-		private static readonly Counter HttpResponseCounter = PromMetrics.CreateCounter("p2g_http_responses", "The number of http responses.", new CounterConfiguration
+		private static readonly Histogram HttpResponseCounter = PromMetrics.CreateHistogram("p2g_http_duration_seconds", "The histogram of http responses.", new HistogramConfiguration
 		{
-			LabelNames = new[] { "method", "host", "path", "query", "status_code", "duration_in_seconds" }
-		});
-		private static readonly Counter HttpErrorCounter = PromMetrics.CreateCounter("p2g_http_errors", "The number of errors encountered.", new CounterConfiguration
-		{
-			LabelNames = new[] { "method", "host", "path", "query", "status_code", "duration_in_seconds", "message" }
+			LabelNames = new[] 
+			{
+				Metrics.Label.HttpMethod, 
+				Metrics.Label.HttpHost, 
+				Metrics.Label.HttpRequestPath, 
+				Metrics.Label.HttpRequestQuery,
+				Metrics.Label.HttpStatusCode,
+				Metrics.Label.HttpMessage
+			}
 		});
 
 		public static void Configure(Configuration config)
@@ -39,30 +43,14 @@ namespace Common
 						call.HttpRequestMessage.RequestUri.AbsolutePath,
 						call.HttpRequestMessage.RequestUri.Query,
 						call.HttpResponseMessage.StatusCode.ToString(),
-						call.Duration.GetValueOrDefault().TotalSeconds.ToString()
-					)
-					.Inc();
+						call.HttpResponseMessage.ReasonPhrase
+					).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
 				}
 			};
 
 			Func<FlurlCall, Task> onErrorAsync = async (FlurlCall call) =>
 			{
 				Log.Error("Http Call Failed. {0} {1}", call.HttpResponseMessage?.StatusCode, await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
-
-				if (config.Observability.Prometheus.Enabled)
-				{
-					HttpErrorCounter
-					.WithLabels(
-						call.HttpRequestMessage.Method.ToString(),
-						call.HttpRequestMessage.RequestUri.Host,
-						call.HttpRequestMessage.RequestUri.AbsolutePath,
-						call.HttpRequestMessage.RequestUri.Query,
-						call.HttpResponseMessage.StatusCode.ToString(),
-						call.Duration.GetValueOrDefault().TotalSeconds.ToString(),
-						call.HttpResponseMessage.ReasonPhrase
-					)
-					.Inc();
-				}
 			};
 
 			FlurlHttp.Configure(settings =>

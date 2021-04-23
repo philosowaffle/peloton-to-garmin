@@ -18,8 +18,7 @@ namespace PelotonToGarminConsole
 {
 	class Program
 	{
-		private static readonly Counter PollsCounter = Metrics.CreateCounter("p2g_polls_total", "The number of times the current process has polled for new data.");
-		private static readonly Counter PollDuration = Metrics.CreateCounter("p2g_poll_duration_seconds", "Time of the entire poll run duration in seconds.");
+		private static readonly Histogram PollsCounter = Metrics.CreateHistogram("p2g_polls_duration_seconds", "The number of times the current process has polled for new data.");
 
 		static void Main(string[] args)
 		{
@@ -99,7 +98,6 @@ namespace PelotonToGarminConsole
 
 		static async Task RunAsync(Configuration config)
 		{
-			PollsCounter.Inc();
 			using var timer = PollsCounter.NewTimer();
 			using var activity = Tracing.Trace(nameof(RunAsync));
 

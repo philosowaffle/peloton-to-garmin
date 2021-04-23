@@ -30,5 +30,22 @@ namespace Common
 				throw new ArgumentException("Prometheus port must be greater than 0.", nameof(config.Prometheus.Port));
 			}
 		}
+
+		public static class Label
+		{
+			public static string HttpMethod = "http_method";
+			public static string HttpHost = "http_host";
+			public static string HttpRequestPath = "http_request_path";
+			public static string HttpRequestQuery = "http_request_query";
+			public static string HttpStatusCode = "http_status_code";
+			public static string HttpMessage = "http_message";
+
+			public static string DbMethod = "db_method";
+			public static string DbQuery = "db_query";
+
+			public static string FileType = "file_type";
+
+			public static string Count = "count";
+		}
 	}
 }
