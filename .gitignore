@@ -111,3 +111,5 @@ tests/testOutput/
 tests/database.json
 config.local.ini
 bak_config.ini
+device_info.xml
+author_info.xml
