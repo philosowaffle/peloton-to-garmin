@@ -184,11 +184,18 @@ namespace Conversion
 			}
 		}
 
-		protected DateTime GetStartTime(Workout workout)
+		protected DateTime GetStartTimeUtc(Workout workout)
 		{
 			var startTimeInSeconds = workout.Start_Time;
-			var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(startTimeInSeconds);
-			return dtDateTime.ToUniversalTime();
+			var dateTime = DateTimeOffset.FromUnixTimeSeconds(startTimeInSeconds);
+			return dateTime.UtcDateTime;
+		}
+
+		protected DateTime GetEndTimeUtc(Workout workout)
+		{
+			var endTimeSeconds = workout.End_Time;
+			var dateTime = DateTimeOffset.FromUnixTimeSeconds(endTimeSeconds);
+			return dateTime.UtcDateTime;
 		}
 
 		protected string GetTimeStamp(DateTime startTime, long offset = 0)

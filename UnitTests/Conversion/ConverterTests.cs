@@ -249,7 +249,7 @@ namespace UnitTests.Conversion
 
 			public DateTime GetStartTime1(Workout workout)
 			{
-				return this.GetStartTime(workout);
+				return this.GetStartTimeUtc(workout);
 			}
 
 			public string GetTimeStamp1(DateTime startTime, long offset)

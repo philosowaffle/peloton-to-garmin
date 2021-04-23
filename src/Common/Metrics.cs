@@ -1,5 +1,6 @@
 ﻿using Prometheus;
 using Serilog;
+using System;
 
 namespace Common
 {
@@ -19,18 +20,15 @@ namespace Common
 			return metricsServer;
 		}
 
-		public static bool ValidateConfig(Observability config)
+		public static void ValidateConfig(Observability config)
 		{
-			if (!config.Prometheus.Enabled)
-				return true;
+			if (!config.Prometheus.Enabled) return;
 
 			if (config.Prometheus.Port.HasValue && config.Prometheus.Port <= 0)
 			{
 				Log.Error("Prometheus Port must be a valid port: {@ConfigSection}.{@ConfigProperty}.", nameof(config), nameof(config.Prometheus.Port));
-				return false;
+				throw new ArgumentException("Prometheus port must be greater than 0.", nameof(config.Prometheus.Port));
 			}
-
-			return true;
 		}
 	}
 }
