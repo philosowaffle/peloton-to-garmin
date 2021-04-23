@@ -22,7 +22,7 @@ namespace PelotonToGarminConsole
 
 		static void Main(string[] args)
 		{
-			Console.WriteLine("Peloton To FIT");
+			Console.WriteLine("Peloton To Garmin");
 			var config = new Configuration();
 
 			try
@@ -32,8 +32,7 @@ namespace PelotonToGarminConsole
 				.AddEnvironmentVariables()
 				.AddCommandLine(args)
 				.Build();
-
-				
+								
 				configProviders.GetSection(nameof(App)).Bind(config.App);
 				configProviders.GetSection(nameof(Format)).Bind(config.Format);
 				configProviders.GetSection(nameof(Peloton)).Bind(config.Peloton);
@@ -54,10 +53,6 @@ namespace PelotonToGarminConsole
 
 			try
 			{
-				//var g = new Garmin.ApiClient(config);
-				//Task.Run(() => g.InitAuth()).GetAwaiter().GetResult();
-
-				// TODO: Actually Verify Configuration validation
 				GarminUploader.ValidateConfig(config.Garmin);
 				Common.Metrics.ValidateConfig(config.Observability);
 				Tracing.ValidateConfig(config.Observability);
@@ -80,7 +75,7 @@ namespace PelotonToGarminConsole
 					while (true)
 					{
 						RunAsync(config).GetAwaiter().GetResult();
-						Log.Information("Sleeping for {0} seconds...", config.App.PollingIntervalSeconds);
+						Log.Information("Sleeping for {@Seconds} seconds...", config.App.PollingIntervalSeconds);
 						Thread.Sleep(config.App.PollingIntervalSeconds * 1000);
 					}
 				}

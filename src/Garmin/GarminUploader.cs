@@ -112,23 +112,27 @@ namespace Garmin
 			}
 		}
 
-		public static bool ValidateConfig(Common.Garmin config)
+		public static void ValidateConfig(Common.Garmin config)
 		{
-			if (config.Upload == false) return true;
+			if (config.Upload == false) return;
 
 			if (string.IsNullOrEmpty(config.Email))
 			{
-				Log.Error("Garmin Email required, check your configuration {0}.{1} is set.", nameof(Garmin), nameof(config.Email));
-				return false;
+				Log.Error("Garmin Email required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Garmin), nameof(config.Email));
+				throw new ArgumentException("Garmin Email must be set.", nameof(config.Email));
 			}
 
 			if (string.IsNullOrEmpty(config.Password))
 			{
-				Log.Error("Garmin Password required, check your configuration {0}.{1} is set.", nameof(Garmin), nameof(config.Password));
-				return false;
+				Log.Error("Garmin Password required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Garmin), nameof(config.Password));
+				throw new ArgumentException("Garmin Password must be set.", nameof(config.Password));
 			}
 
-			return true;
+			if (config.FormatToUpload != "fit" && config.FormatToUpload != "tcx")
+			{
+				Log.Error("Garmin FormatToUpload should be \"fit\" or \"tcx\", check your configuration {@ConfigSection}.{@ConfigProperty}.", nameof(Garmin), nameof(config.FormatToUpload));
+				throw new ArgumentException("Garmin FormatToUpload must be either \"fit\" or \"tcx\".", nameof(config.FormatToUpload));
+			}
 		}
 	}
 }

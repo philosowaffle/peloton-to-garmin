@@ -20,18 +20,15 @@ namespace Common
 			return metricsServer;
 		}
 
-		public static bool ValidateConfig(Observability config)
+		public static void ValidateConfig(Observability config)
 		{
-			if (!config.Prometheus.Enabled)
-				return true;
+			if (!config.Prometheus.Enabled) return;
 
 			if (config.Prometheus.Port.HasValue && config.Prometheus.Port <= 0)
 			{
-				Log.Error("Prometheus Port must be a valid port: {@Config}.{@ConfigSecion}.", nameof(config), nameof(config.Prometheus.Port));
-				throw new ArgumentException("Prometheus Port must be a valid port.", nameof(config.Prometheus.Port));
+				Log.Error("Prometheus Port must be a valid port: {@ConfigSection}.{@ConfigProperty}.", nameof(config), nameof(config.Prometheus.Port));
+				throw new ArgumentException("Prometheus port must be greater than 0.", nameof(config.Prometheus.Port));
 			}
-
-			return true;
 		}
 
 		public static class Label

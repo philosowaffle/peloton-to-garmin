@@ -31,7 +31,7 @@ namespace Common
 		{
 			OutputDirectory = Path.Join(Environment.CurrentDirectory, "output");
 			WorkingDirectory = Path.Join(Environment.CurrentDirectory, "working");
-			SyncHistoryDbPath = Path.Join(Environment.CurrentDirectory, "syncHistory.json");
+			SyncHistoryDbPath = Path.Join(OutputDirectory, "syncHistory.json");
 
 			EnablePolling = true;
 			PollingIntervalSeconds = 3600;
