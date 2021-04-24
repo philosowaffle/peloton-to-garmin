@@ -3,6 +3,7 @@ using Common.Database;
 using Conversion;
 using Garmin;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
 using Peloton;
 using Prometheus;
 using Serilog;
@@ -18,7 +19,7 @@ namespace PelotonToGarminConsole
 {
 	class Program
 	{
-		private static readonly Histogram PollsCounter = Metrics.CreateHistogram("p2g_polls_duration_seconds", "The number of times the current process has polled for new data.");
+		private static readonly Histogram SyncHistogram = Metrics.CreateHistogram("p2g_sync_duration_seconds", "The histogram of sync jobs that have run.");
 
 		static void Main(string[] args)
 		{
@@ -45,6 +46,27 @@ namespace PelotonToGarminConsole
 					.ReadFrom.Configuration(configProviders, sectionName: $"{nameof(Observability)}:Serilog")
 					.Enrich.WithSpan()
 					.CreateLogger();
+
+				ChangeToken.OnChange(() => configProviders.GetReloadToken(), () => 
+				{
+					Log.Information("Config change detected, reloading config values.");
+					configProviders.GetSection(nameof(App)).Bind(config.App);
+					configProviders.GetSection(nameof(Format)).Bind(config.Format);
+					configProviders.GetSection(nameof(Peloton)).Bind(config.Peloton);
+					configProviders.GetSection(nameof(Garmin)).Bind(config.Garmin);
+					configProviders.GetSection(nameof(Developer)).Bind(config.Developer);
+
+					GarminUploader.ValidateConfig(config.Garmin);
+
+					Log.Information("Config reloaded. Changes will take effect at the end of the current sleeping cycle.");
+				});
+
+				GarminUploader.ValidateConfig(config.Garmin);
+				Common.Metrics.ValidateConfig(config.Observability);
+				Tracing.ValidateConfig(config.Observability);
+
+				FlurlConfiguration.Configure(config);
+
 			} catch (Exception e)
 			{
 				Log.Error(e, "Exception during config setup.");
@@ -53,10 +75,6 @@ namespace PelotonToGarminConsole
 
 			try
 			{
-				GarminUploader.ValidateConfig(config.Garmin);
-				Common.Metrics.ValidateConfig(config.Observability);
-				Tracing.ValidateConfig(config.Observability);
-
 				if (config.Peloton.NumWorkoutsToDownload <= 0)
 				{
 					Console.Write("How many workouts to grab? ");
@@ -67,8 +85,6 @@ namespace PelotonToGarminConsole
 				using var metrics = Common.Metrics.EnableMetricsServer(config.Observability.Prometheus);
 				using var tracing = Tracing.EnableTracing(config.Observability.Jaeger);
 				using var tracingSource = new ActivitySource("ROOT");
-
-				FlurlConfiguration.Configure(config);
 
 				if (config.App.EnablePolling)
 				{
@@ -98,11 +114,11 @@ namespace PelotonToGarminConsole
 
 		static async Task RunAsync(Configuration config)
 		{
-			using var timer = PollsCounter.NewTimer();
+			using var timer = SyncHistogram.NewTimer();
 			using var activity = Tracing.Trace(nameof(RunAsync));
 
 			var db = new DbClient(config);
-			var pelotonApiClient = new Peloton.ApiClient(config.Peloton.Email, config.Peloton.Password);
+			var pelotonApiClient = new Peloton.ApiClient(config.Peloton.Email, config.Peloton.Password, config.Observability.Prometheus.Enabled);
 			var peloton = new PelotonService(config, pelotonApiClient, db);
 
 			await peloton.DownloadLatestWorkoutDataAsync();

@@ -20,7 +20,7 @@ namespace Conversion
 
 	public abstract class Converter<T> : IConverter
 	{
-		private static readonly Histogram WorkoutsConverted = Metrics.CreateHistogram("p2g_workouts_converted_duration_seconds", "The number of workouts converted.", new HistogramConfiguration()
+		private static readonly Histogram WorkoutsConverted = Metrics.CreateHistogram("p2g_workouts_converted_duration_seconds", "The histogram of workouts converted.", new HistogramConfiguration()
 		{
 			LabelNames = new string[] { Common.Metrics.Label.FileType }
 		});
