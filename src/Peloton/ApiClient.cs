@@ -1,4 +1,5 @@
-﻿using Common.Dto;
+﻿using Common;
+using Common.Dto;
 using Flurl.Http;
 using Newtonsoft.Json.Linq;
 using Peloton.Dto;
@@ -15,14 +16,16 @@ namespace Peloton
 
 		private readonly string _userEmail;
 		private readonly string _userPassword;
+		private readonly bool _observabilityEnabled;
 
 		private string UserId;
 		private string SessionId;
 
-		public ApiClient(string email, string password)
+		public ApiClient(string email, string password, bool observabilityEnabled)
 		{
 			_userEmail = email;
 			_userPassword = password;
+			_observabilityEnabled = observabilityEnabled;
 		}
 
 		public async Task InitAuthAsync(string overrideUserAgent = null)
@@ -60,6 +63,24 @@ namespace Peloton
 				limit = numWorkouts,
 				sort_by = "-created"
 			})
+			.ConfigureRequest((c) => 
+			{
+				c.AfterCallAsync = async (FlurlCall call) => 
+				{
+					if (_observabilityEnabled)
+					{
+						FlurlConfiguration.HttpReqeustHistogram
+						.WithLabels(
+							call.HttpRequestMessage.Method.ToString(),
+							call.HttpRequestMessage.RequestUri.Host,
+							"/user/{userid}/workouts",
+							"?limit={limit}&sort_by={sortby}",
+							call.HttpResponseMessage.StatusCode.ToString(),
+							call.HttpResponseMessage.ReasonPhrase
+						).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
+					}
+				};
+			})
 			.GetJsonAsync<RecentWorkouts>();
 		}
 
@@ -70,6 +91,24 @@ namespace Peloton
 				.SetQueryParams(new
 				{
 					joins = "ride,ride.instructor"
+				})
+				.ConfigureRequest((c) =>
+				{
+					c.AfterCallAsync = async (FlurlCall call) =>
+					{
+						if (_observabilityEnabled)
+						{
+							FlurlConfiguration.HttpReqeustHistogram
+							.WithLabels(
+								call.HttpRequestMessage.Method.ToString(),
+								call.HttpRequestMessage.RequestUri.Host,
+								"/workout/{workoutid}",
+								"?joins={joins}",
+								call.HttpResponseMessage.StatusCode.ToString(),
+								call.HttpResponseMessage.ReasonPhrase
+							).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
+						}
+					};
 				})
 				.GetJsonAsync<JObject>();
 		}
@@ -82,6 +121,24 @@ namespace Peloton
 				{
 					every_n=1
 				})
+				.ConfigureRequest((c) =>
+				{
+					c.AfterCallAsync = async (FlurlCall call) =>
+					{
+						if (_observabilityEnabled)
+						{
+							FlurlConfiguration.HttpReqeustHistogram
+							.WithLabels(
+								call.HttpRequestMessage.Method.ToString(),
+								call.HttpRequestMessage.RequestUri.Host,
+								"/workout/{workoutid}/performance_graph",
+								"?every_n={everyn}",
+								call.HttpResponseMessage.StatusCode.ToString(),
+								call.HttpResponseMessage.ReasonPhrase
+							).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
+						}
+					};
+				})
 				.GetJsonAsync<JObject>();
 		}
 
@@ -89,6 +146,24 @@ namespace Peloton
 		{
 			return $"{BaseUrl}/workout/{id}/summary"
 				.WithCookie("peloton_session_id", SessionId)
+				.ConfigureRequest((c) =>
+				{
+					c.AfterCallAsync = async (FlurlCall call) =>
+					{
+						if (_observabilityEnabled)
+						{
+							FlurlConfiguration.HttpReqeustHistogram
+							.WithLabels(
+								call.HttpRequestMessage.Method.ToString(),
+								call.HttpRequestMessage.RequestUri.Host,
+								"/workout/{workoutid}/summary",
+								call.HttpRequestMessage.RequestUri.Query,
+								call.HttpResponseMessage.StatusCode.ToString(),
+								call.HttpResponseMessage.ReasonPhrase
+							).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
+						}
+					};
+				})
 				.GetJsonAsync<JObject>();
 		}
 	}

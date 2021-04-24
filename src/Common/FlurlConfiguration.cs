@@ -9,7 +9,7 @@ namespace Common
 {
 	public static class FlurlConfiguration
 	{
-		private static readonly Histogram HttpResponseCounter = PromMetrics.CreateHistogram("p2g_http_duration_seconds", "The histogram of http responses.", new HistogramConfiguration
+		public static readonly Histogram HttpReqeustHistogram = PromMetrics.CreateHistogram("p2g_http_duration_seconds", "The histogram of http requests.", new HistogramConfiguration
 		{
 			LabelNames = new[] 
 			{
@@ -36,7 +36,7 @@ namespace Common
 
 				if (config.Observability.Prometheus.Enabled)
 				{
-					HttpResponseCounter
+					HttpReqeustHistogram
 					.WithLabels(
 						call.HttpRequestMessage.Method.ToString(),
 						call.HttpRequestMessage.RequestUri.Host,
