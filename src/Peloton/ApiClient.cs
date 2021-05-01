@@ -75,7 +75,7 @@ namespace Peloton
 							call.HttpRequestMessage.RequestUri.Host,
 							"/user/{userid}/workouts",
 							"?limit={limit}&sort_by={sortby}",
-							call.HttpResponseMessage.StatusCode.ToString(),
+							((int)call.HttpResponseMessage.StatusCode).ToString(),
 							call.HttpResponseMessage.ReasonPhrase
 						).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
 					}
@@ -104,7 +104,7 @@ namespace Peloton
 								call.HttpRequestMessage.RequestUri.Host,
 								"/workout/{workoutid}",
 								"?joins={joins}",
-								call.HttpResponseMessage.StatusCode.ToString(),
+								((int)call.HttpResponseMessage.StatusCode).ToString(),
 								call.HttpResponseMessage.ReasonPhrase
 							).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
 						}
@@ -133,7 +133,7 @@ namespace Peloton
 								call.HttpRequestMessage.RequestUri.Host,
 								"/workout/{workoutid}/performance_graph",
 								"?every_n={everyn}",
-								call.HttpResponseMessage.StatusCode.ToString(),
+								((int)call.HttpResponseMessage.StatusCode).ToString(),
 								call.HttpResponseMessage.ReasonPhrase
 							).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
 						}
@@ -158,7 +158,7 @@ namespace Peloton
 								call.HttpRequestMessage.RequestUri.Host,
 								"/workout/{workoutid}/summary",
 								call.HttpRequestMessage.RequestUri.Query,
-								call.HttpResponseMessage.StatusCode.ToString(),
+								((int)call.HttpResponseMessage.StatusCode).ToString(),
 								call.HttpResponseMessage.ReasonPhrase
 							).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
 						}

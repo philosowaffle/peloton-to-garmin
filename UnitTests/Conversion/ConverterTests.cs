@@ -223,6 +223,80 @@ namespace UnitTests.Conversion
 			converted.Should().Be(expectedDistance);
 		}
 
+		[Test]
+		public void GetTitle_ShouldReturn_RideTitle()
+		{
+			var workout = new Workout() 
+			{
+				Ride = new Ride() 
+				{
+					Title = "My Title",
+					Instructor = new Instructor() 
+					{
+						Name = "My Name"
+					}
+				}
+			};
+
+			var config = new Configuration();
+			var converter = new ConverterInstance(config, new DbClient(config));
+			var title = converter.GetTitle1(workout);
+
+			title.Should().Be("My_Title_with_My_Name");
+		}
+
+		[Test]
+		public void GetTitle_NullRide_ShouldReturn_RideId()
+		{
+			var workout = new Workout()
+			{
+				Id = "someId"
+			};
+
+			var config = new Configuration();
+			var converter = new ConverterInstance(config, new DbClient(config));
+			var title = converter.GetTitle1(workout);
+
+			title.Should().Be("someId");
+		}
+
+		[Test]
+		public void GetTitle_NullInstructor_ShouldReturn_EmptyInstructorName()
+		{
+			var workout = new Workout()
+			{
+				Ride = new Ride()
+				{
+					Title = "My Title"
+				}
+			};
+
+			var config = new Configuration();
+			var converter = new ConverterInstance(config, new DbClient(config));
+			var title = converter.GetTitle1(workout);
+
+			title.Should().Be("My_Title");
+		}
+
+		[Test]
+		public void GetTitle_NullInstructorName_ShouldReturn_EmptyInstructorName()
+		{
+			var workout = new Workout()
+			{
+				Ride = new Ride()
+				{
+					Title = "My Title",
+					Instructor = new Instructor()
+				}
+			};
+
+			var config = new Configuration();
+			var converter = new ConverterInstance(config, new DbClient(config));
+			var title = converter.GetTitle1(workout);
+
+			title.Should().Be("My_Title");
+		}
+
 		private class ConverterInstance : Converter<string>
 		{
 			public ConverterInstance(Configuration config, DbClient dbClient) : base(config, dbClient) { }
@@ -280,6 +354,11 @@ namespace UnitTests.Conversion
 			public float GetAvgSpeedMetersPerSecond1(WorkoutSamples workoutSamples)
 			{
 				return base.GetAvgSpeedMetersPerSecond(workoutSamples);
+			}
+
+			public string GetTitle1(Workout workout)
+			{
+				return base.GetTitle(workout);
 			}
 		}
 	}

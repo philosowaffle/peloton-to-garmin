@@ -279,7 +279,13 @@ namespace Conversion
 
 		protected string GetTitle(Workout workout)
 		{
-			return $"{workout.Ride.Title} with {workout.Ride.Instructor.Name}"
+			var rideTitle = workout.Ride?.Title ?? workout.Id;
+			var instructorName = workout.Ride?.Instructor?.Name;
+
+			if (instructorName is object)
+				instructorName = $" with {instructorName}";
+
+			return $"{rideTitle}{instructorName}"
 				.Replace(" ", "_")
 				.Replace("/", "-")
 				.Replace(":", "-");

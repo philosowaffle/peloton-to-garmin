@@ -88,7 +88,7 @@ namespace PelotonToGarminConsole
 
 				if (config.App.EnablePolling)
 				{
-					while (true)
+					while (config.App.EnablePolling)
 					{
 						RunAsync(config).GetAwaiter().GetResult();
 						Log.Information("Sleeping for {@Seconds} seconds...", config.App.PollingIntervalSeconds);
