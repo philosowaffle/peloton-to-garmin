@@ -42,7 +42,7 @@ namespace Common
 						call.HttpRequestMessage.RequestUri.Host,
 						call.HttpRequestMessage.RequestUri.AbsolutePath,
 						call.HttpRequestMessage.RequestUri.Query,
-						call.HttpResponseMessage.StatusCode.ToString(),
+						((int)call.HttpResponseMessage.StatusCode).ToString(),
 						call.HttpResponseMessage.ReasonPhrase
 					).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
 				}
