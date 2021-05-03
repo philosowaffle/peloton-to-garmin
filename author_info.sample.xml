@@ -1,0 +1,13 @@
+<Author xsi:type="Application_t">
+  <Name>Garmin Sample Author - please create from exported TCX file</Name>
+  <Build>
+    <Version>
+      <VersionMajor>0</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <BuildMajor>0</BuildMajor>
+      <BuildMinor>0</BuildMinor>
+    </Version>
+  </Build>
+  <LangID>en</LangID>
+  <PartNumber>000-00000-00</PartNumber>
+</Author>

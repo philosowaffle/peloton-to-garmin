@@ -8,6 +8,7 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 * Convert Peloton workout to TCX file
 * Upload TCX workout to Garmin
 * Maintain Upload History to avoid duplicates in Garmin
+* Ensure activities are counting towards Garmin challenges and badges
 
 ## Table of Contents
 
@@ -126,6 +127,13 @@ Examples:
         * `peloton-to-garmin.py -num 10`  
   * To pass your email and passowrd:  
         * `peloton-to-garmin.py -email you@email.com -password mypassword`  
+
+### Ensure activities are counting towards Garmin challenges and badges
+To be able to have all synced activities counting towards Garmin challenges and badges, data from your Garmin hardware is needed. For getting it, please track one workout directly with your hardware (like a Garmin watch) and sync it with Garmin Connect.
+
+After done this, please export this activity as a TCX file and copy out ```<Author>...</Author>``` and ```<Creator>...</Creator>``` into ```author_info.xml``` and ```device_info.xml```.
+
+You can find samples of hwo these files are looking like at ```author_info.sample.xml``` and ```device_info.sample.xml```.
 
 ### Restricting Peloton workout types
 By default, all Peloton workouts are processed.  However, you can optionally filter for only specific types of workouts, such as only cycling and running; all other workouts will be skipped.
