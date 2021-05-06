@@ -65,11 +65,11 @@ namespace Peloton
 			})
 			.ConfigureRequest((c) => 
 			{
-				c.AfterCallAsync = async (FlurlCall call) => 
+				c.AfterCallAsync = (FlurlCall call) => 
 				{
 					if (_observabilityEnabled)
 					{
-						FlurlConfiguration.HttpReqeustHistogram
+						FlurlConfiguration.HttpRequestHistogram
 						.WithLabels(
 							call.HttpRequestMessage.Method.ToString(),
 							call.HttpRequestMessage.RequestUri.Host,
@@ -79,6 +79,8 @@ namespace Peloton
 							call.HttpResponseMessage.ReasonPhrase
 						).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
 					}
+
+					return Task.CompletedTask;
 				};
 			})
 			.GetJsonAsync<RecentWorkouts>();
@@ -94,11 +96,11 @@ namespace Peloton
 				})
 				.ConfigureRequest((c) =>
 				{
-					c.AfterCallAsync = async (FlurlCall call) =>
+					c.AfterCallAsync = (FlurlCall call) =>
 					{
 						if (_observabilityEnabled)
 						{
-							FlurlConfiguration.HttpReqeustHistogram
+							FlurlConfiguration.HttpRequestHistogram
 							.WithLabels(
 								call.HttpRequestMessage.Method.ToString(),
 								call.HttpRequestMessage.RequestUri.Host,
@@ -108,6 +110,8 @@ namespace Peloton
 								call.HttpResponseMessage.ReasonPhrase
 							).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
 						}
+
+						return Task.CompletedTask;
 					};
 				})
 				.GetJsonAsync<JObject>();
@@ -123,11 +127,11 @@ namespace Peloton
 				})
 				.ConfigureRequest((c) =>
 				{
-					c.AfterCallAsync = async (FlurlCall call) =>
+					c.AfterCallAsync = (FlurlCall call) =>
 					{
 						if (_observabilityEnabled)
 						{
-							FlurlConfiguration.HttpReqeustHistogram
+							FlurlConfiguration.HttpRequestHistogram
 							.WithLabels(
 								call.HttpRequestMessage.Method.ToString(),
 								call.HttpRequestMessage.RequestUri.Host,
@@ -137,6 +141,8 @@ namespace Peloton
 								call.HttpResponseMessage.ReasonPhrase
 							).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
 						}
+
+						return Task.CompletedTask;
 					};
 				})
 				.GetJsonAsync<JObject>();
@@ -148,11 +154,11 @@ namespace Peloton
 				.WithCookie("peloton_session_id", SessionId)
 				.ConfigureRequest((c) =>
 				{
-					c.AfterCallAsync = async (FlurlCall call) =>
+					c.AfterCallAsync = (FlurlCall call) =>
 					{
 						if (_observabilityEnabled)
 						{
-							FlurlConfiguration.HttpReqeustHistogram
+							FlurlConfiguration.HttpRequestHistogram
 							.WithLabels(
 								call.HttpRequestMessage.Method.ToString(),
 								call.HttpRequestMessage.RequestUri.Host,
@@ -162,6 +168,8 @@ namespace Peloton
 								call.HttpResponseMessage.ReasonPhrase
 							).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
 						}
+
+						return Task.CompletedTask;
 					};
 				})
 				.GetJsonAsync<JObject>();
