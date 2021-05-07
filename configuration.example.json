@@ -1,4 +1,5 @@
 {
+  // Config Documentation: https://github.com/philosowaffle/peloton-to-garmin/wiki/Configuration
   "App": {
     "OutputDirectory": "./output",
     "WorkingDirectory": "./working",
@@ -12,7 +13,9 @@
     "Fit": true,
     "Json": false,
     "Tcx": false,
-    "SaveLocalCopy": false
+    "SaveLocalCopy": false,
+    "IncludeTimeInHRZones": false,
+    "IncludeTimeInPowerZones": false
   },
 
   "Peloton": {
@@ -43,7 +46,7 @@
     },
 
     "Serilog": {
-      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File"],
+      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File" ],
       "MinimumLevel": "Information",
       "WriteTo": [
         { "Name": "Console" },

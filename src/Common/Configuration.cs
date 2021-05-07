@@ -60,6 +60,8 @@ namespace Common
 		public bool Json { get; set; }
 		public bool Tcx { get; set; }
 		public bool SaveLocalCopy { get; set; }
+		public bool IncludeTimeInHRZones { get; set; }
+		public bool IncludeTimeInPowerZones { get; set; }
 	}
 
 	public class Peloton
@@ -82,8 +84,6 @@ namespace Common
 		public string Password { get; set; }
 		public bool Upload { get; set; }
 		public string FormatToUpload { get; set; }
-
-		public bool IncludeTimeInHRZones { get; set; }
 	}
 
 	public class Observability

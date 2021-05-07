@@ -306,5 +306,123 @@ namespace Conversion
 
 			return hrData.Zones.FirstOrDefault(z => z.Slug == $"zone{zone}");
 		}
+
+		protected PowerZones CalculatePowerZones(Workout workout)
+		{
+			var ftpMaybe = workout.Ftp_Info?.Ftp;
+			if (ftpMaybe is null || ftpMaybe <= 0) return null;
+
+			var ftp = ftpMaybe.Value;
+			return new PowerZones()
+			{
+				Zone1 = new Zone()
+				{
+					Slug = "zone1",
+					Min_Value = 0,
+					Max_Value = 0.55 * ftp,
+				},
+				Zone2 = new Zone()
+				{
+					Slug = "zone2",
+					Min_Value = 0.56 * ftp,
+					Max_Value = 0.75 * ftp
+				},
+				Zone3 = new Zone()
+				{
+					Slug = "zone3",
+					Min_Value = 0.76 * ftp,
+					Max_Value = 0.90 * ftp
+				},
+				Zone4 = new Zone()
+				{
+					Slug = "zone4",
+					Min_Value = 0.91 * ftp,
+					Max_Value = 1.05 * ftp
+				},
+				Zone5 = new Zone()
+				{
+					Slug = "zone5",
+					Min_Value = 1.06 * ftp,
+					Max_Value = 1.20 * ftp
+				},
+				Zone6 = new Zone()
+				{
+					Slug = "zone6",
+					Min_Value = 1.21 * ftp,
+					Max_Value = 1.5 * ftp
+				},
+				Zone7 = new Zone()
+				{
+					Slug = "zone7",
+					Min_Value = 1.51 * ftp,
+					Max_Value = int.MaxValue
+				}
+			};
+		}
+
+		protected PowerZones GetTimeInPowerZones(Workout workout, WorkoutSamples workoutSamples)
+		{
+			var powerZoneData = workoutSamples.Metrics.FirstOrDefault(s => s.Slug == "output");
+
+			if (powerZoneData is null) return null;
+
+			var zones = CalculatePowerZones(workout);
+
+			if (zones is null) return null;
+
+			foreach (var value in powerZoneData.Values)
+			{
+				if (zones.Zone1.Min_Value <= value
+					&& zones.Zone1.Max_Value >= value)
+				{
+					zones.Zone1.Duration++;
+					continue;
+				}
+
+				if (zones.Zone2.Min_Value <= value
+					&& zones.Zone2.Max_Value >= value)
+				{
+					zones.Zone2.Duration++;
+					continue;
+				}
+
+				if (zones.Zone3.Min_Value <= value
+					&& zones.Zone3.Max_Value >= value)
+				{
+					zones.Zone3.Duration++;
+					continue;
+				}
+
+				if (zones.Zone4.Min_Value <= value
+					&& zones.Zone4.Max_Value >= value)
+				{
+					zones.Zone4.Duration++;
+					continue;
+				}
+
+				if (zones.Zone5.Min_Value <= value
+					&& zones.Zone5.Max_Value >= value)
+				{
+					zones.Zone5.Duration++;
+					continue;
+				}
+
+				if (zones.Zone6.Min_Value <= value
+					&& zones.Zone6.Max_Value >= value)
+				{
+					zones.Zone6.Duration++;
+					continue;
+				}
+
+				if (zones.Zone7.Min_Value <= value
+					&& zones.Zone7.Max_Value >= value)
+				{
+					zones.Zone7.Duration++;
+					continue;
+				}
+			}
+
+			return zones;
+		}
 	}
 }
