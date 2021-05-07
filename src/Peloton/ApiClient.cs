@@ -136,7 +136,7 @@ namespace Peloton
 								call.HttpRequestMessage.Method.ToString(),
 								call.HttpRequestMessage.RequestUri.Host,
 								"/workout/{workoutid}/performance_graph",
-								"?every_n={everyn}",
+								"?every_n={everyn}&joins=effort_zones",
 								((int)call.HttpResponseMessage.StatusCode).ToString(),
 								call.HttpResponseMessage.ReasonPhrase
 							).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
