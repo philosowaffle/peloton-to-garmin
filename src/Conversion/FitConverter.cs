@@ -12,13 +12,13 @@ namespace Conversion
 {
 	public class FitConverter : Converter<Tuple<string, ICollection<Mesg>>>
 	{
-		private static readonly float _softwareVersion = 1.0f;
-		private static readonly ushort _productId = GarminProduct.Fenix6S;
+		private static readonly float _softwareVersion = 5f;
+		private static readonly ushort _productId = GarminProduct.Fr945;
 		private static readonly ushort _manufacturerId = Manufacturer.Garmin;
-		private static readonly uint _serialNumber = 1234098765;
+		private static readonly uint _serialNumber = 1;
 
 		private static readonly string _spaceSeparator = "_";
-		public FitConverter(Configuration config, DbClient dbClient) : base(config, dbClient) { }
+		public FitConverter(Configuration config, IDbClient dbClient) : base(config, dbClient) { }
 
 		public override void Convert()
 		{
@@ -83,8 +83,13 @@ namespace Conversion
 			deviceInfoMesg.SetProduct(_productId);
 			deviceInfoMesg.SetSoftwareVersion(_softwareVersion);
 			deviceInfoMesg.SetDeviceIndex(0);
+			deviceInfoMesg.SetSourceType(SourceType.Local);
 			deviceInfoMesg.SetProductName("PelotonToGarmin"); // Max 20 Chars
 			messages.Add(deviceInfoMesg);
+
+			var userProfileMesg = new UserProfileMesg();
+			userProfileMesg.SetPowerSetting(DisplayPower.PercentFtp);
+			messages.Add(userProfileMesg);
 
 			var sportMesg = new SportMesg();
 			sportMesg.SetSport(sport);
@@ -94,6 +99,12 @@ namespace Conversion
 			var zoneTargetMesg = new ZonesTargetMesg();
 			zoneTargetMesg.SetFunctionalThresholdPower((ushort)workout.Ftp_Info.Ftp);
 			zoneTargetMesg.SetPwrCalcType(PwrZoneCalc.PercentFtp);
+			var maxHr = GetUserMaxHeartRate(workoutSamples);
+			if (maxHr is object)
+			{
+				zoneTargetMesg.SetMaxHeartRate(maxHr.Value);
+				zoneTargetMesg.SetHrCalcType(HrZoneCalc.PercentMaxHr);
+			}				
 			messages.Add(zoneTargetMesg);
 
 			var trainingMesg = new TrainingFileMesg();
@@ -162,30 +173,99 @@ namespace Conversion
 			decoder.MesgEvent += mesgBroadcaster.OnMesg;
 			decoder.MesgDefinitionEvent += mesgBroadcaster.OnMesgDefinition;
 
+			mesgBroadcaster.AccelerometerDataMesgEvent += Write;
 			mesgBroadcaster.ActivityMesgEvent += Write;
-			mesgBroadcaster.DeviceInfoMesgEvent += Write;
-			mesgBroadcaster.EventMesgEvent += Write;
-			mesgBroadcaster.FileIdMesgEvent += Write;
-			mesgBroadcaster.LapMesgEvent += WriteLap;
-			mesgBroadcaster.SegmentLapMesgEvent += Write;
-			mesgBroadcaster.SessionMesgEvent += Write;
-			mesgBroadcaster.UserProfileMesgEvent += Write;
-			mesgBroadcaster.WorkoutMesgEvent += WriteWorkout;
-			mesgBroadcaster.WorkoutStepMesgEvent += WriteWorkoutStep;
-			mesgBroadcaster.ZonesTargetMesgEvent += Write;
+			mesgBroadcaster.AntChannelIdMesgEvent += Write;
+			mesgBroadcaster.AntRxMesgEvent += Write;
+			mesgBroadcaster.AntTxMesgEvent += Write;
+			mesgBroadcaster.AviationAttitudeMesgEvent += Write;
+			mesgBroadcaster.BarometerDataMesgEvent += Write;
 			mesgBroadcaster.BikeProfileMesgEvent += Write;
+			mesgBroadcaster.BloodPressureMesgEvent += Write;
 			mesgBroadcaster.CadenceZoneMesgEvent += Write;
+			mesgBroadcaster.CameraEventMesgEvent += Write;
+			mesgBroadcaster.CapabilitiesMesgEvent += Write;
+			mesgBroadcaster.ClimbProMesgEvent += Write;
+			mesgBroadcaster.ConnectivityMesgEvent += Write;
+			mesgBroadcaster.CourseMesgEvent += Write;
+			mesgBroadcaster.CoursePointMesgEvent += Write;
 			mesgBroadcaster.DeveloperDataIdMesgEvent += Write;
+			mesgBroadcaster.DeviceInfoMesgEvent += Write;
+			mesgBroadcaster.DeviceSettingsMesgEvent += Write;
+			mesgBroadcaster.DiveAlarmMesgEvent += Write;
+			mesgBroadcaster.DiveGasMesgEvent += Write;
+			mesgBroadcaster.DiveSettingsMesgEvent += Write;
+			mesgBroadcaster.DiveSummaryMesgEvent += Write;
+			mesgBroadcaster.EventMesgEvent += Write;
+			mesgBroadcaster.ExdDataConceptConfigurationMesgEvent += Write;
+			mesgBroadcaster.ExdDataFieldConfigurationMesgEvent += Write;
+			mesgBroadcaster.ExdScreenConfigurationMesgEvent += Write;
+			mesgBroadcaster.ExerciseTitleMesgEvent += Write;
+			mesgBroadcaster.FieldCapabilitiesMesgEvent += Write;
+			mesgBroadcaster.FieldDescriptionMesgEvent += Write;
+			mesgBroadcaster.FileCapabilitiesMesgEvent += Write;
+			mesgBroadcaster.FileCreatorMesgEvent += Write;
+			mesgBroadcaster.FileIdMesgEvent += Write;
+			mesgBroadcaster.GoalMesgEvent += Write;
+			mesgBroadcaster.GpsMetadataMesgEvent += Write;
+			mesgBroadcaster.GyroscopeDataMesgEvent += Write;
+			mesgBroadcaster.HrMesgEvent += Write;
+			mesgBroadcaster.HrmProfileMesgEvent += Write;
+			mesgBroadcaster.HrvMesgEvent += Write;
+			mesgBroadcaster.HrZoneMesgEvent += Write;
+			mesgBroadcaster.JumpMesgEvent += Write;
+			mesgBroadcaster.LapMesgEvent += Write;
+			mesgBroadcaster.LengthMesgEvent += Write;
+			mesgBroadcaster.MagnetometerDataMesgEvent += Write;
+			mesgBroadcaster.MemoGlobMesgEvent += Write;
+			mesgBroadcaster.MesgCapabilitiesMesgEvent += Write;
+			mesgBroadcaster.MesgEvent += Write;
+			mesgBroadcaster.MetZoneMesgEvent += Write;
+			mesgBroadcaster.MonitoringInfoMesgEvent += Write;
+			mesgBroadcaster.MonitoringMesgEvent += Write;
+			mesgBroadcaster.NmeaSentenceMesgEvent += Write;
+			mesgBroadcaster.ObdiiDataMesgEvent += Write;
+			mesgBroadcaster.OhrSettingsMesgEvent += Write;
+			mesgBroadcaster.OneDSensorCalibrationMesgEvent += Write;
+			mesgBroadcaster.PadMesgEvent += Write;
 			mesgBroadcaster.PowerZoneMesgEvent += Write;
+			mesgBroadcaster.RecordMesgEvent += Write;
+			mesgBroadcaster.ScheduleMesgEvent += Write;
+			mesgBroadcaster.SdmProfileMesgEvent += Write;
+			mesgBroadcaster.SegmentFileMesgEvent += Write;
+			mesgBroadcaster.SegmentIdMesgEvent += Write;
+			mesgBroadcaster.SegmentLapMesgEvent += Write;
+			mesgBroadcaster.SegmentLeaderboardEntryMesgEvent += Write;
+			mesgBroadcaster.SegmentPointMesgEvent += Write;
+			mesgBroadcaster.SessionMesgEvent += Write;
+			mesgBroadcaster.SlaveDeviceMesgEvent += Write;
+			mesgBroadcaster.SoftwareMesgEvent += Write;
+			mesgBroadcaster.SpeedZoneMesgEvent += Write;
 			mesgBroadcaster.SportMesgEvent += Write;
+			mesgBroadcaster.StressLevelMesgEvent += Write;
+			mesgBroadcaster.ThreeDSensorCalibrationMesgEvent += Write;
+			mesgBroadcaster.TimestampCorrelationMesgEvent += Write;
+			mesgBroadcaster.TotalsMesgEvent += Write;
 			mesgBroadcaster.TrainingFileMesgEvent += Write;
 			mesgBroadcaster.UserProfileMesgEvent += Write;
+			mesgBroadcaster.VideoClipMesgEvent += Write;
+			mesgBroadcaster.VideoDescriptionMesgEvent += Write;
+			mesgBroadcaster.VideoFrameMesgEvent += Write;
+			mesgBroadcaster.VideoMesgEvent += Write;
+			mesgBroadcaster.VideoTitleMesgEvent += Write;
+			mesgBroadcaster.WatchfaceSettingsMesgEvent += Write;
+			mesgBroadcaster.WeatherAlertMesgEvent += Write;
+			mesgBroadcaster.WeatherConditionsMesgEvent += Write;
+			mesgBroadcaster.WeightScaleMesgEvent += Write;
+			mesgBroadcaster.WorkoutMesgEvent += Write;
 			mesgBroadcaster.WorkoutSessionMesgEvent += Write;
-			//mesgBroadcaster.RecordMesgEvent += Write;
+			mesgBroadcaster.WorkoutStepMesgEvent += Write;
+			mesgBroadcaster.ZonesTargetMesgEvent += Write;
 
 			FileStream fitDest = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
 			decoder.Read(fitDest);
 		}
+
 		private static void Write(object sender, MesgEventArgs e)
 		{
 			Log.Debug($"{e.mesg.Name}::");
@@ -368,6 +448,7 @@ namespace Conversion
 			sessionMesg.SetFirstLapIndex(0);
 			sessionMesg.SetNumLaps(numLaps);
 			sessionMesg.SetThresholdPower((ushort)workout.Ftp_Info.Ftp);
+			//sessionMesg.SetTimeInPowerZone();
 			sessionMesg.SetEvent(Event.Lap);
 			sessionMesg.SetEventType(EventType.Stop);
 			sessionMesg.SetSport(GetGarminSport(workout));
@@ -380,24 +461,28 @@ namespace Conversion
 			sessionMesg.SetAvgSpeed(GetAvgSpeedMetersPerSecond(workoutSamples));
 
 			// HR zones
-			//if (workoutSamples.Metrics.Any())
-			//{
-			//	var hrZones = workoutSamples.Metrics.FirstOrDefault(m => m.Slug == "heart_rate").Zones;
-			//	var hrz1 = hrZones.FirstOrDefault(z => z.Slug == "zone1");
-			//	sessionMesg.SetTimeInHrZone(1, hrz1.Duration);
+			if (_config.Garmin.IncludeTimeInHRZones && workoutSamples.Metrics.Any())
+			{
+				var hrz1 = GetHeartRateZone(1, workoutSamples);
+				if (hrz1 is object)
+					sessionMesg.SetTimeInHrZone(1, hrz1?.Duration);
 
-			//	var hrz2 = hrZones.FirstOrDefault(z => z.Slug == "zone2");
-			//	sessionMesg.SetTimeInHrZone(2, hrz2.Duration);
+				var hrz2 = GetHeartRateZone(2, workoutSamples);
+				if (hrz2 is object)
+					sessionMesg.SetTimeInHrZone(2, hrz2?.Duration);
 
-			//	var hrz3 = hrZones.FirstOrDefault(z => z.Slug == "zone3");
-			//	sessionMesg.SetTimeInHrZone(3, hrz3.Duration);
+				var hrz3 = GetHeartRateZone(3, workoutSamples);
+				if (hrz3 is object)
+					sessionMesg.SetTimeInHrZone(3, hrz3?.Duration);
 
-			//	var hrz4 = hrZones.FirstOrDefault(z => z.Slug == "zone4");
-			//	sessionMesg.SetTimeInHrZone(4, hrz4.Duration);
+				var hrz4 = GetHeartRateZone(4, workoutSamples);
+				if (hrz4 is object)
+					sessionMesg.SetTimeInHrZone(4, hrz4?.Duration);
 
-			//	var hrz5 = hrZones.FirstOrDefault(z => z.Slug == "zone5");
-			//	sessionMesg.SetTimeInHrZone(5, hrz5.Duration);
-			//}
+				var hrz5 = GetHeartRateZone(5, workoutSamples);
+				if (hrz5 is object)
+					sessionMesg.SetTimeInHrZone(5, hrz5?.Duration);
+			}
 
 			return sessionMesg;
 		}

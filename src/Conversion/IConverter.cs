@@ -28,9 +28,9 @@ namespace Conversion
 		public static readonly float _metersPerMile = 1609.34f;
 
 		protected Configuration _config;
-		protected DbClient _dbClient;
+		protected IDbClient _dbClient;
 
-		public Converter(Configuration config, DbClient dbClient)
+		public Converter(Configuration config, IDbClient dbClient)
 		{
 			_config = config;
 			_dbClient = dbClient;
@@ -289,6 +289,22 @@ namespace Conversion
 				.Replace(" ", "_")
 				.Replace("/", "-")
 				.Replace(":", "-");
+		}
+
+		protected byte? GetUserMaxHeartRate(WorkoutSamples workoutSamples) 
+		{
+			var maxZone = GetHeartRateZone(5, workoutSamples);
+
+			return (byte)maxZone?.Max_Value;
+		}
+
+		protected Zone GetHeartRateZone(int zone, WorkoutSamples workoutSamples)
+		{
+			var hrData = workoutSamples.Metrics.FirstOrDefault(s => s.Slug == "heart_rate");
+
+			if (hrData is null) return null;
+
+			return hrData.Zones.FirstOrDefault(z => z.Slug == $"zone{zone}");
 		}
 	}
 }

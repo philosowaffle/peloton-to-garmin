@@ -2,12 +2,19 @@
 using Prometheus;
 using Serilog;
 using System;
+using System.IO;
 using System.Linq;
 using PromMetrics = Prometheus.Metrics;
 
 namespace Common.Database
 {
-	public class DbClient
+	public interface IDbClient
+	{
+		SyncHistoryItem Get(string id);
+		void Upsert(SyncHistoryItem item);
+	}
+
+	public class DbClient : IDbClient
 	{
 		private static readonly Histogram DbActionDuration = PromMetrics.CreateHistogram("p2g_db_duration_seconds", "Counter of db actions.", new HistogramConfiguration()
 		{
@@ -23,6 +30,22 @@ namespace Common.Database
 									.WithLabels("using", "syncHistoryTable")
 									.NewTimer();
 			using var tracing = Tracing.Trace("LoadTable", TagValue.Db).WithWorkoutId("SyncHistoryItem");
+
+			if (!File.Exists(configuration.App.SyncHistoryDbPath))
+			{
+				Log.Debug("Creating syncHistory db: {@Path}", configuration.App.SyncHistoryDbPath);
+				try
+				{
+					var dir = Path.GetDirectoryName(configuration.App.SyncHistoryDbPath);
+					FileHandling.MkDirIfNotEists(dir);
+					File.WriteAllText(configuration.App.SyncHistoryDbPath, "{}");
+
+				} catch (Exception e)
+				{
+					Log.Error(e, "Failed to create syncHistory db file: {@Path}", configuration.App.SyncHistoryDbPath);
+					throw;
+				}
+			}
 
 			_database = new DataStore(configuration.App.SyncHistoryDbPath);
 			_syncHistoryTable = new Lazy<IDocumentCollection<SyncHistoryItem>>(() => _database.GetCollection<SyncHistoryItem>());

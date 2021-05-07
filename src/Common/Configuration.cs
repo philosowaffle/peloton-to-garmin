@@ -82,6 +82,8 @@ namespace Common
 		public string Password { get; set; }
 		public bool Upload { get; set; }
 		public string FormatToUpload { get; set; }
+
+		public bool IncludeTimeInHRZones { get; set; }
 	}
 
 	public class Observability
