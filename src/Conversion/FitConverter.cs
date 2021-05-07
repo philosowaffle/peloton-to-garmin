@@ -448,7 +448,6 @@ namespace Conversion
 			sessionMesg.SetFirstLapIndex(0);
 			sessionMesg.SetNumLaps(numLaps);
 			sessionMesg.SetThresholdPower((ushort)workout.Ftp_Info.Ftp);
-			//sessionMesg.SetTimeInPowerZone();
 			sessionMesg.SetEvent(Event.Lap);
 			sessionMesg.SetEventType(EventType.Stop);
 			sessionMesg.SetSport(GetGarminSport(workout));
@@ -461,7 +460,7 @@ namespace Conversion
 			sessionMesg.SetAvgSpeed(GetAvgSpeedMetersPerSecond(workoutSamples));
 
 			// HR zones
-			if (_config.Garmin.IncludeTimeInHRZones && workoutSamples.Metrics.Any())
+			if (_config.Format.IncludeTimeInHRZones && workoutSamples.Metrics.Any())
 			{
 				var hrz1 = GetHeartRateZone(1, workoutSamples);
 				if (hrz1 is object)
@@ -482,6 +481,22 @@ namespace Conversion
 				var hrz5 = GetHeartRateZone(5, workoutSamples);
 				if (hrz5 is object)
 					sessionMesg.SetTimeInHrZone(5, hrz5?.Duration);
+			}
+
+			// Power Zones
+			if (_config.Format.IncludeTimeInPowerZones && workoutSamples.Metrics.Any())
+			{
+				var zones = GetTimeInPowerZones(workout, workoutSamples);
+				if (zones is object)
+				{
+					sessionMesg.SetTimeInPowerZone(1, zones.Zone1.Duration);
+					sessionMesg.SetTimeInPowerZone(2, zones.Zone2.Duration);
+					sessionMesg.SetTimeInPowerZone(3, zones.Zone3.Duration);
+					sessionMesg.SetTimeInPowerZone(4, zones.Zone4.Duration);
+					sessionMesg.SetTimeInPowerZone(5, zones.Zone5.Duration);
+					sessionMesg.SetTimeInPowerZone(6, zones.Zone6.Duration);
+					sessionMesg.SetTimeInPowerZone(7, zones.Zone7.Duration);
+				}
 			}
 
 			return sessionMesg;
