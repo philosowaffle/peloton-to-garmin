@@ -294,8 +294,9 @@ namespace Conversion
 			var hrMetrics = allMetrics.FirstOrDefault(m => m.Slug == "heart_rate");
 			var outputMetrics = allMetrics.FirstOrDefault(m => m.Slug == "output");
 			var cadenceMetrics = allMetrics.FirstOrDefault(m => m.Slug == "cadence");
-			var speedMetrics = allMetrics.FirstOrDefault(m => m.Slug == "speed");
+			var speedMetrics = GetSpeedSummary(workoutSamples);
 			var resistanceMetrics = allMetrics.FirstOrDefault(m => m.Slug == "resistance");
+			var inclineMetrics = GetGradeSummary(workoutSamples);
 			var locationMetrics = workoutSamples.Location_Data?.SelectMany(x => x.Coordinates).ToArray();
 			var altitudeMetrics = allMetrics.FirstOrDefault(m => m.Slug == "altitude");
 
@@ -329,6 +330,11 @@ namespace Conversion
 					{
 						var altitude = ConvertDistanceToMeters(altitudeMetrics.GetValue(i), altitudeMetrics.Display_Unit);
 						record.SetAltitude(altitude);
+					}
+
+					if (inclineMetrics is object && i < inclineMetrics.Values.Length)
+					{
+						record.SetGrade((float)inclineMetrics.GetValue(i));
 					}
 
 					if (locationMetrics is object && i < locationMetrics.Length)
@@ -425,6 +431,9 @@ namespace Conversion
 			sessionMesg.SetMaxCadence((byte)workoutSummary.Max_Cadence);
 			sessionMesg.SetMaxSpeed(GetMaxSpeedMetersPerSecond(workoutSamples));
 			sessionMesg.SetAvgSpeed(GetAvgSpeedMetersPerSecond(workoutSamples));
+			sessionMesg.SetAvgGrade(GetAvgGrade(workoutSamples));
+			sessionMesg.SetMaxPosGrade(GetMaxGrade(workoutSamples));
+			sessionMesg.SetMaxNegGrade(0.0f);
 
 			// HR zones
 			if (_config.Format.IncludeTimeInHRZones && workoutSamples.Metrics.Any())
@@ -488,7 +497,7 @@ namespace Conversion
 			float lapDistanceInMeters = 0;
 			WorkoutStepMesg workoutStep = null;
 			LapMesg lapMesg = null;
-			var speedMetrics = workoutSamples.Metrics.FirstOrDefault(m => m.Slug == "speed");
+			var speedMetrics = GetSpeedSummary(workoutSamples);
 
 			foreach (var secondSinceStart in workoutSamples.Seconds_Since_Pedaling_Start)
 			{
@@ -560,7 +569,7 @@ namespace Conversion
 				return stepsAndLaps;
 
 			ushort stepIndex = 0;
-			var speedMetrics = workoutSamples.Metrics.FirstOrDefault(m => m.Slug == "speed");
+			var speedMetrics = GetSpeedSummary(workoutSamples);
 			if (workoutSamples.Segment_List.Any())
 			{
 				var totalElapsedTime = 0;

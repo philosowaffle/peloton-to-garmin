@@ -257,7 +257,37 @@ namespace Conversion
 			return ConvertToMetersPerSecond(speedSummary.Average_Value, workoutSamples);
 		}
 
-		private Metric GetSpeedSummary(WorkoutSamples workoutSamples)
+		protected float GetAvgGrade(WorkoutSamples workoutSamples)
+		{
+			var gradeSummary = GetGradeSummary(workoutSamples);
+			if (gradeSummary is null) return 0.0f;
+
+			return (float)gradeSummary.Average_Value;
+		}
+		protected float GetMaxGrade(WorkoutSamples workoutSamples)
+		{
+			var gradeSummary = GetGradeSummary(workoutSamples);
+			if (gradeSummary is null) return 0.0f;
+
+			return (float)gradeSummary.Max_Value;
+		}
+
+		protected Metric GetGradeSummary(WorkoutSamples workoutSamples)
+		{
+			if (workoutSamples?.Metrics is null)
+			{
+				Log.Debug("No workout Metrics found.");
+				return null;
+			}
+
+			var inclineSummary =  workoutSamples.Metrics.FirstOrDefault(m => m.Slug == "incline");
+			if (inclineSummary is null)
+				Log.Debug("No incline slug found.");
+
+			return inclineSummary;
+		}
+
+		protected Metric GetSpeedSummary(WorkoutSamples workoutSamples)
 		{
 			if (workoutSamples?.Metrics is null)
 			{
@@ -266,6 +296,14 @@ namespace Conversion
 			}
 
 			var speedSummary = workoutSamples.Metrics.FirstOrDefault(s => s.Slug == "speed");
+			if (speedSummary is null)
+			{
+				var alts = workoutSamples.Metrics
+					.Where(w => w.Alternatives is object)
+					.SelectMany(s => s.Alternatives);
+				speedSummary = alts.FirstOrDefault(s => s.Slug == "speed");
+			}	
+			
 			if (speedSummary is null)
 				Log.Debug("No speed slug found.");
 

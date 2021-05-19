@@ -51,7 +51,7 @@ namespace Conversion
 			var hrMetrics = allMetrics.FirstOrDefault(m => m.Slug == "heart_rate");
 			var outputMetrics = allMetrics.FirstOrDefault(m => m.Slug == "output");
 			var cadenceMetrics = allMetrics.FirstOrDefault(m => m.Slug == "cadence");
-			var speedMetrics = allMetrics.FirstOrDefault(m => m.Slug == "speed");
+			var speedMetrics = GetSpeedSummary(samples);
 			var resistanceMetrics = allMetrics.FirstOrDefault(m => m.Slug == "resistance");
 			var locationMetrics = samples.Location_Data?.SelectMany(x => x.Coordinates).ToArray();
 			var altitudeMetrics = allMetrics.FirstOrDefault(m => m.Slug == "altitude");
