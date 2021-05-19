@@ -1,5 +1,4 @@
 ﻿using Common;
-using Common.Database;
 using Common.Dto;
 using Conversion;
 using FluentAssertions;
@@ -226,7 +225,7 @@ namespace UnitTests.Conversion
 
 		private class ConverterInstance : Converter<string>
 		{
-			public ConverterInstance(Configuration config, DbClient dbClient, IOWrapper fileHandler) : base(config, dbClient, fileHandler) { }
+			public ConverterInstance() : base(null, null, null) { }
 
 			public override void Convert()
 			{
