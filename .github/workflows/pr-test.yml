@@ -20,13 +20,13 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet }}
     - name: Clean
-      run: dotnet clean --configuration Release && dotnet nuget locals all --clear
+      run: dotnet clean --configuration Debug && dotnet nuget locals all --clear
     
     - name: Restore
       run: dotnet restore
 
     - name: Build
-      run: dotnet build --no-restore --configuration Release
+      run: dotnet build --no-restore --configuration Debug
 
     - name: Test
       run: dotnet test
