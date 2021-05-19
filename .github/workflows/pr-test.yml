@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        dotnet: [ '3.1.x', '5.0' ]
+        dotnet: [ '5.0' ]
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
@@ -19,7 +19,14 @@ jobs:
       uses: actions/setup-dotnet@v1.7.2
       with:
         dotnet-version: ${{ matrix.dotnet }}
+    - name: Clean
+      run: dotnet clean --configuration Release && dotnet nuget locals all --clear
+    
+    - name: Restore
+      run: dotnet restore
+
     - name: Build
-      run: dotnet build PelotonToGarmin.sln --configuration Release
+      run: dotnet build --no-restore --configuration Release
+
     - name: Test
       run: dotnet test
