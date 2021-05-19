@@ -20,7 +20,7 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet }}
     - name: Install dependencies
-      run: dotnet restore src\PelotonToGarminConsole.csproj
+      run: dotnet restore src\PelotonToGarminConsole\PelotonToGarminConsole.csproj
     - name: Build
       run: dotnet build PelotonToGarmin.sln --configuration Release --no-restore
     - name: Test
