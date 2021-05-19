@@ -5,8 +5,9 @@ Enhancements and fixes are always welcome. Feel free to contribute to any of the
 1. Install [Python 3](https://www.python.org/downloads/) and pip
 1. Install [dotent 5.0 runtime](https://dotnet.microsoft.com/download/dotnet/5.0/runtime)
 1. Clone this repository
-1. In the repository modify the `configuration.local.json`
+1. In the repository, find the file named `configuration.example.json`. Make a copy of it and name the copy `configuration.local.json`
 1. Set `"PythonAndGUploadInstalled": true`
+1. Move `configuration.local.json` into the `src/PelotonToGarminConsole` dirctory.
 1. Open the command line
 
 ```
@@ -16,7 +17,7 @@ Enhancements and fixes are always welcome. Feel free to contribute to any of the
 > cd ../
 > dotnet restore
 > dotnet build
-> dotnet run ./PelotonToGarminConsole/PelotonToGarminConsole.csproj
+> dotnet run ./src/PelotonToGarminConsole/PelotonToGarminConsole.csproj
 ```
 
 # Python
