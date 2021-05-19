@@ -98,6 +98,21 @@ namespace Peloton
 			}
 		}
 
+		public static void ValidateConfig(Common.Peloton config)
+		{
+			if (string.IsNullOrEmpty(config.Email))
+			{
+				Log.Error("Peloton Email required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Peloton), nameof(config.Email));
+				throw new ArgumentException("Peloton Email must be set.", nameof(config.Email));
+			}
+
+			if (string.IsNullOrEmpty(config.Password))
+			{
+				Log.Error("Peloton Password required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Peloton), nameof(config.Password));
+				throw new ArgumentException("Peloton Password must be set.", nameof(config.Password));
+			}
+		}
+
 		private void SaveRawData(dynamic data, string workoutId)
 		{
 			var outputDir = _config.App.JsonDirectory;

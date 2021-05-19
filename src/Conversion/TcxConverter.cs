@@ -66,7 +66,7 @@ namespace Conversion
 					trackPosition.Add(new XElement("LongitudeDegrees", locationMetrics[i].Longitude));
 
 					if (altitudeMetrics is object && i < altitudeMetrics.Values.Length)
-						trackPosition.Add(new XElement("AltitudeMeters", ConvertDistanceToMeters(altitudeMetrics.Values[i], altitudeMetrics.Display_Unit)));
+						trackPosition.Add(new XElement("AltitudeMeters", ConvertDistanceToMeters(altitudeMetrics.GetValue(i), altitudeMetrics.Display_Unit)));
 
 					trackPoint.Add(trackPosition);
 				}
@@ -83,7 +83,7 @@ namespace Conversion
 
 				var tpx = new XElement(activityExtensions + "TPX");
 				if (speedMetrics is object && i < speedMetrics.Values.Length)
-					tpx.Add(new XElement(activityExtensions + "Speed", ConvertToMetersPerSecond(speedMetrics.Values[i], samples)));
+					tpx.Add(new XElement(activityExtensions + "Speed", ConvertToMetersPerSecond(speedMetrics.GetValue(i), samples)));
 
 				if (outputMetrics is object && i < outputMetrics.Values.Length)
 					tpx.Add(new XElement(activityExtensions + "Watts", outputMetrics.Values[i]));

@@ -61,10 +61,11 @@ namespace PelotonToGarminConsole
 					Log.Information("Config reloaded. Changes will take effect at the end of the current sleeping cycle.");
 				});
 
+				PelotonService.ValidateConfig(config.Peloton);
 				GarminUploader.ValidateConfig(config.Garmin);
 				Common.Metrics.ValidateConfig(config.Observability);
 				Tracing.ValidateConfig(config.Observability);
-
+				
 				FlurlConfiguration.Configure(config);
 
 			} catch (Exception e)

@@ -275,40 +275,6 @@ namespace Conversion
 			}
 		}
 
-		private static void WriteLap(object sender, MesgEventArgs e)
-		{
-			var lapmesg = e.mesg as LapMesg;
-
-			Log.Debug("LAP::");
-			Log.Debug($"{lapmesg.GetWktStepIndex()}");
-			foreach (var f in lapmesg.Fields)
-			{
-				Log.Debug($"{f.Name}:{f.GetValue()}");
-			}
-		}
-
-		private static void WriteWorkout(object sender, MesgEventArgs e)
-		{
-			var lapmesg = e.mesg as WorkoutMesg;
-
-			Log.Debug("WORKOUT::");
-			foreach (var f in lapmesg.Fields)
-			{
-				Log.Debug($"{f.Name}:{f.GetValue()}");
-			}
-		}
-
-		private static void WriteWorkoutStep(object sender, MesgEventArgs e)
-		{
-			var lapmesg = e.mesg as WorkoutStepMesg;
-
-			Log.Debug("WORKOUTSTEP::");
-			foreach (var f in lapmesg.Fields)
-			{
-				Log.Debug($"{f.Name}:{f.GetValue()}");
-			}
-		}
-
 		private new Dynastream.Fit.DateTime GetStartTimeUtc(Workout workout)
 		{
 			var dtDateTime = base.GetStartTimeUtc(workout);
@@ -341,7 +307,7 @@ namespace Conversion
 					record.SetTimestamp(recordsTimeStamp);
 
 					if (speedMetrics is object && i < speedMetrics.Values.Length)
-						record.SetSpeed(ConvertToMetersPerSecond(speedMetrics.Values[i], workoutSamples));
+						record.SetSpeed(ConvertToMetersPerSecond(speedMetrics.GetValue(i), workoutSamples));
 
 					if (hrMetrics is object && i < hrMetrics.Values.Length)
 						record.SetHeartRate((byte)hrMetrics.Values[i]);
@@ -360,7 +326,7 @@ namespace Conversion
 
 					if (altitudeMetrics is object && i < altitudeMetrics.Values.Length)
 					{
-						var altitude = ConvertDistanceToMeters(altitudeMetrics.Values[i], altitudeMetrics.Display_Unit);
+						var altitude = ConvertDistanceToMeters(altitudeMetrics.GetValue(i), altitudeMetrics.Display_Unit);
 						record.SetAltitude(altitude);
 					}
 
@@ -530,7 +496,7 @@ namespace Conversion
 
 				if (speedMetrics is object && index < speedMetrics.Values.Length)
 				{
-					var currentSpeedInMPS = ConvertToMetersPerSecond(speedMetrics.Values[index], workoutSamples);
+					var currentSpeedInMPS = ConvertToMetersPerSecond(speedMetrics.GetValue(index), workoutSamples);
 					lapDistanceInMeters += 1 * currentSpeedInMPS;
 				}
 
@@ -622,7 +588,7 @@ namespace Conversion
 					{
 						if (speedMetrics is object && i < speedMetrics.Values.Length)
 						{
-							var currentSpeedInMPS = ConvertToMetersPerSecond(speedMetrics.Values[i], workoutSamples);
+							var currentSpeedInMPS = ConvertToMetersPerSecond(speedMetrics.GetValue(i), workoutSamples);
 							lapDistanceInMeters += 1 * currentSpeedInMPS;
 						}
 					}
