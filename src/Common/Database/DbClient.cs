@@ -23,9 +23,12 @@ namespace Common.Database
 
 		private DataStore _database;
 		private Lazy<IDocumentCollection<SyncHistoryItem>> _syncHistoryTable;
+		private IFileHandling _fileHandler;
 
-		public DbClient(Configuration configuration)
+		public DbClient(Configuration configuration, IFileHandling fileHandler)
 		{
+			_fileHandler = fileHandler;
+
 			using var metrics = DbActionDuration
 									.WithLabels("using", "syncHistoryTable")
 									.NewTimer();
@@ -37,7 +40,7 @@ namespace Common.Database
 				try
 				{
 					var dir = Path.GetDirectoryName(configuration.App.SyncHistoryDbPath);
-					FileHandling.MkDirIfNotEists(dir);
+					_fileHandler.MkDirIfNotExists(dir);
 					File.WriteAllText(configuration.App.SyncHistoryDbPath, "{}");
 
 				} catch (Exception e)

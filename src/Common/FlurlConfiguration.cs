@@ -50,7 +50,10 @@ namespace Common
 
 			Func<FlurlCall, Task> onErrorAsync = async (FlurlCall call) =>
 			{
-				Log.Error("Http Call Failed. {0} {1}", call.HttpResponseMessage?.StatusCode, await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
+				var response = string.Empty;
+				if (call.HttpResponseMessage is object)
+					response = await call.HttpResponseMessage?.Content?.ReadAsStringAsync();
+				Log.Error("Http Call Failed. {0} {1}", call.HttpResponseMessage?.StatusCode, response);
 			};
 
 			FlurlHttp.Configure(settings =>

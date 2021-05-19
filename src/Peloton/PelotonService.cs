@@ -1,6 +1,7 @@
 ﻿using Common;
 using Common.Database;
 using Common.Dto;
+using Common.Helpers;
 using Newtonsoft.Json.Linq;
 using Prometheus;
 using Serilog;
@@ -20,12 +21,14 @@ namespace Peloton
 		private Configuration _config;
 		private ApiClient _pelotonApi;
 		private DbClient _dbClient;
+		private IFileHandling _fileHandler;
 
-		public PelotonService(Configuration config, ApiClient pelotonApi, DbClient dbClient)
+		public PelotonService(Configuration config, ApiClient pelotonApi, DbClient dbClient, IFileHandling fileHandler)
 		{
 			_config = config;
 			_pelotonApi = pelotonApi;
 			_dbClient = dbClient;
+			_fileHandler = fileHandler;
 		}
 
 		public async Task DownloadLatestWorkoutDataAsync() 
@@ -52,7 +55,7 @@ namespace Peloton
 			});
 
 			var workingDir = _config.App.DownloadDirectory;
-			FileHandling.MkDirIfNotEists(workingDir);
+			_fileHandler.MkDirIfNotExists(workingDir);
 
 			foreach (var recentWorkout in filteredWorkouts)
 			{
@@ -80,15 +83,17 @@ namespace Peloton
 				dynamic data = new JObject();
 				data.Workout = workout;
 				data.WorkoutSamples = workoutSamples;
-				data.WorkoutSummary = workoutSummary; 
-
-				if (_config.Format.Json && _config.Format.SaveLocalCopy) SaveRawData(data, workoutId);
-
-				Log.Debug("Write peloton workout details to file for {@WorkoutId}.", workoutId);
-				File.WriteAllText(Path.Join(workingDir, $"{workoutId}_workout.json"), data.ToString());
+				data.WorkoutSummary = workoutSummary;
 
 				P2GWorkout deSerializedData = JsonSerializer.Deserialize<P2GWorkout>(data.ToString(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+				var workoutTitle = WorkoutHelper.GetUniqueTitle(deSerializedData.Workout);
 
+				if (_config.Format.Json && _config.Format.SaveLocalCopy) SaveRawData(data, workoutTitle);
+
+				Log.Debug("Write peloton workout details to file for {@WorkoutId}.", workoutId);
+				File.WriteAllText(Path.Join(workingDir, $"{workoutTitle}.json"), data.ToString());
+
+				
 				var syncHistoryItem = new SyncHistoryItem(deSerializedData.Workout)
 				{
 					DownloadDate = DateTime.Now,
@@ -113,13 +118,13 @@ namespace Peloton
 			}
 		}
 
-		private void SaveRawData(dynamic data, string workoutId)
+		private void SaveRawData(dynamic data, string workoutTitle)
 		{
 			var outputDir = _config.App.JsonDirectory;
-			FileHandling.MkDirIfNotEists(outputDir);
+			_fileHandler.MkDirIfNotExists(outputDir);
 
-			Log.Debug("Write peloton json to file for {@WorkoutId}", workoutId);
-			File.WriteAllText(Path.Join(outputDir, $"{workoutId}_workout.json"), data.ToString());
+			Log.Debug("Write peloton json to file for {@WorkoutId}", data.Workout.Id);
+			File.WriteAllText(Path.Join(outputDir, $"{workoutTitle}.json"), data.ToString());
 		}
 	}
 }

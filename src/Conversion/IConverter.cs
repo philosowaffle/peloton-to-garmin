@@ -1,12 +1,12 @@
 ﻿using Common;
 using Common.Database;
 using Common.Dto;
+using Common.Helpers;
 using Prometheus;
 using Serilog;
 using System;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using Metrics = Prometheus.Metrics;
 using Summary = Common.Dto.Summary;
 
@@ -29,11 +29,13 @@ namespace Conversion
 
 		protected Configuration _config;
 		protected IDbClient _dbClient;
+		protected IFileHandling _fileHandler;
 
-		public Converter(Configuration config, IDbClient dbClient)
+		public Converter(Configuration config, IDbClient dbClient, IFileHandling fileHandler)
 		{
 			_config = config;
 			_dbClient = dbClient;
+			_fileHandler = fileHandler;
 		}
 
 		public abstract void Convert();
@@ -45,13 +47,13 @@ namespace Conversion
 
 		protected void Convert(string format)
 		{
-			if (!Directory.Exists(_config.App.DownloadDirectory))
+			if (!_fileHandler.DirExists(_config.App.DownloadDirectory))
 			{
 				Log.Information("No download directory found. Nothing to do. {@File}", _config.App.DownloadDirectory);
 				return;
 			}
 
-			var files = Directory.GetFiles(_config.App.DownloadDirectory);
+			var files = _fileHandler.GetFiles(_config.App.DownloadDirectory);
 
 			if (files.Length == 0)
 			{
@@ -60,7 +62,7 @@ namespace Conversion
 			}
 
 			if (_config.Garmin.Upload)
-				FileHandling.MkDirIfNotEists(_config.App.UploadDirectory);
+				_fileHandler.MkDirIfNotExists(_config.App.UploadDirectory);
 
 			// Foreach file in directory
 			foreach (var file in files)
@@ -71,15 +73,12 @@ namespace Conversion
 				P2GWorkout workoutData = null;
 				try
 				{
-					using (var reader = new StreamReader(file))
-					{
-						workoutData = JsonSerializer.Deserialize<P2GWorkout>(reader.ReadToEnd(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
-					}
+					workoutData = _fileHandler.DeserializeJson<P2GWorkout>(file);
 				}
 				catch (Exception e)
 				{
 					Log.Error(e, "Failed to load and parse workout data {@File}", file);
-					FileHandling.MoveFailedFile(file, _config.App.FailedDirectory);
+					_fileHandler.MoveFailedFile(file, _config.App.FailedDirectory);
 					continue;
 				}
 
@@ -89,7 +88,7 @@ namespace Conversion
 
 				// call internal convert method
 				T converted = default;
-				var workoutTitle = GetTitle(workoutData.Workout);
+				var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout);
 				try
 				{
 					converted = Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.WorkoutSummary);
@@ -101,7 +100,7 @@ namespace Conversion
 
 				if (converted is null)
 				{
-					FileHandling.MoveFailedFile(file, _config.App.FailedDirectory);
+					_fileHandler.MoveFailedFile(file, _config.App.FailedDirectory);
 					continue;
 				}
 
@@ -122,12 +121,12 @@ namespace Conversion
 				{
 					try
 					{
-						FileHandling.MkDirIfNotEists(_config.App.TcxDirectory);
-						FileHandling.MkDirIfNotEists(_config.App.FitDirectory);
+						_fileHandler.MkDirIfNotExists(_config.App.TcxDirectory);
+						_fileHandler.MkDirIfNotExists(_config.App.FitDirectory);
 						var dir = format == "fit" ? _config.App.FitDirectory : _config.App.TcxDirectory;
 
 						var backupDest = Path.Join(dir, $"{workoutTitle}.{format}");
-						System.IO.File.Copy(path, backupDest, overwrite: true);
+						_fileHandler.Copy(path, backupDest, overwrite: true);
 						Log.Information("Backed up file {@File}", backupDest);
 					}
 					catch (Exception e)
@@ -143,7 +142,7 @@ namespace Conversion
 					try
 					{
 						var uploadDest = Path.Join(_config.App.UploadDirectory, $"{workoutTitle}.{format}");
-						System.IO.File.Copy(path, uploadDest, overwrite: true);
+						_fileHandler.Copy(path, uploadDest, overwrite: true);
 						Log.Debug("Prepped {@Format} file {@Path} for upload.", format, uploadDest);
 					}
 					catch (Exception e)
@@ -155,15 +154,11 @@ namespace Conversion
 
 				// update db item with conversion date
 				SyncHistoryItem syncRecord = _dbClient.Get(workoutData.Workout.Id);
-				if (syncRecord?.DownloadDate is null)
+				if (syncRecord is null)
 				{
-					var startTimeInSeconds = workoutData.Workout.Start_Time;
-					var dtDateTime = new System.DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-					dtDateTime = dtDateTime.AddSeconds(startTimeInSeconds).ToLocalTime();
-
 					syncRecord = new SyncHistoryItem(workoutData.Workout)
 					{
-						DownloadDate = System.DateTime.Now
+						DownloadDate = System.DateTime.Now,
 					};
 				}
 
@@ -275,20 +270,6 @@ namespace Conversion
 				Log.Debug("No speed slug found.");
 
 			return speedSummary;
-		}
-
-		protected string GetTitle(Workout workout)
-		{
-			var rideTitle = workout.Ride?.Title ?? workout.Id;
-			var instructorName = workout.Ride?.Instructor?.Name;
-
-			if (instructorName is object)
-				instructorName = $" with {instructorName}";
-
-			return $"{rideTitle}{instructorName}"
-				.Replace(" ", "_")
-				.Replace("/", "-")
-				.Replace(":", "-");
 		}
 
 		protected byte? GetUserMaxHeartRate(WorkoutSamples workoutSamples) 

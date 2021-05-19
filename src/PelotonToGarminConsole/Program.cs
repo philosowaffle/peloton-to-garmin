@@ -118,23 +118,25 @@ namespace PelotonToGarminConsole
 			using var timer = SyncHistogram.NewTimer();
 			using var activity = Tracing.Trace(nameof(RunAsync));
 
-			var db = new DbClient(config);
+			var fileHandler = new IOWrapper();
+			var db = new DbClient(config, fileHandler);
 			var pelotonApiClient = new Peloton.ApiClient(config.Peloton.Email, config.Peloton.Password, config.Observability.Prometheus.Enabled);
-			var peloton = new PelotonService(config, pelotonApiClient, db);
+			var peloton = new PelotonService(config, pelotonApiClient, db, fileHandler);
+			
 
 			await peloton.DownloadLatestWorkoutDataAsync();
 
-			var fitConverter = new FitConverter(config, db);
+			var fitConverter = new FitConverter(config, db, fileHandler);
 			fitConverter.Convert();
 
-			var tcxConverter = new TcxConverter(config, db);
+			var tcxConverter = new TcxConverter(config, db, fileHandler);
 			tcxConverter.Convert();
 
 			var garminUploader = new GarminUploader(config);
 			garminUploader.UploadToGarmin();
 
-			FileHandling.Cleanup(config.App.DownloadDirectory);
-			FileHandling.Cleanup(config.App.UploadDirectory);
+			fileHandler.Cleanup(config.App.DownloadDirectory);
+			fileHandler.Cleanup(config.App.UploadDirectory);
 			foreach (var file in Directory.GetFiles(config.App.WorkingDirectory))
 				File.Delete(file);
 		}

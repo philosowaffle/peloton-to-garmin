@@ -3,6 +3,7 @@ using Common.Database;
 using Common.Dto;
 using Conversion;
 using FluentAssertions;
+using Moq.AutoMock;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -19,8 +20,8 @@ namespace UnitTests.Conversion
 			TimeSpan diff = nowCst.ToUniversalTime() - epoch;
 			var seconds = (long)Math.Floor(diff.TotalSeconds);
 
-			var config = new Configuration();
-			var converter = new ConverterInstance(config, new DbClient(config));
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
 
 			var wokout = new Workout()
 			{
@@ -36,8 +37,8 @@ namespace UnitTests.Conversion
 		{
 			var now = DateTime.Parse("2021-04-01 03:14:12");
 
-			var config = new Configuration();
-			var converter = new ConverterInstance(config, new DbClient(config));
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
 
 			var timeStamp = converter.GetTimeStamp1(now, offset);
 
@@ -53,8 +54,8 @@ namespace UnitTests.Conversion
 		[Test]
 		public void ConvertDistanceToMetersTest([Values("km","mi","ft", "KM","unknown")]string unit)
 		{
-			var config = new Configuration();
-			var converter = new ConverterInstance(config, new DbClient(config));
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
 
 			var value = 8677;
 			var converted = converter.ConvertDistanceToMeters1(value, unit);
@@ -81,8 +82,8 @@ namespace UnitTests.Conversion
 			var workoutSample = new WorkoutSamples();
 			workoutSample.Summaries = null;
 
-			var config = new Configuration();
-			var converter = new ConverterInstance(config, new DbClient(config));
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
 
 			var converted = converter.GetTotalDistance1(workoutSample);
 			converted.Should().Be(0.0f);
@@ -94,8 +95,8 @@ namespace UnitTests.Conversion
 			var workoutSample = new WorkoutSamples();
 			workoutSample.Summaries = new List<Summary>() { new Summary() { Slug = "notDistance" } };
 
-			var config = new Configuration();
-			var converter = new ConverterInstance(config, new DbClient(config));
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
 
 			var converted = converter.GetTotalDistance1(workoutSample);
 			converted.Should().Be(0.0f);
@@ -111,8 +112,8 @@ namespace UnitTests.Conversion
 				new Summary() { Slug = "distance", Display_Unit = unit, Value = distance } 
 			};
 
-			var config = new Configuration();
-			var converter = new ConverterInstance(config, new DbClient(config));
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
 			var expectedDistance = converter.ConvertDistanceToMeters1(distance, unit);
 
 			var converted = converter.GetTotalDistance1(workoutSample);
@@ -125,8 +126,8 @@ namespace UnitTests.Conversion
 			var workoutSample = new WorkoutSamples();
 			workoutSample.Summaries = null;
 
-			var config = new Configuration();
-			var converter = new ConverterInstance(config, new DbClient(config));
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
 
 			var value = 145;
 			var converted = converter.ConvertToMetersPerSecond1(value, workoutSample);
@@ -143,8 +144,8 @@ namespace UnitTests.Conversion
 				new Summary() { Slug = "distance", Display_Unit = unit, Value = value }
 			};
 
-			var config = new Configuration();
-			var converter = new ConverterInstance(config, new DbClient(config));
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
 
 			var metersPerHour = converter.ConvertDistanceToMeters1(value, unit);
 			var metersPerMinute = metersPerHour / 60;
@@ -159,8 +160,8 @@ namespace UnitTests.Conversion
 			var workoutSample = new WorkoutSamples();
 			workoutSample.Metrics = null;
 
-			var config = new Configuration();
-			var converter = new ConverterInstance(config, new DbClient(config));
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
 
 			var converted = converter.GetMaxSpeedMetersPerSecond1(workoutSample);
 			converted.Should().Be(0.0f);
@@ -180,8 +181,8 @@ namespace UnitTests.Conversion
 				new Summary() { Slug = "distance", Display_Unit = unit }
 			};
 
-			var config = new Configuration();
-			var converter = new ConverterInstance(config, new DbClient(config));
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
 			var expectedDistance = converter.ConvertToMetersPerSecond1(speed, workoutSample);
 
 			var converted = converter.GetMaxSpeedMetersPerSecond1(workoutSample);
@@ -194,8 +195,8 @@ namespace UnitTests.Conversion
 			var workoutSample = new WorkoutSamples();
 			workoutSample.Metrics = null;
 
-			var config = new Configuration();
-			var converter = new ConverterInstance(config, new DbClient(config));
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
 
 			var converted = converter.GetAvgSpeedMetersPerSecond1(workoutSample);
 			converted.Should().Be(0.0f);
@@ -215,91 +216,17 @@ namespace UnitTests.Conversion
 				new Summary() { Slug = "distance", Display_Unit = unit }
 			};
 
-			var config = new Configuration();
-			var converter = new ConverterInstance(config, new DbClient(config));
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
 			var expectedDistance = converter.ConvertToMetersPerSecond1(speed, workoutSample);
 
 			var converted = converter.GetAvgSpeedMetersPerSecond1(workoutSample);
 			converted.Should().Be(expectedDistance);
 		}
 
-		[Test]
-		public void GetTitle_ShouldReturn_RideTitle()
-		{
-			var workout = new Workout() 
-			{
-				Ride = new Ride() 
-				{
-					Title = "My Title",
-					Instructor = new Instructor() 
-					{
-						Name = "My Name"
-					}
-				}
-			};
-
-			var config = new Configuration();
-			var converter = new ConverterInstance(config, new DbClient(config));
-			var title = converter.GetTitle1(workout);
-
-			title.Should().Be("My_Title_with_My_Name");
-		}
-
-		[Test]
-		public void GetTitle_NullRide_ShouldReturn_RideId()
-		{
-			var workout = new Workout()
-			{
-				Id = "someId"
-			};
-
-			var config = new Configuration();
-			var converter = new ConverterInstance(config, new DbClient(config));
-			var title = converter.GetTitle1(workout);
-
-			title.Should().Be("someId");
-		}
-
-		[Test]
-		public void GetTitle_NullInstructor_ShouldReturn_EmptyInstructorName()
-		{
-			var workout = new Workout()
-			{
-				Ride = new Ride()
-				{
-					Title = "My Title"
-				}
-			};
-
-			var config = new Configuration();
-			var converter = new ConverterInstance(config, new DbClient(config));
-			var title = converter.GetTitle1(workout);
-
-			title.Should().Be("My_Title");
-		}
-
-		[Test]
-		public void GetTitle_NullInstructorName_ShouldReturn_EmptyInstructorName()
-		{
-			var workout = new Workout()
-			{
-				Ride = new Ride()
-				{
-					Title = "My Title",
-					Instructor = new Instructor()
-				}
-			};
-
-			var config = new Configuration();
-			var converter = new ConverterInstance(config, new DbClient(config));
-			var title = converter.GetTitle1(workout);
-
-			title.Should().Be("My_Title");
-		}
-
 		private class ConverterInstance : Converter<string>
 		{
-			public ConverterInstance(Configuration config, DbClient dbClient) : base(config, dbClient) { }
+			public ConverterInstance(Configuration config, DbClient dbClient, IOWrapper fileHandler) : base(config, dbClient, fileHandler) { }
 
 			public override void Convert()
 			{
@@ -354,11 +281,6 @@ namespace UnitTests.Conversion
 			public float GetAvgSpeedMetersPerSecond1(WorkoutSamples workoutSamples)
 			{
 				return base.GetAvgSpeedMetersPerSecond(workoutSamples);
-			}
-
-			public string GetTitle1(Workout workout)
-			{
-				return base.GetTitle(workout);
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 ﻿using Common;
 using Common.Database;
 using Common.Dto;
+using Common.Helpers;
 using Dynastream.Fit;
 using Serilog;
 using System;
@@ -18,7 +19,7 @@ namespace Conversion
 		private static readonly uint _serialNumber = 1;
 
 		private static readonly string _spaceSeparator = "_";
-		public FitConverter(Configuration config, IDbClient dbClient) : base(config, dbClient) { }
+		public FitConverter(Configuration config, IDbClient dbClient, IFileHandling fileHandler) : base(config, dbClient, fileHandler) { }
 
 		public override void Convert()
 		{
@@ -50,7 +51,7 @@ namespace Conversion
 
 			var startTime = GetStartTimeUtc(workout);
 			var endTime = GetEndTimeUtc(workout);
-			var title = GetTitle(workout);
+			var title = WorkoutHelper.GetTitle(workout);
 			var sport = GetGarminSport(workout);
 			var subSport = GetGarminSubSport(workout);
 

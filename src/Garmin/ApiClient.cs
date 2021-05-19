@@ -102,6 +102,7 @@ namespace Garmin
 							.SetQueryParams(queryParams)
 							.WithCookies(_jar)
 							.GetStringAsync();
+
 			} catch (FlurlHttpException e)
 			{
 				Log.Error(e, "No login form.");

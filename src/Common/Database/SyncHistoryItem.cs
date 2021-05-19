@@ -21,7 +21,7 @@ namespace Common.Database
 			dtDateTime = dtDateTime.AddSeconds(startTimeInSeconds).ToLocalTime();
 
 			Id = workout.Id;
-			WorkoutTitle = workout.Ride.Title;
+			WorkoutTitle = workout.Ride?.Title;
 			WorkoutDate = dtDateTime;
 		}
 	}
