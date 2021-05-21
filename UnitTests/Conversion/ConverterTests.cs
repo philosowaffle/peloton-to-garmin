@@ -1,5 +1,4 @@
-﻿using Common;
-using Common.Dto;
+﻿using Common.Dto;
 using Conversion;
 using FluentAssertions;
 using Moq.AutoMock;
@@ -223,6 +222,32 @@ namespace UnitTests.Conversion
 			converted.Should().Be(expectedDistance);
 		}
 
+		[Test]
+		public void GetHeartRateZone_NullMetrics_ReturnsNull()
+		{
+			var workoutSample = new WorkoutSamples();
+			workoutSample.Metrics = null;
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var zone = converter.GetHeartRateZone1(1, workoutSample);
+			zone.Should().BeNull();
+		}
+
+		[Test]
+		public void GetUserMaxHeartRate_NullMetrics_ReturnsNull()
+		{
+			var workoutSample = new WorkoutSamples();
+			workoutSample.Metrics = null;
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var hr = converter.GetUserMaxHeartRate1(workoutSample);
+			hr.Should().BeNull();
+		}
+
 		private class ConverterInstance : Converter<string>
 		{
 			public ConverterInstance() : base(null, null, null) { }
@@ -280,6 +305,16 @@ namespace UnitTests.Conversion
 			public float GetAvgSpeedMetersPerSecond1(WorkoutSamples workoutSamples)
 			{
 				return base.GetAvgSpeedMetersPerSecond(workoutSamples);
+			}
+
+			public Zone GetHeartRateZone1(int zone, WorkoutSamples workoutSamples)
+			{
+				return base.GetHeartRateZone(zone, workoutSamples);
+			}
+
+			public byte? GetUserMaxHeartRate1(WorkoutSamples workoutSamples)
+			{
+				return base.GetUserMaxHeartRate(workoutSamples);
 			}
 		}
 	}

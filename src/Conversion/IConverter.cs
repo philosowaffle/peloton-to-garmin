@@ -314,12 +314,12 @@ namespace Conversion
 		{
 			var maxZone = GetHeartRateZone(5, workoutSamples);
 
-			return (byte)maxZone?.Max_Value;
+			return (byte?)maxZone?.Max_Value;
 		}
 
 		protected Zone GetHeartRateZone(int zone, WorkoutSamples workoutSamples)
 		{
-			var hrData = workoutSamples.Metrics.FirstOrDefault(s => s.Slug == "heart_rate");
+			var hrData = workoutSamples?.Metrics?.FirstOrDefault(s => s.Slug == "heart_rate");
 
 			if (hrData is null) return null;
 
