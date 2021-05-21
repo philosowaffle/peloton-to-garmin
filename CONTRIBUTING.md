@@ -26,5 +26,5 @@ Enhancements and fixes are always welcome. Feel free to contribute to any of the
 > edit python script
 > pip install -r requirements.txt
 > pip install pyinstaller
-> pyinstaller -n upload_<os> --distpath ./ --console --clean --noconfirm upload.py
+> pyinstaller -n upload --distpath ./ --console --clean --noconfirm upload.py
 ```

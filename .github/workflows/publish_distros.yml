@@ -8,7 +8,6 @@ on:
     paths:
     - 'src/**'
     - 'python/upload/**'
-    - 'UnitTests/**'
     - 'PelotonToGarmin.sln'
     - 'configuration.example.json'
     - '.github/workflows/publish_distros.yml'

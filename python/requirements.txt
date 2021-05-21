@@ -1,1 +1,1 @@
-garmin_uploader>=1.0.9
+garmin_uploader>=1.0.10

@@ -62,6 +62,7 @@ namespace Common
 				settings.BeforeCallAsync = beforeCallAsync;
 				settings.AfterCallAsync = afterCallAsync;
 				settings.OnErrorAsync = onErrorAsync;
+				settings.Redirects.ForwardHeaders = true;
 			});
 		}
 	}

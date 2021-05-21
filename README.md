@@ -17,6 +17,7 @@ Convert workout data from Peloton into a format that can be uploaded to Garmin.
 * Upload TCX or FIT workout to Garmin
 * Avoid duplicates in Garmin
 * Backup your downloaded data and converted files
+* Earn Badges and credit for Garmin Challenges
 
 
 Head on over to the [Wiki](https://github.com/philosowaffle/peloton-to-garmin/wiki/Peloton-To-Garmin---v2) to get started!
@@ -27,6 +28,7 @@ Head on over to the [Wiki](https://github.com/philosowaffle/peloton-to-garmin/wi
 
 * Windows
 * Mac
+* Linux
 * Docker
 
 ## Contributors
