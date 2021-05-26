@@ -55,4 +55,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: ${{ matrix.os }}
-        path: /dist/${{ matrix.os }}.zip
+        path: ${{ github.workspace }}/dist/${{ matrix.os }}.zip
