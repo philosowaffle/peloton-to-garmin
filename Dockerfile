@@ -11,9 +11,9 @@ ARG VERSION
 RUN echo $TARGETPLATFORM
 RUN echo $VERSION
 RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
-		dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-musl-arm64 -o /build/published --version-suffix ${VERSION} ; \
+		dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-musl-arm64 -o /build/published --version-suffix "$VERSION" ; \
 	else \
-		dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-musl-x64 -o /build/published --version-suffix ${VERSION} ; \
+		dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-musl-x64 -o /build/published --version-suffix "$VERSION" ; \
 	fi
 
 FROM mcr.microsoft.com/dotnet/runtime:5.0-alpine
