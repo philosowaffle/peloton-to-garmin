@@ -51,10 +51,8 @@ jobs:
        files: /dist/${{ matrix.os }}/
        dest: /dist/${{ matrix.os }}.zip
 
-    - name: Commit changes ${{ matrix.os }}
-      uses: EndBug/add-and-commit@v7.0.0
+    - name: Upload Artifact ${{ matrix.os }}
+      uses: actions/upload-artifact@v2
       with:
-        message: "Create ${{ matrix.os }} distro"
-        add: ${{ github.workspace }}/dist/${{ matrix.os }}.zip
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        name: ${{ matrix.os }}
+        path: /dist/${{ matrix.os }}.zip
