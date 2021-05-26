@@ -30,11 +30,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{A7F642
 		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dist", "dist", "{0F682AD5-F664-4DB3-80B9-AE5F04E1166E}"
-	ProjectSection(SolutionItems) = preProject
-		dist\win10-x64.zip = dist\win10-x64.zip
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{9DDC93B4-7815-4592-90B8-2C2E2FE0EF6F}"
@@ -82,7 +77,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{614A75B3-E4D8-4F29-A06A-C087159AF0B3} = {EAA7A07D-19F0-4D55-A52E-CFC1C9CEBEAB}
 		{A7F642D9-7954-4547-84DB-67A04AE1043D} = {EAA7A07D-19F0-4D55-A52E-CFC1C9CEBEAB}
-		{0F682AD5-F664-4DB3-80B9-AE5F04E1166E} = {EAA7A07D-19F0-4D55-A52E-CFC1C9CEBEAB}
 		{9DDC93B4-7815-4592-90B8-2C2E2FE0EF6F} = {614A75B3-E4D8-4F29-A06A-C087159AF0B3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
