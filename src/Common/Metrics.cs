@@ -46,6 +46,11 @@ namespace Common
 			public static string FileType = "file_type";
 
 			public static string Count = "count";
+
+			public static string Os = "os";
+			public static string OsVersion = "os_version";
+			public static string Version = "version";
+			public static string DotNetRuntime = "dotnet_runtime";
 		}
 	}
 }

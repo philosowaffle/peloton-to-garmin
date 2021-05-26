@@ -47,6 +47,7 @@ jobs:
           file: ./Dockerfile
           tags: philosowaffle/peloton-to-garmin:fitvLatest
           platforms: linux/arm64,linux/amd64
+          build-args: VERSION=${{ env.GITHUB_RUN_NUMBER }}.${{ env.GITHUB_RUN_ID}}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 

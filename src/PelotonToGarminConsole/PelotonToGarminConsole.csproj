@@ -11,6 +11,10 @@
     <RepositoryUrl>https://github.com/philosowaffle/peloton-to-garmin</RepositoryUrl>
     <Authors>Bailey Belvis</Authors>
     <ApplicationIcon>256x256.ico</ApplicationIcon>
+    <PackageIcon>256x256.png</PackageIcon>
+    <RepositoryType>git</RepositoryType>
+    <VersionPrefix>2.0.0</VersionPrefix>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +34,13 @@
     <ProjectReference Include="..\Conversion\Conversion.csproj" />
     <ProjectReference Include="..\Garmin\Garmin.csproj" />
     <ProjectReference Include="..\Peloton\Peloton.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\images\logo\256x256.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

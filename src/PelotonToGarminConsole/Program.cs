@@ -11,6 +11,7 @@ using Serilog.Enrichers.Span;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Metrics = Prometheus.Metrics;
@@ -20,11 +21,20 @@ namespace PelotonToGarminConsole
 	class Program
 	{
 		private static readonly Histogram SyncHistogram = Metrics.CreateHistogram("p2g_sync_duration_seconds", "The histogram of sync jobs that have run.");
+		private static readonly Gauge P2GBuildInfo = Metrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
+		{
+			LabelNames = new[] { Common.Metrics.Label.Version, Common.Metrics.Label.Os, Common.Metrics.Label.OsVersion, Common.Metrics.Label.DotNetRuntime }
+		});
 
 		static void Main(string[] args)
 		{
 			Console.WriteLine("Peloton To Garmin");
 			var config = new Configuration();
+
+			var runtimeVersion = Environment.Version.ToString();
+			var os = Environment.OSVersion.Platform.ToString();
+			var osVersion = Environment.OSVersion.VersionString;
+			var version = Assembly.GetEntryAssembly().GetName().Version.ToString();
 
 			try
 			{
@@ -61,6 +71,10 @@ namespace PelotonToGarminConsole
 					Log.Information("Config reloaded. Changes will take effect at the end of the current sleeping cycle.");
 				});
 
+				Log.Debug("P2G Version: {@Version}", version);
+				Log.Debug("Operating System: {@Os}", osVersion);
+				Log.Debug("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
+
 				PelotonService.ValidateConfig(config.Peloton);
 				GarminUploader.ValidateConfig(config.Garmin);
 				Common.Metrics.ValidateConfig(config.Observability);
@@ -76,16 +90,18 @@ namespace PelotonToGarminConsole
 
 			try
 			{
+				using var metrics = Common.Metrics.EnableMetricsServer(config.Observability.Prometheus);
+				using var tracing = Tracing.EnableTracing(config.Observability.Jaeger);
+				using var tracingSource = new ActivitySource("ROOT");
+
+				P2GBuildInfo.WithLabels(version, os, osVersion, runtimeVersion).Set(1);
+
 				if (config.Peloton.NumWorkoutsToDownload <= 0)
 				{
 					Console.Write("How many workouts to grab? ");
 					int num = Convert.ToInt32(Console.ReadLine());
 					config.Peloton.NumWorkoutsToDownload = num;
 				}
-
-				using var metrics = Common.Metrics.EnableMetricsServer(config.Observability.Prometheus);
-				using var tracing = Tracing.EnableTracing(config.Observability.Jaeger);
-				using var tracingSource = new ActivitySource("ROOT");
 
 				if (config.App.EnablePolling)
 				{
@@ -122,7 +138,6 @@ namespace PelotonToGarminConsole
 			var db = new DbClient(config, fileHandler);
 			var pelotonApiClient = new Peloton.ApiClient(config.Peloton.Email, config.Peloton.Password, config.Observability.Prometheus.Enabled);
 			var peloton = new PelotonService(config, pelotonApiClient, db, fileHandler);
-			
 
 			await peloton.DownloadLatestWorkoutDataAsync();
 
