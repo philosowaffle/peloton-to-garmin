@@ -9,6 +9,7 @@ ARG TARGETPLATFORM
 ARG VERSION
 
 RUN echo $TARGETPLATFORM
+RUN echo $VERSION
 RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
 		dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-musl-arm64 -o /build/published --version-suffix $VERSION ; \
 	else \
