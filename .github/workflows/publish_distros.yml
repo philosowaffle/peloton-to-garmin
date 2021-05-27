@@ -55,7 +55,7 @@ jobs:
        files: /dist/${{ matrix.os }}/
        dest: /dist/${{ matrix.os }}_${{ env.BUILD_VERSION }}.zip
 
-    - name: Upload Artifact ${{ matrix.os }}
+    - name: Upload Artifact ${{ matrix.os }}_${{ env.BUILD_VERSION }}
       uses: actions/upload-artifact@v2
       with:
         name: ${{ matrix.os }}
