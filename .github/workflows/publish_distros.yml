@@ -34,9 +34,13 @@ jobs:
     
     - name: Restore
       run: dotnet restore
+
+    - name: Prepare env
+      run: |
+          echo "BUILD_VERSION=${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}" >> $GITHUB_ENV
         
     - name: Publish ${{matrix.os}}
-      run: dotnet publish ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --no-restore -c Release -r ${{ matrix.os }} -o ${{ github.workspace }}/dist/${{ matrix.os }}
+      run: dotnet publish ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --no-restore -c Release -r ${{ matrix.os }} -o ${{ github.workspace }}/dist/${{ matrix.os }} --version-suffix ${{ env.BUILD_VERSION }}
 
     - name: Copy Config to Distro
       run: cp ${{ github.workspace }}/configuration.example.json ${{ github.workspace }}/dist/${{ matrix.os }}/configuration.local.json
@@ -49,10 +53,10 @@ jobs:
       uses: papeloto/action-zip@v1
       with:
        files: /dist/${{ matrix.os }}/
-       dest: /dist/${{ matrix.os }}.zip
+       dest: /dist/${{ matrix.os }}_${{ env.BUILD_VERSION }}.zip
 
     - name: Upload Artifact ${{ matrix.os }}
       uses: actions/upload-artifact@v2
       with:
         name: ${{ matrix.os }}
-        path: ${{ github.workspace }}/dist/${{ matrix.os }}.zip
+        path: ${{ github.workspace }}/dist/${{ matrix.os }}_${{ env.BUILD_VERSION }}.zip
