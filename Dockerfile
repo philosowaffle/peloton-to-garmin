@@ -25,6 +25,9 @@ RUN apk add --update --no-cache bash python3 tzdata && ln -sf python3 /usr/bin/p
 RUN python3 -m ensurepip
 RUN pip3 install --no-cache --upgrade pip setuptools
 
+RUN python --version
+RUN pip3 --version
+
 WORKDIR /app
 
 COPY --from=build /build/published .
@@ -38,7 +41,8 @@ RUN mkdir working
 RUN touch syncHistory.json
 RUN echo "{}" >> syncHistory.json
 
-RUN pip3 install -r requirements.txt
+# RUN pip3 install -r requirements.txt
+RUN pip3 install https://github.com/La0/garmin-uploader/archive/cloudscraper.zip
 
 RUN ls -l
 ENTRYPOINT ["./PelotonToGarminConsole"]
