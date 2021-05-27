@@ -41,7 +41,7 @@ jobs:
       
       - name: Prepare env
         run: |
-          echo "BUILD_VERSION=${GITHUB_RUN_NUMBER}.${GITHUB_RUN_ID}" >> $GITHUB_ENV
+          echo "BUILD_VERSION=${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}" >> $GITHUB_ENV
 
       - name: Build and push
         id: docker_build
