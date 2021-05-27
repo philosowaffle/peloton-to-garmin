@@ -34,7 +34,7 @@ namespace PelotonToGarminConsole
 			var runtimeVersion = Environment.Version.ToString();
 			var os = Environment.OSVersion.Platform.ToString();
 			var osVersion = Environment.OSVersion.VersionString;
-			var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			var version = Assembly.GetExecutingAssembly().GetName().Version.ToString(4);
 
 			try
 			{
