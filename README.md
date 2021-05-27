@@ -1,5 +1,8 @@
 # peloton-to-garmin
 
+> First time user? Start with [P2G Version 2](https://github.com/philosowaffle/peloton-to-garmin/tree/v2). V2 has feature parity with v1 + additional new features.  If you choose to run V2, join the [discussion and post feedback](https://github.com/philosowaffle/peloton-to-garmin/discussions/77).
+
+
 #### _#PelotonToGarmin_
 
 Convert workout data from Peloton into a TCX file that can be uploaded to Garmin.
