@@ -58,5 +58,5 @@ jobs:
     - name: Upload Artifact ${{ matrix.os }}_${{ env.BUILD_VERSION }}
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ matrix.os }}
+        name: ${{ matrix.os }}_${{ env.BUILD_VERSION }}
         path: ${{ github.workspace }}/dist/${{ matrix.os }}_${{ env.BUILD_VERSION }}.zip
