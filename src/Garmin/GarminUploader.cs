@@ -65,7 +65,7 @@ namespace Garmin
 		private void UploadViaPython(string[] files)
 		{
 			using var tracer = Tracing.Trace(nameof(UploadToGarmin))
-										.WithTag(TagKey.App, "gupload");
+										.WithTag(TagKey.Category, "gupload");
 			
 			ProcessStartInfo start = new ProcessStartInfo();
 			var paths = String.Join(" ", files.Select(p => $"\"{p}\""));

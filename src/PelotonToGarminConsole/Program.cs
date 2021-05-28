@@ -21,15 +21,17 @@ namespace PelotonToGarminConsole
 	class Program
 	{
 		private static readonly Histogram SyncHistogram = Metrics.CreateHistogram("p2g_sync_duration_seconds", "The histogram of sync jobs that have run.");
-		private static readonly Gauge P2GBuildInfo = Metrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
+		private static readonly Gauge BuildInfo = Metrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
 		{
 			LabelNames = new[] { Common.Metrics.Label.Version, Common.Metrics.Label.Os, Common.Metrics.Label.OsVersion, Common.Metrics.Label.DotNetRuntime }
 		});
+		private static readonly Gauge Health = Metrics.CreateGauge("p2g_health_info", "Health status for P2G.");
 
 		static void Main(string[] args)
 		{
 			Console.WriteLine("Peloton To Garmin");
 			var config = new Configuration();
+			Health.Set(1);
 
 			var runtimeVersion = Environment.Version.ToString();
 			var os = Environment.OSVersion.Platform.ToString();
@@ -85,6 +87,7 @@ namespace PelotonToGarminConsole
 			} catch (Exception e)
 			{
 				Log.Error(e, "Exception during config setup.");
+				Health.Set(0);
 				throw;
 			}			
 
@@ -94,7 +97,7 @@ namespace PelotonToGarminConsole
 				using var tracing = Tracing.EnableTracing(config.Observability.Jaeger);
 				using var tracingSource = new ActivitySource("ROOT");
 
-				P2GBuildInfo.WithLabels(version, os, osVersion, runtimeVersion).Set(1);
+				BuildInfo.WithLabels(version, os, osVersion, runtimeVersion).Set(1);
 
 				if (config.Peloton.NumWorkoutsToDownload <= 0)
 				{
@@ -120,6 +123,7 @@ namespace PelotonToGarminConsole
 			catch (Exception e)
 			{
 				Log.Error(e, "Uncaught Exception.");
+				Health.Set(0);
 				throw;
 			}
 			finally

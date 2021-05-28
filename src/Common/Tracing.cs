@@ -3,6 +3,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Common
@@ -22,6 +23,7 @@ namespace Common
 		public static string Db = "db";
 		public static string Fit = "fit";
 		public static string Tcx = "tcx";
+		public static string P2G = "p2g";
 	}
 
 	public static class Tracing
@@ -35,7 +37,16 @@ namespace Common
 			{
 				tracing = Sdk.CreateTracerProviderBuilder()
 							.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("p2g"))
-							.AddHttpClientInstrumentation()
+							.AddHttpClientInstrumentation(config => 
+							{
+								config.RecordException = true;
+								config.Enrich = (activity, name, rawEventObject) => 
+								{
+									activity.SetTag(TagKey.App, TagValue.P2G);
+									activity.SetTag("SpanId", activity.SpanId);
+									activity.SetTag("TraceId", activity.TraceId);
+								};
+							})
 							.AddSource("P2G")
 							.AddJaegerExporter(o =>
 							{
@@ -52,8 +63,17 @@ namespace Common
 
 		public static Activity Trace(string name, string category = "app")
 		{
-			return Activity.Current?.Source.StartActivity(name)?.SetTag(TagKey.Category, category)
-					?? new ActivitySource("P2G")?.StartActivity(name)?.SetTag(TagKey.Category, category);
+			var activity = Activity.Current?.Source.StartActivity(name)
+				??
+				new ActivitySource("P2G")?.StartActivity(name);
+
+			activity
+				.SetTag(TagKey.Category, category)
+				.SetTag(TagKey.App, TagValue.P2G)
+				.SetTag("SpanId", activity.SpanId)
+				.SetTag("TraceId", activity.TraceId);
+
+			return activity;
 		}
 
 		public static Activity WithWorkoutId(this Activity activity, string workoutId)
