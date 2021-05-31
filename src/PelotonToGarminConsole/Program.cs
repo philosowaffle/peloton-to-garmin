@@ -42,7 +42,7 @@ namespace PelotonToGarminConsole
 			{
 				IConfiguration configProviders = new ConfigurationBuilder()
 				.AddJsonFile(Path.Join(Environment.CurrentDirectory, "configuration.local.json"), optional: true, reloadOnChange: true)
-				.AddEnvironmentVariables()
+				.AddEnvironmentVariables(prefix: "P2G_")
 				.AddCommandLine(args)
 				.Build();
 								
@@ -124,7 +124,6 @@ namespace PelotonToGarminConsole
 			{
 				Log.Error(e, "Uncaught Exception.");
 				Health.Set(0);
-				throw;
 			}
 			finally
 			{

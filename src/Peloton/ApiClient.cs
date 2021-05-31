@@ -65,8 +65,10 @@ namespace Peloton
 			})
 			.ConfigureRequest((c) => 
 			{
-				c.AfterCallAsync = (FlurlCall call) => 
+				c.AfterCallAsync = async (FlurlCall call) => 
 				{
+					Log.Debug("{0} {1}", call.HttpResponseMessage?.StatusCode, await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
+
 					if (_observabilityEnabled)
 					{
 						FlurlConfiguration.HttpRequestHistogram
@@ -79,8 +81,6 @@ namespace Peloton
 							call.HttpResponseMessage.ReasonPhrase
 						).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
 					}
-
-					return Task.CompletedTask;
 				};
 			})
 			.GetJsonAsync<RecentWorkouts>();
