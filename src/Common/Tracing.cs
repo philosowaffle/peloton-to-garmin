@@ -67,7 +67,7 @@ namespace Common
 				??
 				new ActivitySource("P2G")?.StartActivity(name);
 
-			activity
+			activity?
 				.SetTag(TagKey.Category, category)
 				.SetTag(TagKey.App, TagValue.P2G)
 				.SetTag("SpanId", activity.SpanId)
