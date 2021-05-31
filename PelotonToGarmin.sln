@@ -40,6 +40,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\tag-release.yml = .github\workflows\tag-release.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "grafana", "grafana", "{D569F903-710B-4862-B8CF-70604D93FC4F}"
+	ProjectSection(SolutionItems) = preProject
+		grafana\p2g_dashboard.json = grafana\p2g_dashboard.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +83,7 @@ Global
 		{614A75B3-E4D8-4F29-A06A-C087159AF0B3} = {EAA7A07D-19F0-4D55-A52E-CFC1C9CEBEAB}
 		{A7F642D9-7954-4547-84DB-67A04AE1043D} = {EAA7A07D-19F0-4D55-A52E-CFC1C9CEBEAB}
 		{9DDC93B4-7815-4592-90B8-2C2E2FE0EF6F} = {614A75B3-E4D8-4F29-A06A-C087159AF0B3}
+		{D569F903-710B-4862-B8CF-70604D93FC4F} = {EAA7A07D-19F0-4D55-A52E-CFC1C9CEBEAB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1DBD48F5-054F-4C40-A97A-DE31B9132FCB}
