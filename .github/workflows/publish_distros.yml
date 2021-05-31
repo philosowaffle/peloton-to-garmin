@@ -76,7 +76,7 @@ jobs:
         pyinstaller -n upload-${{ matrix.os }} --distpath ${{ github.workspace }}/python --windowed --onedir --clean ${{ github.workspace }}/python/upload.py
     
     - name: Copy Python to Distro
-      run: cp -R ${{ github.workspace }}/python/upload ${{ github.workspace }}/dist/${{ matrix.os }}/python/upload
+      run: cp -R /python/upload /dist/${{ matrix.os }}/python/upload
 
     # Create Artifact
     - name: Upload Artifact ${{ matrix.os }}_${{ env.BUILD_VERSION }}
