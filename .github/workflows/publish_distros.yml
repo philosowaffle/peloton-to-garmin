@@ -25,7 +25,7 @@ jobs:
       matrix:
         dotnet: [ '5.0.201' ]
         #os: [ 'win10-x64', 'osx-x64' ] # osx signing issue, mac wont run the executable
-        os: [ 'win10x64' ]
+        os: [ 'win10-x64' ]
         python-version: [ 3.9 ]
 
     steps:
@@ -66,7 +66,7 @@ jobs:
         pip install pyinstaller
 
     - name: Package Python - Windows
-      if: ${{ matrix.os == 'win10x64' }}
+      if: ${{ matrix.os == 'win10-x64' }}
       run: |
         pyinstaller -n upload-${{ matrix.os }} --distpath ${{ github.workspace }}/python --console --clean --noconfirm ${{ github.workspace }}/python/upload.py
     
@@ -76,7 +76,6 @@ jobs:
         pyinstaller -n upload-${{ matrix.os }} --distpath ${{ github.workspace }}/python --windowed --onedir --clean ${{ github.workspace }}/python/upload.py
     
     - name: Copy Python to Distro
-      if: ${{ matrix.os == 'win10-x64' }}
       run: cp -R ${{ github.workspace }}/python/upload ${{ github.workspace }}/dist/${{ matrix.os }}/python/upload
 
     # Create Artifact
