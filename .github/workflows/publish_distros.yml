@@ -68,15 +68,12 @@ jobs:
     - name: Package Python - Windows
       if: ${{ matrix.os == 'win10-x64' }}
       run: |
-        pyinstaller -n upload-${{ matrix.os }} --distpath ${{ github.workspace }}/python --console --clean --noconfirm ${{ github.workspace }}/python/upload.py
+        pyinstaller -n upload --distpath ${{ github.workspace }}/dist/${{ matrix.os }}/python/ --console --clean --noconfirm ${{ github.workspace }}/python/upload.py
     
     - name: Package Python - MacOS
       if: ${{ matrix.os == 'osx-x64' }}
       run: |
-        pyinstaller -n upload-${{ matrix.os }} --distpath ${{ github.workspace }}/python --windowed --onedir --clean ${{ github.workspace }}/python/upload.py
-    
-    - name: Copy Python to Distro
-      run: cp -R /python/upload /dist/${{ matrix.os }}/python/upload
+        pyinstaller -n upload --distpath ${{ github.workspace }}/dist/${{ matrix.os }}/python/ --windowed --onedir --clean ${{ github.workspace }}/python/upload.py
 
     # Create Artifact
     - name: Upload Artifact ${{ matrix.os }}_${{ env.BUILD_VERSION }}
