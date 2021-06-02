@@ -41,8 +41,7 @@ RUN mkdir working
 RUN touch syncHistory.json
 RUN echo "{}" >> syncHistory.json
 
-# RUN pip3 install -r requirements.txt
-RUN pip3 install https://github.com/La0/garmin-uploader/archive/cloudscraper.zip
+RUN pip3 install -r requirements.txt
 
 RUN ls -l
 ENTRYPOINT ["./PelotonToGarminConsole"]
