@@ -13,6 +13,8 @@ Convert workout data from Peloton into a TCX file that can be uploaded to Garmin
 * Maintain Upload History to avoid duplicates in Garmin
 * Ensure activities are counting towards Garmin challenges and badges
 
+Have questions? Check out our [Discussion Forum](https://github.com/philosowaffle/peloton-to-garmin/discussions)!
+
 ## Table of Contents
 
 1. [Windows Usage](#windows-setup)
