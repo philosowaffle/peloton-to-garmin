@@ -38,6 +38,13 @@ namespace Peloton
 				var response = await $"{AuthBaseUrl}"
 				.WithHeader("Accept-Language", "en-US")
 				.WithHeader("User-Agent", overrideUserAgent ?? "PostmanRuntime/7.26.10")
+				.ConfigureRequest((c) =>
+				{
+					c.BeforeCall = (FlurlCall call) =>
+					{
+						Log.Verbose("HTTP Request: {@HttpMethod} {@Uri} {@Content}", call.HttpRequestMessage.Method, call.HttpRequestMessage.RequestUri, "userAuthParams");
+					};
+				})
 				.PostJsonAsync(new AuthRequest()
 				{
 					username_or_email = _userEmail,
@@ -49,7 +56,7 @@ namespace Peloton
 				SessionId = response.session_id;
 			} catch(Exception e)
 			{
-				Log.Error(e, "Failed to authenticate with Peloton.");
+				Log.Fatal(e, "Failed to authenticate with Peloton.");
 				throw;
 			}
 		}
@@ -67,7 +74,7 @@ namespace Peloton
 			{
 				c.AfterCallAsync = async (FlurlCall call) => 
 				{
-					Log.Debug("{0} {1}", call.HttpResponseMessage?.StatusCode, await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
+					Log.Verbose("HTTP Response: {@HttpStatusCode} {@Content}", call.HttpResponseMessage?.StatusCode, await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
 
 					if (_observabilityEnabled)
 					{
@@ -98,7 +105,7 @@ namespace Peloton
 				{
 					c.AfterCallAsync = async (FlurlCall call) =>
 					{
-						Log.Debug("{0} {1}", call.HttpResponseMessage?.StatusCode, await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
+						Log.Verbose("HTTP Response: {@HttpStatusCode} {@Content}", call.HttpResponseMessage?.StatusCode, await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
 
 						if (_observabilityEnabled)
 						{
@@ -129,7 +136,7 @@ namespace Peloton
 				{
 					c.AfterCallAsync = async (FlurlCall call) =>
 					{
-						Log.Debug("{0} {1}", call.HttpResponseMessage?.StatusCode, await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
+						Log.Verbose("HTTP Response: {@HttpStatusCode} {@Content}", call.HttpResponseMessage?.StatusCode, await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
 
 						if (_observabilityEnabled)
 						{
@@ -156,7 +163,7 @@ namespace Peloton
 				{
 					c.AfterCallAsync = async (FlurlCall call) =>
 					{
-						Log.Debug("{0} {1}", call.HttpResponseMessage?.StatusCode, await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
+						Log.Verbose("HTTP Response: {@HttpStatusCode} {@Content}", call.HttpResponseMessage?.StatusCode, await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
 
 						if (_observabilityEnabled)
 						{

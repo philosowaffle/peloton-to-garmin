@@ -83,7 +83,7 @@ namespace Garmin
 			}
 
 			Log.Information("Beginning Garmin Upload.");
-			Log.Debug("Uploading to Garmin with the following parameters: {0} {1}", start.FileName, cmd.Replace(_config.Garmin.Email, "**email**").Replace(_config.Garmin.Password, "**password**"));
+			Log.Debug("Uploading to Garmin with the following parameters: {@File} {@Command}", start.FileName, cmd.Replace(_config.Garmin.Email, "**email**").Replace(_config.Garmin.Password, "**password**"));
 
 			start.Arguments = cmd;
 			start.UseShellExecute = false;

@@ -11,7 +11,6 @@ using Serilog.Enrichers.Span;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Metrics = Prometheus.Metrics;
@@ -36,7 +35,7 @@ namespace PelotonToGarminConsole
 			var runtimeVersion = Environment.Version.ToString();
 			var os = Environment.OSVersion.Platform.ToString();
 			var osVersion = Environment.OSVersion.VersionString;
-			var version = Assembly.GetExecutingAssembly().GetName().Version.ToString(4);
+			var version = typeof(Program).Assembly.GetName().Version.ToString(4);
 
 			try
 			{
@@ -45,7 +44,7 @@ namespace PelotonToGarminConsole
 				.AddEnvironmentVariables(prefix: "P2G_")
 				.AddCommandLine(args)
 				.Build();
-								
+
 				configProviders.GetSection(nameof(App)).Bind(config.App);
 				configProviders.GetSection(nameof(Format)).Bind(config.Format);
 				configProviders.GetSection(nameof(Peloton)).Bind(config.Peloton);
@@ -59,7 +58,7 @@ namespace PelotonToGarminConsole
 					.Enrich.WithSpan()
 					.CreateLogger();
 
-				ChangeToken.OnChange(() => configProviders.GetReloadToken(), () => 
+				ChangeToken.OnChange(() => configProviders.GetReloadToken(), () =>
 				{
 					Log.Information("Config change detected, reloading config values.");
 					configProviders.GetSection(nameof(App)).Bind(config.App);
@@ -81,15 +80,16 @@ namespace PelotonToGarminConsole
 				GarminUploader.ValidateConfig(config.Garmin);
 				Common.Metrics.ValidateConfig(config.Observability);
 				Tracing.ValidateConfig(config.Observability);
-				
+
 				FlurlConfiguration.Configure(config);
 
-			} catch (Exception e)
+			}
+			catch (Exception e)
 			{
-				Log.Error(e, "Exception during config setup.");
+				Log.Fatal(e, "Exception during config setup.");
 				Health.Set(0);
 				throw;
-			}			
+			}
 
 			try
 			{
@@ -122,7 +122,7 @@ namespace PelotonToGarminConsole
 			}
 			catch (Exception e)
 			{
-				Log.Error(e, "Uncaught Exception.");
+				Log.Fatal(e, "Uncaught Exception.");
 				Health.Set(0);
 			}
 			finally

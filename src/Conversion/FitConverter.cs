@@ -40,7 +40,7 @@ namespace Conversion
 				}
 				encoder.Close();
 
-				Log.Information("Encoded FIT file {0}", fitDest.Name);
+				Log.Information("Encoded FIT file {@Path}", fitDest.Name);
 			}
 		}
 
@@ -57,7 +57,7 @@ namespace Conversion
 
 			if (sport == Sport.Invalid)
 			{
-				Log.Error("Unsupported Sport Type - Skipping {@Sport}", workout.Fitness_Discipline);
+				Log.Warning("Unsupported Sport Type - Skipping {@Sport}", workout.Fitness_Discipline);
 				return new Tuple<string, ICollection<Mesg>>(string.Empty, null);
 			}
 
@@ -269,10 +269,10 @@ namespace Conversion
 
 		private static void Write(object sender, MesgEventArgs e)
 		{
-			Log.Debug($"{e.mesg.Name}::");
+			Log.Verbose($"{e.mesg.Name}::");
 			foreach (var f in e.mesg.Fields)
 			{
-				Log.Debug($"{f.Name}::{f.GetValue()}");
+				Log.Verbose($"{f.Name}::{f.GetValue()}");
 			}
 		}
 

@@ -26,13 +26,13 @@ namespace Common
 		{
 			Func<FlurlCall, Task> beforeCallAsync = (FlurlCall call) =>
 			{
-				Log.Debug("{0} {1} {2}", call.HttpRequestMessage.Method, call.HttpRequestMessage.RequestUri, call.HttpRequestMessage.Content);
+				Log.Verbose("HTTP Request: {@HttpMethod} {@Uri} {@Content}", call.HttpRequestMessage.Method, call.HttpRequestMessage.RequestUri, call.HttpRequestMessage.Content);
 				return Task.CompletedTask;
 			};
 
 			Func<FlurlCall, Task> afterCallAsync = async (FlurlCall call) =>
 			{
-				Log.Debug("{0} {1}", call.HttpResponseMessage?.StatusCode, await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
+				Log.Verbose("HTTP Response: {@HttpStatusCode} {@Content}", call.HttpResponseMessage?.StatusCode, await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
 
 				if (config.Observability.Prometheus.Enabled)
 				{
@@ -53,7 +53,7 @@ namespace Common
 				var response = string.Empty;
 				if (call.HttpResponseMessage is object)
 					response = await call.HttpResponseMessage?.Content?.ReadAsStringAsync();
-				Log.Error("Http Call Failed. {0} {1}", call.HttpResponseMessage?.StatusCode, response);
+				Log.Error("Http Call Failed. {@HttpStatusCode} {@Content}", call.HttpResponseMessage?.StatusCode, response);
 			};
 
 			FlurlHttp.Configure(settings =>
