@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using static Common.Metrics;
 using Metrics = Prometheus.Metrics;
 
 namespace PelotonToGarminConsole
@@ -30,7 +31,7 @@ namespace PelotonToGarminConsole
 		{
 			Console.WriteLine("Peloton To Garmin");
 			var config = new Configuration();
-			Health.Set(1);
+			Health.Set(HealthStatus.Healthy);
 
 			var runtimeVersion = Environment.Version.ToString();
 			var os = Environment.OSVersion.Platform.ToString();
@@ -87,7 +88,7 @@ namespace PelotonToGarminConsole
 			catch (Exception e)
 			{
 				Log.Fatal(e, "Exception during config setup.");
-				Health.Set(0);
+				Health.Set(HealthStatus.Dead);
 				throw;
 			}
 
@@ -123,7 +124,7 @@ namespace PelotonToGarminConsole
 			catch (Exception e)
 			{
 				Log.Fatal(e, "Uncaught Exception.");
-				Health.Set(0);
+				Health.Set(HealthStatus.Dead);
 			}
 			finally
 			{
@@ -151,12 +152,26 @@ namespace PelotonToGarminConsole
 			tcxConverter.Convert();
 
 			var garminUploader = new GarminUploader(config);
-			garminUploader.UploadToGarmin();
-
-			fileHandler.Cleanup(config.App.DownloadDirectory);
-			fileHandler.Cleanup(config.App.UploadDirectory);
-			foreach (var file in Directory.GetFiles(config.App.WorkingDirectory))
-				File.Delete(file);
+			var uploadSuccessful = true;
+			try
+			{
+				garminUploader.UploadToGarmin();
+			} catch (GarminUploadException e)
+			{
+				Log.Error(e, "GUpload returned an error code. Failed to upload workouts.");
+				Log.Warning("GUpload failed to upload files. You can find the converted files at {@Path} \n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", config.App.OutputDirectory);
+				uploadSuccessful = false;
+				Health.Set(HealthStatus.UnHealthy);
+			}
+			
+			if (uploadSuccessful)
+			{
+				Health.Set(HealthStatus.Healthy);
+				fileHandler.Cleanup(config.App.DownloadDirectory);
+				fileHandler.Cleanup(config.App.UploadDirectory);
+				foreach (var file in Directory.GetFiles(config.App.WorkingDirectory))
+					File.Delete(file);
+			}
 		}
 	}
 }

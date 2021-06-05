@@ -16,6 +16,10 @@ namespace Garmin
 		{
 			LabelNames = new[] { Common.Metrics.Label.Count }
 		});
+		private static readonly Gauge FailedUploadAttemptsGauge = Metrics.CreateGauge("p2g_failed_upload_attempts",
+			"The number of consecutive failed upload attempts. Resets to 0 on the first successful upload. This is not a count of the number of workouts that failed to upload. P2G uploads in bulk, so this is just a guage of number of failed upload attempts.");
+		private static readonly Gauge FilesToUpload = Metrics.CreateGauge("p2g_files_to_upload",
+			"The number of files available to be uploaded. This number sets to 0 upon successful upload.");
 
 		private readonly Configuration _config;
 		private readonly ApiClient _api;
@@ -91,6 +95,7 @@ namespace Garmin
 			start.RedirectStandardOutput = true;
 			start.RedirectStandardError = true;
 
+			FilesToUpload.Set(files.Length);
 			if (files.Length > 20)
 				Log.Information("Detected large number of files for upload to Garmin. Please be patient, this could take a while.");
 			using var process = Process.Start(start);
@@ -108,7 +113,12 @@ namespace Garmin
 
 			if (process.HasExited && process.ExitCode != 0)
 			{
+				FailedUploadAttemptsGauge.Inc();
 				throw new GarminUploadException("GUpload returned an error code. Failed to upload workouts.", process.ExitCode);
+			} else
+			{
+				FailedUploadAttemptsGauge.Set(0);
+				FilesToUpload.Set(0);
 			}
 		}
 

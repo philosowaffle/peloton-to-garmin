@@ -52,5 +52,12 @@ namespace Common
 			public static string Version = "version";
 			public static string DotNetRuntime = "dotnet_runtime";
 		}
+
+		public static class HealthStatus
+		{
+			public static int Healthy = 2;
+			public static int UnHealthy = 1;
+			public static int Dead = 0;
+		}
 	}
 }
