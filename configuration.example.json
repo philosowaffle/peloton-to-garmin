@@ -13,7 +13,7 @@
     "Fit": true,
     "Json": false,
     "Tcx": false,
-    "SaveLocalCopy": false,
+    "SaveLocalCopy": true,
     "IncludeTimeInHRZones": false,
     "IncludeTimeInPowerZones": false
   },
