@@ -152,25 +152,20 @@ namespace PelotonToGarminConsole
 			tcxConverter.Convert();
 
 			var garminUploader = new GarminUploader(config);
-			var uploadSuccessful = true;
 			try
 			{
 				garminUploader.UploadToGarmin();
-			} catch (GarminUploadException e)
-			{
-				Log.Error(e, "GUpload returned an error code. Failed to upload workouts.");
-				Log.Warning("GUpload failed to upload files. You can find the converted files at {@Path} \n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", config.App.OutputDirectory);
-				uploadSuccessful = false;
-				Health.Set(HealthStatus.UnHealthy);
-			}
-			
-			if (uploadSuccessful)
-			{
 				Health.Set(HealthStatus.Healthy);
+
 				fileHandler.Cleanup(config.App.DownloadDirectory);
 				fileHandler.Cleanup(config.App.UploadDirectory);
 				foreach (var file in Directory.GetFiles(config.App.WorkingDirectory))
 					File.Delete(file);
+			} catch (GarminUploadException e)
+			{
+				Log.Error(e, "GUpload returned an error code. Failed to upload workouts.");
+				Log.Warning("GUpload failed to upload files. You can find the converted files at {@Path} \n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", config.App.OutputDirectory);
+				Health.Set(HealthStatus.UnHealthy);
 			}
 		}
 	}
