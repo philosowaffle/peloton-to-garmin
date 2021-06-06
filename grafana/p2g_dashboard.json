@@ -185,37 +185,37 @@
           },
           "mappings": [
             {
-              "from": "",
+              "from": "1.5",
               "id": 1,
               "text": "Healthy",
-              "to": "",
+              "to": "2",
               "type": 1,
-              "value": "0"
+              "value": "2"
             },
             {
-              "from": "",
+              "from": ".5",
               "id": 2,
               "text": "UnHealthy",
-              "to": "",
+              "to": "1",
               "type": 1,
               "value": "1"
             },
             {
-              "from": "",
+              "from": "0",
               "id": 3,
               "text": "Down",
-              "to": "",
+              "to": ".5",
               "type": 1,
-              "value": "2"
+              "value": "0"
             }
           ],
-          "max": 2.25,
+          "max": 2,
           "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
               },
               {
@@ -223,7 +223,7 @@
                 "value": 1
               },
               {
-                "color": "red",
+                "color": "green",
                 "value": 2
               }
             ]
@@ -247,7 +247,7 @@
           "values": false
         },
         "showThresholdLabels": false,
-        "showThresholdMarkers": true,
+        "showThresholdMarkers": false,
         "text": {}
       },
       "pluginVersion": "7.5.7",
@@ -1705,5 +1705,5 @@
   "timezone": "",
   "title": "Peloton To Garmin",
   "uid": "Rqu853UGk",
-  "version": 124
+  "version": 125
 }
