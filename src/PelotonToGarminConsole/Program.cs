@@ -11,6 +11,7 @@ using Serilog.Enrichers.Span;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using static Common.Metrics;
@@ -36,7 +37,9 @@ namespace PelotonToGarminConsole
 			var runtimeVersion = Environment.Version.ToString();
 			var os = Environment.OSVersion.Platform.ToString();
 			var osVersion = Environment.OSVersion.VersionString;
-			var version = typeof(Program).Assembly.GetName().Version.ToString(4);
+			var assembly = Assembly.GetExecutingAssembly();
+			var versionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+			var version = versionInfo.ProductVersion;
 
 			try
 			{

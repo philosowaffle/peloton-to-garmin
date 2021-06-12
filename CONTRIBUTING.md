@@ -28,3 +28,8 @@ Enhancements and fixes are always welcome. Feel free to contribute to any of the
 > pip install pyinstaller
 > pyinstaller -n upload --distpath ./ --console --clean --noconfirm upload.py
 ```
+
+# Package Windows exe
+```
+> dotnet publish ./src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --no-restore -c Release -r win10-x64 -o ./dist --version-suffix local
+```
