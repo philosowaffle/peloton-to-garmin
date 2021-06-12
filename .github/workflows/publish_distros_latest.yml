@@ -1,0 +1,83 @@
+# This workflow will:
+# - Build python package for os
+# - Publish latest all-in-one windows exe
+
+name: Publish Distro
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - master
+    paths:
+    - 'src/**'
+    - 'python/**'
+    - 'PelotonToGarmin.sln'
+    - 'configuration.example.json'
+    - '.github/workflows/publish_distros.yml'
+
+jobs:
+  publish:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      matrix:
+        dotnet: [ '5.0.201' ]
+        #os: [ 'win10-x64', 'osx-x64' ] # osx signing issue, mac wont run the executable
+        os: [ 'win10-x64' ]
+        python-version: [ 3.9 ]
+
+    steps:
+
+    # Publish dotnet core exe
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core SDK ${{ matrix.dotnet }}
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+        dotnet-version: ${{ matrix.dotnet }}
+    
+    - name: Clean
+      run: dotnet clean --configuration Release && dotnet nuget locals all --clear
+    
+    - name: Restore
+      run: dotnet restore
+
+    - name: Prepare env
+      run: |
+          echo "BUILD_VERSION=${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}" >> $GITHUB_ENV
+        
+    - name: Publish ${{matrix.os}}
+      run: dotnet publish ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --no-restore -c Release -r ${{ matrix.os }} -o ${{ github.workspace }}/dist/${{ matrix.os }} --version-suffix ${{ env.BUILD_VERSION }}
+
+    - name: Copy Config to Distro
+      run: cp ${{ github.workspace }}/configuration.example.json ${{ github.workspace }}/dist/${{ matrix.os }}/configuration.local.json
+
+    # Package all-in-one python and add to distro
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r ${{ github.workspace }}/python/requirements.txt
+        pip install pyinstaller
+
+    - name: Package Python - Windows
+      if: ${{ matrix.os == 'win10-x64' }}
+      run: |
+        pyinstaller -n upload --distpath ${{ github.workspace }}/dist/${{ matrix.os }}/python/ --console --clean --noconfirm ${{ github.workspace }}/python/upload.py
+    
+    - name: Package Python - MacOS
+      if: ${{ matrix.os == 'osx-x64' }}
+      run: |
+        pyinstaller -n upload --distpath ${{ github.workspace }}/dist/${{ matrix.os }}/python/ --windowed --onedir --clean ${{ github.workspace }}/python/upload.py
+
+    # Create Artifact
+    - name: Upload Artifact ${{ matrix.os }}_${{ env.BUILD_VERSION }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.os }}_${{ env.BUILD_VERSION }}
+        path: ${{ github.workspace }}/dist/${{ matrix.os }}

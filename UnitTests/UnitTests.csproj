@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="6.0.0-alpha0002" />
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="Moq.AutoMock" Version="2.3.0" />
+    <PackageReference Include="NUnit" Version="3.13.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.0.0-beta.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0-release-20210330-02" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\Common\Common.csproj" />
+    <ProjectReference Include="..\src\Conversion\Conversion.csproj" />
+    <ProjectReference Include="..\src\Garmin\Garmin.csproj" />
+    <ProjectReference Include="..\src\PelotonToGarminConsole\PelotonToGarminConsole.csproj" />
+    <ProjectReference Include="..\src\Peloton\Peloton.csproj" />
+  </ItemGroup>
+
+</Project>

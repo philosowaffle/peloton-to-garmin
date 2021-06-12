@@ -1,4 +1,0 @@
-pytest
-pyinstaller
-mock
-pytest-mock

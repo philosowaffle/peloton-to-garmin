@@ -1,6 +1,5 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[cod]
 *$py.class
 
 # C extensions
@@ -101,15 +100,19 @@ ENV/
 *.lnk
 .DS_Store
 
-# User Files
-database.json
-*.log
-output/
+# Python Build
+python/__pycache__/
+python/build/
+
+# dotnet
+*/**/.vs/*
+*/**/bin/*
+*/**/obj/*
 
 # Dev Files
-tests/testOutput/
-tests/database.json
-config.local.ini
-bak_config.ini
-device_info.xml
-author_info.xml
+*.log
+syncHistory.json
+configuration.local.json
+/.vs/PelotonToGarmin
+/src/PelotonToGarminConsole/python/**
+*/**/output/**

@@ -1,0 +1,91 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PelotonToGarminConsole", "src\PelotonToGarminConsole\PelotonToGarminConsole.csproj", "{808B1164-D94D-456F-B0AF-E5DDE4B82B4A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Garmin", "src\Garmin\Garmin.csproj", "{3E0E0007-E67A-44BA-B819-40C6E2C2EC8C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peloton", "src\Peloton\Peloton.csproj", "{0194BE87-68AC-4F02-B2A0-B35BEB2F5466}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "src\Common\Common.csproj", "{DC38F108-7BB1-4055-B913-4EA1547EEDDC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conversion", "src\Conversion\Conversion.csproj", "{31BB1515-5895-4ADC-83C6-53E53FD254B0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solution", ".solution", "{EAA7A07D-19F0-4D55-A52E-CFC1C9CEBEAB}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		configuration.example.json = configuration.example.json
+		CONTRIBUTING.md = CONTRIBUTING.md
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{614A75B3-E4D8-4F29-A06A-C087159AF0B3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{A7F642D9-7954-4547-84DB-67A04AE1043D}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yaml = docker-compose.yaml
+		Dockerfile = Dockerfile
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{9DDC93B4-7815-4592-90B8-2C2E2FE0EF6F}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\docker_latest.yml = .github\workflows\docker_latest.yml
+		.github\workflows\pr-test.yml = .github\workflows\pr-test.yml
+		.github\workflows\publish_distros_latest.yml = .github\workflows\publish_distros_latest.yml
+		.github\workflows\tag-release.yml = .github\workflows\tag-release.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "grafana", "grafana", "{D569F903-710B-4862-B8CF-70604D93FC4F}"
+	ProjectSection(SolutionItems) = preProject
+		grafana\p2g_dashboard.json = grafana\p2g_dashboard.json
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{808B1164-D94D-456F-B0AF-E5DDE4B82B4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{808B1164-D94D-456F-B0AF-E5DDE4B82B4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{808B1164-D94D-456F-B0AF-E5DDE4B82B4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{808B1164-D94D-456F-B0AF-E5DDE4B82B4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E0E0007-E67A-44BA-B819-40C6E2C2EC8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E0E0007-E67A-44BA-B819-40C6E2C2EC8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E0E0007-E67A-44BA-B819-40C6E2C2EC8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E0E0007-E67A-44BA-B819-40C6E2C2EC8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0194BE87-68AC-4F02-B2A0-B35BEB2F5466}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0194BE87-68AC-4F02-B2A0-B35BEB2F5466}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0194BE87-68AC-4F02-B2A0-B35BEB2F5466}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0194BE87-68AC-4F02-B2A0-B35BEB2F5466}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC38F108-7BB1-4055-B913-4EA1547EEDDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC38F108-7BB1-4055-B913-4EA1547EEDDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC38F108-7BB1-4055-B913-4EA1547EEDDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC38F108-7BB1-4055-B913-4EA1547EEDDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31BB1515-5895-4ADC-83C6-53E53FD254B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31BB1515-5895-4ADC-83C6-53E53FD254B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31BB1515-5895-4ADC-83C6-53E53FD254B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31BB1515-5895-4ADC-83C6-53E53FD254B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{614A75B3-E4D8-4F29-A06A-C087159AF0B3} = {EAA7A07D-19F0-4D55-A52E-CFC1C9CEBEAB}
+		{A7F642D9-7954-4547-84DB-67A04AE1043D} = {EAA7A07D-19F0-4D55-A52E-CFC1C9CEBEAB}
+		{9DDC93B4-7815-4592-90B8-2C2E2FE0EF6F} = {614A75B3-E4D8-4F29-A06A-C087159AF0B3}
+		{D569F903-710B-4862-B8CF-70604D93FC4F} = {EAA7A07D-19F0-4D55-A52E-CFC1C9CEBEAB}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1DBD48F5-054F-4C40-A97A-DE31B9132FCB}
+	EndGlobalSection
+EndGlobal

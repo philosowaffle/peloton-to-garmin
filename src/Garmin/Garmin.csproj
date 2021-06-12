@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="FitSdk\Examples\**" />
+    <Compile Remove="FitSdk\plugins\examples\**" />
+    <EmbeddedResource Remove="FitSdk\Examples\**" />
+    <EmbeddedResource Remove="FitSdk\plugins\examples\**" />
+    <None Remove="FitSdk\Examples\**" />
+    <None Remove="FitSdk\plugins\examples\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Fit\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
+  </ItemGroup>
+
+</Project>
