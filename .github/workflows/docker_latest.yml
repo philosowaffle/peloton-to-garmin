@@ -56,18 +56,13 @@ jobs:
         with:
           push: true
           file: ./Dockerfile
-          tags: philosowaffle/peloton-to-garmin:fitvLatest
+          tags: |
+              philosowaffle/peloton-to-garmin:fitvLatest
+              ghcr.io/philosowaffle/peloton-to-garmin:fitvLatest
           platforms: linux/arm64,linux/amd64
           build-args: VERSION=${{ env.BUILD_VERSION }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
-      
-      - name: Push Image to GitHub Packages
-        uses: akhilerm/tag-push-action@v1.0.0
-        with:
-          src: docker.io/philosowaffle/peloton-to-garmin:fitvLatest
-          dst: |
-            ghcr.io/philosowaffle/peloton-to-garmin:fitvLatest
 
       -
         # Temp fix
