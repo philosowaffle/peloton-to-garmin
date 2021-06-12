@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-    - v2
+    - master
     paths:
     - 'src/**'
     - 'python/**'
