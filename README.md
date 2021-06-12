@@ -5,9 +5,6 @@
 <span class="badge-buymeacoffee"><a href="https://www.buymeacoffee.com/philosowaffle" title="Donate to this project using Buy Me A Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee donate button" /></a></span>
 # peloton-to-garmin
 
-> First time user? Start with [P2G Version 2](https://github.com/philosowaffle/peloton-to-garmin/tree/v2). V2 has feature parity with v1 + additional new features.  If you choose to run V2, join the [discussion and post feedback](https://github.com/philosowaffle/peloton-to-garmin/discussions/77).
-
-
 #### _#PelotonToGarmin_
 
 Convert workout data from Peloton into a format that can be uploaded to Garmin.
@@ -18,7 +15,6 @@ Convert workout data from Peloton into a format that can be uploaded to Garmin.
 * Avoid duplicates in Garmin
 * Backup your downloaded data and converted files
 * Earn Badges and credit for Garmin Challenges
-
 
 Head on over to the [Wiki](https://github.com/philosowaffle/peloton-to-garmin/wiki/Peloton-To-Garmin---v2) to get started!
 

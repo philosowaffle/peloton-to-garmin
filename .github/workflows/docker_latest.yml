@@ -56,9 +56,7 @@ jobs:
         with:
           push: true
           file: ./Dockerfile
-          tags: |
-              philosowaffle/peloton-to-garmin:fitvLatest
-              # ghcr.io/philosowaffle/peloton-to-garmin:fitvLatest
+          tags: philosowaffle/peloton-to-garmin:fitvLatest
           platforms: linux/arm64,linux/amd64
           build-args: VERSION=${{ env.BUILD_VERSION }}
           cache-from: type=local,src=/tmp/.buildx-cache
