@@ -56,6 +56,7 @@ jobs:
           file: ./Dockerfile
           tags: philosowaffle/peloton-to-garmin:v${{ github.event.inputs.version }}
           platforms: linux/arm64,linux/amd64
+          build-args: VERSION=${{ env.BUILD_VERSION }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
