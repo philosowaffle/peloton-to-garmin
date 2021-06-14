@@ -129,16 +129,22 @@ jobs:
       run: |
         pyinstaller -n upload --distpath ${{ github.workspace }}/dist/${{ matrix.os }}/python/ --windowed --onedir --clean ${{ github.workspace }}/python/upload.py
 
-    # Create Artifact
+    # Create Build Artifact
     - name: Upload Artifact ${{ matrix.os }}_${{ github.event.inputs.version }}
       uses: actions/upload-artifact@v2
       with:
         name: ${{ matrix.os }}_${{ github.event.inputs.version }}
         path: ${{ github.workspace }}/dist/${{ matrix.os }}
-
+    
+    - name: Create Zip for Release Artifact 
+      uses: papeloto/action-zip@v1
+      with:
+        files: ${{ github.workspace }}/dist/${{ matrix.os }}
+        dest: ${{ github.workspace }}/dist/${{ matrix.os }}_${{ github.event.inputs.version }}.zip
+    
     - name: Create Release and Upload Artifact
       uses: ncipollo/release-action@v1
       with:
-        artifacts: ${{ github.workspace }}/dist/${{ matrix.os }}
+        artifacts: ${{ github.workspace }}/dist/${{ matrix.os }}_${{ github.event.inputs.version }}.zip
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: v${{ github.event.inputs.version }}
