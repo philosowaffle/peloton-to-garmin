@@ -19,7 +19,7 @@ on:
 jobs:
   publish:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 1
       matrix:
