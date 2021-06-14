@@ -14,7 +14,7 @@ on:
     - 'python/**'
     - 'PelotonToGarmin.sln'
     - 'configuration.example.json'
-    - '.github/workflows/publish_distros.yml'
+    - '.github/workflows/publish_distros_latest.yml'
 
 jobs:
   publish:
