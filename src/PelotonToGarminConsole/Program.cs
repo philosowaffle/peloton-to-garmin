@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Peloton;
 using Prometheus;
+using Prometheus.DotNetRuntime;
 using Serilog;
 using Serilog.Enrichers.Span;
 using System;
@@ -95,11 +96,22 @@ namespace PelotonToGarminConsole
 				throw;
 			}
 
+			IDisposable dotNetRuntimeMetrics = null;
 			try
 			{
 				using var metrics = Common.Metrics.EnableMetricsServer(config.Observability.Prometheus);
 				using var tracing = Tracing.EnableTracing(config.Observability.Jaeger);
 				using var tracingSource = new ActivitySource("ROOT");
+
+				if (config.Observability.Prometheus.Enabled)
+					 dotNetRuntimeMetrics = DotNetRuntimeStatsBuilder
+											.Customize()
+											.WithContentionStats()
+											.WithJitStats()
+											.WithThreadPoolStats()
+											.WithGcStats()
+											.WithExceptionStats()
+											.StartCollecting();
 
 				BuildInfo.WithLabels(version, os, osVersion, runtimeVersion).Set(1);
 
@@ -133,6 +145,7 @@ namespace PelotonToGarminConsole
 			{
 				Log.CloseAndFlush();
 				Console.ReadLine();
+				dotNetRuntimeMetrics?.Dispose();
 			}
 		}
 

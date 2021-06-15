@@ -14,6 +14,7 @@ namespace Common
 				var port = config.Port ?? 4000;
 				metricsServer = new KestrelMetricServer(port: port);
 				metricsServer.Start();
+
 				Log.Information("Metrics Server started and listening on: http://localhost:{0}/metrics", port);
 			}
 
