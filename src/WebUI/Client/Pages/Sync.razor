@@ -1,0 +1,36 @@
+﻿@page "/sync"
+@using WebUI.Shared
+@inject HttpClient Http
+
+<h1>Sync Workouts</h1>
+
+<p>Sync your latest workouts from Peloton to Garmin.</p>
+
+<EditForm Model="@postRequest" OnValidSubmit="@OnClickSyncAsync">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <p>
+        <label>
+            Number of Workouts to Sync:
+            <InputNumber @bind-Value="postRequest.NumWorkouts" />
+        </label>
+    </p>
+
+    <button type="submit">Submit</button>
+</EditForm>
+
+<p>Sync Success: @syncSuccess</p>
+
+@code {
+    private SyncPostRequest postRequest = null;
+    private bool? syncSuccess = null;
+
+    protected async Task OnClickSyncAsync()
+    {
+        var response = await Http.PostAsJsonAsync("/sync", postRequest);
+
+        syncSuccess = await response.Content.ReadFromJsonAsync<bool>();
+    }
+
+}
