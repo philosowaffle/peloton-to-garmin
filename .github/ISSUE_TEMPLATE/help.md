@@ -7,6 +7,8 @@ assignees: ''
 
 ---
 
+Consider checking out the [discussion forum](https://github.com/philosowaffle/peloton-to-garmin/discussions) to get help from the community.  Or fill out this template to get help here.
+
 **Problem**
 A clear and concise description of your question/problem.
 
