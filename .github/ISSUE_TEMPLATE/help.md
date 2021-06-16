@@ -11,6 +11,7 @@ assignees: ''
 A clear and concise description of your question/problem.
 
 **Logs if applicable**
+You can set your [config](https://github.com/philosowaffle/peloton-to-garmin/blob/master/configuration.example.json#L50) to `"Debug"` to get more detailed logs.
 ```
 Paste Log output here
 ```
