@@ -28,6 +28,7 @@ namespace PelotonToGarminConsole
 			LabelNames = new[] { Common.Metrics.Label.Version, Common.Metrics.Label.Os, Common.Metrics.Label.OsVersion, Common.Metrics.Label.DotNetRuntime }
 		});
 		private static readonly Gauge Health = Metrics.CreateGauge("p2g_health_info", "Health status for P2G.");
+		private static readonly Gauge NextSyncTime = Metrics.CreateGauge("p2g_next_sync_time", "The next time the sync will run in seconds since epoch.");
 
 		static void Main(string[] args)
 		{
@@ -128,6 +129,10 @@ namespace PelotonToGarminConsole
 					{
 						RunAsync(config).GetAwaiter().GetResult();
 						Log.Information("Sleeping for {@Seconds} seconds...", config.App.PollingIntervalSeconds);
+
+						var now = DateTime.UtcNow;
+						var nextRunTime = now.AddSeconds(config.App.PollingIntervalSeconds);
+						NextSyncTime.Set(new DateTimeOffset(nextRunTime).ToUnixTimeSeconds());
 						Thread.Sleep(config.App.PollingIntervalSeconds * 1000);
 					}
 				}
