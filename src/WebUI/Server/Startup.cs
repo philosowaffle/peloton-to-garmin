@@ -46,7 +46,6 @@ namespace WebUI.Server
 				Configuration.GetSection(nameof(Observability)).Bind(config.Observability);
 				Configuration.GetSection(nameof(Developer)).Bind(config.Developer);
 
-				// TODO: OnChange not working
 				ChangeToken.OnChange(() => Configuration.GetReloadToken(), () =>
 				{
 					Log.Information("Config change detected, reloading config values.");
