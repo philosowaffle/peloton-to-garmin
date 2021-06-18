@@ -46,11 +46,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "grafana", "grafana", "{D569
 		grafana\p2g_dashboard.json = grafana\p2g_dashboard.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebUI.Server", "src\WebUI\Server\WebUI.Server.csproj", "{DF89CC6D-EEE5-42B3-BCEB-491754A2280E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebUI.Server", "src\WebUI\Server\WebUI.Server.csproj", "{DF89CC6D-EEE5-42B3-BCEB-491754A2280E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebUI.Client", "src\WebUI\Client\WebUI.Client.csproj", "{4691A3F8-E856-4068-8EB4-D6C639171FFD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebUI.Client", "src\WebUI\Client\WebUI.Client.csproj", "{4691A3F8-E856-4068-8EB4-D6C639171FFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebUI.Shared", "src\WebUI\Shared\WebUI.Shared.csproj", "{B23E807C-1437-404E-8BDA-6CCEC97DD157}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebUI.Shared", "src\WebUI\Shared\WebUI.Shared.csproj", "{B23E807C-1437-404E-8BDA-6CCEC97DD157}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

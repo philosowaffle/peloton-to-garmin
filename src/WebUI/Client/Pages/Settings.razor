@@ -1,0 +1,90 @@
+﻿@page "/settings"
+@inject HttpClient Http
+
+<h3>Settings</h3>
+
+@if (settings == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>App Config</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Output Directory:</td>
+                <td>@settings.App.OutputDirectory</td>
+            </tr>
+            <tr>
+                <td>Working Directory:</td>
+                <td>@settings.App.WorkingDirectory</td>
+            </tr>
+            <tr>
+                <td>Sync History Db Path:</td>
+                <td>@settings.App.SyncHistoryDbPath</td>
+            </tr>
+            <tr>
+                <td>Enable Polling:</td>
+                <td>@settings.App.EnablePolling</td>
+            </tr>
+            <tr>
+                <td>Polling Interval Seconds:</td>
+                <td>@settings.App.PollingIntervalSeconds</td>
+            </tr>
+            <tr>
+                <td>Python and GUpload Installed:</td>
+                <td>@settings.App.PythonAndGUploadInstalled</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Format Config</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Fit:</td>
+                <td>@settings.Format.Fit</td>
+            </tr>
+            <tr>
+                <td>Json:</td>
+                <td>@settings.Format.Json</td>
+            </tr>
+            <tr>
+                <td>TCX:</td>
+                <td>@settings.Format.Tcx</td>
+            </tr>
+            <tr>
+                <td>Save Local Copy:</td>
+                <td>@settings.Format.SaveLocalCopy</td>
+            </tr>
+            <tr>
+                <td>Include Time in HR Zones:</td>
+                <td>@settings.Format.IncludeTimeInHRZones</td>
+            </tr>
+            <tr>
+                <td>Include Time in Power Zones:</td>
+                <td>@settings.Format.IncludeTimeInPowerZones</td>
+            </tr>
+        </tbody>
+    </table>
+}
+
+@code {
+    private SettingsGetResponse settings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        settings = await Http.GetFromJsonAsync<SettingsGetResponse>("/settings");
+    }
+}
