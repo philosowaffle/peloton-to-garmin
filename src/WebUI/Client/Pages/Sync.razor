@@ -20,15 +20,31 @@
     <button type="submit">Submit</button>
 </EditForm>
 
-<p>Sync Success: @syncSuccess</p>
+
+@if (syncing is null)
+{
+
+}
+else if (syncing.GetValueOrDefault())
+{
+    <p><em>Syncing, Please Wait...</em></p>
+}
+else 
+{
+    <p>Sync Success: @syncSuccess</p>
+}
+
 
 @code {
-    private SyncPostRequest postRequest = null;
+    private SyncPostRequest postRequest = new SyncPostRequest();
     private bool? syncSuccess = null;
+    private bool? syncing = null;
 
     protected async Task OnClickSyncAsync()
     {
+        syncing = true;
         var response = await Http.PostAsJsonAsync("/sync", postRequest);
+        syncing = false;
 
         syncSuccess = await response.Content.ReadFromJsonAsync<bool>();
     }
