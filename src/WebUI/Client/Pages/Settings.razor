@@ -78,6 +78,56 @@ else
             </tr>
         </tbody>
     </table>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Peloton Config</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Email:</td>
+                <td>@settings.Peloton.Email</td>
+            </tr>
+            <tr>
+                <td>Password:</td>
+                <td>@settings.Peloton.Password</td>
+            </tr>
+            <tr>
+                <td>Number of Workouts to Download:</td>
+                <td>@settings.Peloton.NumWorkoutsToDownload</td>
+            </tr>
+            <tr>
+                <td>Excluded Workout Types:</td>
+                <td>@settings.Peloton.ExcludeWorkoutTypes</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Garmin Config</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Email:</td>
+                <td>@settings.Garmin.Email</td>
+            </tr>
+            <tr>
+                <td>Password:</td>
+                <td>@settings.Garmin.Password</td>
+            </tr>
+            <tr>
+                <td>Format To Upload:</td>
+                <td>@settings.Garmin.FormatToUpload</td>
+            </tr>
+        </tbody>
+    </table>
 }
 
 @code {
@@ -85,6 +135,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        settings = await Http.GetFromJsonAsync<SettingsGetResponse>("/settings");
+        settings = await Http.GetFromJsonAsync<SettingsGetResponse>("/api/settings");
     }
 }

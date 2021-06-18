@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebUI.Server.Controllers
 {
 	[ApiController]
-	[Route("/settings")]
+	[Route("/api/settings")]
 	public class SettingsController : Controller
 	{
 		private IAppConfiguration _config;

@@ -11,7 +11,7 @@ using WebUI.Shared;
 namespace WebUI.Server.Controllers
 {
 	[ApiController]
-	[Route("/sync")]
+	[Route("/api/sync")]
 	public class SyncController : ControllerBase
 	{
 		private IAppConfiguration _config;

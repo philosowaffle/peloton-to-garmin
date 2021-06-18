@@ -58,7 +58,7 @@ else
     {
         Log.Information("Calling SyncController.");
         syncing = true;
-        var response = await Http.PostAsJsonAsync("/sync", postRequest);
+        var response = await Http.PostAsJsonAsync("/api/sync", postRequest);
         syncing = false;
 
         syncSuccess = await response.Content.ReadFromJsonAsync<SyncPostResponse>();
