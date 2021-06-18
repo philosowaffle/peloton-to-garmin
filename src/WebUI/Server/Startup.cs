@@ -5,13 +5,22 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
+using Prometheus;
 using Serilog;
 using Serilog.Enrichers.Span;
+using System;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace WebUI.Server
 {
 	public class Startup
 	{
+		private static readonly Gauge BuildInfo = Prometheus.Metrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
+		{
+			LabelNames = new[] { Common.Metrics.Label.Version, Common.Metrics.Label.Os, Common.Metrics.Label.OsVersion, Common.Metrics.Label.DotNetRuntime }
+		});
+
 		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
@@ -71,6 +80,9 @@ namespace WebUI.Server
 				app.UseHsts();
 			}
 
+			var observability = new Observability();
+			Configuration.GetSection(nameof(Observability)).Bind(observability);
+
 			app.UseSerilogRequestLogging();
 
 			app.UseHttpsRedirection();
@@ -79,12 +91,40 @@ namespace WebUI.Server
 
 			app.UseRouting();
 
+			if (observability.Prometheus.Enabled)
+			{
+				app.UseHttpMetrics(options =>
+				{
+					// This identifies the page when using Razor Pages.
+					options.AddRouteParameter("page");
+				});
+			}
+			
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapRazorPages();
 				endpoints.MapControllers();
 				endpoints.MapFallbackToFile("index.html");
+
+				if (observability.Prometheus.Enabled)
+				{
+					endpoints.MapMetrics();
+				}				
 			});
+
+
+			// TODO: this probably called too early
+			var runtimeVersion = Environment.Version.ToString();
+			var os = Environment.OSVersion.Platform.ToString();
+			var osVersion = Environment.OSVersion.VersionString;
+			var assembly = Assembly.GetExecutingAssembly();
+			var versionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+			var version = versionInfo.ProductVersion;
+
+			BuildInfo.WithLabels(version, os, osVersion, runtimeVersion).Set(1);
+			Log.Debug("P2G Version: {@Version}", version);
+			Log.Debug("Operating System: {@Os}", osVersion);
+			Log.Debug("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
 		}
 	}
 }
