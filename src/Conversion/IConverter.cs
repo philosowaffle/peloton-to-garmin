@@ -209,7 +209,7 @@ namespace Conversion
 			if (distanceSummary is null) return 0.0f;
 
 			var unit = distanceSummary.Display_Unit;
-			return ConvertDistanceToMeters(distanceSummary.Value, unit);
+			return ConvertDistanceToMeters(distanceSummary.Value.GetValueOrDefault(), unit);
 		}
 
 		protected float ConvertToMetersPerSecond(double value, WorkoutSamples workoutSamples)

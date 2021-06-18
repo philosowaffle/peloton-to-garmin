@@ -21,6 +21,7 @@ namespace Peloton
 		private Configuration _config;
 		private ApiClient _pelotonApi;
 		private DbClient _dbClient;
+		private int _failedCount;
 		private IFileHandling _fileHandler;
 
 		public PelotonService(Configuration config, ApiClient pelotonApi, DbClient dbClient, IFileHandling fileHandler)
@@ -29,6 +30,8 @@ namespace Peloton
 			_pelotonApi = pelotonApi;
 			_dbClient = dbClient;
 			_fileHandler = fileHandler;
+
+			_failedCount = 0;
 		}
 
 		public async Task DownloadLatestWorkoutDataAsync() 
@@ -85,10 +88,23 @@ namespace Peloton
 				data.WorkoutSamples = workoutSamples;
 				data.WorkoutSummary = workoutSummary;
 
-				P2GWorkout deSerializedData = JsonSerializer.Deserialize<P2GWorkout>(data.ToString(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
-				var workoutTitle = WorkoutHelper.GetUniqueTitle(deSerializedData.Workout);
+				var workoutTitle = string.Empty;
+				P2GWorkout deSerializedData = null;
+				try
+				{
+					deSerializedData = JsonSerializer.Deserialize<P2GWorkout>(data.ToString(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+					workoutTitle = WorkoutHelper.GetUniqueTitle(deSerializedData.Workout);
 
-				if (_config.Format.Json && _config.Format.SaveLocalCopy) SaveRawData(data, workoutTitle);
+					if (_config.Format.Json && _config.Format.SaveLocalCopy) SaveRawData(data, workoutTitle);
+
+				} catch (Exception e)
+				{
+					_failedCount++;
+					var title = "workout_failed_to_deserialize_" + _failedCount;
+					Log.Error("Failed to deserialize workout from Peloton. You can find the raw data from the workout here: @FileName", title, e);
+					SaveRawData(data, title);
+					return;
+				}				
 
 				Log.Debug("Write peloton workout details to file for {@WorkoutId}.", workoutId);
 				File.WriteAllText(Path.Join(workingDir, $"{workoutTitle}.json"), data.ToString());
