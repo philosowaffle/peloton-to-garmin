@@ -1,11 +1,10 @@
+using Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
+using Microsoft.Extensions.Primitives;
 
 namespace WebUI.Server
 {
@@ -22,7 +21,29 @@ namespace WebUI.Server
 		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddSingleton<IAppConfiguration, Configuration>();
 
+			services.Configure<IAppConfiguration>((configOptions) => 
+			{
+				Configuration.GetSection(nameof(App)).Bind(configOptions.App);
+				Configuration.GetSection(nameof(Format)).Bind(configOptions.Format);
+				Configuration.GetSection(nameof(Peloton)).Bind(configOptions.Peloton);
+				Configuration.GetSection(nameof(Garmin)).Bind(configOptions.Garmin);
+				Configuration.GetSection(nameof(Observability)).Bind(configOptions.Observability);
+				Configuration.GetSection(nameof(Developer)).Bind(configOptions.Developer);
+
+				ChangeToken.OnChange(() => Configuration.GetReloadToken(), () =>
+				{
+					//Log.Information("Config change detected, reloading config values.");
+					Configuration.GetSection(nameof(App)).Bind(configOptions.App);
+					Configuration.GetSection(nameof(Format)).Bind(configOptions.Format);
+					Configuration.GetSection(nameof(Peloton)).Bind(configOptions.Peloton);
+					Configuration.GetSection(nameof(Garmin)).Bind(configOptions.Garmin);
+					Configuration.GetSection(nameof(Developer)).Bind(configOptions.Developer);
+
+					//Log.Information("Config reloaded. Changes will take effect at the end of the current sleeping cycle.");
+				});
+			});
 			services.AddControllersWithViews();
 			services.AddRazorPages();
 		}

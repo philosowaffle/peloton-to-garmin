@@ -6,9 +6,20 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.7" />
+    <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="1.1.0-beta4" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc4" />
+    <PackageReference Include="prometheus-net" Version="4.1.1" />
+    <PackageReference Include="prometheus-net.DotNetRuntime" Version="4.1.0" />
+    <PackageReference Include="Serilog" Version="2.10.1-dev-01285" />
+    <PackageReference Include="Serilog.Enrichers.Span" Version="1.2.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.2.0-dev-00269" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
+    <PackageReference Include="Serilog.Sinks.Grafana.Loki" Version="6.0.1" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\Common.csproj" />
     <ProjectReference Include="..\Client\WebUI.Client.csproj" />
     <ProjectReference Include="..\Shared\WebUI.Shared.csproj" />
   </ItemGroup>

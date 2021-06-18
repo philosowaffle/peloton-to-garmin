@@ -5,7 +5,18 @@ using System.IO;
 
 namespace Common
 {
-	public class Configuration
+	public interface IAppConfiguration 
+	{
+		App App { get; set; }
+		Format Format { get; set; }
+		Peloton Peloton { get; set; }
+		Garmin Garmin { get; set; }
+
+		Observability Observability { get; set; }
+		Developer Developer { get; set; }
+	}
+
+	public class Configuration : IAppConfiguration
 	{
 		public Configuration()
 		{

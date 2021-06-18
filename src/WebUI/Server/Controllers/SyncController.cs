@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Common;
+using Microsoft.AspNetCore.Mvc;
 using WebUI.Shared;
 
 namespace WebUI.Server.Controllers
@@ -7,6 +8,13 @@ namespace WebUI.Server.Controllers
 	[Route("/sync")]
 	public class SyncController : ControllerBase
 	{
+		private IAppConfiguration _config;
+
+		public SyncController(IAppConfiguration config)
+		{
+			_config = config;
+		}
+
 		[HttpPost]
 		public IActionResult PostAsync([FromBody] SyncPostRequest request)
 		{
@@ -19,7 +27,7 @@ namespace WebUI.Server.Controllers
 			if (request.NumWorkouts % 2 == 0)
 				return Ok(true);
 
-			return Ok(false);
+			return Ok(_config.Garmin.Upload);
 		}
 	}
 }
