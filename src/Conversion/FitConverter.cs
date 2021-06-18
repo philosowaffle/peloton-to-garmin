@@ -14,7 +14,7 @@ namespace Conversion
 	public class FitConverter : Converter<Tuple<string, ICollection<Mesg>>>
 	{
 		private static readonly string _spaceSeparator = "_";
-		public FitConverter(Configuration config, IDbClient dbClient, IFileHandling fileHandler) : base(config, dbClient, fileHandler) { }
+		public FitConverter(IAppConfiguration config, IDbClient dbClient, IFileHandling fileHandler) : base(config, dbClient, fileHandler) { }
 
 		public override void Convert()
 		{

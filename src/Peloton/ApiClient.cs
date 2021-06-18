@@ -9,7 +9,16 @@ using System.Threading.Tasks;
 
 namespace Peloton
 {
-	public class ApiClient
+	public interface IPelotonApi
+	{
+		Task InitAuthAsync(string overrideUserAgent);
+		Task<RecentWorkouts> GetWorkoutsAsync(int numWorkouts);
+		Task<JObject> GetWorkoutByIdAsync(string id);
+		Task<JObject> GetWorkoutSamplesByIdAsync(string id);
+		Task<JObject> GetWorkoutSummaryByIdAsync(string id);
+	}
+
+	public class ApiClient : IPelotonApi
 	{
 		private static readonly string BaseUrl = "https://api.onepeloton.com/api";
 		private static readonly string AuthBaseUrl = "https://api.onepeloton.com/auth/login";
@@ -20,6 +29,13 @@ namespace Peloton
 
 		private string UserId;
 		private string SessionId;
+
+		public ApiClient(IAppConfiguration config)
+		{
+			_userEmail = config.Peloton.Email;
+			_userPassword = config.Peloton.Password;
+			_observabilityEnabled = config.Observability.Prometheus.Enabled;
+		}
 
 		public ApiClient(string email, string password, bool observabilityEnabled)
 		{

@@ -12,7 +12,12 @@ using Metrics = Prometheus.Metrics;
 
 namespace Garmin
 {
-	public class GarminUploader
+	public interface IGarminUploader
+	{
+		void UploadToGarmin();
+	}
+
+	public class GarminUploader : IGarminUploader
 	{
 		private static readonly Histogram WorkoutUploadDuration = Metrics.CreateHistogram("p2g_workout_upload_duration_seconds", "Histogram of workout upload durations.", new HistogramConfiguration()
 		{
@@ -23,12 +28,12 @@ namespace Garmin
 		private static readonly Gauge FilesToUpload = Metrics.CreateGauge("p2g_files_to_upload",
 			"The number of files available to be uploaded. This number sets to 0 upon successful upload.");
 
-		private readonly Configuration _config;
+		private readonly IAppConfiguration _config;
 		private readonly ApiClient _api;
 		private readonly IDbClient _dbClient;
 		private readonly Random _random;
 
-		public GarminUploader(Configuration config, IDbClient dbClient)
+		public GarminUploader(IAppConfiguration config, IDbClient dbClient)
 		{
 			_config = config;
 			_api = new ApiClient(config);

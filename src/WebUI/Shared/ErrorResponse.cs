@@ -1,4 +1,6 @@
-﻿namespace WebUI.Shared
+﻿using System.Collections.Generic;
+
+namespace WebUI.Shared
 {
 	public class ErrorResponse
 	{

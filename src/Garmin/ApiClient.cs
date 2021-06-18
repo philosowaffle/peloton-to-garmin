@@ -23,11 +23,11 @@ namespace Garmin
 		private const string ORIGIN = SSO_URL;
 		private static string USERAGENT = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/50.0";
 
-		private readonly Configuration _config;
+		private readonly IAppConfiguration _config;
 
 		private CookieJar _jar;
 
-		public ApiClient(Configuration config)
+		public ApiClient(IAppConfiguration config)
 		{
 			_config = config;
 

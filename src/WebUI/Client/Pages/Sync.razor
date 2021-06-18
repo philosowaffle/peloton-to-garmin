@@ -28,15 +28,30 @@ else if (syncing.GetValueOrDefault())
 {
     <p><em>Syncing, Please Wait...</em></p>
 }
-else 
+else
 {
-    <p>Sync Success: @syncSuccess</p>
+    <p>Sync Success: @syncSuccess.SyncSuccess</p>
+    <ol>
+        <li>Peloton Download Success: @syncSuccess.PelotonDownloadSuccess</li>
+        <li>Convert to FIT Success: @syncSuccess.ConverToFitSuccess</li>
+        <li>Upload to Garmin Success: @syncSuccess.UploadToGarminSuccess</li>
+    </ol>
+
+    if (syncSuccess.Errors.Any())
+    {
+        foreach (var error in syncSuccess.Errors)
+        {
+        <ul>
+            <li><em>@error.Message</em></li>
+        </ul>
+        }
+    }
 }
 
 
 @code {
     private SyncPostRequest postRequest = new SyncPostRequest();
-    private bool? syncSuccess = null;
+    private SyncPostResponse syncSuccess = null;
     private bool? syncing = null;
 
     protected async Task OnClickSyncAsync()
@@ -46,7 +61,7 @@ else
         var response = await Http.PostAsJsonAsync("/sync", postRequest);
         syncing = false;
 
-        syncSuccess = await response.Content.ReadFromJsonAsync<bool>();
+        syncSuccess = await response.Content.ReadFromJsonAsync<SyncPostResponse>();
     }
 
 }

@@ -1,10 +1,14 @@
 using Common;
+using Common.Database;
+using Conversion;
+using Garmin;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
+using Peloton;
 using Prometheus;
 using Serilog;
 using Serilog.Enrichers.Span;
@@ -32,35 +36,43 @@ namespace WebUI.Server
 		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddSingleton<IAppConfiguration, Configuration>();
-
-			services.Configure<IAppConfiguration>((configOptions) => 
+			services.AddSingleton<IAppConfiguration>((serviceProvider) =>
 			{
-				Configuration.GetSection(nameof(App)).Bind(configOptions.App);
-				Configuration.GetSection(nameof(Format)).Bind(configOptions.Format);
-				Configuration.GetSection(nameof(Peloton)).Bind(configOptions.Peloton);
-				Configuration.GetSection(nameof(Garmin)).Bind(configOptions.Garmin);
-				Configuration.GetSection(nameof(Observability)).Bind(configOptions.Observability);
-				Configuration.GetSection(nameof(Developer)).Bind(configOptions.Developer);
-
-				Log.Logger = new LoggerConfiguration()
-					.ReadFrom.Configuration(Configuration, sectionName: $"{nameof(Observability)}:Serilog")
-					.Enrich.WithSpan()
-					.CreateLogger();
+				var config = new Configuration();
+				Configuration.GetSection(nameof(App)).Bind(config.App);
+				Configuration.GetSection(nameof(Format)).Bind(config.Format);
+				Configuration.GetSection(nameof(Peloton)).Bind(config.Peloton);
+				Configuration.GetSection(nameof(Garmin)).Bind(config.Garmin);
+				Configuration.GetSection(nameof(Observability)).Bind(config.Observability);
+				Configuration.GetSection(nameof(Developer)).Bind(config.Developer);
 
 				// TODO: OnChange not working
 				ChangeToken.OnChange(() => Configuration.GetReloadToken(), () =>
 				{
 					Log.Information("Config change detected, reloading config values.");
-					Configuration.GetSection(nameof(App)).Bind(configOptions.App);
-					Configuration.GetSection(nameof(Format)).Bind(configOptions.Format);
-					Configuration.GetSection(nameof(Peloton)).Bind(configOptions.Peloton);
-					Configuration.GetSection(nameof(Garmin)).Bind(configOptions.Garmin);
-					Configuration.GetSection(nameof(Developer)).Bind(configOptions.Developer);
-
+					Configuration.GetSection(nameof(App)).Bind(config.App);
+					Configuration.GetSection(nameof(Format)).Bind(config.Format);
+					Configuration.GetSection(nameof(Peloton)).Bind(config.Peloton);
+					Configuration.GetSection(nameof(Garmin)).Bind(config.Garmin);
+					Configuration.GetSection(nameof(Developer)).Bind(config.Developer);
 					Log.Information("Config reloaded. Changes will take effect at the end of the current sleeping cycle.");
 				});
+
+				return config;
 			});
+
+			services.AddSingleton<IDbClient, DbClient>();
+			services.AddSingleton<IFileHandling, IOWrapper>();
+			services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
+			services.AddSingleton<IPelotonService, PelotonService>();
+			services.AddSingleton<IConverter, FitConverter>(); // TODO: Switch to strategy pattern
+			services.AddSingleton<IGarminUploader, GarminUploader>();
+
+			Log.Logger = new LoggerConfiguration()
+					.ReadFrom.Configuration(Configuration, sectionName: $"{nameof(Observability)}:Serilog")
+					.Enrich.WithSpan()
+					.CreateLogger();
+
 			services.AddControllersWithViews();
 			services.AddRazorPages();
 		}

@@ -24,6 +24,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common.csproj" />
+    <ProjectReference Include="..\..\Conversion\Conversion.csproj" />
+    <ProjectReference Include="..\..\Peloton\Peloton.csproj" />
     <ProjectReference Include="..\Client\WebUI.Client.csproj" />
     <ProjectReference Include="..\Shared\WebUI.Shared.csproj" />
   </ItemGroup>
