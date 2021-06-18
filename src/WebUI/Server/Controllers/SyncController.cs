@@ -1,5 +1,6 @@
 ﻿using Common;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using WebUI.Shared;
 
 namespace WebUI.Server.Controllers
@@ -18,6 +19,8 @@ namespace WebUI.Server.Controllers
 		[HttpPost]
 		public IActionResult PostAsync([FromBody] SyncPostRequest request)
 		{
+			Log.Information("Reached the SyncController.");
+
 			if (request.NumWorkouts <= 0)
 				return UnprocessableEntity(new ErrorResponse() 
 				{

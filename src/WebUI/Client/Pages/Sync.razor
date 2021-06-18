@@ -1,5 +1,4 @@
 ﻿@page "/sync"
-@using WebUI.Shared
 @inject HttpClient Http
 
 <h1>Sync Workouts</h1>
@@ -42,6 +41,7 @@ else
 
     protected async Task OnClickSyncAsync()
     {
+        Log.Information("Calling SyncController.");
         syncing = true;
         var response = await Http.PostAsJsonAsync("/sync", postRequest);
         syncing = false;

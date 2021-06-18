@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
+using Serilog;
+using Serilog.Enrichers.Span;
 
 namespace WebUI.Server
 {
@@ -32,16 +34,22 @@ namespace WebUI.Server
 				Configuration.GetSection(nameof(Observability)).Bind(configOptions.Observability);
 				Configuration.GetSection(nameof(Developer)).Bind(configOptions.Developer);
 
+				Log.Logger = new LoggerConfiguration()
+					.ReadFrom.Configuration(Configuration, sectionName: $"{nameof(Observability)}:Serilog")
+					.Enrich.WithSpan()
+					.CreateLogger();
+
+				// TODO: OnChange not working
 				ChangeToken.OnChange(() => Configuration.GetReloadToken(), () =>
 				{
-					//Log.Information("Config change detected, reloading config values.");
+					Log.Information("Config change detected, reloading config values.");
 					Configuration.GetSection(nameof(App)).Bind(configOptions.App);
 					Configuration.GetSection(nameof(Format)).Bind(configOptions.Format);
 					Configuration.GetSection(nameof(Peloton)).Bind(configOptions.Peloton);
 					Configuration.GetSection(nameof(Garmin)).Bind(configOptions.Garmin);
 					Configuration.GetSection(nameof(Developer)).Bind(configOptions.Developer);
 
-					//Log.Information("Config reloaded. Changes will take effect at the end of the current sleeping cycle.");
+					Log.Information("Config reloaded. Changes will take effect at the end of the current sleeping cycle.");
 				});
 			});
 			services.AddControllersWithViews();
@@ -62,6 +70,8 @@ namespace WebUI.Server
 				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
+
+			app.UseSerilogRequestLogging();
 
 			app.UseHttpsRedirection();
 			app.UseBlazorFrameworkFiles();

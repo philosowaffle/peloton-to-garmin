@@ -2,12 +2,10 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Enrichers.Span;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace WebUI.Server
 {
@@ -29,6 +27,13 @@ namespace WebUI.Server
 					.AddCommandLine(args)
 					.Build();
 
+				})
+				.UseSerilog((ctx, logConfig) => 
+				{
+					logConfig
+					.ReadFrom.Configuration(ctx.Configuration, sectionName: $"{nameof(Observability)}:Serilog")
+					.Enrich.WithSpan()
+					.Enrich.FromLogContext();
 				})
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
