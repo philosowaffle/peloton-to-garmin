@@ -236,6 +236,36 @@ namespace UnitTests.Conversion
 		}
 
 		[Test]
+		public void GetHeartRateZone_NullSamples_ReturnsNull()
+		{
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var zone = converter.GetHeartRateZone1(1, null);
+			zone.Should().BeNull();
+		}
+
+		[Test]
+		public void GetHeartRateZone_NullZones_ReturnsNull()
+		{
+			var workoutSample = new WorkoutSamples();
+			workoutSample.Metrics = new List<Metric>()
+			{
+				new Metric()
+				{
+					Slug = "heart_rate",
+					Zones = null
+				}
+			};
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var zone = converter.GetHeartRateZone1(1, workoutSample);
+			zone.Should().BeNull();
+		}
+
+		[Test]
 		public void GetUserMaxHeartRate_NullMetrics_ReturnsNull()
 		{
 			var workoutSample = new WorkoutSamples();
