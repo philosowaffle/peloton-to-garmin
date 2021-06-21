@@ -79,8 +79,9 @@ jobs:
 
     - name: Package Python - Windows
       if: ${{ matrix.os == 'win10-x64' }}
+      working-directory: ${{ github.workspace }}/python
       run: |
-        pyinstaller -n upload --distpath ${{ github.workspace }}/dist/${{ matrix.os }}/python/ --console --clean --noconfirm ${{ github.workspace }}/python/upload.py
+        pyinstaller -n upload --distpath ${{ github.workspace }}/dist/${{ matrix.os }}/python/ --console --clean --onefile --noconfirm ${{ github.workspace }}/python/upload.py
 
     # Create Build Artifact
     - name: Upload Artifact ${{ matrix.os }}_${{ env.BUILD_VERSION }}
