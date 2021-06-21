@@ -323,7 +323,7 @@ namespace Conversion
 
 			if (hrData is null) return null;
 
-			return hrData.Zones.FirstOrDefault(z => z.Slug == $"zone{zone}");
+			return hrData.Zones?.FirstOrDefault(z => z.Slug == $"zone{zone}");
 		}
 
 		protected PowerZones CalculatePowerZones(Workout workout)
