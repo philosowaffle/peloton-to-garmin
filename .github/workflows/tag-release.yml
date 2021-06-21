@@ -122,8 +122,9 @@ jobs:
 
     - name: Package Python - Windows
       if: ${{ matrix.os == 'win10-x64' }}
+      working-directory: ${{ github.workspace }}/python
       run: |
-        pyinstaller -n upload --distpath ${{ github.workspace }}/dist/${{ matrix.os }}/python/ --console --clean --noconfirm ${{ github.workspace }}/python/upload.py
+        pyinstaller -n upload --distpath ${{ github.workspace }}/dist/${{ matrix.os }}/python/ --console --clean --onefile --noconfirm --add-data "${{ env.RUNNER_TOOL_CACHE }}/python/3.9.5/x64/lib/site-packages/cloudscraper;./cloudscraper" ${{ github.workspace }}/python/upload.py
     
     - name: Package Python - MacOS
       if: ${{ matrix.os == 'osx-x64' }}
@@ -147,6 +148,6 @@ jobs:
     - name: Create Release and Upload Artifact
       uses: ncipollo/release-action@v1
       with:
-        artifacts: ${{ github.workspace }}/dist/${{ matrix.os }}_${{ github.event.inputs.version }}.zip
+        artifacts: /dist/${{ matrix.os }}_${{ github.event.inputs.version }}.zip
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: v${{ github.event.inputs.version }}
