@@ -142,7 +142,7 @@ jobs:
       uses: papeloto/action-zip@v1
       with:
         files: /dist/${{ matrix.os }}
-        dest: ${{ github.workspace }}/dist/${{ matrix.os }}_${{ github.event.inputs.version }}.zip
+        dest: /dist/${{ matrix.os }}_${{ github.event.inputs.version }}.zip
     
     - name: Create Release and Upload Artifact
       uses: ncipollo/release-action@v1
