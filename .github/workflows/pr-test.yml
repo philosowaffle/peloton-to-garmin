@@ -82,7 +82,7 @@ jobs:
       if: ${{ matrix.os == 'win10-x64' }}
       working-directory: ${{ github.workspace }}/python
       run: |
-        pyinstaller -n upload --distpath ${{ github.workspace }}/dist/${{ matrix.os }}/python/ --console --clean --noconfirm --add-data "${{ env.RUNNER_TOOL_CACHE }}/python/3.9.5/x64/lib/site-packages/cloudscraper;./cloudscraper" ${{ github.workspace }}/python/upload.py
+        pyinstaller -n upload --distpath ${{ github.workspace }}/dist/${{ matrix.os }}/python/ --console --clean --onefile --noconfirm --add-data "${{ env.RUNNER_TOOL_CACHE }}/python/3.9.5/x64/lib/site-packages/cloudscraper;./cloudscraper" ${{ github.workspace }}/python/upload.py
 
     # Create Build Artifact
     - name: Upload Artifact ${{ matrix.os }}_${{ env.BUILD_VERSION }}
