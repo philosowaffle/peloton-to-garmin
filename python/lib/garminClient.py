@@ -15,10 +15,6 @@ handle.write(cert_data)
 handle.flush()
 os.environ['REQUESTS_CA_BUNDLE'] = handle.name
 
-##############################
-# Logging Setup
-##############################
-
 class GarminClient:
 
     """Main Garmin Api Class"""

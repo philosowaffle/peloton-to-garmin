@@ -82,12 +82,12 @@ namespace Garmin
 			} else
 			{
 				paths = String.Join(" ", files.Select(f => $"\"{Path.GetFullPath(f)}\""));
-				start.FileName = Path.Join(Environment.CurrentDirectory, "python", "upload", "upload.exe");
+				start.FileName = Path.Join(Environment.CurrentDirectory, "python", "upload.exe");
 				cmd = $"-ge {_config.Garmin.Email} -gp {_config.Garmin.Password} -f {paths}";
 			}
 
 			Log.Information("Beginning Garmin Upload.");
-			Log.Debug("Uploading to Garmin with the following parameters: {@File} {@Command}", start.FileName, cmd.Replace(_config.Garmin.Email, "**email**").Replace(_config.Garmin.Password, "**password**"));
+			Log.Information("Uploading to Garmin with the following parameters: {@File} {@Command}", start.FileName, cmd.Replace(_config.Garmin.Email, "**email**").Replace(_config.Garmin.Password, "**password**"));
 
 			start.Arguments = cmd;
 			start.UseShellExecute = false;
@@ -105,7 +105,7 @@ namespace Garmin
 			var stdout = process.StandardOutput.ReadToEnd();
 
 			if (!string.IsNullOrEmpty(stdout))
-				Log.Debug(stdout);
+				Log.Information(stdout);
 
 			// Despite coming from StandardError, this is not necessarily an error, just the output
 			if (!string.IsNullOrEmpty(stderr))

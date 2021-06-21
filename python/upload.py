@@ -1,5 +1,5 @@
 import argparse
-from . import garminClient
+from lib import garminClient
 
 if __name__ == "__main__":
     args = argparse.ArgumentParser()
