@@ -1,4 +1,6 @@
-﻿using Conversion;
+﻿using Common;
+using Common.Dto;
+using Conversion;
 using Moq.AutoMock;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -38,7 +40,7 @@ namespace UnitTests
 			//var email = "";
 			//var password = "";
 
-			//var workoutId = "3bade6602259414a82576302f9339175";
+			//var workoutId = "aaa6527fd5a74b7e8e2f8975c6025e60";
 
 			//var client = new ApiClient(email, password, false);
 			//await client.InitAuthAsync();
