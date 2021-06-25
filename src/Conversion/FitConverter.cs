@@ -374,6 +374,7 @@ namespace Conversion
 				case "strength":
 				case "stretching":
 				case "yoga":
+				case "meditation":
 					return Sport.Training;
 				default:
 					return Sport.Invalid;
@@ -397,8 +398,10 @@ namespace Conversion
 					return SubSport.CardioTraining;
 				case "strength":
 					return SubSport.StrengthTraining;
-				case "yoga":
 				case "stretching":
+					return SubSport.FlexibilityTraining;
+				case "yoga":
+				case "meditation":
 					return SubSport.Yoga;
 				default:
 					return SubSport.Generic;
