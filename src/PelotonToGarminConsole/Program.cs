@@ -73,7 +73,7 @@ namespace PelotonToGarminConsole
 					configProviders.GetSection(nameof(Garmin)).Bind(config.Garmin);
 					configProviders.GetSection(nameof(Developer)).Bind(config.Developer);
 
-					GarminUploader.ValidateConfig(config.Garmin);
+					GarminUploader.ValidateConfig(config);
 
 					Log.Information("Config reloaded. Changes will take effect at the end of the current sleeping cycle.");
 				});
@@ -83,7 +83,7 @@ namespace PelotonToGarminConsole
 				Log.Debug("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
 
 				PelotonService.ValidateConfig(config.Peloton);
-				GarminUploader.ValidateConfig(config.Garmin);
+				GarminUploader.ValidateConfig(config);
 				Common.Metrics.ValidateConfig(config.Observability);
 				Tracing.ValidateConfig(config.Observability);
 
@@ -172,10 +172,10 @@ namespace PelotonToGarminConsole
 			var tcxConverter = new TcxConverter(config, db, fileHandler);
 			tcxConverter.Convert();
 
-			var garminUploader = new GarminUploader(config);
+			var garminUploader = new GarminUploader(config, db);
 			try
 			{
-				garminUploader.UploadToGarmin();
+				await garminUploader.UploadToGarminAsync();
 				Health.Set(HealthStatus.Healthy);
 
 				fileHandler.Cleanup(config.App.DownloadDirectory);
@@ -184,7 +184,7 @@ namespace PelotonToGarminConsole
 					File.Delete(file);
 			} catch (GarminUploadException e)
 			{
-				Log.Error(e, "GUpload returned an error code. Failed to upload workouts.");
+				Log.Error(e, "Garmin upload returned an error code. Failed to upload workouts.");
 				Log.Warning("GUpload failed to upload files. You can find the converted files at {@Path} \n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", config.App.OutputDirectory);
 				Health.Set(HealthStatus.UnHealthy);
 			}

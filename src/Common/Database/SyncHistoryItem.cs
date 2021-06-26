@@ -11,6 +11,7 @@ namespace Common.Database
 		public DateTime WorkoutDate { get; set; }
 		public bool ConvertedToFit { get; set; }
 		public bool ConvertedToTcx { get; set; }
+		public DateTime? UploadDate { get; set; }
 
 		public SyncHistoryItem() { }
 

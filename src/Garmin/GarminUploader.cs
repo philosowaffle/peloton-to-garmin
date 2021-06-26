@@ -1,10 +1,12 @@
 ﻿using Common;
+using Common.Database;
 using Prometheus;
 using Serilog;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Metrics = Prometheus.Metrics;
 
@@ -23,14 +25,18 @@ namespace Garmin
 
 		private readonly Configuration _config;
 		private readonly ApiClient _api;
+		private readonly IDbClient _dbClient;
+		private readonly Random _random;
 
-		public GarminUploader(Configuration config)
+		public GarminUploader(Configuration config, IDbClient dbClient)
 		{
 			_config = config;
 			_api = new ApiClient(config);
+			_dbClient = dbClient;
+			_random = new Random();
 		}
 
-		public void UploadToGarmin()
+		public async Task UploadToGarminAsync()
 		{
 			if (!_config.Garmin.Upload) return;
 
@@ -51,31 +57,61 @@ namespace Garmin
 			using var metrics = WorkoutUploadDuration
 								.WithLabels(files.Count().ToString()).NewTimer();
 
-			UploadViaPython(files);
-			//Task.Run(() => Upload(files)).GetAwaiter().GetResult();
-
+			switch (_config.Garmin.UploadStrategy)
+			{
+				case UploadStrategy.PythonAndGuploadInstalledLocally:
+				case UploadStrategy.WindowsExeBundledPython:
+					UploadViaPython(files);
+					return;
+				case UploadStrategy.NativeImplV1:
+				default:
+					await UploadAsync(files);
+					return;
+			}
 		}
 
-		private async Task Upload(string[] files)
+		private async Task UploadAsync(string[] files)
 		{
+			using var tracer = Tracing.Trace("UploadToGarminViaNative")
+										.WithTag(TagKey.Category, "nativeImplV1");
+
 			await _api.InitAuth();
-			
+
 			foreach (var file in files)
 			{
-				await _api.UploadActivity("someName", file, _config.Format.Fit ? ".fit" : ".tcx");
+				try
+				{
+					var response = await _api.UploadActivity(file, _config.Format.Fit ? ".fit" : ".tcx");
+					if (!string.IsNullOrEmpty(response.DetailedImportResult.UploadId))
+					{
+						// TODO: update upload datetime in DBClient
+						Log.Information("Uploaded workout {@workoutName}", file);
+					}
+					RateLimit();
+				} catch (Exception e)
+				{
+					throw new GarminUploadException($"NativeImplV1 failed to upload workout {file}", -1, e);
+				}
 			}
+		}
+
+		private void RateLimit()
+		{
+			var waitDuration = _random.Next(1000, 5000);
+			Log.Information($"Rate limiting, upload will continue after {waitDuration / 1000} seconds...");
+			Thread.Sleep(waitDuration);
 		}
 
 		private void UploadViaPython(string[] files)
 		{
-			using var tracer = Tracing.Trace(nameof(UploadToGarmin))
+			using var tracer = Tracing.Trace("UploadToGarminViaPython")
 										.WithTag(TagKey.Category, "gupload");
 			
 			ProcessStartInfo start = new ProcessStartInfo();
 			var paths = String.Join(" ", files.Select(p => $"\"{p}\""));
 			var cmd = string.Empty;
 
-			if (_config.App.PythonAndGUploadInstalled)
+			if (_config.Garmin.UploadStrategy == UploadStrategy.PythonAndGuploadInstalledLocally)
 			{
 				start.FileName = "gupload";
 				cmd = $"-u {_config.Garmin.Email} -p {_config.Garmin.Password} {paths}";
@@ -122,26 +158,38 @@ namespace Garmin
 			}
 		}
 
-		public static void ValidateConfig(Common.Garmin config)
+		public static void ValidateConfig(Configuration config)
 		{
-			if (config.Upload == false) return;
+			if (config.Garmin.Upload == false) return;
 
-			if (string.IsNullOrEmpty(config.Email))
+			if (string.IsNullOrEmpty(config.Garmin.Email))
 			{
-				Log.Error("Garmin Email required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Garmin), nameof(config.Email));
-				throw new ArgumentException("Garmin Email must be set.", nameof(config.Email));
+				Log.Error("Garmin Email required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Garmin), nameof(config.Garmin.Email));
+				throw new ArgumentException("Garmin Email must be set.", nameof(config.Garmin.Email));
 			}
 
-			if (string.IsNullOrEmpty(config.Password))
+			if (string.IsNullOrEmpty(config.Garmin.Password))
 			{
-				Log.Error("Garmin Password required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Garmin), nameof(config.Password));
-				throw new ArgumentException("Garmin Password must be set.", nameof(config.Password));
+				Log.Error("Garmin Password required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Garmin), nameof(config.Garmin.Password));
+				throw new ArgumentException("Garmin Password must be set.", nameof(config.Garmin.Password));
 			}
 
-			if (config.FormatToUpload != "fit" && config.FormatToUpload != "tcx")
+			if (config.Garmin.FormatToUpload != "fit" && config.Garmin.FormatToUpload != "tcx")
 			{
-				Log.Error("Garmin FormatToUpload should be \"fit\" or \"tcx\", check your configuration {@ConfigSection}.{@ConfigProperty}.", nameof(Garmin), nameof(config.FormatToUpload));
-				throw new ArgumentException("Garmin FormatToUpload must be either \"fit\" or \"tcx\".", nameof(config.FormatToUpload));
+				Log.Error("Garmin FormatToUpload should be \"fit\" or \"tcx\", check your configuration {@ConfigSection}.{@ConfigProperty}.", nameof(Garmin), nameof(config.Garmin.FormatToUpload));
+				throw new ArgumentException("Garmin FormatToUpload must be either \"fit\" or \"tcx\".", nameof(config.Garmin.FormatToUpload));
+			}
+
+			if (config.App.PythonAndGUploadInstalled.HasValue)
+			{
+				Log.Warning("App.PythonAndGuploadInstalledLocally setting is deprecated and will be removed in a future release. Please swith to using Garmin.UploadStrategy config.");
+
+				if (config.Garmin.UploadStrategy == UploadStrategy.PythonAndGuploadInstalledLocally
+					&& config.App.PythonAndGUploadInstalled.Value == false)
+				{
+					config.Garmin.UploadStrategy = UploadStrategy.WindowsExeBundledPython;
+					Log.Warning("Detected use of deprecated config App.PythonAndGuploadInstalledLocally, setting Garmin.UploadStrategy to WindowsExeBundledPython=1");
+				}
 			}
 		}
 	}

@@ -34,29 +34,29 @@ namespace UnitTests
 			//fitConverter.Decode(syncMyWorkoutFitFile);
 		}
 
-		[Test]
-		public async Task DownloadWorkout()
-		{
-			//var email = "";
-			//var password = "";
+		//[Test]
+		//public async Task DownloadWorkout()
+		//{
+		//	var email = "";
+		//	var password = "";
 
 			//var workoutId = "aaa6527fd5a74b7e8e2f8975c6025e60";
 
-			//var client = new ApiClient(email, password, false);
-			//await client.InitAuthAsync();
+		//	var client = new ApiClient(email, password, false);
+		//	await client.InitAuthAsync();
 
-			//var workout = await client.GetWorkoutByIdAsync(workoutId);
-			//var workoutSamples = await client.GetWorkoutSamplesByIdAsync(workoutId);
-			//var workoutSummary = await client.GetWorkoutSummaryByIdAsync(workoutId);
+		//	var workout = await client.GetWorkoutByIdAsync(workoutId);
+		//	var workoutSamples = await client.GetWorkoutSamplesByIdAsync(workoutId);
+		//	var workoutSummary = await client.GetWorkoutSummaryByIdAsync(workoutId);
 
-			//dynamic data = new JObject();
-			//data.Workout = workout;
-			//data.WorkoutSamples = workoutSamples;
-			//data.WorkoutSummary = workoutSummary;
+		//	dynamic data = new JObject();
+		//	data.Workout = workout;
+		//	data.WorkoutSamples = workoutSamples;
+		//	data.WorkoutSummary = workoutSummary;
 
-			//Log.Debug(data.ToString());
-			//SaveRawData(data, workoutId, DataDirectory);
-		}
+		//	Log.Debug(data.ToString());
+		//	SaveRawData(data, workoutId, DataDirectory);
+		//}
 
 		private void SaveRawData(dynamic data, string workoutId, string path)
 		{

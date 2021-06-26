@@ -43,7 +43,7 @@ namespace Common
 		public string SyncHistoryDbPath { get; set; }
 		public bool EnablePolling { get; set; }
 		public int PollingIntervalSeconds { get; set; }
-		public bool PythonAndGUploadInstalled { get; set; }
+		public bool? PythonAndGUploadInstalled { get; set; }
 
 		public string FitDirectory => Path.Join(OutputDirectory, "fit");
 		public string JsonDirectory => Path.Join(OutputDirectory, "json");
@@ -84,6 +84,7 @@ namespace Common
 		public string Password { get; set; }
 		public bool Upload { get; set; }
 		public string FormatToUpload { get; set; }
+		public UploadStrategy UploadStrategy { get; set; }
 	}
 
 	public class Observability
@@ -114,5 +115,12 @@ namespace Common
 	public class Developer
 	{
 		public string UserAgent { get; set; }
+	}
+
+	public enum UploadStrategy
+	{
+		PythonAndGuploadInstalledLocally = 0,
+		WindowsExeBundledPython = 1,
+		NativeImplV1 = 2
 	}
 }

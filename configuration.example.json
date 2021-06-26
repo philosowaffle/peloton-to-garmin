@@ -5,8 +5,7 @@
     "WorkingDirectory": "./working",
     "SyncHistoryDbPath": "./output/syncHistory.json",
     "EnablePolling": true,
-    "PollingIntervalSeconds": 86400,
-    "PythonAndGUploadInstalled": true
+    "PollingIntervalSeconds": 86400
   },
 
   "Format": {
@@ -29,7 +28,8 @@
     "Email": "garmin@gmail.com",
     "Password": "garmin",
     "Upload": false,
-    "FormatToUpload": "fit"
+    "FormatToUpload": "fit",
+    "UploadStrategy": 1
   },
 
   "Observability": {
