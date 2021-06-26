@@ -75,7 +75,13 @@ namespace Garmin
 			using var tracer = Tracing.Trace("UploadToGarminViaNative")
 										.WithTag(TagKey.Category, "nativeImplV1");
 
-			await _api.InitAuth();
+			try
+			{
+				await _api.InitAuth();
+			} catch (Exception e)
+			{
+				throw new GarminUploadException("Failed to authenticate with Garmin.", -2, e);
+			}			
 
 			foreach (var file in files)
 			{
