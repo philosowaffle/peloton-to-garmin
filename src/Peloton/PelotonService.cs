@@ -40,7 +40,7 @@ namespace Peloton
 
 			using var tracing = Tracing.Trace(nameof(DownloadLatestWorkoutDataAsync));
 
-			await _pelotonApi.InitAuthAsync(_config.Developer?.UserAgent);
+			await _pelotonApi.InitAuthAsync();
 
 			var recentWorkouts = await _pelotonApi.GetWorkoutsAsync(_config.Peloton.NumWorkoutsToDownload);
 			var completedWorkouts = recentWorkouts.data.Where(w => 
