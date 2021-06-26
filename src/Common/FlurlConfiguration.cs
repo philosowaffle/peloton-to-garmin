@@ -32,7 +32,7 @@ namespace Common
 
 			Func<FlurlCall, Task> afterCallAsync = async (FlurlCall call) =>
 			{
-				Log.Verbose("HTTP Response: {@HttpStatusCode} - {@Headers} - {@Content}", call.HttpResponseMessage?.StatusCode, call.HttpResponseMessage.Headers.ToString(), await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
+				Log.Verbose("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}", call.HttpResponseMessage?.StatusCode, call.HttpRequestMessage?.Method, call.HttpRequestMessage?.RequestUri, call.HttpResponseMessage.Headers.ToString(), await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
 
 				if (config.Observability.Prometheus.Enabled)
 				{
