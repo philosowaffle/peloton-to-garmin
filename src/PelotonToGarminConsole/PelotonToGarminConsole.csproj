@@ -13,7 +13,7 @@
     <ApplicationIcon>../../images/logo/256x256.ico</ApplicationIcon>
     <PackageIcon>../../images/logo/256x256.png</PackageIcon>
     <RepositoryType>git</RepositoryType>
-    <VersionPrefix>2.0.2</VersionPrefix>
+    <VersionPrefix>2.0.3</VersionPrefix>
     <SignAssembly>false</SignAssembly>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>

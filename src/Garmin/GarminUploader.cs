@@ -103,6 +103,8 @@ namespace Garmin
 
 		private void RateLimit()
 		{
+			using var tracer = Tracing.Trace("UploadToGarminRateLimit");
+
 			var waitDuration = _random.Next(1000, 5000);
 			Log.Information($"Rate limiting, upload will continue after {waitDuration / 1000} seconds...");
 			Thread.Sleep(waitDuration);
