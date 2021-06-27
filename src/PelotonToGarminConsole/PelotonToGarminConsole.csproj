@@ -18,6 +18,8 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <ServerGarbageCollection>false</ServerGarbageCollection>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -28,6 +30,7 @@
   <ItemGroup>
     <PackageReference Include="Flurl.Http" Version="3.2.0" />
     <PackageReference Include="JsonFlatFileDataStore" Version="2.2.3" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
     <PackageReference Include="prometheus-net.DotNetRuntime" Version="4.1.0" />
     <PackageReference Include="Serilog" Version="2.10.1-dev-01285" />
     <PackageReference Include="Serilog.Enrichers.Span" Version="1.2.0" />

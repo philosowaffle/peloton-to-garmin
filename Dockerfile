@@ -13,16 +13,16 @@ RUN echo $VERSION
 ENV VERSION=${VERSION}
 
 RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
-		dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-musl-arm64 -o /build/published --version-suffix $VERSION ; \
+		dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-arm64 -o /build/published --version-suffix $VERSION ; \
 	else \
-		dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-musl-x64 -o /build/published --version-suffix $VERSION ; \
+		dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-x64 -o /build/published --version-suffix $VERSION ; \
 	fi
 
-FROM mcr.microsoft.com/dotnet/runtime:5.0-alpine
+FROM mcr.microsoft.com/dotnet/aspnet:5.0
 
 ENV PYTHONUNBUFFERED=1
-RUN apk add --update --no-cache bash python3 tzdata && ln -sf python3 /usr/bin/python
-RUN python3 -m ensurepip
+RUN apt-get update
+RUN apt-get -y install bash python3 python3-pip tzdata && ln -sf python3 /usr/bin/python
 RUN pip3 install --no-cache --upgrade pip setuptools
 
 RUN python --version

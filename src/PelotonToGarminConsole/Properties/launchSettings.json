@@ -10,11 +10,23 @@
   "profiles": {
     "PelotonToGarminConsole": {
       "commandName": "Project",
-      "launchBrowser": false,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": ""
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "publishAllPorts": true,
+      "DockerfileRunArguments": ""
+    },
+    "WSL 2": {
+      "commandName": "WSL2",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "distributionName": ""
     }
   }
 }

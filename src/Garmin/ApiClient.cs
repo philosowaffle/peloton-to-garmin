@@ -81,8 +81,6 @@ namespace Garmin
 				throw;
 			}
 
-			Log.Verbose($"Login Form: {loginForm}");
-
 			object loginData = new
 			{
 				embed = "true",
