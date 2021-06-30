@@ -20,19 +20,19 @@ namespace UnitTests
 		{
 			Log.Logger = new LoggerConfiguration()
 					.WriteTo.Console()
-					.MinimumLevel.Debug()
+					.MinimumLevel.Verbose()
 					.CreateLogger();
 		}
 
-		[Test]
-		public void DecodeFitFile()
-		{
-			//var autoMocker = new AutoMocker();
-			//var fitConverter = autoMocker.CreateInstance<FitConverter>();
+		//[Test]
+		//public void DecodeFitFile()
+		//{
+		//	var autoMocker = new AutoMocker();
+		//	var fitConverter = autoMocker.CreateInstance<FitConverter>();
 
-			//var syncMyWorkoutFitFile = Path.Join(DataDirectory, "SyncMyWorkout01.fit");
-			//fitConverter.Decode(syncMyWorkoutFitFile);
-		}
+		//	var syncMyWorkoutFitFile = Path.Join(DataDirectory, "garmin_training_effect.fit");
+		//	fitConverter.Decode(syncMyWorkoutFitFile);
+		//}
 
 		//[Test]
 		//public async Task DownloadWorkout()
