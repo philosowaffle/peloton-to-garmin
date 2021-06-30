@@ -26,7 +26,7 @@ Paste Log output here
 **Installation (please complete the following information):**
  - OS: [mac, linux, windows]
  - Method: [source, exe, docker]
- - Version: [1.2.0, 2.0.1, etc.]
+ - Version: [1.2.0, 2.0.1, dockerTag, etc]
 
 **Additional context**
 Add any other context about the problem here.
