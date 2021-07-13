@@ -148,6 +148,6 @@ jobs:
     - name: Create Release and Upload Artifact
       uses: ncipollo/release-action@v1
       with:
-        artifacts: /dist/${{ matrix.os }}_${{ github.event.inputs.version }}.zip
+        artifacts: "${{ github.workspace }}/dist/${{ matrix.os }}_${{ github.event.inputs.version }}.zip"
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: v${{ github.event.inputs.version }}
