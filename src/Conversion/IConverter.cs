@@ -41,7 +41,7 @@ namespace Conversion
 		public abstract void Convert();
 		public abstract void Decode(string filePath);
 
-		protected abstract T Convert(Workout workout, WorkoutSamples workoutSamples, WorkoutSummary workoutSummary);
+		protected abstract T Convert(Workout workout, WorkoutSamples workoutSamples);
 
 		protected abstract void Save(T data, string path);
 
@@ -91,7 +91,7 @@ namespace Conversion
 				var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout);
 				try
 				{
-					converted = Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.WorkoutSummary);
+					converted = Convert(workoutData.Workout, workoutData.WorkoutSamples);
 					
 				} catch (Exception e)
 				{
@@ -241,6 +241,22 @@ namespace Conversion
 			return distanceSummary;
 		}
 
+		protected Summary GetCalorieSummary(WorkoutSamples workoutSamples)
+		{
+			if (workoutSamples?.Summaries is null)
+			{
+				Log.Debug("No workout Summaries found.");
+				return null;
+			}
+
+			var summaries = workoutSamples.Summaries;
+			var caloriesSummary = summaries.FirstOrDefault(s => s.Slug == "calories");
+			if (caloriesSummary is null)
+				Log.Debug("No calories slug found.");
+
+			return caloriesSummary;
+		}
+
 		protected float GetMaxSpeedMetersPerSecond(WorkoutSamples workoutSamples)
 		{
 			var speedSummary = GetSpeedSummary(workoutSamples);
@@ -274,40 +290,12 @@ namespace Conversion
 
 		protected Metric GetGradeSummary(WorkoutSamples workoutSamples)
 		{
-			if (workoutSamples?.Metrics is null)
-			{
-				Log.Debug("No workout Metrics found.");
-				return null;
-			}
-
-			var inclineSummary =  workoutSamples.Metrics.FirstOrDefault(m => m.Slug == "incline");
-			if (inclineSummary is null)
-				Log.Debug("No incline slug found.");
-
-			return inclineSummary;
+			return GetMetric("incline", workoutSamples);
 		}
 
 		protected Metric GetSpeedSummary(WorkoutSamples workoutSamples)
 		{
-			if (workoutSamples?.Metrics is null)
-			{
-				Log.Debug("No workout Metrics found.");
-				return null;
-			}
-
-			var speedSummary = workoutSamples.Metrics.FirstOrDefault(s => s.Slug == "speed");
-			if (speedSummary is null)
-			{
-				var alts = workoutSamples.Metrics
-					.Where(w => w.Alternatives is object)
-					.SelectMany(s => s.Alternatives);
-				speedSummary = alts.FirstOrDefault(s => s.Slug == "speed");
-			}	
-			
-			if (speedSummary is null)
-				Log.Debug("No speed slug found.");
-
-			return speedSummary;
+			return GetMetric("speed", workoutSamples);
 		}
 
 		protected byte? GetUserMaxHeartRate(WorkoutSamples workoutSamples) 
@@ -319,7 +307,7 @@ namespace Conversion
 
 		protected Zone GetHeartRateZone(int zone, WorkoutSamples workoutSamples)
 		{
-			var hrData = workoutSamples?.Metrics?.FirstOrDefault(s => s.Slug == "heart_rate");
+			var hrData = GetHeartRateSummary(workoutSamples);
 
 			if (hrData is null) return null;
 
@@ -381,7 +369,7 @@ namespace Conversion
 
 		protected PowerZones GetTimeInPowerZones(Workout workout, WorkoutSamples workoutSamples)
 		{
-			var powerZoneData = workoutSamples.Metrics.FirstOrDefault(s => s.Slug == "output");
+			var powerZoneData = GetOutputSummary(workoutSamples);
 
 			if (powerZoneData is null) return null;
 
@@ -442,6 +430,49 @@ namespace Conversion
 			}
 
 			return zones;
+		}
+
+		protected Metric GetOutputSummary(WorkoutSamples workoutSamples)
+		{
+			return GetMetric("output", workoutSamples);
+		}
+
+		protected Metric GetHeartRateSummary(WorkoutSamples workoutSamples)
+		{
+			return GetMetric("heart_rate", workoutSamples);
+		}
+
+		protected Metric GetCadenceSummary(WorkoutSamples workoutSamples)
+		{
+			return GetMetric("cadence", workoutSamples);
+		}
+
+		protected Metric GetResistanceSummary(WorkoutSamples workoutSamples)
+		{
+			return GetMetric("resistance", workoutSamples);
+		}
+
+		protected Metric GetMetric(string slug, WorkoutSamples workoutSamples)
+		{
+			if (workoutSamples?.Metrics is null)
+			{
+				Log.Debug("No workout Metrics found.");
+				return null;
+			}
+
+			var metric = workoutSamples.Metrics.FirstOrDefault(s => s.Slug == slug);
+			if (metric is null)
+			{
+				var alts = workoutSamples.Metrics
+					.Where(w => w.Alternatives is object)
+					.SelectMany(s => s.Alternatives);
+				metric = alts.FirstOrDefault(s => s.Slug == slug);
+			}
+
+			if (metric is null)
+				Log.Debug($"No {slug} found.");
+
+			return metric;
 		}
 	}
 }

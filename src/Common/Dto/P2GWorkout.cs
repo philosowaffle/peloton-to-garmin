@@ -4,6 +4,5 @@
 	{
 		public Workout Workout { get; set; }
 		public WorkoutSamples WorkoutSamples { get; set; }
-		public WorkoutSummary WorkoutSummary { get; set; }
 	}
 }

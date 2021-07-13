@@ -75,18 +75,15 @@ namespace Peloton
 
 				var workoutTask = _pelotonApi.GetWorkoutByIdAsync(recentWorkout.Id);
 				var workoutSamplesTask = _pelotonApi.GetWorkoutSamplesByIdAsync(recentWorkout.Id);
-				var workoutSummaryTask = _pelotonApi.GetWorkoutSummaryByIdAsync(recentWorkout.Id);
 
-				await Task.WhenAll(workoutTask, workoutSamplesTask, workoutSummaryTask);
+				await Task.WhenAll(workoutTask, workoutSamplesTask);
 
 				var workout = workoutTask.GetAwaiter().GetResult();
 				var workoutSamples = workoutSamplesTask.GetAwaiter().GetResult();
-				var workoutSummary = workoutSummaryTask.GetAwaiter().GetResult();
 
 				dynamic data = new JObject();
 				data.Workout = workout;
 				data.WorkoutSamples = workoutSamples;
-				data.WorkoutSummary = workoutSummary;
 
 				var workoutTitle = string.Empty;
 				P2GWorkout deSerializedData = null;

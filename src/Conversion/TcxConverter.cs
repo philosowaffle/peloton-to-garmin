@@ -23,7 +23,7 @@ namespace Conversion
 			data.Save(path);
 		}
 
-		protected override XElement Convert(Workout workout, WorkoutSamples samples, WorkoutSummary summary)
+		protected override XElement Convert(Workout workout, WorkoutSamples samples)
 		{
 			XNamespace ns1 = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2";
 			XNamespace activityExtensions = "http://www.garmin.com/xmlschemas/ActivityExtension/v2";
@@ -34,14 +34,19 @@ namespace Conversion
 			var subSport = GetSubSport(workout);
 			var startTime = GetStartTimeUtc(workout);
 
+			var outputSummary = GetOutputSummary(samples);
+			var hrSummary = GetHeartRateSummary(samples);
+			var cadenceSummary = GetCadenceSummary(samples);
+			var resistanceSummary = GetResistanceSummary(samples);
+
 			var lx = new XElement(activityExtensions + "TPX");
-			lx.Add(new XElement(activityExtensions + "TotalPower", summary.Total_Work));
-			lx.Add(new XElement(activityExtensions + "MaximumCadence", summary.Max_Cadence));
-			lx.Add(new XElement(activityExtensions + "AverageCadence", summary.Avg_Cadence));
-			lx.Add(new XElement(activityExtensions + "AverageWatts", summary.Avg_Power));
-			lx.Add(new XElement(activityExtensions + "MaximumWatts", summary.Max_Power));
-			lx.Add(new XElement(activityExtensions + "AverageResistance", summary.Avg_Resistance));
-			lx.Add(new XElement(activityExtensions + "MaximumResistance", summary.Max_Resistance));
+			lx.Add(new XElement(activityExtensions + "TotalPower", workout?.Total_Work));
+			lx.Add(new XElement(activityExtensions + "MaximumCadence", cadenceSummary?.Max_Value));
+			lx.Add(new XElement(activityExtensions + "AverageCadence", cadenceSummary?.Average_Value));
+			lx.Add(new XElement(activityExtensions + "AverageWatts", outputSummary?.Average_Value));
+			lx.Add(new XElement(activityExtensions + "MaximumWatts", outputSummary?.Max_Value));
+			lx.Add(new XElement(activityExtensions + "AverageResistance", resistanceSummary?.Average_Value));
+			lx.Add(new XElement(activityExtensions + "MaximumResistance", resistanceSummary?.Max_Value));
 
 			var extensions = new XElement("Extensions");
 			extensions.Add(lx);
@@ -107,9 +112,9 @@ namespace Conversion
 			lap.Add(new XElement("Triggermethod", "Manual"));
 			lap.Add(new XElement("DistanceMeters", GetTotalDistance(samples)));
 			lap.Add(new XElement("MaximumSpeed", GetMaxSpeedMetersPerSecond(samples)));
-			lap.Add(new XElement("Calories", summary.Calories));
-			lap.Add(new XElement("AverageHeartRateBpm", new XElement("Value", summary.Avg_Heart_Rate)));
-			lap.Add(new XElement("MaximumHeartRateBpm", new XElement("Value", summary.Max_Heart_Rate)));
+			lap.Add(new XElement("Calories", GetCalorieSummary(samples)?.Value));
+			lap.Add(new XElement("AverageHeartRateBpm", new XElement("Value", hrSummary?.Average_Value)));
+			lap.Add(new XElement("MaximumHeartRateBpm", new XElement("Value", hrSummary?.Max_Value)));
 			lap.Add(lx);
 			lap.Add(track);
 
