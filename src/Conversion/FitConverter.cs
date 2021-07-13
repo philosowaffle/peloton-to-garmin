@@ -421,8 +421,8 @@ namespace Conversion
 			sessionMesg.SetTotalCalories((ushort)GetCalorieSummary(workoutSamples)?.Value);
 
 			var outputSummary = GetOutputSummary(workoutSamples);
-			sessionMesg.SetAvgPower((ushort)outputSummary?.Average_Value);
-			sessionMesg.SetMaxPower((ushort)outputSummary?.Max_Value);
+			sessionMesg.SetAvgPower((ushort?)outputSummary?.Average_Value);
+			sessionMesg.SetMaxPower((ushort?)outputSummary?.Max_Value);
 
 			sessionMesg.SetFirstLapIndex(0);
 			sessionMesg.SetNumLaps(numLaps);
@@ -433,12 +433,12 @@ namespace Conversion
 			sessionMesg.SetSubSport(GetGarminSubSport(workout));
 
 			var hrSummary = GetHeartRateSummary(workoutSamples);
-			sessionMesg.SetAvgHeartRate((byte)hrSummary?.Average_Value);
-			sessionMesg.SetMaxHeartRate((byte)hrSummary?.Max_Value);
+			sessionMesg.SetAvgHeartRate((byte?)hrSummary?.Average_Value);
+			sessionMesg.SetMaxHeartRate((byte?)hrSummary?.Max_Value);
 
 			var cadenceSummary = GetCadenceSummary(workoutSamples);
-			sessionMesg.SetAvgCadence((byte)cadenceSummary.Average_Value);
-			sessionMesg.SetMaxCadence((byte)cadenceSummary.Max_Value);
+			sessionMesg.SetAvgCadence((byte?)cadenceSummary?.Average_Value);
+			sessionMesg.SetMaxCadence((byte?)cadenceSummary?.Max_Value);
 
 			sessionMesg.SetMaxSpeed(GetMaxSpeedMetersPerSecond(workoutSamples));
 			sessionMesg.SetAvgSpeed(GetAvgSpeedMetersPerSecond(workoutSamples));
