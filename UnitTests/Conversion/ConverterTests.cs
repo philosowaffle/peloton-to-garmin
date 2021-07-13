@@ -278,6 +278,158 @@ namespace UnitTests.Conversion
 			hr.Should().BeNull();
 		}
 
+		[Test]
+		public void GetCalorieSummary_NullWorkoutSamples_ReturnsNull()
+		{
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var calories = converter.GetCalorieSummary1(null);
+			calories.Should().BeNull();
+		}
+
+		[Test]
+		public void GetCalorieSummary_Summaries_ReturnsNull()
+		{
+			var workoutSamples = new WorkoutSamples();
+			workoutSamples.Summaries = null;
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var calories = converter.GetCalorieSummary1(workoutSamples);
+			calories.Should().BeNull();
+		}
+
+		[Test]
+		public void GetCalorieSummary_NoCalorieSlug_ReturnsNull()
+		{
+			var workoutSamples = new WorkoutSamples();
+			workoutSamples.Summaries = new List<Summary>() { new Summary() { Slug = "something" } };
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var calories = converter.GetCalorieSummary1(workoutSamples);
+			calories.Should().BeNull();
+		}
+
+		[Test]
+		public void GetCalorieSummary_CalorieSlug_ReturnsSummary()
+		{
+			var workoutSamples = new WorkoutSamples();
+			workoutSamples.Summaries = new List<Summary>() { new Summary() { Slug = "calories", Value = 100 } };
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var calories = converter.GetCalorieSummary1(workoutSamples);
+			calories.Should().NotBeNull();
+			calories.Value.Should().Be(100);
+		}
+
+		[Test]
+		public void GetOutputSummary_NullWorkoutSamples_ReturnsNull()
+		{
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var output = converter.GetOutputSummary1(null);
+			output.Should().BeNull();
+		}
+
+		[Test]
+		public void GetOutputSummary_Metrics_ReturnsNull()
+		{
+			var workoutSamples = new WorkoutSamples();
+			workoutSamples.Metrics = null;
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var output = converter.GetOutputSummary1(workoutSamples);
+			output.Should().BeNull();
+		}
+
+		[Test]
+		public void GetOutputSummary_NoCalorieSlug_ReturnsNull()
+		{
+			var workoutSamples = new WorkoutSamples();
+			workoutSamples.Metrics = new List<Metric>() { new Metric() { Slug = "something" } };
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var output = converter.GetOutputSummary1(workoutSamples);
+			output.Should().BeNull();
+		}
+
+		[Test]
+		public void GetOutputSummary_CalorieSlug_ReturnsSummary()
+		{
+			var workoutSamples = new WorkoutSamples();
+			workoutSamples.Metrics = new List<Metric>() { new Metric() { Slug = "output",  Max_Value = 100, Average_Value = 50 } };
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var output = converter.GetOutputSummary1(workoutSamples);
+			output.Should().NotBeNull();
+			output.Max_Value.Should().Be(100);
+			output.Average_Value.Should().Be(50);
+		}
+
+		[Test]
+		public void GetHeartRateSummary_NullWorkoutSamples_ReturnsNull()
+		{
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var hr = converter.GetHeartRateSummary1(null);
+			hr.Should().BeNull();
+		}
+
+		[Test]
+		public void GetHeartRateSummary_Metrics_ReturnsNull()
+		{
+			var workoutSamples = new WorkoutSamples();
+			workoutSamples.Metrics = null;
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var hr = converter.GetHeartRateSummary1(workoutSamples);
+			hr.Should().BeNull();
+		}
+
+		[Test]
+		public void GetHeartRateSummary_NoCalorieSlug_ReturnsNull()
+		{
+			var workoutSamples = new WorkoutSamples();
+			workoutSamples.Metrics = new List<Metric>() { new Metric() { Slug = "something" } };
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var hr = converter.GetHeartRateSummary1(workoutSamples);
+			hr.Should().BeNull();
+		}
+
+		[Test]
+		public void GetHeartRateSummary_CalorieSlug_ReturnsSummary()
+		{
+			var workoutSamples = new WorkoutSamples();
+			workoutSamples.Metrics = new List<Metric>() { new Metric() { Slug = "heart_rate", Max_Value = 100, Average_Value = 50 } };
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var hr = converter.GetHeartRateSummary1(workoutSamples);
+			hr.Should().NotBeNull();
+			hr.Max_Value.Should().Be(100);
+			hr.Average_Value.Should().Be(50);
+		}
+
 		private class ConverterInstance : Converter<string>
 		{
 			public ConverterInstance() : base(null, null, null) { }
@@ -292,7 +444,7 @@ namespace UnitTests.Conversion
 				throw new NotImplementedException();
 			}
 
-			protected override string Convert(Workout workout, WorkoutSamples workoutSamples, WorkoutSummary workoutSummary)
+			protected override string Convert(Workout workout, WorkoutSamples workoutSamples)
 			{
 				throw new NotImplementedException();
 			}
@@ -345,6 +497,26 @@ namespace UnitTests.Conversion
 			public byte? GetUserMaxHeartRate1(WorkoutSamples workoutSamples)
 			{
 				return base.GetUserMaxHeartRate(workoutSamples);
+			}
+
+			public Summary GetCalorieSummary1(WorkoutSamples workoutSamples)
+			{
+				return base.GetCalorieSummary(workoutSamples);
+			}
+
+			public Metric GetOutputSummary1(WorkoutSamples workoutSamples)
+			{
+				return base.GetOutputSummary(workoutSamples);
+			}
+
+			public Metric GetHeartRateSummary1(WorkoutSamples workoutSamples)
+			{
+				return base.GetHeartRateSummary(workoutSamples);
+			}
+
+			public Metric GetCadenceSummary1(WorkoutSamples workoutSamples)
+			{
+				return base.GetCadenceSummary(workoutSamples);
 			}
 		}
 	}

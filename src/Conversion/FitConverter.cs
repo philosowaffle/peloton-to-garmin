@@ -44,7 +44,7 @@ namespace Conversion
 			}
 		}
 
-		protected override Tuple<string, ICollection<Mesg>> Convert(Workout workout, WorkoutSamples workoutSamples, WorkoutSummary workoutSummary)
+		protected override Tuple<string, ICollection<Mesg>> Convert(Workout workout, WorkoutSamples workoutSamples)
 		{
 			// MESSAGE ORDER MATTERS
 			var messages = new List<Mesg>();
@@ -147,7 +147,7 @@ namespace Conversion
 			foreach (var lap in laps)
 				messages.Add(lap);
 
-			messages.Add(GetSessionMesg(workout, workoutSamples, workoutSummary, startTime, endTime, (ushort)laps.Count));
+			messages.Add(GetSessionMesg(workout, workoutSamples, startTime, endTime, (ushort)laps.Count));
 
 			var activityMesg = new ActivityMesg();
 			activityMesg.SetTimestamp(endTime);
@@ -408,7 +408,7 @@ namespace Conversion
 			}
 		}
 
-		private SessionMesg GetSessionMesg(Workout workout, WorkoutSamples workoutSamples, WorkoutSummary workoutSummary, Dynastream.Fit.DateTime startTime, Dynastream.Fit.DateTime endTime, ushort numLaps)
+		private SessionMesg GetSessionMesg(Workout workout, WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime, Dynastream.Fit.DateTime endTime, ushort numLaps)
 		{
 			var sessionMesg = new SessionMesg();
 			sessionMesg.SetTimestamp(endTime);
@@ -417,10 +417,13 @@ namespace Conversion
 			sessionMesg.SetTotalElapsedTime(totalTime);
 			sessionMesg.SetTotalTimerTime(totalTime);
 			sessionMesg.SetTotalDistance(GetTotalDistance(workoutSamples));
-			sessionMesg.SetTotalWork((uint)workoutSummary.Total_Work);
-			sessionMesg.SetTotalCalories((ushort)workoutSummary.Calories);
-			sessionMesg.SetAvgPower((ushort)workoutSummary.Avg_Power);
-			sessionMesg.SetMaxPower((ushort)workoutSummary.Max_Power);
+			sessionMesg.SetTotalWork((uint)workout.Total_Work);
+			sessionMesg.SetTotalCalories((ushort)GetCalorieSummary(workoutSamples)?.Value);
+
+			var outputSummary = GetOutputSummary(workoutSamples);
+			sessionMesg.SetAvgPower((ushort)outputSummary?.Average_Value);
+			sessionMesg.SetMaxPower((ushort)outputSummary?.Max_Value);
+
 			sessionMesg.SetFirstLapIndex(0);
 			sessionMesg.SetNumLaps(numLaps);
 			sessionMesg.SetThresholdPower((ushort)workout.Ftp_Info.Ftp);
@@ -428,10 +431,15 @@ namespace Conversion
 			sessionMesg.SetEventType(EventType.Stop);
 			sessionMesg.SetSport(GetGarminSport(workout));
 			sessionMesg.SetSubSport(GetGarminSubSport(workout));
-			sessionMesg.SetAvgHeartRate((byte)workoutSummary.Avg_Heart_Rate);
-			sessionMesg.SetMaxHeartRate((byte)workoutSummary.Max_Heart_Rate);
-			sessionMesg.SetAvgCadence((byte)workoutSummary.Avg_Cadence);
-			sessionMesg.SetMaxCadence((byte)workoutSummary.Max_Cadence);
+
+			var hrSummary = GetHeartRateSummary(workoutSamples);
+			sessionMesg.SetAvgHeartRate((byte)hrSummary?.Average_Value);
+			sessionMesg.SetMaxHeartRate((byte)hrSummary?.Max_Value);
+
+			var cadenceSummary = GetCadenceSummary(workoutSamples);
+			sessionMesg.SetAvgCadence((byte)cadenceSummary.Average_Value);
+			sessionMesg.SetMaxCadence((byte)cadenceSummary.Max_Value);
+
 			sessionMesg.SetMaxSpeed(GetMaxSpeedMetersPerSecond(workoutSamples));
 			sessionMesg.SetAvgSpeed(GetAvgSpeedMetersPerSecond(workoutSamples));
 			sessionMesg.SetAvgGrade(GetAvgGrade(workoutSamples));

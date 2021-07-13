@@ -154,32 +154,5 @@ namespace Peloton
 				})
 				.GetJsonAsync<JObject>();
 		}
-
-		public Task<JObject> GetWorkoutSummaryByIdAsync(string id)
-		{
-			return $"{BaseUrl}/workout/{id}/summary"
-				.WithCookie("peloton_session_id", SessionId)
-				.ConfigureRequest((c) =>
-				{
-					c.AfterCallAsync = async (FlurlCall call) =>
-					{
-						Log.Verbose("HTTP Response: {@HttpStatusCode} {@Content}", call.HttpResponseMessage?.StatusCode, await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
-
-						if (_observabilityEnabled)
-						{
-							FlurlConfiguration.HttpRequestHistogram
-							.WithLabels(
-								call.HttpRequestMessage.Method.ToString(),
-								call.HttpRequestMessage.RequestUri.Host,
-								"/workout/{workoutid}/summary",
-								call.HttpRequestMessage.RequestUri.Query,
-								((int)call.HttpResponseMessage.StatusCode).ToString(),
-								call.HttpResponseMessage.ReasonPhrase
-							).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
-						}
-					};
-				})
-				.GetJsonAsync<JObject>();
-		}
 	}
 }
