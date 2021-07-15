@@ -418,7 +418,7 @@ namespace Conversion
 			sessionMesg.SetTotalTimerTime(totalTime);
 			sessionMesg.SetTotalDistance(GetTotalDistance(workoutSamples));
 			sessionMesg.SetTotalWork((uint)workout.Total_Work);
-			sessionMesg.SetTotalCalories((ushort)GetCalorieSummary(workoutSamples)?.Value);
+			sessionMesg.SetTotalCalories((ushort?)GetCalorieSummary(workoutSamples)?.Value);
 
 			var outputSummary = GetOutputSummary(workoutSamples);
 			sessionMesg.SetAvgPower((ushort?)outputSummary?.Average_Value);
