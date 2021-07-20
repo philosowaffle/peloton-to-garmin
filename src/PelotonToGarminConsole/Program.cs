@@ -35,6 +35,7 @@ namespace PelotonToGarminConsole
 			Console.WriteLine("Peloton To Garmin");
 			var config = new Configuration();
 			Health.Set(HealthStatus.Healthy);
+			var exitCode = 0;
 
 			var runtimeVersion = Environment.Version.ToString();
 			var os = Environment.OSVersion.Platform.ToString();
@@ -94,7 +95,9 @@ namespace PelotonToGarminConsole
 			{
 				Log.Fatal(e, "Exception during config setup.");
 				Health.Set(HealthStatus.Dead);
-				throw;
+				
+				Log.CloseAndFlush();
+				Environment.Exit(-1);
 			}
 
 			IDisposable dotNetRuntimeMetrics = null;
@@ -139,18 +142,24 @@ namespace PelotonToGarminConsole
 				else
 				{
 					RunAsync(config).GetAwaiter().GetResult();
+					Log.Information("Done.");
 				}
 			}
 			catch (Exception e)
 			{
 				Log.Fatal(e, "Uncaught Exception.");
 				Health.Set(HealthStatus.Dead);
+				exitCode = -2;
 			}
 			finally
 			{
 				Log.CloseAndFlush();
-				Console.ReadLine();
 				dotNetRuntimeMetrics?.Dispose();
+
+				if (!config.App.CloseWindowOnFinish)
+					Console.ReadLine();
+
+				Environment.Exit(exitCode);
 			}
 		}
 

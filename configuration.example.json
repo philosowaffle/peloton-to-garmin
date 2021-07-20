@@ -5,7 +5,8 @@
     "WorkingDirectory": "./working",
     "SyncHistoryDbPath": "./output/syncHistory.json",
     "EnablePolling": true,
-    "PollingIntervalSeconds": 86400
+    "PollingIntervalSeconds": 86400,
+    "CloseWindowOnFinish": false
   },
 
   "Format": {
