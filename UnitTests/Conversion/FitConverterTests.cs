@@ -21,7 +21,7 @@ namespace UnitTests.Conversion
 		{
 			var workoutPath = Path.Join(DataDirectory, $"{filename}.json");
 			var converter = new ConverterInstance();
-			var convertedMesgs = converter.Convert(workoutPath);
+			var convertedMesgs = converter.ConvertForTest(workoutPath);
 
 			convertedMesgs.Should().NotBeNullOrEmpty();
 
@@ -43,13 +43,13 @@ namespace UnitTests.Conversion
 
 		private class ConverterInstance : FitConverter
 		{
-			private IOWrapper _fileHandler = new IOWrapper();
+			private IOWrapper fileHandler = new IOWrapper();
 
 			public ConverterInstance() : base(new Configuration(), null, null) { }
 
-			public ICollection<Mesg> Convert(string path)
+			public ICollection<Mesg> ConvertForTest(string path)
 			{
-				var workoutData = _fileHandler.DeserializeJson<P2GWorkout>(path);
+				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
 				var converted = this.Convert(workoutData.Workout, workoutData.WorkoutSamples);
 
 				return converted.Item2;
