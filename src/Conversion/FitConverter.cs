@@ -28,12 +28,15 @@ namespace Conversion
 			using (FileStream fitDest = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
 			{
 				Encode encoder = new Encode(ProtocolVersion.V20);
-				encoder.Open(fitDest);
-				foreach (Mesg message in data.Item2)
+				try
 				{
-					encoder.Write(message);
+					encoder.Open(fitDest);
+					encoder.Write(data.Item2);
 				}
-				encoder.Close();
+				finally
+				{
+					encoder.Close();
+				}			
 
 				Log.Information("Encoded FIT file {@Path}", fitDest.Name);
 			}
