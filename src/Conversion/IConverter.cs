@@ -490,7 +490,7 @@ namespace Conversion
 				info = new GarminDeviceInfo()
 				{
 					Name = "PelotonToGarmin", // Max 20 Chars
-					ProductId = GarminProduct.Fr945,
+					ProductID = GarminProduct.Fr945,
 					UnitId = 1,
 					Version = new GarminDeviceVersion()
 					{

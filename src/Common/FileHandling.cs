@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace Common
@@ -58,10 +59,17 @@ namespace Common
 			using var trace1 = Tracing.Trace(nameof(DeserializeXml), "io");
 			if (!File.Exists(file)) return default;
 
-			XmlSerializer serializer = new XmlSerializer(typeof(T));
-			using (Stream reader = new FileStream(file, FileMode.Open))
+			XmlSerializer serializer = new XmlSerializer(typeof(T), new XmlRootAttribute("Creator"));
+			using (Stream stream = new FileStream(file, FileMode.Open))
 			{
-				return (T)serializer.Deserialize(reader);
+				try
+				{
+					return (T)serializer.Deserialize(stream);
+				} catch (Exception e)
+				{
+					Log.Error(e, "Failed to read device info xml.");
+					return default;
+				}				
 			}
 		}
 

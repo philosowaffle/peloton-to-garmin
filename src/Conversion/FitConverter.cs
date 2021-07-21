@@ -64,7 +64,7 @@ namespace Conversion
 			fileIdMesg.SetSerialNumber(deviceInfo.UnitId);
 			fileIdMesg.SetTimeCreated(startTime);
 			fileIdMesg.SetManufacturer(deviceInfo.ManufacturerId);
-			fileIdMesg.SetProduct(deviceInfo.ProductId);
+			fileIdMesg.SetProduct(deviceInfo.ProductID);
 			fileIdMesg.SetType(Dynastream.Fit.File.Activity);
 			messages.Add(fileIdMesg);
 
@@ -80,7 +80,7 @@ namespace Conversion
 			deviceInfoMesg.SetTimestamp(startTime);
 			deviceInfoMesg.SetSerialNumber(deviceInfo.UnitId);
 			deviceInfoMesg.SetManufacturer(deviceInfo.ManufacturerId);
-			deviceInfoMesg.SetProduct(deviceInfo.ProductId);
+			deviceInfoMesg.SetProduct(deviceInfo.ProductID);
 			deviceInfoMesg.SetSoftwareVersion(deviceInfo.Version.VersionMajor);
 			deviceInfoMesg.SetDeviceIndex(0);
 			deviceInfoMesg.SetSourceType(SourceType.Local);
@@ -112,7 +112,7 @@ namespace Conversion
 			trainingMesg.SetTimeCreated(startTime);
 			trainingMesg.SetSerialNumber(deviceInfo.UnitId);
 			trainingMesg.SetManufacturer(deviceInfo.ManufacturerId);
-			trainingMesg.SetProduct(deviceInfo.ProductId);
+			trainingMesg.SetProduct(deviceInfo.ProductID);
 			trainingMesg.SetType(Dynastream.Fit.File.Workout);
 			messages.Add(trainingMesg);
 

@@ -4,7 +4,7 @@
 	{
 		public string Name { get; set; }
 		public uint UnitId { get; set; }
-		public ushort ProductId { get; set; }
+		public ushort ProductID { get; set; }
 		public ushort ManufacturerId { get; set; } = 1;
 		public GarminDeviceVersion Version { get; set; }
 	}

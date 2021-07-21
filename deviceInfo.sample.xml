@@ -1,4 +1,4 @@
-<Creator xsi:type="Device_t">
+<Creator>
   <Name>Garmin Sample Device - please create from exported TCX file</Name>
   <UnitId>00000000000</UnitId>
   <ProductID>0000</ProductID>

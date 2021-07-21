@@ -133,7 +133,7 @@ namespace Conversion
 			var creator = new XElement("Creator");
 			creator.Add(new XElement("Name", deviceInfo.Name));
 			creator.Add(new XElement("UnitId", deviceInfo.UnitId));
-			creator.Add(new XElement("ProductID", deviceInfo.ProductId));
+			creator.Add(new XElement("ProductID", deviceInfo.ProductID));
 			creator.Add(creatorVersion);
 			activity.Add(creator);
 
@@ -141,7 +141,7 @@ namespace Conversion
 			activities.Add(activity);
 
 			var root = new XElement("TrainingCenterDatabase",
-									new XAttribute("xsi:" + "schemaLocation", "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd"),
+									// new XAttribute("xsi:" + "schemaLocation", "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd"),
 									new XAttribute(XNamespace.Xmlns + nameof(ns1), ns1.NamespaceName),
 									new XAttribute(XNamespace.Xmlns + nameof(activityExtensions), activityExtensions.NamespaceName),
 									new XAttribute(XNamespace.Xmlns + nameof(trackPointExtensions), trackPointExtensions.NamespaceName),
