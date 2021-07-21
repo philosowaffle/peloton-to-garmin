@@ -38,6 +38,7 @@ namespace Conversion
 			var hrSummary = GetHeartRateSummary(samples);
 			var cadenceSummary = GetCadenceSummary(samples);
 			var resistanceSummary = GetResistanceSummary(samples);
+			var deviceInfo = GetDeviceInfo();
 
 			var lx = new XElement(activityExtensions + "TPX");
 			lx.Add(new XElement(activityExtensions + "TotalPower", workout?.Total_Work));
@@ -123,11 +124,24 @@ namespace Conversion
 			activity.Add(new XElement("Id", GetTimeStamp(startTime)));
 			activity.Add(lap);
 
+			var creatorVersion = new XElement("Version");
+			creatorVersion.Add(new XElement("VersionMajor", deviceInfo.Version.VersionMajor));
+			creatorVersion.Add(new XElement("VersionMinor", deviceInfo.Version.VersionMinor));
+			creatorVersion.Add(new XElement("BuildMajor", deviceInfo.Version.BuildMajor));
+			creatorVersion.Add(new XElement("BuildMinor", deviceInfo.Version.BuildMinor));
+
+			var creator = new XElement("Creator");
+			creator.Add(new XElement("Name", deviceInfo.Name));
+			creator.Add(new XElement("UnitId", deviceInfo.UnitId));
+			creator.Add(new XElement("ProductID", deviceInfo.ProductId));
+			creator.Add(creatorVersion);
+			activity.Add(creator);
+
 			var activities = new XElement("Activities");
 			activities.Add(activity);
 
 			var root = new XElement("TrainingCenterDatabase",
-									//new XAttribute("xsi:" + "schemaLocation", "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd"),
+									new XAttribute("xsi:" + "schemaLocation", "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd"),
 									new XAttribute(XNamespace.Xmlns + nameof(ns1), ns1.NamespaceName),
 									new XAttribute(XNamespace.Xmlns + nameof(activityExtensions), activityExtensions.NamespaceName),
 									new XAttribute(XNamespace.Xmlns + nameof(trackPointExtensions), trackPointExtensions.NamespaceName),
