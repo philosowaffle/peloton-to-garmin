@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using System.Xml.Serialization;
 
 namespace Common
 {
@@ -12,6 +13,7 @@ namespace Common
 		string[] GetFiles(string path);
 
 		T DeserializeJson<T>(string file);
+		T DeserializeXml<T>(string file) where T : new();
 		void MoveFailedFile(string fromPath, string toPath);
 		void Copy(string from, string to, bool overwrite);
 		void Cleanup(string dir);
@@ -48,6 +50,18 @@ namespace Common
 			using (var reader = new StreamReader(file))
 			{
 				return JsonSerializer.Deserialize<T>(reader.ReadToEnd(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+			}
+		}
+
+		public T DeserializeXml<T>(string file) where T : new()
+		{
+			using var trace1 = Tracing.Trace(nameof(DeserializeXml), "io");
+			if (!File.Exists(file)) return default;
+
+			XmlSerializer serializer = new XmlSerializer(typeof(T));
+			using (Stream reader = new FileStream(file, FileMode.Open))
+			{
+				return (T)serializer.Deserialize(reader);
 			}
 		}
 
