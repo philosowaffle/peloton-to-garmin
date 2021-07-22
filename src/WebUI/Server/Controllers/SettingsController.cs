@@ -18,10 +18,10 @@ namespace WebUI.Server.Controllers
 		public IActionResult Index()
 		{
 			_config.Peloton.Email = "******" + _config.Peloton.Email.Substring(6);
-			_config.Peloton.Password = "******";
+			_config.Peloton.Password = string.IsNullOrEmpty(_config.Peloton.Password) ? "not set" : "******";
 
-			_config.Garmin.Email = "******" + _config.Peloton.Email.Substring(6);
-			_config.Garmin.Password = "******";
+			_config.Garmin.Email = "******" + _config.Garmin.Email.Substring(6);
+			_config.Garmin.Password = string.IsNullOrEmpty(_config.Garmin.Password) ? "not set" : "******";
 
 			return Ok(_config);
 		}

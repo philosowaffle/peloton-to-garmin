@@ -14,7 +14,7 @@ namespace Garmin
 {
 	public interface IGarminUploader
 	{
-		void UploadToGarmin();
+		Task UploadToGarminAsync();
 	}
 
 	public class GarminUploader : IGarminUploader

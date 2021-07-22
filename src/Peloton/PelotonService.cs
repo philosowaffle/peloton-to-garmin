@@ -18,6 +18,7 @@ namespace Peloton
 	public interface IPelotonService
 	{
 		Task DownloadLatestWorkoutDataAsync();
+		Task DownloadLatestWorkoutDataAsync(int numWorkoutsToDownload);
 	}
 
 	public class PelotonService : IPelotonService
@@ -41,9 +42,14 @@ namespace Peloton
 			_failedCount = 0;
 		}
 
-		public async Task DownloadLatestWorkoutDataAsync() 
+		public Task DownloadLatestWorkoutDataAsync()
 		{
-			if (_config.Peloton.NumWorkoutsToDownload <= 0) return;
+			return DownloadLatestWorkoutDataAsync(_config.Peloton.NumWorkoutsToDownload);
+		}
+
+		public async Task DownloadLatestWorkoutDataAsync(int numWorkoutsToDownload) 
+		{
+			if (numWorkoutsToDownload <= 0) return;
 
 			using var tracing = Tracing.Trace(nameof(DownloadLatestWorkoutDataAsync));
 

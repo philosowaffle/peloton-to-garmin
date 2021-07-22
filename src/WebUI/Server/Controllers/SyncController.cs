@@ -41,32 +41,36 @@ namespace WebUI.Server.Controllers
 
 			try
 			{
-				await _pelotonService.DownloadLatestWorkoutDataAsync();
+				await _pelotonService.DownloadLatestWorkoutDataAsync(request.NumWorkouts);
+				response.PelotonDownloadSuccess = true;
+
 			} catch (Exception e)
 			{
+				Log.Error(e, "Failed to download workouts from Peleoton.");
 				response.SyncSuccess = false;
 				response.PelotonDownloadSuccess = false;
 				response.Errors.Add(new ErrorResponse() { Message = "Failed to download workouts from Peloton. Check logs for more details." });
 				return Ok(response);
 			}
 
-			response.PelotonDownloadSuccess = true;
-
 			try
 			{
 				_converter.Convert();
+				response.ConverToFitSuccess = true;
+
 			} catch (Exception e)
 			{
+				Log.Error(e, "Failed to convert workouts to FIT format.");
 				response.SyncSuccess = false;
 				response.ConverToFitSuccess = false;
 				response.Errors.Add(new ErrorResponse() { Message = "Failed to convert workouts to FIT format. Check logs for more details." });
 				return Ok(response);
 			}
-			response.ConverToFitSuccess = true;
 
 			try
 			{
-				_garminUploader.UploadToGarmin();
+				await _garminUploader.UploadToGarminAsync();
+				response.UploadToGarminSuccess = true;
 			}
 			catch (GarminUploadException e) 
 			{
@@ -79,7 +83,6 @@ namespace WebUI.Server.Controllers
 				return Ok(response);
 			}
 
-			response.UploadToGarminSuccess = true;
 			response.SyncSuccess = true;
 			return Ok(response);
 		}
