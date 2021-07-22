@@ -13,11 +13,6 @@ namespace Conversion
 {
 	public class FitConverter : Converter<Tuple<string, ICollection<Mesg>>>
 	{
-		private static readonly float _softwareVersion = 5f;
-		private static readonly ushort _productId = GarminProduct.Fr945;
-		private static readonly ushort _manufacturerId = Manufacturer.Garmin;
-		private static readonly uint _serialNumber = 1;
-
 		private static readonly string _spaceSeparator = "_";
 		public FitConverter(Configuration config, IDbClient dbClient, IFileHandling fileHandler) : base(config, dbClient, fileHandler) { }
 
@@ -33,12 +28,15 @@ namespace Conversion
 			using (FileStream fitDest = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
 			{
 				Encode encoder = new Encode(ProtocolVersion.V20);
-				encoder.Open(fitDest);
-				foreach (Mesg message in data.Item2)
+				try
 				{
-					encoder.Write(message);
+					encoder.Open(fitDest);
+					encoder.Write(data.Item2);
 				}
-				encoder.Close();
+				finally
+				{
+					encoder.Close();
+				}			
 
 				Log.Information("Encoded FIT file {@Path}", fitDest.Name);
 			}
@@ -54,6 +52,7 @@ namespace Conversion
 			var title = WorkoutHelper.GetTitle(workout);
 			var sport = GetGarminSport(workout);
 			var subSport = GetGarminSubSport(workout);
+			var deviceInfo = GetDeviceInfo();
 
 			if (sport == Sport.Invalid)
 			{
@@ -62,10 +61,10 @@ namespace Conversion
 			}
 
 			var fileIdMesg = new FileIdMesg();
-			fileIdMesg.SetSerialNumber(_serialNumber);
+			fileIdMesg.SetSerialNumber(deviceInfo.UnitId);
 			fileIdMesg.SetTimeCreated(startTime);
-			fileIdMesg.SetManufacturer(_manufacturerId);
-			fileIdMesg.SetProduct(_productId);
+			fileIdMesg.SetManufacturer(deviceInfo.ManufacturerId);
+			fileIdMesg.SetProduct(deviceInfo.ProductID);
 			fileIdMesg.SetType(Dynastream.Fit.File.Activity);
 			messages.Add(fileIdMesg);
 
@@ -79,13 +78,13 @@ namespace Conversion
 
 			var deviceInfoMesg = new DeviceInfoMesg();
 			deviceInfoMesg.SetTimestamp(startTime);
-			deviceInfoMesg.SetSerialNumber(_serialNumber);
-			deviceInfoMesg.SetManufacturer(_manufacturerId);
-			deviceInfoMesg.SetProduct(_productId);
-			deviceInfoMesg.SetSoftwareVersion(_softwareVersion);
+			deviceInfoMesg.SetSerialNumber(deviceInfo.UnitId);
+			deviceInfoMesg.SetManufacturer(deviceInfo.ManufacturerId);
+			deviceInfoMesg.SetProduct(deviceInfo.ProductID);
+			deviceInfoMesg.SetSoftwareVersion(deviceInfo.Version.VersionMajor);
 			deviceInfoMesg.SetDeviceIndex(0);
 			deviceInfoMesg.SetSourceType(SourceType.Local);
-			deviceInfoMesg.SetProductName("PelotonToGarmin"); // Max 20 Chars
+			deviceInfoMesg.SetProductName(deviceInfo.Name);
 			messages.Add(deviceInfoMesg);
 
 			var userProfileMesg = new UserProfileMesg();
@@ -111,9 +110,9 @@ namespace Conversion
 			var trainingMesg = new TrainingFileMesg();
 			trainingMesg.SetTimestamp(startTime);
 			trainingMesg.SetTimeCreated(startTime);
-			trainingMesg.SetSerialNumber(_serialNumber);
-			trainingMesg.SetManufacturer(_manufacturerId);
-			trainingMesg.SetProduct(_productId);
+			trainingMesg.SetSerialNumber(deviceInfo.UnitId);
+			trainingMesg.SetManufacturer(deviceInfo.ManufacturerId);
+			trainingMesg.SetProduct(deviceInfo.ProductID);
 			trainingMesg.SetType(Dynastream.Fit.File.Workout);
 			messages.Add(trainingMesg);
 

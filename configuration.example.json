@@ -15,7 +15,8 @@
     "Tcx": false,
     "SaveLocalCopy": true,
     "IncludeTimeInHRZones": false,
-    "IncludeTimeInPowerZones": false
+    "IncludeTimeInPowerZones": false,
+    "DeviceInfoPath": "./deviceInfo.xml"
   },
 
   "Peloton": {
@@ -30,7 +31,7 @@
     "Password": "garmin",
     "Upload": false,
     "FormatToUpload": "fit",
-    "UploadStrategy": 1
+    "UploadStrategy": 2
   },
 
   "Observability": {

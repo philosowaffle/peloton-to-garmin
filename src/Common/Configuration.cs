@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Dto;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -63,6 +64,7 @@ namespace Common
 		public bool SaveLocalCopy { get; set; }
 		public bool IncludeTimeInHRZones { get; set; }
 		public bool IncludeTimeInPowerZones { get; set; }
+		public string DeviceInfoPath { get; set; }
 	}
 
 	public class Peloton

@@ -2,6 +2,7 @@
 using Common.Database;
 using Common.Dto;
 using Common.Helpers;
+using Dynastream.Fit;
 using Prometheus;
 using Serilog;
 using System;
@@ -168,21 +169,21 @@ namespace Conversion
 			}
 		}
 
-		protected DateTime GetStartTimeUtc(Workout workout)
+		protected System.DateTime GetStartTimeUtc(Workout workout)
 		{
 			var startTimeInSeconds = workout.Start_Time;
 			var dateTime = DateTimeOffset.FromUnixTimeSeconds(startTimeInSeconds);
 			return dateTime.UtcDateTime;
 		}
 
-		protected DateTime GetEndTimeUtc(Workout workout)
+		protected System.DateTime GetEndTimeUtc(Workout workout)
 		{
 			var endTimeSeconds = workout.End_Time;
 			var dateTime = DateTimeOffset.FromUnixTimeSeconds(endTimeSeconds);
 			return dateTime.UtcDateTime;
 		}
 
-		protected string GetTimeStamp(DateTime startTime, long offset = 0)
+		protected string GetTimeStamp(System.DateTime startTime, long offset = 0)
 		{
 			return startTime.AddSeconds(offset).ToString("yyyy-MM-ddTHH:mm:ssZ");
 		}
@@ -473,6 +474,35 @@ namespace Conversion
 				Log.Debug($"No {slug} found.");
 
 			return metric;
+		}
+
+		protected GarminDeviceInfo GetDeviceInfo()
+		{
+			GarminDeviceInfo info = null;
+
+			if (!string.IsNullOrEmpty(_config.Format.DeviceInfoPath))
+			{
+				info = _fileHandler.DeserializeXml<GarminDeviceInfo>(_config.Format.DeviceInfoPath);
+			}
+
+			if (info is null)
+			{
+				info = new GarminDeviceInfo()
+				{
+					Name = "PelotonToGarmin", // Max 20 Chars
+					ProductID = GarminProduct.Fr945,
+					UnitId = 1,
+					Version = new GarminDeviceVersion()
+					{
+						VersionMajor = 5,
+						VersionMinor = 0,
+						BuildMajor = 0,
+						BuildMinor = 0,
+					}
+				};
+			}
+
+			return info;
 		}
 	}
 }
