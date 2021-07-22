@@ -1,0 +1,32 @@
+﻿@page "/about"
+@inject HttpClient Http
+
+<h3>About</h3>
+
+@if (systemInfo == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+<ul class="list-group list-group-flush">
+    <li class="list-group-item">Version: @systemInfo.Version</li>
+    <li class="list-group-item">Operating System: @systemInfo.OperatingSystem</li>
+    <li class="list-group-item">OS Version: @systemInfo.OperatingSystemVersion</li>
+    <li class="list-group-item">Runtime Version: @systemInfo.RunTimeVersion</li>
+    <li class="list-group-item"><a href="@systemInfo.Website">Website</a></li>
+    <li class="list-group-item"><a href="@systemInfo.Documentation">Documentation</a></li>
+    <li class="list-group-item"><a href="@systemInfo.Forums">Forums</a></li>
+    <li class="list-group-item"><a href="@systemInfo.Issues">Report and Issue</a></li>
+    <li class="list-group-item"><a href="@systemInfo.Donate">Donate</a></li>
+</ul>   
+}
+
+@code {
+    private SystemInfoGetResponse systemInfo;
+
+    protected override async Task OnInitializedAsync()
+    {
+        systemInfo = await Http.GetFromJsonAsync<SystemInfoGetResponse>("/api/systemInfo");
+    }
+}
