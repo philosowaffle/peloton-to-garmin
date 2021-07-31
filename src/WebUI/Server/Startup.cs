@@ -25,12 +25,16 @@ namespace WebUI.Server
 			LabelNames = new[] { Common.Metrics.Label.Version, Common.Metrics.Label.Os, Common.Metrics.Label.OsVersion, Common.Metrics.Label.DotNetRuntime }
 		});
 
+		private readonly Configuration _config;
+
 		public Startup(IConfiguration configuration)
 		{
-			Configuration = configuration;
+			ConfigurationProvider = configuration;
+			_config = new Configuration();
+			LoadConfigValues(_config);
 		}
 
-		public IConfiguration Configuration { get; }
+		public IConfiguration ConfigurationProvider { get; }
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -39,21 +43,12 @@ namespace WebUI.Server
 			services.AddSingleton<IAppConfiguration>((serviceProvider) =>
 			{
 				var config = new Configuration();
-				Configuration.GetSection(nameof(App)).Bind(config.App);
-				Configuration.GetSection(nameof(Format)).Bind(config.Format);
-				Configuration.GetSection(nameof(Peloton)).Bind(config.Peloton);
-				Configuration.GetSection(nameof(Garmin)).Bind(config.Garmin);
-				Configuration.GetSection(nameof(Observability)).Bind(config.Observability);
-				Configuration.GetSection(nameof(Developer)).Bind(config.Developer);
+				LoadConfigValues(config);
 
-				ChangeToken.OnChange(() => Configuration.GetReloadToken(), () =>
+				ChangeToken.OnChange(() => ConfigurationProvider.GetReloadToken(), () =>
 				{
 					Log.Information("Config change detected, reloading config values.");
-					Configuration.GetSection(nameof(App)).Bind(config.App);
-					Configuration.GetSection(nameof(Format)).Bind(config.Format);
-					Configuration.GetSection(nameof(Peloton)).Bind(config.Peloton);
-					Configuration.GetSection(nameof(Garmin)).Bind(config.Garmin);
-					Configuration.GetSection(nameof(Developer)).Bind(config.Developer);
+					LoadConfigValues(config);
 					Log.Information("Config reloaded. Changes will take effect at the end of the current sleeping cycle.");
 				});
 
@@ -68,12 +63,28 @@ namespace WebUI.Server
 			services.AddSingleton<IGarminUploader, GarminUploader>();
 
 			Log.Logger = new LoggerConfiguration()
-					.ReadFrom.Configuration(Configuration, sectionName: $"{nameof(Observability)}:Serilog")
+					.ReadFrom.Configuration(ConfigurationProvider, sectionName: $"{nameof(Observability)}:Serilog")
 					.Enrich.WithSpan()
 					.CreateLogger();
 
 			services.AddControllersWithViews();
 			services.AddRazorPages();
+			services.AddSwaggerGen(c =>
+			{
+				c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo() { Title = "P2G Api", Version = "v1" });
+			});
+
+			var runtimeVersion = Environment.Version.ToString();
+			var os = Environment.OSVersion.Platform.ToString();
+			var osVersion = Environment.OSVersion.VersionString;
+			var assembly = Assembly.GetExecutingAssembly();
+			var versionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+			var version = versionInfo.ProductVersion;
+
+			BuildInfo.WithLabels(version, os, osVersion, runtimeVersion).Set(1);
+			Log.Debug("P2G Version: {@Version}", version);
+			Log.Debug("Operating System: {@Os}", osVersion);
+			Log.Debug("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -91,18 +102,18 @@ namespace WebUI.Server
 				app.UseHsts();
 			}
 
-			var observability = new Observability();
-			Configuration.GetSection(nameof(Observability)).Bind(observability);
-
 			app.UseSerilogRequestLogging();
 
 			app.UseHttpsRedirection();
 			app.UseBlazorFrameworkFiles();
 			app.UseStaticFiles();
 
+			app.UseSwagger();
+			app.UseSwaggerUI();
+
 			app.UseRouting();
 
-			if (observability.Prometheus.Enabled)
+			if (_config.Observability.Prometheus.Enabled)
 			{
 				app.UseHttpMetrics(options =>
 				{
@@ -117,25 +128,21 @@ namespace WebUI.Server
 				endpoints.MapControllers();
 				endpoints.MapFallbackToFile("index.html");
 
-				if (observability.Prometheus.Enabled)
+				if (_config.Observability.Prometheus.Enabled)
 				{
 					endpoints.MapMetrics();
 				}				
 			});
+		}
 
-
-			// TODO: this probably called too early
-			var runtimeVersion = Environment.Version.ToString();
-			var os = Environment.OSVersion.Platform.ToString();
-			var osVersion = Environment.OSVersion.VersionString;
-			var assembly = Assembly.GetExecutingAssembly();
-			var versionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-			var version = versionInfo.ProductVersion;
-
-			BuildInfo.WithLabels(version, os, osVersion, runtimeVersion).Set(1);
-			Log.Debug("P2G Version: {@Version}", version);
-			Log.Debug("Operating System: {@Os}", osVersion);
-			Log.Debug("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
+		private void LoadConfigValues(Configuration config)
+		{
+			ConfigurationProvider.GetSection(nameof(App)).Bind(config.App);
+			ConfigurationProvider.GetSection(nameof(Format)).Bind(config.Format);
+			ConfigurationProvider.GetSection(nameof(Peloton)).Bind(config.Peloton);
+			ConfigurationProvider.GetSection(nameof(Garmin)).Bind(config.Garmin);
+			ConfigurationProvider.GetSection(nameof(Observability)).Bind(config.Observability);
+			ConfigurationProvider.GetSection(nameof(Developer)).Bind(config.Developer);
 		}
 	}
 }

@@ -15,6 +15,7 @@ namespace WebUI.Server.Controllers
 		}
 
 		[HttpGet]
+		[ProducesResponseType(typeof(IAppConfiguration), 200)]
 		public IActionResult Index()
 		{
 			_config.Peloton.Email = "******" + _config.Peloton.Email.Substring(6);

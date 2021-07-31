@@ -11,7 +11,7 @@ namespace WebUI.Server.Controllers
 	public class SystemInfoController : Controller
 	{
 		[HttpGet]
-		public IActionResult Index()
+		public SystemInfoGetResponse Index()
 		{
 			var systemInfo = new SystemInfoGetResponse()
 			{
@@ -30,7 +30,7 @@ namespace WebUI.Server.Controllers
 
 			};
 
-			return Ok(systemInfo);
+			return systemInfo;
 		}
 	}
 }

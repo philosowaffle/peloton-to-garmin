@@ -28,6 +28,8 @@ namespace WebUI.Server.Controllers
 		}
 
 		[HttpPost]
+		[ProducesResponseType(typeof(SyncPostResponse), 200)]
+		[ProducesResponseType(typeof(ErrorResponse), 422)]
 		public async Task<IActionResult> PostAsync([FromBody] SyncPostRequest request)
 		{
 			Log.Information("Reached the SyncController.");

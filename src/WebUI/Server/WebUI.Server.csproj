@@ -20,6 +20,7 @@
     <PackageReference Include="Serilog.Sinks.Grafana.Loki" Version="6.0.1" />
     <PackageReference Include="Serilog.Sinks.Http" Version="7.2.0" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
   </ItemGroup>
 
   <ItemGroup>
