@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 using Peloton;
 using Prometheus;
+using Prometheus.DotNetRuntime;
 using Serilog;
 using Serilog.Enrichers.Span;
 using System;
@@ -27,14 +28,20 @@ namespace WebUI.Server
 
 		private readonly Configuration _config;
 
+		public static IDisposable Collector;
+		public IConfiguration ConfigurationProvider { get; }
+
 		public Startup(IConfiguration configuration)
 		{
 			ConfigurationProvider = configuration;
 			_config = new Configuration();
 			LoadConfigValues(_config);
-		}
 
-		public IConfiguration ConfigurationProvider { get; }
+			if (_config.Observability.Prometheus.Enabled)
+			{
+				Collector = CreateCollector();
+			}
+		}		
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -61,6 +68,8 @@ namespace WebUI.Server
 			services.AddSingleton<IPelotonService, PelotonService>();
 			services.AddSingleton<IConverter, FitConverter>(); // TODO: Switch to strategy pattern
 			services.AddSingleton<IGarminUploader, GarminUploader>();
+
+			FlurlConfiguration.Configure(_config);
 
 			Log.Logger = new LoggerConfiguration()
 					.ReadFrom.Configuration(ConfigurationProvider, sectionName: $"{nameof(Observability)}:Serilog")
@@ -143,6 +152,23 @@ namespace WebUI.Server
 			ConfigurationProvider.GetSection(nameof(Garmin)).Bind(config.Garmin);
 			ConfigurationProvider.GetSection(nameof(Observability)).Bind(config.Observability);
 			ConfigurationProvider.GetSection(nameof(Developer)).Bind(config.Developer);
+		}
+
+		private static IDisposable CreateCollector()
+		{
+			Log.Information("Metrics Enabled");
+			var builder = DotNetRuntimeStatsBuilder.Default();
+
+			return DotNetRuntimeStatsBuilder
+					.Customize()
+					.WithContentionStats()
+					.WithJitStats()
+					.WithThreadPoolStats()
+					.WithGcStats()
+					.WithExceptionStats()
+					//.WithDebuggingMetrics(true)
+					.WithErrorHandler(ex => Log.Error(ex, "Unexpected exception occurred in prometheus-net.DotNetRuntime"))
+					.StartCollecting();
 		}
 	}
 }

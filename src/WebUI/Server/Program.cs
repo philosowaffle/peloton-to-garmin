@@ -1,11 +1,13 @@
 ﻿using Common;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Enrichers.Span;
 using System;
 using System.IO;
+using WebUI.Server.Services;
 
 namespace WebUI.Server
 {
@@ -38,6 +40,10 @@ namespace WebUI.Server
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
 					webBuilder.UseStartup<Startup>();
+				})
+				.ConfigureServices(services => 
+				{
+					services.AddHostedService<SyncService>();
 				});
 		}
 	}
