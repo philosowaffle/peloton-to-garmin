@@ -17,6 +17,7 @@ namespace UnitTests.Conversion
 		[TestCase("cycling_workout")]
 		[TestCase("tread_run_workout")]
 		[TestCase("meditation_workout")]
+		[TestCase("walking_workout_01")]
 		public void Fit_Converter_Creates_Valid_Fit(string filename)
 		{
 			var workoutPath = Path.Join(DataDirectory, $"{filename}.json");
