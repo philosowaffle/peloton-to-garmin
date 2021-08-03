@@ -14,6 +14,8 @@ namespace WebUI.Server.Controllers
 	[Route("/api/sync")]
 	public class SyncController : ControllerBase
 	{
+		private static readonly ILogger _logger = LogContext.ForClass<SyncController>();
+
 		private IAppConfiguration _config;
 		private IPelotonService _pelotonService;
 		private IGarminUploader _garminUploader;
@@ -32,7 +34,7 @@ namespace WebUI.Server.Controllers
 		[ProducesResponseType(typeof(ErrorResponse), 422)]
 		public async Task<IActionResult> PostAsync([FromBody] SyncPostRequest request)
 		{
-			Log.Information("Reached the SyncController.");
+			_logger.Information("Reached the SyncController.");
 			var response = new SyncPostResponse();
 
 			if (request.NumWorkouts <= 0)
@@ -48,7 +50,7 @@ namespace WebUI.Server.Controllers
 
 			} catch (Exception e)
 			{
-				Log.Error(e, "Failed to download workouts from Peleoton.");
+				_logger.Error(e, "Failed to download workouts from Peleoton.");
 				response.SyncSuccess = false;
 				response.PelotonDownloadSuccess = false;
 				response.Errors.Add(new ErrorResponse() { Message = "Failed to download workouts from Peloton. Check logs for more details." });
@@ -62,7 +64,7 @@ namespace WebUI.Server.Controllers
 
 			} catch (Exception e)
 			{
-				Log.Error(e, "Failed to convert workouts to FIT format.");
+				_logger.Error(e, "Failed to convert workouts to FIT format.");
 				response.SyncSuccess = false;
 				response.ConverToFitSuccess = false;
 				response.Errors.Add(new ErrorResponse() { Message = "Failed to convert workouts to FIT format. Check logs for more details." });
@@ -76,8 +78,8 @@ namespace WebUI.Server.Controllers
 			}
 			catch (GarminUploadException e) 
 			{
-				Log.Error(e, "GUpload returned an error code. Failed to upload workouts.");
-				Log.Warning("GUpload failed to upload files. You can find the converted files at {@Path} \n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", _config.App.OutputDirectory);
+				_logger.Error(e, "GUpload returned an error code. Failed to upload workouts.");
+				_logger.Warning("GUpload failed to upload files. You can find the converted files at {@Path} \n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", _config.App.OutputDirectory);
 
 				response.SyncSuccess = false;
 				response.UploadToGarminSuccess = false;

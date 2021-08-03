@@ -14,6 +14,7 @@ namespace Conversion
 	public class FitConverter : Converter<Tuple<string, ICollection<Mesg>>>
 	{
 		private static readonly string _spaceSeparator = "_";
+		private static readonly ILogger _logger = LogContext.ForClass<FitConverter>();
 		public FitConverter(IAppConfiguration config, IDbClient dbClient, IFileHandling fileHandler) : base(config, dbClient, fileHandler) { }
 
 		public override void Convert()
@@ -36,9 +37,9 @@ namespace Conversion
 				finally
 				{
 					encoder.Close();
-				}			
+				}
 
-				Log.Information("Encoded FIT file {@Path}", fitDest.Name);
+				_logger.Information("Encoded FIT file {@Path}", fitDest.Name);
 			}
 		}
 
@@ -56,7 +57,7 @@ namespace Conversion
 
 			if (sport == Sport.Invalid)
 			{
-				Log.Warning("Unsupported Sport Type - Skipping {@Sport}", workout.Fitness_Discipline);
+				_logger.Warning("Unsupported Sport Type - Skipping {@Sport}", workout.Fitness_Discipline);
 				return new Tuple<string, ICollection<Mesg>>(string.Empty, null);
 			}
 
@@ -268,10 +269,10 @@ namespace Conversion
 
 		private static void Write(object sender, MesgEventArgs e)
 		{
-			Log.Verbose($"{e.mesg.Name}::");
+			_logger.Verbose($"{e.mesg.Name}::");
 			foreach (var f in e.mesg.Fields)
 			{
-				Log.Verbose($"{f.Name}::{f.GetValue()}");
+				_logger.Verbose($"{f.Name}::{f.GetValue()}");
 			}
 		}
 

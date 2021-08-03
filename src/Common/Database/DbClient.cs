@@ -20,6 +20,7 @@ namespace Common.Database
 		{
 			LabelNames = new[] { Metrics.Label.DbMethod, Metrics.Label.DbQuery }
 		});
+		private static readonly ILogger _logger = LogContext.ForClass<DbClient>();
 
 		private DataStore _database;
 		private Lazy<IDocumentCollection<SyncHistoryItem>> _syncHistoryTable;
@@ -36,7 +37,7 @@ namespace Common.Database
 
 			if (!File.Exists(configuration.App.SyncHistoryDbPath))
 			{
-				Log.Debug("Creating syncHistory db: {@Path}", configuration.App.SyncHistoryDbPath);
+				_logger.Debug("Creating syncHistory db: {@Path}", configuration.App.SyncHistoryDbPath);
 				try
 				{
 					var dir = Path.GetDirectoryName(configuration.App.SyncHistoryDbPath);
@@ -45,7 +46,7 @@ namespace Common.Database
 
 				} catch (Exception e)
 				{
-					Log.Error(e, "Failed to create syncHistory db file: {@Path}", configuration.App.SyncHistoryDbPath);
+					_logger.Error(e, "Failed to create syncHistory db file: {@Path}", configuration.App.SyncHistoryDbPath);
 					throw;
 				}
 			}
@@ -69,7 +70,7 @@ namespace Common.Database
 			} 
 			catch (Exception e)
 			{
-				Log.Error(e, "Failed to get workout from db: {@WorkoutId}", id);
+				_logger.Error(e, "Failed to get workout from db: {@WorkoutId}", id);
 				return null;
 			}
 		}
@@ -89,7 +90,7 @@ namespace Common.Database
 			}
 			catch (Exception e)
 			{
-				Log.Error(e, "Failed to upsert workout to db: {@WorkoutId}", item?.Id);
+				_logger.Error(e, "Failed to upsert workout to db: {@WorkoutId}", item?.Id);
 			}
 		}
 	}
