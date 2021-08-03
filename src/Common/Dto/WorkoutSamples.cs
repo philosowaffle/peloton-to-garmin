@@ -30,7 +30,7 @@ namespace Common.Dto
 	{
 		public float Accuracy { get; set; }
 		public float Distance { get; set; }
-		public float Distance_Display_Unit { get; set; }
+		public string Distance_Display_Unit { get; set; }
 		public float Latitude { get; set; }
 		public float Longitude { get; set; }
 		public int Seconds_Offset_From_Start { get; set; }
