@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
+using OpenTelemetry.Trace;
 using Peloton;
 using Prometheus;
 using Prometheus.DotNetRuntime;
@@ -82,6 +83,26 @@ namespace WebUI.Server
 			{
 				c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo() { Title = "P2G Api", Version = "v1" });
 			});
+
+			services.AddOpenTelemetryTracing(
+				(builder) => builder
+					.AddAspNetCoreInstrumentation(c => 
+					{
+						c.RecordException = true;
+						c.Enrich = (activity, name, rawEventObject) => 
+						{
+							activity.SetTag(TagKey.App, TagValue.P2G);
+							activity.SetTag("SpanId", activity.SpanId);
+							activity.SetTag("TraceId", activity.TraceId);
+						};
+					})
+					.AddSource("P2G")
+					.AddJaegerExporter(o => 
+					{
+						o.AgentHost = _config.Observability.Jaeger.AgentHost;
+						o.AgentPort = _config.Observability.Jaeger.AgentPort.GetValueOrDefault();
+					})
+				);
 
 			var runtimeVersion = Environment.Version.ToString();
 			var os = Environment.OSVersion.Platform.ToString();

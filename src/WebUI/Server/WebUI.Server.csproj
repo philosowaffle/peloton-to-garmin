@@ -7,6 +7,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.8" />
     <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="1.1.0" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc4" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc4" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc4" />
     <PackageReference Include="prometheus-net" Version="4.2.0" />
     <PackageReference Include="prometheus-net.DotNetRuntime" Version="4.1.0" />
