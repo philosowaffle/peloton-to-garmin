@@ -5,6 +5,7 @@ using Garmin;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Peloton;
+using Peloton.Dto;
 using Prometheus;
 using Prometheus.DotNetRuntime;
 using Serilog;
@@ -172,8 +173,15 @@ namespace PelotonToGarminConsole
 			var db = new DbClient(config, fileHandler);
 			var pelotonApiClient = new Peloton.ApiClient(config.Peloton.Email, config.Peloton.Password, config.Observability.Prometheus.Enabled);
 			var peloton = new PelotonService(config, pelotonApiClient, db, fileHandler);
+			var healthy = true;
 
-			await peloton.DownloadLatestWorkoutDataAsync();
+			try
+			{
+				await peloton.DownloadLatestWorkoutDataAsync();
+			} catch (PelotonAuthenticationError)
+			{
+				healthy = false;
+			}			
 
 			var fitConverter = new FitConverter(config, db, fileHandler);
 			fitConverter.Convert();
@@ -185,7 +193,6 @@ namespace PelotonToGarminConsole
 			try
 			{
 				await garminUploader.UploadToGarminAsync();
-				Health.Set(HealthStatus.Healthy);
 
 				fileHandler.Cleanup(config.App.DownloadDirectory);
 				fileHandler.Cleanup(config.App.UploadDirectory);
@@ -195,8 +202,10 @@ namespace PelotonToGarminConsole
 			{
 				Log.Error(e, "Garmin upload returned an error code. Failed to upload workouts.");
 				Log.Warning("GUpload failed to upload files. You can find the converted files at {@Path} \n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", config.App.OutputDirectory);
-				Health.Set(HealthStatus.UnHealthy);
+				healthy = false;
 			}
+
+			Health.Set(healthy ? HealthStatus.Healthy : HealthStatus.UnHealthy);
 		}
 	}
 }

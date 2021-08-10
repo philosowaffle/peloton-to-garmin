@@ -56,8 +56,8 @@ namespace Peloton
 				SessionId = response.session_id;
 			} catch(Exception e)
 			{
-				Log.Fatal(e, "Failed to authenticate with Peloton.");
-				throw;
+				Log.Error(e, "Failed to authenticate with Peloton.");
+				throw new PelotonAuthenticationError("Failed to authenticate with Peloton", e);
 			}
 		}
 
