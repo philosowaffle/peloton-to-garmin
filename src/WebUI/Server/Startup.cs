@@ -8,12 +8,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Peloton;
 using Prometheus;
 using Prometheus.DotNetRuntime;
 using Serilog;
-using Serilog.Enrichers.Span;
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -74,35 +74,18 @@ namespace WebUI.Server
 
 			Log.Logger = new LoggerConfiguration()
 					.ReadFrom.Configuration(ConfigurationProvider, sectionName: $"{nameof(Observability)}:Serilog")
-					.Enrich.WithSpan()
+					.Enrich.FromLogContext()
 					.CreateLogger();
 
 			services.AddControllersWithViews();
 			services.AddRazorPages();
 			services.AddSwaggerGen(c =>
 			{
-				c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo() { Title = "P2G Api", Version = "v1" });
+				c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo() { Title = "P2G API", Version = "v1" });
 			});
 
-			services.AddOpenTelemetryTracing(
-				(builder) => builder
-					.AddAspNetCoreInstrumentation(c => 
-					{
-						c.RecordException = true;
-						c.Enrich = (activity, name, rawEventObject) => 
-						{
-							activity.SetTag(TagKey.App, TagValue.P2G);
-							activity.SetTag("SpanId", activity.SpanId);
-							activity.SetTag("TraceId", activity.TraceId);
-						};
-					})
-					.AddSource("P2G")
-					.AddJaegerExporter(o => 
-					{
-						o.AgentHost = _config.Observability.Jaeger.AgentHost;
-						o.AgentPort = _config.Observability.Jaeger.AgentPort.GetValueOrDefault();
-					})
-				);
+			if (_config.Observability.Jaeger.Enabled)
+				ConfigureTracing(services);			
 
 			var runtimeVersion = Environment.Version.ToString();
 			var os = Environment.OSVersion.Platform.ToString();
@@ -190,6 +173,42 @@ namespace WebUI.Server
 					//.WithDebuggingMetrics(true)
 					.WithErrorHandler(ex => Log.Error(ex, "Unexpected exception occurred in prometheus-net.DotNetRuntime"))
 					.StartCollecting();
+		}
+
+		private void ConfigureTracing(IServiceCollection services)
+		{
+			services.AddOpenTelemetryTracing(
+				(builder) => builder
+					.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("p2g"))
+					.AddSource("P2G")
+					.SetSampler(new AlwaysOnSampler())
+					.SetErrorStatusOnException()
+					.AddAspNetCoreInstrumentation(c =>
+					{
+						c.RecordException = true;
+						c.Enrich = (activity, name, rawEventObject) =>
+						{
+							activity.SetTag(TagKey.App, TagValue.P2G);
+							activity.SetTag("SpanId", activity.SpanId);
+							activity.SetTag("TraceId", activity.TraceId);
+						};
+					})
+					.AddHttpClientInstrumentation(h =>
+					{
+						h.RecordException = true;
+						h.Enrich = (activity, name, rawEventObject) =>
+						{
+							activity.SetTag(TagKey.App, TagValue.P2G);
+							activity.SetTag("SpanId", activity.SpanId);
+							activity.SetTag("TraceId", activity.TraceId);
+						};
+					})
+					.AddJaegerExporter(o =>
+					{
+						o.AgentHost = _config.Observability.Jaeger.AgentHost;
+						o.AgentPort = _config.Observability.Jaeger.AgentPort.GetValueOrDefault();
+					})
+				);
 		}
 	}
 }
