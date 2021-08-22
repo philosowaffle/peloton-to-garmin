@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using Prometheus;
 using Serilog;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -17,6 +18,7 @@ namespace Peloton
 	public class PelotonService
 	{
 		public static readonly Histogram WorkoutDownloadDuration = Metrics.CreateHistogram("p2g_peloton_workout_download_duration_seconds", "Histogram of the entire time to download a single workouts data.");
+		public static readonly Gauge FailedDesiralizationCount = Metrics.CreateGauge("p2g_peloton_workout_download_deserialization_failed", "Number of workouts that failed to deserialize during the last sync.");
 
 		private Configuration _config;
 		private ApiClient _pelotonApi;
@@ -42,8 +44,29 @@ namespace Peloton
 
 			await _pelotonApi.InitAuthAsync();
 
-			var recentWorkouts = await _pelotonApi.GetWorkoutsAsync(_config.Peloton.NumWorkoutsToDownload);
-			var completedWorkouts = recentWorkouts.data.Where(w => 
+			List<RecentWorkout> recentWorkouts = new List<RecentWorkout>();
+			var page = 0;
+			var numWorkoutsToDownload = _config.Peloton.NumWorkoutsToDownload;
+			while(numWorkoutsToDownload > 0)
+			{
+				Log.Debug("Fetching recent workouts page: {@Page}", page);
+
+				var workouts = await _pelotonApi.GetWorkoutsAsync(_config.Peloton.NumWorkoutsToDownload, page);
+				if (workouts.data is null || workouts.data.Count <= 0)
+				{
+					Log.Debug("No more workouts found from Peloton.");
+					break;
+				}
+
+				recentWorkouts.AddRange(workouts.data);
+
+				numWorkoutsToDownload -= workouts.data.Count;
+				page++;
+			}
+
+			Log.Debug("Total workouts found: {@FoundWorkouts}", recentWorkouts.Count);
+
+			var completedWorkouts = recentWorkouts.Where(w => 
 			{
 				if (w.Status == "COMPLETE") return true;
 				Log.Debug("Skipping in progress workout. {@WorkoutId} {@WorkoutStatus} {@WorkoutType}", w.Id, w.Status, w.Fitness_Discipline);
@@ -56,6 +79,8 @@ namespace Peloton
 				Log.Debug("Skipping excluded workout type. {@WorkoutId} {@WorkoutStatus} {@WorkoutType}", w.Id, w.Status, w.Fitness_Discipline);
 				return false;
 			});
+
+			Log.Debug("Total workouts found after filtering InProgress and ExcludeWorkoutTypes: {@FoundWorkouts}", filteredWorkouts.Count());
 
 			var workingDir = _config.App.DownloadDirectory;
 			_fileHandler.MkDirIfNotExists(workingDir);
@@ -97,16 +122,15 @@ namespace Peloton
 				} catch (Exception e)
 				{
 					_failedCount++;
-					var title = "workout_failed_to_deserialize_" + _failedCount;
+					var title = "workout_failed_to_deserialize_" + workoutId;
 					Log.Error("Failed to deserialize workout from Peloton. You can find the raw data from the workout here: @FileName", title, e);
 					SaveRawData(data, title);
-					return;
+					continue;
 				}				
 
 				Log.Debug("Write peloton workout details to file for {@WorkoutId}.", workoutId);
 				File.WriteAllText(Path.Join(workingDir, $"{workoutTitle}.json"), data.ToString());
 
-				
 				var syncHistoryItem = new SyncHistoryItem(deSerializedData.Workout)
 				{
 					DownloadDate = DateTime.Now,
@@ -114,6 +138,10 @@ namespace Peloton
 
 				_dbClient.Upsert(syncHistoryItem);
 			}
+
+			FailedDesiralizationCount.Set(_failedCount);
+			if (_failedCount > 0)
+				Log.Warning("Failed to deserialize {@NumFailed} workouts. You can find the failed workouts at {@Path}", _failedCount, _config.App.JsonDirectory);
 		}
 
 		public static void ValidateConfig(Common.Peloton config)
