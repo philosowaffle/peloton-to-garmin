@@ -18,6 +18,7 @@ namespace Peloton
 	public class PelotonService
 	{
 		public static readonly Histogram WorkoutDownloadDuration = Metrics.CreateHistogram("p2g_peloton_workout_download_duration_seconds", "Histogram of the entire time to download a single workouts data.");
+		public static readonly Gauge FailedDesiralizationCount = Metrics.CreateGauge("p2g_peloton_workout_download_deserialization_failed", "Number of workouts that failed to deserialize during the last sync.");
 
 		private Configuration _config;
 		private ApiClient _pelotonApi;
@@ -121,10 +122,10 @@ namespace Peloton
 				} catch (Exception e)
 				{
 					_failedCount++;
-					var title = "workout_failed_to_deserialize_" + _failedCount;
+					var title = "workout_failed_to_deserialize_" + workoutId;
 					Log.Error("Failed to deserialize workout from Peloton. You can find the raw data from the workout here: @FileName", title, e);
 					SaveRawData(data, title);
-					return;
+					continue;
 				}				
 
 				Log.Debug("Write peloton workout details to file for {@WorkoutId}.", workoutId);
@@ -137,6 +138,10 @@ namespace Peloton
 
 				_dbClient.Upsert(syncHistoryItem);
 			}
+
+			FailedDesiralizationCount.Set(_failedCount);
+			if (_failedCount > 0)
+				Log.Warning("Failed to deserialize {@NumFailed} workouts. You can find the failed workouts at {@Path}", _failedCount, _config.App.JsonDirectory);
 		}
 
 		public static void ValidateConfig(Common.Peloton config)
