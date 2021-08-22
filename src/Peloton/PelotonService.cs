@@ -59,7 +59,7 @@ namespace Peloton
 
 				recentWorkouts.AddRange(workouts.data);
 
-				numWorkoutsToDownload -= 100;
+				numWorkoutsToDownload -= workouts.data.Count;
 				page++;
 			}
 
