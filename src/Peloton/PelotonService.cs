@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using Prometheus;
 using Serilog;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -42,8 +43,29 @@ namespace Peloton
 
 			await _pelotonApi.InitAuthAsync();
 
-			var recentWorkouts = await _pelotonApi.GetWorkoutsAsync(_config.Peloton.NumWorkoutsToDownload);
-			var completedWorkouts = recentWorkouts.data.Where(w => 
+			List<RecentWorkout> recentWorkouts = new List<RecentWorkout>();
+			var page = 0;
+			var numWorkoutsToDownload = _config.Peloton.NumWorkoutsToDownload;
+			while(numWorkoutsToDownload > 0)
+			{
+				Log.Debug("Fetching recent workouts page: {@Page}", page);
+
+				var workouts = await _pelotonApi.GetWorkoutsAsync(_config.Peloton.NumWorkoutsToDownload, page);
+				if (workouts.data is null || workouts.data.Count <= 0)
+				{
+					Log.Debug("No more workouts found from Peloton.");
+					break;
+				}
+
+				recentWorkouts.AddRange(workouts.data);
+
+				numWorkoutsToDownload -= 100;
+				page++;
+			}
+
+			Log.Debug("Total workouts found: {@FoundWorkouts}", recentWorkouts.Count);
+
+			var completedWorkouts = recentWorkouts.Where(w => 
 			{
 				if (w.Status == "COMPLETE") return true;
 				Log.Debug("Skipping in progress workout. {@WorkoutId} {@WorkoutStatus} {@WorkoutType}", w.Id, w.Status, w.Fitness_Discipline);
@@ -56,6 +78,8 @@ namespace Peloton
 				Log.Debug("Skipping excluded workout type. {@WorkoutId} {@WorkoutStatus} {@WorkoutType}", w.Id, w.Status, w.Fitness_Discipline);
 				return false;
 			});
+
+			Log.Debug("Total workouts found after filtering InProgress and ExcludeWorkoutTypes: {@FoundWorkouts}", filteredWorkouts.Count());
 
 			var workingDir = _config.App.DownloadDirectory;
 			_fileHandler.MkDirIfNotExists(workingDir);
@@ -106,7 +130,6 @@ namespace Peloton
 				Log.Debug("Write peloton workout details to file for {@WorkoutId}.", workoutId);
 				File.WriteAllText(Path.Join(workingDir, $"{workoutTitle}.json"), data.ToString());
 
-				
 				var syncHistoryItem = new SyncHistoryItem(deSerializedData.Workout)
 				{
 					DownloadDate = DateTime.Now,
