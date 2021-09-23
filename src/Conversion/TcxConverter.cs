@@ -29,6 +29,7 @@ namespace Conversion
 			XNamespace activityExtensions = "http://www.garmin.com/xmlschemas/ActivityExtension/v2";
 			XNamespace trackPointExtensions = "http://www.garmin.com/xmlschemas/TrackPointExtension/v2";
 			XNamespace profileExtension = "http://www.garmin.com/xmlschemas/ProfileExtension/v1";
+			XNamespace xsi = XNamespace.Get("http://www.w3.org/2001/XMLSchema-instance");
 
 			var sport = GetSport(workout);
 			var subSport = GetSubSport(workout);
@@ -49,10 +50,10 @@ namespace Conversion
 			lx.Add(new XElement(activityExtensions + "AverageResistance", resistanceSummary?.Average_Value));
 			lx.Add(new XElement(activityExtensions + "MaximumResistance", resistanceSummary?.Max_Value));
 
-			var extensions = new XElement("Extensions");
+			var extensions = new XElement(ns1 + "Extensions");
 			extensions.Add(lx);
 
-			var track = new XElement("Track");
+			var track = new XElement(ns1+"Track");
 			var allMetrics = samples.Metrics;
 			var hrMetrics = allMetrics.FirstOrDefault(m => m.Slug == "heart_rate");
 			var outputMetrics = allMetrics.FirstOrDefault(m => m.Slug == "output");
@@ -63,29 +64,29 @@ namespace Conversion
 			var altitudeMetrics = allMetrics.FirstOrDefault(m => m.Slug == "altitude");
 			for (var i = 0; i < samples.Seconds_Since_Pedaling_Start.Count; i++)
 			{
-				var trackPoint = new XElement("TrackPoint");
+				var trackPoint = new XElement(ns1+"TrackPoint");
 
 				if (locationMetrics is object && i < locationMetrics.Length)
 				{
-					var trackPosition = new XElement("Position");
-					trackPosition.Add(new XElement("LatitudeDegrees", locationMetrics[i].Latitude));
-					trackPosition.Add(new XElement("LongitudeDegrees", locationMetrics[i].Longitude));
+					var trackPosition = new XElement(ns1+"Position");
+					trackPosition.Add(new XElement(ns1+"LatitudeDegrees", locationMetrics[i].Latitude));
+					trackPosition.Add(new XElement(ns1+"LongitudeDegrees", locationMetrics[i].Longitude));
 
 					if (altitudeMetrics is object && i < altitudeMetrics.Values.Length)
-						trackPosition.Add(new XElement("AltitudeMeters", ConvertDistanceToMeters(altitudeMetrics.GetValue(i), altitudeMetrics.Display_Unit)));
+						trackPosition.Add(new XElement(ns1+"AltitudeMeters", ConvertDistanceToMeters(altitudeMetrics.GetValue(i), altitudeMetrics.Display_Unit)));
 
 					trackPoint.Add(trackPosition);
 				}
 
 				if (hrMetrics is object && i < hrMetrics.Values.Length)
 				{
-					var hr = new XElement("HeartRateBpm");
-					hr.Add(new XElement("Value", hrMetrics.Values[i]));
+					var hr = new XElement(ns1+"HeartRateBpm");
+					hr.Add(new XElement(ns1+"Value", hrMetrics.Values[i]));
 					trackPoint.Add(hr);
 				}
 
 				if (cadenceMetrics is object && i < cadenceMetrics.Values.Length)
-					trackPoint.Add(new XElement("Cadence", cadenceMetrics.Values[i]));
+					trackPoint.Add(new XElement(ns1+"Cadence", cadenceMetrics.Values[i]));
 
 				var tpx = new XElement(activityExtensions + "TPX");
 				if (speedMetrics is object && i < speedMetrics.Values.Length)
@@ -97,52 +98,51 @@ namespace Conversion
 				if (resistanceMetrics is object && i < resistanceMetrics.Values.Length)
 					tpx.Add(new XElement(activityExtensions + "Resistance", resistanceMetrics.Values[i]));
 
-				var trackPointExtension = new XElement("Extensions");
+				var trackPointExtension = new XElement(ns1+"Extensions");
 				trackPointExtension.Add(tpx);
 
 				trackPoint.Add(trackPointExtension);
-				trackPoint.Add(new XElement("Time", GetTimeStamp(startTime, i)));
+				trackPoint.Add(new XElement(ns1+"Time", GetTimeStamp(startTime, i)));
 
 				track.Add(trackPoint);
 			}
 
-			var lap = new XElement("Lap");
+			var lap = new XElement(ns1+"Lap");
 			lap.SetAttributeValue("StartTime", GetTimeStamp(startTime));
-			lap.Add(new XElement("TotalTimeSeconds", workout.Ride.Duration));
-			lap.Add(new XElement("Intensity", "Active"));
-			lap.Add(new XElement("Triggermethod", "Manual"));
-			lap.Add(new XElement("DistanceMeters", GetTotalDistance(samples)));
-			lap.Add(new XElement("MaximumSpeed", GetMaxSpeedMetersPerSecond(samples)));
-			lap.Add(new XElement("Calories", GetCalorieSummary(samples)?.Value));
-			lap.Add(new XElement("AverageHeartRateBpm", new XElement("Value", hrSummary?.Average_Value)));
-			lap.Add(new XElement("MaximumHeartRateBpm", new XElement("Value", hrSummary?.Max_Value)));
+			lap.Add(new XElement(ns1+"TotalTimeSeconds", workout.Ride.Duration));
+			lap.Add(new XElement(ns1+"Intensity", "Active"));
+			lap.Add(new XElement(ns1+"Triggermethod", "Manual"));
+			lap.Add(new XElement(ns1+"DistanceMeters", GetTotalDistance(samples)));
+			lap.Add(new XElement(ns1+"MaximumSpeed", GetMaxSpeedMetersPerSecond(samples)));
+			lap.Add(new XElement(ns1+"Calories", GetCalorieSummary(samples)?.Value));
+			lap.Add(new XElement(ns1+"AverageHeartRateBpm", new XElement(ns1+"Value", hrSummary?.Average_Value)));
+			lap.Add(new XElement(ns1+"MaximumHeartRateBpm", new XElement(ns1+"Value", hrSummary?.Max_Value)));
 			lap.Add(lx);
 			lap.Add(track);
 
-			var activity = new XElement("Activity");
+			var activity = new XElement(ns1 + "Activity");
 			activity.SetAttributeValue("Sport", sport);
-			activity.Add(new XElement("Id", GetTimeStamp(startTime)));
+			activity.Add(new XElement(ns1+"Id", GetTimeStamp(startTime)));
 			activity.Add(lap);
 
-			var creatorVersion = new XElement("Version");
-			creatorVersion.Add(new XElement("VersionMajor", deviceInfo.Version.VersionMajor));
-			creatorVersion.Add(new XElement("VersionMinor", deviceInfo.Version.VersionMinor));
-			creatorVersion.Add(new XElement("BuildMajor", deviceInfo.Version.BuildMajor));
-			creatorVersion.Add(new XElement("BuildMinor", deviceInfo.Version.BuildMinor));
+			var creatorVersion = new XElement(ns1+"Version");
+			creatorVersion.Add(new XElement(ns1+"VersionMajor", deviceInfo.Version.VersionMajor));
+			creatorVersion.Add(new XElement(ns1+"VersionMinor", deviceInfo.Version.VersionMinor));
+			creatorVersion.Add(new XElement(ns1+"BuildMajor", deviceInfo.Version.BuildMajor));
+			creatorVersion.Add(new XElement(ns1+"BuildMinor", deviceInfo.Version.BuildMinor));
 
-			var creator = new XElement("Creator");
-			creator.Add(new XElement("Name", deviceInfo.Name));
-			creator.Add(new XElement("UnitId", deviceInfo.UnitId));
-			creator.Add(new XElement("ProductID", deviceInfo.ProductID));
+			var creator = new XElement(ns1+"Creator");
+			creator.Add(new XAttribute(xsi + "type", "Device_t"));
+			creator.Add(new XElement(ns1+"Name", deviceInfo.Name));
+			creator.Add(new XElement(ns1+"UnitId", deviceInfo.UnitId));
+			creator.Add(new XElement(ns1+"ProductID", deviceInfo.ProductID));
 			creator.Add(creatorVersion);
 			activity.Add(creator);
 
-			var activities = new XElement("Activities");
+			var activities = new XElement(ns1 + "Activities");
 			activities.Add(activity);
-
-			var root = new XElement("TrainingCenterDatabase",
-									// new XAttribute("xsi:" + "schemaLocation", "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd"),
-									new XAttribute(XNamespace.Xmlns + nameof(ns1), ns1.NamespaceName),
+			var root = new XElement(ns1 + "TrainingCenterDatabase",
+			 						new XAttribute(XNamespace.Xmlns + "xsi", xsi.NamespaceName),
 									new XAttribute(XNamespace.Xmlns + nameof(activityExtensions), activityExtensions.NamespaceName),
 									new XAttribute(XNamespace.Xmlns + nameof(trackPointExtensions), trackPointExtensions.NamespaceName),
 									new XAttribute(XNamespace.Xmlns + nameof(profileExtension), profileExtension.NamespaceName));
