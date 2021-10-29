@@ -21,5 +21,25 @@ namespace UnitTests.Common.Dto
 			metric.GetValue(2).Should().Be(10);
 			metric.GetValue(3).Should().Be(12);
 		}
+
+		[Test]
+		public void Json_WithNullMaxVlaue_Can_Deserialzize_To_Metric()
+		{
+			var sampleMetricPayload = "{ \"display_name\": \"Pace\", \"display_unit\": \"min/mi\",\"max_value\": null,\"average_value\": 18.02,\"Values\": [-1, 10, 12]}";
+
+			var metric = JsonSerializer.Deserialize<Metric>(sampleMetricPayload, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+			metric.Values.Should().NotBeNullOrEmpty();
+			metric.Max_Value.Should().BeNull();
+		}
+
+		[Test]
+		public void Json_WithNullAvgVlaue_Can_Deserialzize_To_Metric()
+		{
+			var sampleMetricPayload = "{ \"display_name\": \"Pace\", \"display_unit\": \"min/mi\",\"max_value\": 1,\"average_value\": null,\"Values\": [-1, 10, 12]}";
+
+			var metric = JsonSerializer.Deserialize<Metric>(sampleMetricPayload, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+			metric.Values.Should().NotBeNullOrEmpty();
+			metric.Average_Value.Should().BeNull();
+		}
 	}
 }
