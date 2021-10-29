@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Dto;
+using Common.Helpers;
 using Conversion;
 using Moq.AutoMock;
 using Newtonsoft.Json.Linq;
@@ -7,6 +8,7 @@ using NUnit.Framework;
 using Peloton;
 using Serilog;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace UnitTests
@@ -56,6 +58,14 @@ namespace UnitTests
 
 		//	Log.Debug(data.ToString());
 		//	SaveRawData(data, workoutId, DataDirectory);
+		//}
+
+		//[Test]
+		//public async Task DeSerialize()
+		//{
+		//	var file = Path.Join(DataDirectory, "test.json");
+		//	var _fileHandler = new IOWrapper();
+		//	var workout = _fileHandler.DeserializeJson<P2GWorkout>(file);
 		//}
 
 		private void SaveRawData(dynamic data, string workoutId, string path)

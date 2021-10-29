@@ -263,7 +263,8 @@ namespace Conversion
 			var speedSummary = GetSpeedSummary(workoutSamples);
 			if (speedSummary is null) return 0.0f;
 
-			return ConvertToMetersPerSecond(speedSummary.Max_Value, workoutSamples);
+			var max = speedSummary.Max_Value.GetValueOrDefault();
+			return ConvertToMetersPerSecond(max, workoutSamples);
 		}
 
 		protected float GetAvgSpeedMetersPerSecond(WorkoutSamples workoutSamples)
@@ -271,7 +272,8 @@ namespace Conversion
 			var speedSummary = GetSpeedSummary(workoutSamples);
 			if (speedSummary is null) return 0.0f;
 
-			return ConvertToMetersPerSecond(speedSummary.Average_Value, workoutSamples);
+			var avg = speedSummary.Average_Value.GetValueOrDefault();
+			return ConvertToMetersPerSecond(avg, workoutSamples);
 		}
 
 		protected float GetAvgGrade(WorkoutSamples workoutSamples)
