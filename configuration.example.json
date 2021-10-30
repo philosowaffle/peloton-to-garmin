@@ -1,5 +1,4 @@
 {
-  // Config Documentation: https://github.com/philosowaffle/peloton-to-garmin/wiki/Configuration
   "App": {
     "OutputDirectory": "./output",
     "WorkingDirectory": "./working",
