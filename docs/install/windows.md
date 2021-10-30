@@ -26,7 +26,7 @@ For convenience a compiled windows executable is provided. This can easily be do
 1. Find the `PelotonToGarminConsole.exe`
 1. Double click to run it!
 
-You can learn more about customizing your configuration file over in the [Configuration Section](/configuration).
+You can learn more about customizing your configuration file over in the [Configuration Section]({{ site.baseurl }}{% link configuration/index.md %}).
 
 ## Available Versions
 
