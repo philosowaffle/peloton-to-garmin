@@ -1,1 +1,5 @@
-theme: jekyll-theme-dinky
+title: Peloton to Garmin Docs
+locale: en_US
+logo: p2g.svg
+
+theme: just-the-docs
