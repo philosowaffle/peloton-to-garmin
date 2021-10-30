@@ -1,37 +1,31 @@
-## Welcome to GitHub Pages 1
+---
+layout: default
+title: Home
+nav_order: 0
+---
 
-You can use the [editor on GitHub](https://github.com/philosowaffle/peloton-to-garmin/edit/master/docs/index.md) to maintain and preview the content for your website in Markdown files.
+# Home
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Convert workout data from Peloton into a format that can be uploaded to Garmin.
 
-### Markdown
+* Fetch latest workouts from Peloton
+* Convert Peloton workout to a variety of formats
+* Upload TCX or FIT workout to Garmin
+* Avoid duplicates in Garmin
+* Backup your downloaded data and converted files
+* Earn Badges and credit for Garmin Challenges
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Head on over to the [Install]({{ site.baseurl }}{% link install/index.md %}) page to get started!
 
-```markdown
-Syntax highlighted code block
+![Example Cycling Workout](https://github.com/philosowaffle/peloton-to-garmin/blob/master/images/example_cycle.png?raw=true "Example Cycling Workout")
 
-# Header 1
-## Header 2
-### Header 3
+## Supported Platforms
 
-- Bulleted
-- List
+* Windows
+* Mac
+* Linux
+* Docker
 
-1. Numbered
-2. List
+## Contributors
 
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/philosowaffle/peloton-to-garmin/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+Special thanks to all the [contributors](https://github.com/philosowaffle/peloton-to-garmin/graphs/contributors) who have helped improve this project!

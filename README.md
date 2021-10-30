@@ -16,7 +16,7 @@ Convert workout data from Peloton into a format that can be uploaded to Garmin.
 * Backup your downloaded data and converted files
 * Earn Badges and credit for Garmin Challenges
 
-Head on over to the [Wiki](https://github.com/philosowaffle/peloton-to-garmin/wiki/Peloton-To-Garmin---v2) to get started!
+Head on over to the [Wiki](https://philosowaffle.github.io/peloton-to-garmin) to get started!
 
 ![Example Cycling Workout](/images/example_cycle.png?raw=true "Example Cycling Workout")
 
@@ -30,8 +30,6 @@ Head on over to the [Wiki](https://github.com/philosowaffle/peloton-to-garmin/wi
 ## Contributors
 
 Special thanks to all the [contributors](https://github.com/philosowaffle/peloton-to-garmin/graphs/contributors) who have helped improve this project!
-
-Garmin Upload feature is provided by the library: https://github.com/La0/garmin-uploader
 
 ## Warnings
 
