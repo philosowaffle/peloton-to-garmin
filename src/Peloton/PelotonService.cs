@@ -58,15 +58,14 @@ namespace Peloton
 
 			List<RecentWorkout> recentWorkouts = new List<RecentWorkout>();
 			var page = 0;
-			var numWorkoutsToDownload = _config.Peloton.NumWorkoutsToDownload;
 			while(numWorkoutsToDownload > 0)
 			{
-				Log.Debug("Fetching recent workouts page: {@Page}", page);
+				_logger.Debug("Fetching recent workouts page: {@Page}", page);
 
 				var workouts = await _pelotonApi.GetWorkoutsAsync(_config.Peloton.NumWorkoutsToDownload, page);
 				if (workouts.data is null || workouts.data.Count <= 0)
 				{
-					Log.Debug("No more workouts found from Peloton.");
+					_logger.Debug("No more workouts found from Peloton.");
 					break;
 				}
 
@@ -76,7 +75,7 @@ namespace Peloton
 				page++;
 			}
 
-			Log.Debug("Total workouts found: {@FoundWorkouts}", recentWorkouts.Count);
+			_logger.Debug("Total workouts found: {@FoundWorkouts}", recentWorkouts.Count);
 
 			var completedWorkouts = recentWorkouts.Where(w => 
 			{
@@ -138,9 +137,9 @@ namespace Peloton
 					_logger.Error("Failed to deserialize workout from Peloton. You can find the raw data from the workout here: @FileName", title, e);
 					SaveRawData(data, title);
 					continue;
-				}				
+				}
 
-				Log.Debug("Write peloton workout details to file for {@WorkoutId}.", workoutId);
+				_logger.Debug("Write peloton workout details to file for {@WorkoutId}.", workoutId);
 				File.WriteAllText(Path.Join(workingDir, $"{workoutTitle}.json"), data.ToString());
 
 				var syncHistoryItem = new SyncHistoryItem(deSerializedData.Workout)
@@ -153,7 +152,7 @@ namespace Peloton
 
 			FailedDesiralizationCount.Set(_failedCount);
 			if (_failedCount > 0)
-				Log.Warning("Failed to deserialize {@NumFailed} workouts. You can find the failed workouts at {@Path}", _failedCount, _config.App.JsonDirectory);
+				_logger.Warning("Failed to deserialize {@NumFailed} workouts. You can find the failed workouts at {@Path}", _failedCount, _config.App.JsonDirectory);
 		}
 
 		public static void ValidateConfig(Common.Peloton config)

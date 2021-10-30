@@ -79,12 +79,12 @@ namespace PelotonToGarminConsole
 
 					GarminUploader.ValidateConfig(config);
 
-					_logger.Information("Config reloaded. Changes will take effect at the end of the current sleeping cycle.");
+					Log.Information("Config reloaded. Changes will take effect at the end of the current sleeping cycle.");
 				});
 
-				_logger.Debug("P2G Version: {@Version}", version);
-				_logger.Debug("Operating System: {@Os}", osVersion);
-				_logger.Debug("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
+				Log.Debug("P2G Version: {@Version}", version);
+				Log.Debug("Operating System: {@Os}", osVersion);
+				Log.Debug("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
 
 				PelotonService.ValidateConfig(config.Peloton);
 				GarminUploader.ValidateConfig(config);
@@ -134,7 +134,7 @@ namespace PelotonToGarminConsole
 					while (config.App.EnablePolling)
 					{
 						RunAsync(config).GetAwaiter().GetResult();
-						_logger.Information("Sleeping for {@Seconds} seconds...", config.App.PollingIntervalSeconds);
+						Log.Information("Sleeping for {@Seconds} seconds...", config.App.PollingIntervalSeconds);
 
 						var now = DateTime.UtcNow;
 						var nextRunTime = now.AddSeconds(config.App.PollingIntervalSeconds);
@@ -145,7 +145,7 @@ namespace PelotonToGarminConsole
 				else
 				{
 					RunAsync(config).GetAwaiter().GetResult();
-					_logger.Information("Done.");
+					Log.Information("Done.");
 				}
 			}
 			catch (Exception e)

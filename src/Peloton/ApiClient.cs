@@ -12,7 +12,7 @@ namespace Peloton
 	public interface IPelotonApi
 	{
 		Task InitAuthAsync(string overrideUserAgent = null);
-		Task<RecentWorkouts> GetWorkoutsAsync(int numWorkouts);
+		Task<RecentWorkouts> GetWorkoutsAsync(int numWorkouts, int page);
 		Task<JObject> GetWorkoutByIdAsync(string id);
 		Task<JObject> GetWorkoutSamplesByIdAsync(string id);
 	}

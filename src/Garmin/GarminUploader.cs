@@ -99,7 +99,7 @@ namespace Garmin
 						// TODO: update upload datetime in DBClient
 						_logger.Information("Uploaded workout {@workoutName}", file);
 					}
-					RateLimit();
+					await RateLimit();
 				} catch (Exception e)
 				{
 					throw new GarminUploadException($"NativeImplV1 failed to upload workout {file}", -1, e);
@@ -107,13 +107,13 @@ namespace Garmin
 			}
 		}
 
-		private void RateLimit()
+		private async Task RateLimit()
 		{
 			using var tracer = Tracing.Trace("UploadToGarminRateLimit");
 
 			var waitDuration = _random.Next(1000, 5000);
 			_logger.Information($"Rate limiting, upload will continue after {waitDuration / 1000} seconds...");
-			Thread.Sleep(waitDuration);
+			await Task.Delay(waitDuration);
 		}
 
 		private void UploadViaPython(string[] files)
