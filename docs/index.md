@@ -15,7 +15,7 @@ Convert workout data from Peloton into a format that can be uploaded to Garmin.
 * Backup your downloaded data and converted files
 * Earn Badges and credit for Garmin Challenges
 
-Head on over to the [Quick Start](/Install) to get started!
+Head on over to the [Quick Start](/install) to get started!
 
 ![Example Cycling Workout](/images/example_cycle.png?raw=true "Example Cycling Workout")
 
