@@ -3,4 +3,5 @@ repository: philosowaffle/peloton-to-garmin
 locale: en_US
 logo: p2g.svg
 
-theme: just-the-docs
+# theme: just-the-docs
+remote_theme: pmarsceill/just-the-docs
