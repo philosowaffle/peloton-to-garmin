@@ -17,7 +17,6 @@ The Docker container expects a valid `configuration.local.json` file is mounted 
 
 ```yaml
 version: "3.9"
-
 services:
   p2g:
     container_name: p2g
@@ -36,7 +35,6 @@ If you configure P2G to server Prometheus metrics then you will also need to map
 
 ```yaml
 version: "3.9"
-
 services:
   p2g:
     container_name: p2g

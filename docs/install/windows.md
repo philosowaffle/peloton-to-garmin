@@ -18,7 +18,7 @@ For convenience a compiled windows executable is provided. This can easily be do
         "Password": "garmin",
         "Upload": false,
         "FormatToUpload": "fit",
-        "UploadStrategy": 0
+        "UploadStrategy": 2
         }
     ```
     1. Be sure to set your usernames and passwords in Garmin and Peloton config sections respectively.
