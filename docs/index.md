@@ -1,3 +1,9 @@
+---
+layout: default
+title: Home
+nav_order: 0
+---
+
 ## peloton-to-garmin
 
 You can use the [editor on GitHub](https://github.com/philosowaffle/peloton-to-garmin/edit/master/docs/index.md) to maintain and preview the content for your website in Markdown files.
