@@ -41,6 +41,8 @@ aux_links:
     - "//github.com/philosowaffle/peloton-to-garmin"
   "Join the discussion":
     - "//github.com/philosowaffle/peloton-to-garmin/discussions"
+  "Donate":
+    - "https://www.buymeacoffee.com/philosowaffle"
   
 back_to_top: true
 back_to_top_text: "Back to top"
