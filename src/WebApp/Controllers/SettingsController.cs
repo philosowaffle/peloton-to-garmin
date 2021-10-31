@@ -1,6 +1,6 @@
 ﻿using Common;
 using Microsoft.AspNetCore.Mvc;
-using WebUI.Shared;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {

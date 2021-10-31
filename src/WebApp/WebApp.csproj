@@ -29,7 +29,6 @@
     <ProjectReference Include="..\Conversion\Conversion.csproj" />
     <ProjectReference Include="..\Garmin\Garmin.csproj" />
     <ProjectReference Include="..\Peloton\Peloton.csproj" />
-    <ProjectReference Include="..\WebUI\Shared\WebUI.Shared.csproj" />
   </ItemGroup>
 
 </Project>

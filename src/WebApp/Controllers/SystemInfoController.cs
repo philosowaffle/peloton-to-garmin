@@ -2,7 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
-using WebUI.Shared;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {

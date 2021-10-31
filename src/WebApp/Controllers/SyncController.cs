@@ -6,7 +6,7 @@ using Peloton;
 using Serilog;
 using System;
 using System.Threading.Tasks;
-using WebUI.Shared;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {

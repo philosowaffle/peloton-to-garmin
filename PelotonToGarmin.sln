@@ -46,13 +46,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "grafana", "grafana", "{D569
 		grafana\p2g_dashboard.json = grafana\p2g_dashboard.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebUI.Server", "src\WebUI\Server\WebUI.Server.csproj", "{DF89CC6D-EEE5-42B3-BCEB-491754A2280E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebUI.Client", "src\WebUI\Client\WebUI.Client.csproj", "{4691A3F8-E856-4068-8EB4-D6C639171FFD}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebUI.Shared", "src\WebUI\Shared\WebUI.Shared.csproj", "{B23E807C-1437-404E-8BDA-6CCEC97DD157}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "src\WebApp\WebApp.csproj", "{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp", "src\WebApp\WebApp.csproj", "{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,18 +78,6 @@ Global
 		{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DF89CC6D-EEE5-42B3-BCEB-491754A2280E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DF89CC6D-EEE5-42B3-BCEB-491754A2280E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DF89CC6D-EEE5-42B3-BCEB-491754A2280E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DF89CC6D-EEE5-42B3-BCEB-491754A2280E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4691A3F8-E856-4068-8EB4-D6C639171FFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4691A3F8-E856-4068-8EB4-D6C639171FFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4691A3F8-E856-4068-8EB4-D6C639171FFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4691A3F8-E856-4068-8EB4-D6C639171FFD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B23E807C-1437-404E-8BDA-6CCEC97DD157}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B23E807C-1437-404E-8BDA-6CCEC97DD157}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B23E807C-1437-404E-8BDA-6CCEC97DD157}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B23E807C-1437-404E-8BDA-6CCEC97DD157}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Release|Any CPU.ActiveCfg = Release|Any CPU
