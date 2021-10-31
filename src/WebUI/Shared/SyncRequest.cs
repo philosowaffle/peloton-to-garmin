@@ -23,4 +23,10 @@ namespace WebUI.Shared
 		public bool? UploadToGarminSuccess { get; set; }
 		public ICollection<ErrorResponse> Errors { get; set; }
 	}
+
+	public class SyncViewModel
+	{
+		public SyncPostRequest Request { get; set; }
+		public SyncPostResponse Response { get; set; }
+	}
 }
