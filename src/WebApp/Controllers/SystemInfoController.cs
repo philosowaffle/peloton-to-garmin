@@ -35,8 +35,8 @@ namespace WebApp.Controllers
 
 				Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion,
 
-				Website = "https://github.com/philosowaffle/peloton-to-garmin",
-				Documentation = "https://github.com/philosowaffle/peloton-to-garmin/wiki/Peloton-To-Garmin---v2",
+				GitHub = "https://github.com/philosowaffle/peloton-to-garmin",
+				Documentation = "https://philosowaffle.github.io/peloton-to-garmin/",
 				Forums = "https://github.com/philosowaffle/peloton-to-garmin/discussions",
 				Donate = "https://www.buymeacoffee.com/philosowaffle",
 				Issues = "https://github.com/philosowaffle/peloton-to-garmin/issues",

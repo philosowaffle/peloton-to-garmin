@@ -119,3 +119,26 @@ main {
     padding-right: 25px;
     line-height: 7vh; /* Vertically center the text there */
 }
+
+/* Custom Styles
+-------------------------------------------------- */
+.bold-label {
+    font-weight: bold !important;
+}
+
+td {
+    text-align: justify;
+    width: 25vw;
+}
+
+td.font-weight-bold {
+    color: #928d8d;
+}
+
+h1 {
+    color: #302f2f;
+}
+
+h3 {
+    color: #4a4949;
+}
