@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Database;
 using Conversion;
 using Garmin;
 using Microsoft.AspNetCore.Mvc;
@@ -19,13 +20,15 @@ namespace WebApp.Controllers
 		private IPelotonService _pelotonService;
 		private IGarminUploader _garminUploader;
 		private IConverter _converter;
+		private IDbClient _db;
 
-		public SyncController(IAppConfiguration appConfiguration, IPelotonService pelotonService, IGarminUploader garminUploader, IConverter converter)
+		public SyncController(IAppConfiguration appConfiguration, IPelotonService pelotonService, IGarminUploader garminUploader, IConverter converter, IDbClient db)
 		{
 			_config = appConfiguration;
 			_pelotonService = pelotonService;
 			_garminUploader = garminUploader;
 			_converter = converter;
+			_db = db;
 		}
 
 		[HttpGet]
@@ -33,7 +36,19 @@ namespace WebApp.Controllers
 		[ApiExplorerSettings(IgnoreApi = true)]
 		public ActionResult Index()
 		{
-			var model = new SyncViewModel();
+			var syncTime = _db.GetSyncTime();
+
+			var model = new SyncViewModel()
+			{
+				GetResponse = new SyncGetResponse()
+				{
+					AutoSyncEnabled = _config.App.EnablePolling,
+					AutoSyncHealth = syncTime.AutoSyncServiceStatus,
+					LastSuccessfulSyncTime = syncTime.LastSuccessfulSyncTime,
+					LastSyncTime = syncTime.LastSyncTime,
+					NextSyncTime = syncTime.NextSyncTime
+				}
+			};
 			return View(model);
 		}
 
@@ -44,6 +59,17 @@ namespace WebApp.Controllers
 		{
 			var model = new SyncViewModel();
 			model.Response = await SyncAsync(request.NumWorkouts);
+
+			var syncTime = _db.GetSyncTime();
+			model.GetResponse = new SyncGetResponse()
+			{
+				AutoSyncEnabled = _config.App.EnablePolling,
+				AutoSyncHealth = syncTime.AutoSyncServiceStatus,
+				LastSuccessfulSyncTime = syncTime.LastSuccessfulSyncTime,
+				LastSyncTime = syncTime.LastSyncTime,
+				NextSyncTime = syncTime.NextSyncTime
+			};
+
 			return View("Index", model);
 		}
 
@@ -62,6 +88,7 @@ namespace WebApp.Controllers
 		{
 			_logger.Information("Reached the SyncController.");
 			var response = new SyncPostResponse();
+			var syncTime = _db.GetSyncTime();
 
 			try
 			{
@@ -108,6 +135,10 @@ namespace WebApp.Controllers
 				response.Errors.Add(new ErrorResponse() { Message = "Failed to upload to Garmin Connect. Check logs for more details." });
 				return response;
 			}
+
+			syncTime.LastSyncTime = DateTime.Now;
+			syncTime.LastSuccessfulSyncTime = DateTime.Now;
+			_db.UpsertSyncTime(syncTime);
 
 			response.SyncSuccess = true;
 			return response;

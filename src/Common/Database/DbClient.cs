@@ -12,6 +12,8 @@ namespace Common.Database
 	{
 		SyncHistoryItem Get(string id);
 		void Upsert(SyncHistoryItem item);
+		SyncTime GetSyncTime();
+		void UpsertSyncTime(SyncTime syncTime);
 	}
 
 	public class DbClient : IDbClient
@@ -72,6 +74,45 @@ namespace Common.Database
 			{
 				_logger.Error(e, "Failed to get workout from db: {@WorkoutId}", id);
 				return null;
+			}
+		}
+
+		public SyncTime GetSyncTime()
+		{
+			using var metrics = DbActionDuration
+									.WithLabels("select", "SyncTime")
+									.NewTimer();
+			using var tracing = Tracing.Trace("select", TagValue.Db)
+										.WithTable("SyncTime");
+
+			try
+			{
+				var syncTime = _database.GetItem<SyncTime>("syncTime");
+				return syncTime ?? new SyncTime();
+
+			}
+			catch (Exception e)
+			{
+				_logger.Error(e, "Failed to get last sync time from db.");
+				return new SyncTime();
+			}
+		}
+
+		public void UpsertSyncTime(SyncTime newSyncTime)
+		{
+			using var metrics = DbActionDuration
+									.WithLabels("upsert", "SyncTime")
+									.NewTimer();
+			using var tracing = Tracing.Trace("upsert", TagValue.Db)
+										.WithTable("SyncTime");
+
+			try
+			{
+				_database.ReplaceItem("syncTime", newSyncTime, upsert: true);
+			}
+			catch (Exception e)
+			{
+				_logger.Error(e, "Failed to upsert sync time in db.");
 			}
 		}
 

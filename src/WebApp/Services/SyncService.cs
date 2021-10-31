@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Database;
 using Conversion;
 using Garmin;
 using Microsoft.Extensions.Hosting;
@@ -31,20 +32,31 @@ namespace WebApp.Services
 		private readonly IGarminUploader _garminUploader;
 		private readonly IConverter _converter;
 		private readonly IFileHandling _fileHandler;
+		private readonly IDbClient _db;
 
-		public SyncService(IAppConfiguration config, IPelotonService pelotonService, IGarminUploader garminUploader, IConverter converter, IFileHandling fileHandling)
+		public SyncService(IAppConfiguration config, IPelotonService pelotonService, IGarminUploader garminUploader, IConverter converter, IFileHandling fileHandling, IDbClient db)
 		{
 			_config = config;
 			_pelotonService = pelotonService;
 			_garminUploader = garminUploader;
 			_converter = converter;
 			_fileHandler = fileHandling;
+			_db = db;
 		}
 
 		protected override Task ExecuteAsync(CancellationToken stoppingToken)
 		{
 			if (!_config.App.EnablePolling)
+			{
+				var syncTime = _db.GetSyncTime();
+				syncTime.NextSyncTime = null;
+				syncTime.AutoSyncServiceStatus = "Not Running";
+				_db.UpsertSyncTime(syncTime);
+
 				return Task.CompletedTask;
+
+			}
+				
 
 			_logger.Information("Starting Sync Service....");
 			return RunAsync();
@@ -59,6 +71,10 @@ namespace WebApp.Services
 				{
 					using var timer = SyncHistogram.NewTimer();
 					using var activity = Tracing.Trace(nameof(RunAsync));
+
+					var syncTime = _db.GetSyncTime();
+					syncTime = syncTime ?? new SyncTime();
+					syncTime.LastSyncTime = DateTime.Now;
 
 					await _pelotonService.DownloadLatestWorkoutDataAsync();
 
@@ -88,6 +104,12 @@ namespace WebApp.Services
 
 					var now = DateTime.UtcNow;
 					var nextRunTime = now.AddSeconds(_config.App.PollingIntervalSeconds);
+					
+					syncTime.NextSyncTime = nextRunTime;
+					syncTime.LastSuccessfulSyncTime = Health.Value == HealthStatus.Healthy ? DateTime.Now : syncTime.LastSuccessfulSyncTime;
+					syncTime.AutoSyncServiceStatus = Health.Value == HealthStatus.Healthy ? "Healthy" : "Uhealthy";
+					_db.UpsertSyncTime(syncTime);
+
 					NextSyncTime.Set(new DateTimeOffset(nextRunTime).ToUnixTimeSeconds());
 					Thread.Sleep(_config.App.PollingIntervalSeconds * 1000);
 				}
@@ -95,7 +117,12 @@ namespace WebApp.Services
 			{
 				_logger.Fatal(e, "Uncaught Exception.");
 				_logger.Information("Sync Service no longer running.");
+
 				Health.Set(HealthStatus.Dead);
+				var syncTime = _db.GetSyncTime();
+				syncTime.NextSyncTime = null;
+				syncTime.AutoSyncServiceStatus = "Dead";
+				_db.UpsertSyncTime(syncTime);
 			}
 		}
 	} 

@@ -46,3 +46,13 @@
         }
     }
 </div>
+
+<div>
+    <ul>
+        <li>Last Sync Time: @Model.GetResponse.LastSyncTime</li>
+        <li>Last Successful Sync: @Model.GetResponse.LastSuccessfulSyncTime</li>
+        <li>Next Sync: @Model.GetResponse.NextSyncTime</li>
+        <li>Auto Sync Enabled: @Model.GetResponse.AutoSyncEnabled</li>
+        <li>Auto Sync Status: @Model.GetResponse.AutoSyncHealth</li>
+    </ul>
+</div>
