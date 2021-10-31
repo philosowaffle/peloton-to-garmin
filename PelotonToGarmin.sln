@@ -52,6 +52,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebUI.Client", "src\WebUI\C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebUI.Shared", "src\WebUI\Shared\WebUI.Shared.csproj", "{B23E807C-1437-404E-8BDA-6CCEC97DD157}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "src\WebApp\WebApp.csproj", "{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -94,6 +96,10 @@ Global
 		{B23E807C-1437-404E-8BDA-6CCEC97DD157}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B23E807C-1437-404E-8BDA-6CCEC97DD157}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B23E807C-1437-404E-8BDA-6CCEC97DD157}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
