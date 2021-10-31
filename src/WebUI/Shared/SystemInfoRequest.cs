@@ -11,5 +11,6 @@
 		public string Forums { get; set; }
 		public string Donate { get; set; }
 		public string Issues { get; set; }
+		public string Api { get; set; }
 	}
 }
