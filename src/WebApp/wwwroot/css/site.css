@@ -1,15 +1,53 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
-a.navbar-brand {
+/*a.navbar-brand {
   white-space: normal;
   text-align: center;
   word-break: break-all;
+}*/
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
 }
 
+#nav-menu {
+    width: 15vw;
+    min-height: 100vh;
+    color: #FFF !important;
+    display: block !important;
+    /* https://coolors.co/gradient-maker/4d1082-103783 */
+    background: hsla(272, 78%, 29%, 1);
+    background: linear-gradient(90deg, hsla(272, 78%, 29%, 1) 0%, hsla(220, 78%, 29%, 1) 100%);
+    background: -moz-linear-gradient(90deg, hsla(272, 78%, 29%, 1) 0%, hsla(220, 78%, 29%, 1) 100%);
+    background: -webkit-linear-gradient(90deg, hsla(272, 78%, 29%, 1) 0%, hsla(220, 78%, 29%, 1) 100%);
+}
+
+    #nav-menu .navbar-brand {
+        max-height: 7vh;
+        line-height: 7vh;
+        width: 15vw;
+        padding-right: 0px;
+        margin-right: 0px;
+        background: #173164;
+        color: #fff;
+        text-align: center;
+    }
+
+    #nav-menu ul.navbar-nav {
+        line-height: 5vh;
+        max-height: 5vh;
+        text-align: center;
+    }
+
+        #nav-menu ul.navbar-nav a {
+            color: #fff;
+        }
 /* Provide sufficient contrast against white background */
 a {
-  color: #0366d6;
+    color: #427ced;
 }
 
 .btn-primary {
@@ -58,14 +96,26 @@ html {
   min-height: 100%;
 }
 
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
+main {
+    margin-top: 80px;
+    padding-top: 25px;
 }
+
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px; /* Vertically center the text there */
+    position: absolute;
+    left: 15vw;
+    width: calc(100%-15vw);
+    bottom: 0;
+    white-space: nowrap;
+    line-height: 5vh; /* Vertically center the text there */
+}
+
+.header {
+    position: absolute;
+    left: 15vw;
+    width: calc(100% - 15vw);
+    background: #eeeaea;
+    white-space: nowrap;
+    padding-right: 25px;
+    line-height: 7vh; /* Vertically center the text there */
 }
