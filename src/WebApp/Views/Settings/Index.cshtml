@@ -1,0 +1,131 @@
+﻿@model WebUI.Shared.SettingsGetResponse 
+@{
+    ViewData["Title"] = "Settings";
+    ViewBag.Page = "settings";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>App Config</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Output Directory:</td>
+            <td>@Model.App.OutputDirectory</td>
+        </tr>
+        <tr>
+            <td>Working Directory:</td>
+            <td>@Model.App.WorkingDirectory</td>
+        </tr>
+        <tr>
+            <td>Sync History Db Path:</td>
+            <td>@Model.App.SyncHistoryDbPath</td>
+        </tr>
+        <tr>
+            <td>Enable Polling:</td>
+            <td>@Model.App.EnablePolling</td>
+        </tr>
+        <tr>
+            <td>Polling Interval Seconds:</td>
+            <td>@Model.App.PollingIntervalSeconds</td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Format Config</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Fit:</td>
+            <td>@Model.Format.Fit</td>
+        </tr>
+        <tr>
+            <td>Json:</td>
+            <td>@Model.Format.Json</td>
+        </tr>
+        <tr>
+            <td>TCX:</td>
+            <td>@Model.Format.Tcx</td>
+        </tr>
+        <tr>
+            <td>Save Local Copy:</td>
+            <td>@Model.Format.SaveLocalCopy</td>
+        </tr>
+        <tr>
+            <td>Include Time in HR Zones:</td>
+            <td>@Model.Format.IncludeTimeInHRZones</td>
+        </tr>
+        <tr>
+            <td>Include Time in Power Zones:</td>
+            <td>@Model.Format.IncludeTimeInPowerZones</td>
+        </tr>
+        <tr>
+            <td>Device Info Path:</td>
+            <td>@Model.Format.DeviceInfoPath</td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Peloton Config</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Email:</td>
+            <td>@Model.Peloton.Email</td>
+        </tr>
+        <tr>
+            <td>Password:</td>
+            <td>@Model.Peloton.Password</td>
+        </tr>
+        <tr>
+            <td>Number of Workouts to Download:</td>
+            <td>@Model.Peloton.NumWorkoutsToDownload</td>
+        </tr>
+        <tr>
+            <td>Excluded Workout Types:</td>
+            <td>@Model.Peloton.ExcludeWorkoutTypes</td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Garmin Config</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Email:</td>
+            <td>@Model.Garmin.Email</td>
+        </tr>
+        <tr>
+            <td>Password:</td>
+            <td>@Model.Garmin.Password</td>
+        </tr>
+        <tr>
+            <td>Format To Upload:</td>
+            <td>@Model.Garmin.FormatToUpload</td>
+        </tr>
+        <tr>
+            <td>Garmin Upload Strategy:</td>
+            <td>@Model.Garmin.UploadStrategy</td>
+        </tr>
+    </tbody>
+</table>
