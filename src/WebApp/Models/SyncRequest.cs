@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Database;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -7,8 +8,22 @@ namespace WebApp.Models
 
 	public class SyncGetResponse
 	{
-		public bool AutoSyncEnabled { get; set; }
-		public string AutoSyncHealth { get; set; }
+		public bool SyncEnabled { get; set; }
+		public string AutoSyncHealthString
+		{
+			get {
+				switch (SyncStatus)
+				{
+					case Status.Dead: return "Dead";
+					case Status.NotRunning: return "Not Running";
+					case Status.Running: return "Running";
+					case Status.UnHealthy: return "Unhealthy";
+				}
+
+				return "Unknown";
+			}
+		}
+		public Status SyncStatus { get; set; }
 		public DateTime? LastSyncTime { get; set; }
 		public DateTime? LastSuccessfulSyncTime { get; set; }
 		public DateTime? NextSyncTime { get; set; }

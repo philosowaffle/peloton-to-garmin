@@ -45,7 +45,7 @@ namespace WebApp
 				})
 				.ConfigureServices(services =>
 				{
-					services.AddHostedService<SyncService>();
+					services.AddHostedService<BackgroundSyncJob>();
 				});
 	}
 }

@@ -71,8 +71,10 @@ namespace WebApp
 			services.AddSingleton<IFileHandling, IOWrapper>();
 			services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
 			services.AddSingleton<IPelotonService, PelotonService>();
-			services.AddSingleton<IConverter, FitConverter>(); // TODO: Switch to strategy pattern
 			services.AddSingleton<IGarminUploader, GarminUploader>();
+
+			services.AddSingleton<IConverter, FitConverter>();
+			services.AddSingleton<IConverter, TcxConverter>();
 
 			FlurlConfiguration.Configure(_config);
 

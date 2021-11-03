@@ -43,6 +43,7 @@ namespace Common
 			OutputDirectory = Path.Join(Environment.CurrentDirectory, "output");
 			WorkingDirectory = Path.Join(Environment.CurrentDirectory, "working");
 			SyncHistoryDbPath = Path.Join(OutputDirectory, "syncHistory.json");
+			ConfigDbPath = Path.Join(OutputDirectory, "config.json");
 
 			EnablePolling = true;
 			PollingIntervalSeconds = 3600;
@@ -52,6 +53,7 @@ namespace Common
 		public string WorkingDirectory { get; set; }
 		
 		public string SyncHistoryDbPath { get; set; }
+		public string ConfigDbPath { get; set; }
 		public bool EnablePolling { get; set; }
 		public int PollingIntervalSeconds { get; set; }
 		public bool? PythonAndGUploadInstalled { get; set; }

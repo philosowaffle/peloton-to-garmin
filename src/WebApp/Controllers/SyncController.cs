@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Peloton;
 using Serilog;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApp.Models;
 
@@ -19,15 +20,15 @@ namespace WebApp.Controllers
 		private IAppConfiguration _config;
 		private IPelotonService _pelotonService;
 		private IGarminUploader _garminUploader;
-		private IConverter _converter;
+		private IEnumerable<IConverter> _converters;
 		private IDbClient _db;
 
-		public SyncController(IAppConfiguration appConfiguration, IPelotonService pelotonService, IGarminUploader garminUploader, IConverter converter, IDbClient db)
+		public SyncController(IAppConfiguration appConfiguration, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, IDbClient db)
 		{
 			_config = appConfiguration;
 			_pelotonService = pelotonService;
 			_garminUploader = garminUploader;
-			_converter = converter;
+			_converters = converters;
 			_db = db;
 		}
 
@@ -42,8 +43,8 @@ namespace WebApp.Controllers
 			{
 				GetResponse = new SyncGetResponse()
 				{
-					AutoSyncEnabled = _config.App.EnablePolling,
-					AutoSyncHealth = syncTime.AutoSyncServiceStatus,
+					SyncEnabled = _config.App.EnablePolling,
+					SyncStatus = syncTime.SyncStatus,
 					LastSuccessfulSyncTime = syncTime.LastSuccessfulSyncTime,
 					LastSyncTime = syncTime.LastSyncTime,
 					NextSyncTime = syncTime.NextSyncTime
@@ -63,8 +64,8 @@ namespace WebApp.Controllers
 			var syncTime = _db.GetSyncTime();
 			model.GetResponse = new SyncGetResponse()
 			{
-				AutoSyncEnabled = _config.App.EnablePolling,
-				AutoSyncHealth = syncTime.AutoSyncServiceStatus,
+				SyncEnabled = _config.App.EnablePolling,
+				SyncStatus = syncTime.SyncStatus,
 				LastSuccessfulSyncTime = syncTime.LastSuccessfulSyncTime,
 				LastSyncTime = syncTime.LastSyncTime,
 				NextSyncTime = syncTime.NextSyncTime
@@ -86,7 +87,7 @@ namespace WebApp.Controllers
 
 		private async Task<SyncPostResponse> SyncAsync(int numWorkouts)
 		{
-			_logger.Information("Reached the SyncController.");
+			_logger.Verbose("Reached the SyncController.");
 			var response = new SyncPostResponse();
 			var syncTime = _db.GetSyncTime();
 
@@ -107,9 +108,11 @@ namespace WebApp.Controllers
 
 			try
 			{
-				_converter.Convert();
+				foreach (var converter in _converters)
+				{
+					converter.Convert();
+				}
 				response.ConverToFitSuccess = true;
-
 			}
 			catch (Exception e)
 			{

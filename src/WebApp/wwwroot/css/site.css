@@ -142,3 +142,7 @@ h1 {
 h3 {
     color: #4a4949;
 }
+
+.home-page-badge {
+    margin-left: 7.5rem !important;
+}

@@ -12,8 +12,8 @@ namespace Common.Database
 	{
 		SyncHistoryItem Get(string id);
 		void Upsert(SyncHistoryItem item);
-		SyncTime GetSyncTime();
-		void UpsertSyncTime(SyncTime syncTime);
+		SyncServiceStatus GetSyncTime();
+		void UpsertSyncTime(SyncServiceStatus syncTime);
 	}
 
 	public class DbClient : IDbClient
@@ -24,7 +24,7 @@ namespace Common.Database
 		});
 		private static readonly ILogger _logger = LogContext.ForClass<DbClient>();
 
-		private DataStore _database;
+		private DataStore _configDatabase;
 		private Lazy<IDocumentCollection<SyncHistoryItem>> _syncHistoryTable;
 		private IFileHandling _fileHandler;
 
@@ -53,8 +53,9 @@ namespace Common.Database
 				}
 			}
 
-			_database = new DataStore(configuration.App.SyncHistoryDbPath);
-			_syncHistoryTable = new Lazy<IDocumentCollection<SyncHistoryItem>>(() => _database.GetCollection<SyncHistoryItem>());
+			_configDatabase = new DataStore(configuration.App.ConfigDbPath);
+			var syncHistoryDb = new DataStore(configuration.App.SyncHistoryDbPath);
+			_syncHistoryTable = new Lazy<IDocumentCollection<SyncHistoryItem>>(() => syncHistoryDb.GetCollection<SyncHistoryItem>());
 		}
 
 		public SyncHistoryItem Get(string id)
@@ -77,7 +78,7 @@ namespace Common.Database
 			}
 		}
 
-		public SyncTime GetSyncTime()
+		public SyncServiceStatus GetSyncTime()
 		{
 			using var metrics = DbActionDuration
 									.WithLabels("select", "SyncTime")
@@ -87,18 +88,18 @@ namespace Common.Database
 
 			try
 			{
-				var syncTime = _database.GetItem<SyncTime>("syncTime");
-				return syncTime ?? new SyncTime();
+				var syncTime = _configDatabase.GetItem<SyncServiceStatus>("syncTime");
+				return syncTime ?? new SyncServiceStatus();
 
 			}
 			catch (Exception e)
 			{
 				_logger.Error(e, "Failed to get last sync time from db.");
-				return new SyncTime();
+				return new SyncServiceStatus();
 			}
 		}
 
-		public void UpsertSyncTime(SyncTime newSyncTime)
+		public void UpsertSyncTime(SyncServiceStatus newSyncTime)
 		{
 			using var metrics = DbActionDuration
 									.WithLabels("upsert", "SyncTime")
@@ -108,7 +109,7 @@ namespace Common.Database
 
 			try
 			{
-				_database.ReplaceItem("syncTime", newSyncTime, upsert: true);
+				_configDatabase.ReplaceItem("syncTime", newSyncTime, upsert: true);
 			}
 			catch (Exception e)
 			{
