@@ -85,10 +85,10 @@ namespace WebApp.Services
 
 			if (StateChanged())
 			{
-				var syncTime = _db.GetSyncTime();
+				var syncTime = _db.GetSyncStatus();
 				syncTime.NextSyncTime = shouldPoll ? DateTime.Now : null;
 				syncTime.SyncStatus = shouldPoll ? Status.Running : Status.NotRunning;
-				_db.UpsertSyncTime(syncTime);
+				_db.UpsertSyncStatus(syncTime);
 
 				if (shouldPoll) _logger.Information("Sync Service started.");
 				else _logger.Information("Sync Service stopped.");
@@ -137,7 +137,7 @@ namespace WebApp.Services
 				var now = DateTime.UtcNow;
 				var nextRunTime = now.AddSeconds(_config.App.PollingIntervalSeconds);
 
-				var syncStatus = _db.GetSyncTime();
+				var syncStatus = _db.GetSyncStatus();
 				syncStatus.LastSyncTime = DateTime.Now;
 				syncStatus.LastSuccessfulSyncTime = Health.Value == HealthStatus.Healthy ? DateTime.Now : syncStatus.LastSuccessfulSyncTime;
 				syncStatus.NextSyncTime = nextRunTime;
@@ -145,7 +145,7 @@ namespace WebApp.Services
 										Health.Value == HealthStatus.Dead ? Status.Dead :
 										Status.Running;
 
-				_db.UpsertSyncTime(syncStatus);
+				_db.UpsertSyncStatus(syncStatus);
 
 				NextSyncTime.Set(new DateTimeOffset(nextRunTime).ToUnixTimeSeconds());
 			}

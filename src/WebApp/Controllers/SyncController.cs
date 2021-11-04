@@ -37,7 +37,7 @@ namespace WebApp.Controllers
 		[ApiExplorerSettings(IgnoreApi = true)]
 		public ActionResult Index()
 		{
-			var syncTime = _db.GetSyncTime();
+			var syncTime = _db.GetSyncStatus();
 
 			var model = new SyncViewModel()
 			{
@@ -61,7 +61,7 @@ namespace WebApp.Controllers
 			var model = new SyncViewModel();
 			model.Response = await SyncAsync(request.NumWorkouts);
 
-			var syncTime = _db.GetSyncTime();
+			var syncTime = _db.GetSyncStatus();
 			model.GetResponse = new SyncGetResponse()
 			{
 				SyncEnabled = _config.App.EnablePolling,
@@ -89,7 +89,7 @@ namespace WebApp.Controllers
 		{
 			_logger.Verbose("Reached the SyncController.");
 			var response = new SyncPostResponse();
-			var syncTime = _db.GetSyncTime();
+			var syncTime = _db.GetSyncStatus();
 
 			try
 			{
@@ -141,7 +141,7 @@ namespace WebApp.Controllers
 
 			syncTime.LastSyncTime = DateTime.Now;
 			syncTime.LastSuccessfulSyncTime = DateTime.Now;
-			_db.UpsertSyncTime(syncTime);
+			_db.UpsertSyncStatus(syncTime);
 
 			response.SyncSuccess = true;
 			return response;

@@ -35,12 +35,17 @@
     <p>This is a work in progress and not guaranteed to fully work yet. Feel free to check it out.</p>
 </div>
 
+<br />
+
 <div class="card @syncStatusBorderClass mb-3" style="max-width: 18rem;">
     <div class="card-body @syncStatusTextClass">
         <h5 class="card-title">Sync Service  <span class="position-absolute p-2 rounded-circle @syncStatusBadgeClass home-page-badge"></span></h5>
         <p class="font-weight-bold">@Model.AutoSyncHealthString</p>
-        <p><span class="font-weight-bold">Last Sync: </span><br />@Model.LastSyncTime</p>
-        <p><span class="font-weight-bold">Last Successful Sync: </span><br />@Model.LastSuccessfulSyncTime</p>
-        <p><span class="font-weight-bold">Next Scheduled Sync: </span><br />@Model.NextSyncTime</p>
+        @if (@Model.SyncStatus != Common.Database.Status.NotRunning)
+        {
+            <p><span class="font-weight-bold">Last Sync: </span><br />@Model.LastSyncTime</p>
+            <p><span class="font-weight-bold">Last Successful Sync: </span><br />@Model.LastSuccessfulSyncTime</p>
+            <p><span class="font-weight-bold">Next Scheduled Sync: </span><br />@Model.NextSyncTime</p>
+        }
     </div>
 </div>

@@ -30,6 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{A7F642
 		.dockerignore = .dockerignore
 		docker-compose.yaml = docker-compose.yaml
 		Dockerfile = Dockerfile
+		entrypoint.sh = entrypoint.sh
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}"

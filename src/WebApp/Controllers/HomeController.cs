@@ -24,7 +24,7 @@ namespace WebApp.Controllers
 		[ApiExplorerSettings(IgnoreApi = true)]
 		public IActionResult Index()
 		{
-			var syncTime = _db.GetSyncTime();
+			var syncTime = _db.GetSyncStatus();
 			var model = new HomeViewModel()
 			{
 				SyncEnabled = _config.App.EnablePolling,
@@ -34,11 +34,6 @@ namespace WebApp.Controllers
 				NextSyncTime = syncTime.NextSyncTime
 			};
 			return View(model);
-		}
-
-		public IActionResult Privacy()
-		{
-			return View();
 		}
 
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

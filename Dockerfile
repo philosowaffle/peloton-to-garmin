@@ -1,3 +1,6 @@
+###################
+# BUILD CONSOLE APP
+###################
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 
 COPY . /build
@@ -18,6 +21,32 @@ RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
 		dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-x64 -o /build/published --version-suffix $VERSION ; \
 	fi
 
+###################
+# BUILD WEB APP
+###################
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 as buildwebapp
+
+COPY . /build
+WORKDIR /build
+
+SHELL ["/bin/bash", "-c"]
+
+ARG TARGETPLATFORM
+ARG VERSION
+
+RUN echo $TARGETPLATFORM
+RUN echo $VERSION
+ENV VERSION=${VERSION}
+
+RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
+		dotnet publish /build/src/WebApp/WebApp.csproj -c Release -r linux-arm64 -o /build/published --version-suffix $VERSION ; \
+	else \
+		dotnet publish /build/src/WebApp/WebApp.csproj -c Release -r linux-x64 -o /build/published --version-suffix $VERSION ; \
+	fi
+
+###################
+# FINAL
+###################
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
 
 ENV PYTHONUNBUFFERED=1
@@ -28,6 +57,7 @@ RUN pip3 install --no-cache --upgrade pip setuptools
 RUN python --version
 RUN pip3 --version
 
+# Setup console app
 WORKDIR /app
 
 COPY --from=build /build/published .
@@ -38,10 +68,26 @@ COPY --from=build /build/configuration.example.json ./configuration.local.json
 RUN mkdir output
 RUN mkdir working
 
-RUN touch syncHistory.json
-RUN echo "{}" >> syncHistory.json
+# Setup web app
+WORKDIR /app-web
+
+COPY --from=buildwebapp /build/published .
+COPY --from=buildwebapp /build/python/requirements.txt ./requirements.txt
+COPY --from=buildwebapp /build/LICENSE ./LICENSE
+COPY --from=buildwebapp /build/configuration.example.json ./configuration.local.json
+
+RUN mkdir output
+RUN mkdir working
 
 RUN pip3 install -r requirements.txt
 
-RUN ls -l
-ENTRYPOINT ["./PelotonToGarminConsole"]
+WORKDIR /
+
+COPY ./entrypoint.sh .
+RUN chmod 777 entrypoint.sh
+
+EXPOSE 80 443
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["console"]
+
+#ENTRYPOINT ["./PelotonToGarminConsole"]

@@ -12,8 +12,8 @@ namespace Common.Database
 	{
 		SyncHistoryItem Get(string id);
 		void Upsert(SyncHistoryItem item);
-		SyncServiceStatus GetSyncTime();
-		void UpsertSyncTime(SyncServiceStatus syncTime);
+		SyncServiceStatus GetSyncStatus();
+		void UpsertSyncStatus(SyncServiceStatus syncTime);
 	}
 
 	public class DbClient : IDbClient
@@ -32,30 +32,32 @@ namespace Common.Database
 		{
 			_fileHandler = fileHandler;
 
-			using var metrics = DbActionDuration
-									.WithLabels("using", "syncHistoryTable")
-									.NewTimer();
-			using var tracing = Tracing.Trace("LoadTable", TagValue.Db).WithWorkoutId("SyncHistoryItem");
-
-			if (!File.Exists(configuration.App.SyncHistoryDbPath))
-			{
-				_logger.Debug("Creating syncHistory db: {@Path}", configuration.App.SyncHistoryDbPath);
-				try
-				{
-					var dir = Path.GetDirectoryName(configuration.App.SyncHistoryDbPath);
-					_fileHandler.MkDirIfNotExists(dir);
-					File.WriteAllText(configuration.App.SyncHistoryDbPath, "{}");
-
-				} catch (Exception e)
-				{
-					_logger.Error(e, "Failed to create syncHistory db file: {@Path}", configuration.App.SyncHistoryDbPath);
-					throw;
-				}
-			}
+			MakeDbIfNotExist(configuration.App.ConfigDbPath);
+			MakeDbIfNotExist(configuration.App.SyncHistoryDbPath);
 
 			_configDatabase = new DataStore(configuration.App.ConfigDbPath);
 			var syncHistoryDb = new DataStore(configuration.App.SyncHistoryDbPath);
-			_syncHistoryTable = new Lazy<IDocumentCollection<SyncHistoryItem>>(() => syncHistoryDb.GetCollection<SyncHistoryItem>());
+			_syncHistoryTable = new Lazy<IDocumentCollection<SyncHistoryItem>>(() => syncHistoryDb.GetCollection<SyncHistoryItem>());		
+		}
+
+		private void MakeDbIfNotExist(string dbPath)
+		{
+			if (!File.Exists(dbPath))
+			{
+				_logger.Debug("Creating db: {@Path}", dbPath);
+				try
+				{
+					var dir = Path.GetDirectoryName(dbPath);
+					_fileHandler.MkDirIfNotExists(dir);
+					File.WriteAllText(dbPath, "{}");
+
+				}
+				catch (Exception e)
+				{
+					_logger.Fatal(e, "Failed to create db file: {@Path}", dbPath);
+					throw;
+				}
+			}
 		}
 
 		public SyncHistoryItem Get(string id)
@@ -78,7 +80,7 @@ namespace Common.Database
 			}
 		}
 
-		public SyncServiceStatus GetSyncTime()
+		public SyncServiceStatus GetSyncStatus()
 		{
 			using var metrics = DbActionDuration
 									.WithLabels("select", "SyncTime")
@@ -99,7 +101,7 @@ namespace Common.Database
 			}
 		}
 
-		public void UpsertSyncTime(SyncServiceStatus newSyncTime)
+		public void UpsertSyncStatus(SyncServiceStatus newSyncTime)
 		{
 			using var metrics = DbActionDuration
 									.WithLabels("upsert", "SyncTime")

@@ -117,3 +117,4 @@ configuration.local.json
 /src/PelotonToGarminConsole/python/**
 */**/output/**
 /src/WebApp/WebApp.csproj.user
+/Output
