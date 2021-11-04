@@ -3,10 +3,15 @@ version: "3.5"
 services:
   p2g:
     container_name: p2g
-    image: philosowaffle/peloton-to-garmin
+    build: .
+    command: "web"
+    # image: philosowaffle/peloton-to-garmin
+    ports:
+      - 81:80
+      - 443:443
     environment:
       - TZ=America/Chicago
     volumes:
-      - ./configuration.local.json:/app/configuration.local.json
-      - ./output:/app/output
-      - ./working:/app/working
+      - ./configuration.local.json:/web-app/configuration.local.json
+      - ./output:/web-app/output
+      - ./working:/web-app/working

@@ -1,7 +1,8 @@
-#!/bin/sh
+#!/bin/bash
+set -e
 
 if [[ "$1" == "web" ]]; then
-    dotnet /app-web/WebApp
+    ./app-web/WebApp
 else
-   dotnet /app/PelotonToGarminConsole
+   ./app/PelotonToGarminConsole
 fi
