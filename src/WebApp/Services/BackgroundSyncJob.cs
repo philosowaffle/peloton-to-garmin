@@ -105,12 +105,10 @@ namespace WebApp.Services
 				using var timer = SyncHistogram.NewTimer();
 				using var activity = Tracing.Trace(nameof(SyncAsync));				
 
-				await _pelotonService.DownloadLatestWorkoutDataAsync();				
+				await _pelotonService.DownloadLatestWorkoutDataAsync();								
 
 				foreach (var converter in _converters)
-				{
 					converter.Convert();
-				}
 
 				try
 				{

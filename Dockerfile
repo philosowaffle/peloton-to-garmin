@@ -56,25 +56,13 @@ RUN mkdir output
 RUN mkdir working
 
 # Setup web app
-WORKDIR /app-web
-
 COPY --from=build /buildweb/published .
-COPY --from=build /build/python/requirements.txt ./requirements.txt
-COPY --from=build /build/LICENSE ./LICENSE
-COPY --from=build /build/configuration.example.json ./configuration.local.json
-
-RUN mkdir output
-RUN mkdir working
 
 RUN pip3 install -r requirements.txt
-
-WORKDIR /
 
 COPY ./entrypoint.sh .
 RUN chmod 777 entrypoint.sh
 
 EXPOSE 80 443
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["console"]
-
-#ENTRYPOINT ["./PelotonToGarminConsole"]

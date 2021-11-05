@@ -2,7 +2,7 @@
 set -e
 
 if [[ "$1" == "web" ]]; then
-    ./app-web/WebApp
+    ./WebApp
 else
-   ./app/PelotonToGarminConsole
+   ./PelotonToGarminConsole
 fi
