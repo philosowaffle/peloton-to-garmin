@@ -12,7 +12,12 @@ using Metrics = Prometheus.Metrics;
 
 namespace Garmin
 {
-	public class GarminUploader
+	public interface IGarminUploader
+	{
+		Task UploadToGarminAsync();
+	}
+
+	public class GarminUploader : IGarminUploader
 	{
 		private static readonly Histogram WorkoutUploadDuration = Metrics.CreateHistogram("p2g_workout_upload_duration_seconds", "Histogram of workout upload durations.", new HistogramConfiguration()
 		{
@@ -22,13 +27,14 @@ namespace Garmin
 			"The number of consecutive failed upload attempts. Resets to 0 on the first successful upload. This is not a count of the number of workouts that failed to upload. P2G uploads in bulk, so this is just a guage of number of failed upload attempts.");
 		private static readonly Gauge FilesToUpload = Metrics.CreateGauge("p2g_files_to_upload",
 			"The number of files available to be uploaded. This number sets to 0 upon successful upload.");
+		private static readonly ILogger _logger = LogContext.ForClass<GarminUploader>();
 
-		private readonly Configuration _config;
+		private readonly IAppConfiguration _config;
 		private readonly ApiClient _api;
 		private readonly IDbClient _dbClient;
 		private readonly Random _random;
 
-		public GarminUploader(Configuration config, IDbClient dbClient)
+		public GarminUploader(IAppConfiguration config, IDbClient dbClient)
 		{
 			_config = config;
 			_api = new ApiClient(config);
@@ -42,7 +48,7 @@ namespace Garmin
 
 			if (!Directory.Exists(_config.App.UploadDirectory))
 			{
-				Log.Information("No upload directory found. Nothing to do.");
+				_logger.Information("No upload directory found. Nothing to do.");
 				return;
 			}
 
@@ -50,7 +56,7 @@ namespace Garmin
 
 			if (files.Length == 0)
 			{
-				Log.Information("No files to upload in output directory. Nothing to do.");
+				_logger.Information("No files to upload in output directory. Nothing to do.");
 				return;
 			}
 
@@ -91,9 +97,9 @@ namespace Garmin
 					if (!string.IsNullOrEmpty(response.DetailedImportResult.UploadId))
 					{
 						// TODO: update upload datetime in DBClient
-						Log.Information("Uploaded workout {@workoutName}", file);
+						_logger.Information("Uploaded workout {@workoutName}", file);
 					}
-					RateLimit();
+					await RateLimit();
 				} catch (Exception e)
 				{
 					throw new GarminUploadException($"NativeImplV1 failed to upload workout {file}", -1, e);
@@ -101,13 +107,13 @@ namespace Garmin
 			}
 		}
 
-		private void RateLimit()
+		private async Task RateLimit()
 		{
 			using var tracer = Tracing.Trace("UploadToGarminRateLimit");
 
 			var waitDuration = _random.Next(1000, 5000);
-			Log.Information($"Rate limiting, upload will continue after {waitDuration / 1000} seconds...");
-			Thread.Sleep(waitDuration);
+			_logger.Information($"Rate limiting, upload will continue after {waitDuration / 1000} seconds...");
+			await Task.Delay(waitDuration);
 		}
 
 		private void UploadViaPython(string[] files)
@@ -130,8 +136,8 @@ namespace Garmin
 				cmd = $"-ge {_config.Garmin.Email} -gp {_config.Garmin.Password} -f {paths}";
 			}
 
-			Log.Information("Beginning Garmin Upload.");
-			Log.Information("Uploading to Garmin with the following parameters: {@File} {@Command}", start.FileName, cmd.Replace(_config.Garmin.Email, "**email**").Replace(_config.Garmin.Password, "**password**"));
+			_logger.Information("Beginning Garmin Upload.");
+			_logger.Information("Uploading to Garmin with the following parameters: {@File} {@Command}", start.FileName, cmd.Replace(_config.Garmin.Email, "**email**").Replace(_config.Garmin.Password, "**password**"));
 
 			start.Arguments = cmd;
 			start.UseShellExecute = false;
@@ -141,7 +147,7 @@ namespace Garmin
 
 			FilesToUpload.Set(files.Length);
 			if (files.Length > 20)
-				Log.Information("Detected large number of files for upload to Garmin. Please be patient, this could take a while.");
+				_logger.Information("Detected large number of files for upload to Garmin. Please be patient, this could take a while.");
 			using var process = Process.Start(start);
 			process.WaitForExit();
 
@@ -149,11 +155,11 @@ namespace Garmin
 			var stdout = process.StandardOutput.ReadToEnd();
 
 			if (!string.IsNullOrEmpty(stdout))
-				Log.Information(stdout);
+				_logger.Information(stdout);
 
 			// Despite coming from StandardError, this is not necessarily an error, just the output
 			if (!string.IsNullOrEmpty(stderr))
-				Log.Information("GUpload: {Output}", stderr);
+				_logger.Information("GUpload: {Output}", stderr);
 
 			if (process.HasExited && process.ExitCode != 0)
 			{
@@ -172,31 +178,31 @@ namespace Garmin
 
 			if (string.IsNullOrEmpty(config.Garmin.Email))
 			{
-				Log.Error("Garmin Email required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Garmin), nameof(config.Garmin.Email));
+				_logger.Error("Garmin Email required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Garmin), nameof(config.Garmin.Email));
 				throw new ArgumentException("Garmin Email must be set.", nameof(config.Garmin.Email));
 			}
 
 			if (string.IsNullOrEmpty(config.Garmin.Password))
 			{
-				Log.Error("Garmin Password required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Garmin), nameof(config.Garmin.Password));
+				_logger.Error("Garmin Password required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Garmin), nameof(config.Garmin.Password));
 				throw new ArgumentException("Garmin Password must be set.", nameof(config.Garmin.Password));
 			}
 
 			if (config.Garmin.FormatToUpload != "fit" && config.Garmin.FormatToUpload != "tcx")
 			{
-				Log.Error("Garmin FormatToUpload should be \"fit\" or \"tcx\", check your configuration {@ConfigSection}.{@ConfigProperty}.", nameof(Garmin), nameof(config.Garmin.FormatToUpload));
+				_logger.Error("Garmin FormatToUpload should be \"fit\" or \"tcx\", check your configuration {@ConfigSection}.{@ConfigProperty}.", nameof(Garmin), nameof(config.Garmin.FormatToUpload));
 				throw new ArgumentException("Garmin FormatToUpload must be either \"fit\" or \"tcx\".", nameof(config.Garmin.FormatToUpload));
 			}
 
 			if (config.App.PythonAndGUploadInstalled.HasValue)
 			{
-				Log.Warning("App.PythonAndGuploadInstalledLocally setting is deprecated and will be removed in a future release. Please swith to using Garmin.UploadStrategy config.");
+				_logger.Warning("App.PythonAndGuploadInstalledLocally setting is deprecated and will be removed in a future release. Please swith to using Garmin.UploadStrategy config.");
 
 				if (config.Garmin.UploadStrategy == UploadStrategy.PythonAndGuploadInstalledLocally
 					&& config.App.PythonAndGUploadInstalled.Value == false)
 				{
 					config.Garmin.UploadStrategy = UploadStrategy.WindowsExeBundledPython;
-					Log.Warning("Detected use of deprecated config App.PythonAndGuploadInstalledLocally, setting Garmin.UploadStrategy to WindowsExeBundledPython=1");
+					_logger.Warning("Detected use of deprecated config App.PythonAndGuploadInstalledLocally, setting Garmin.UploadStrategy to WindowsExeBundledPython=1");
 				}
 			}
 		}

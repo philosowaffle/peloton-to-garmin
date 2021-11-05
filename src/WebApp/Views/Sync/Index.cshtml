@@ -1,0 +1,58 @@
+﻿@model SyncViewModel
+@{
+    ViewData["Title"] = "Sync";
+    ViewBag.Page = "sync";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>Sync your latest workouts from Peloton to Garmin.</p>
+
+@using (Html.BeginForm())
+{
+    <fieldset>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Request.NumWorkouts)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Request.NumWorkouts)
+            @Html.ValidationMessageFor(model => model.Request.NumWorkouts)
+        </div>
+    </fieldset>
+
+    <p>
+        <input type="submit" value="Sync" />
+    </p>
+}
+
+<div>
+    @if (Model.Response is not null)
+    {
+        <p>Sync Success: @Model.Response.SyncSuccess</p>
+        <ol>
+            <li>Peloton Download Success: @Model.Response.PelotonDownloadSuccess</li>
+            <li>Convert to FIT Success: @Model.Response.ConverToFitSuccess</li>
+            <li>Upload to Garmin Success: @Model.Response.UploadToGarminSuccess</li>
+        </ol>
+
+        if (Model.Response.Errors.Any())
+        {
+            foreach (var error in Model.Response.Errors)
+            {
+                <ul>
+                    <li><em>@error.Message</em></li>
+                </ul>
+            }
+        }
+    }
+</div>
+
+<div>
+    <ul>
+        <li>Last Sync Time: @Model.GetResponse.LastSyncTime</li>
+        <li>Last Successful Sync: @Model.GetResponse.LastSuccessfulSyncTime</li>
+        <li>Next Sync: @Model.GetResponse.NextSyncTime</li>
+        <li>Auto Sync Enabled: @Model.GetResponse.SyncEnabled</li>
+        <li>Auto Sync Status: @Model.GetResponse.AutoSyncHealthString</li>
+    </ul>
+</div>

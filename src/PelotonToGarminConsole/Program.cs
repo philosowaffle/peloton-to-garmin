@@ -31,6 +31,8 @@ namespace PelotonToGarminConsole
 		private static readonly Gauge Health = Metrics.CreateGauge("p2g_health_info", "Health status for P2G.");
 		private static readonly Gauge NextSyncTime = Metrics.CreateGauge("p2g_next_sync_time", "The next time the sync will run in seconds since epoch.");
 
+		private static readonly ILogger _logger = LogContext.ForClass<Program>();
+
 		static void Main(string[] args)
 		{
 			Console.WriteLine("Peloton To Garmin");
@@ -94,7 +96,7 @@ namespace PelotonToGarminConsole
 			}
 			catch (Exception e)
 			{
-				Log.Fatal(e, "Exception during config setup.");
+				_logger.Fatal(e, "Exception during config setup.");
 				Health.Set(HealthStatus.Dead);
 				
 				Log.CloseAndFlush();
@@ -148,7 +150,7 @@ namespace PelotonToGarminConsole
 			}
 			catch (Exception e)
 			{
-				Log.Fatal(e, "Uncaught Exception.");
+				_logger.Fatal(e, "Uncaught Exception.");
 				Health.Set(HealthStatus.Dead);
 				exitCode = -2;
 			}
@@ -200,8 +202,8 @@ namespace PelotonToGarminConsole
 					File.Delete(file);
 			} catch (GarminUploadException e)
 			{
-				Log.Error(e, "Garmin upload returned an error code. Failed to upload workouts.");
-				Log.Warning("GUpload failed to upload files. You can find the converted files at {@Path} \n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", config.App.OutputDirectory);
+				_logger.Error(e, "Garmin upload returned an error code. Failed to upload workouts.");
+				_logger.Warning("GUpload failed to upload files. You can find the converted files at {@Path} \n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", config.App.OutputDirectory);
 				healthy = false;
 			}
 

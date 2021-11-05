@@ -1,0 +1,182 @@
+﻿@model SettingsGetResponse
+@{
+    ViewData["Title"] = "Settings";
+    ViewBag.Page = "settings";
+}
+
+<h1>@ViewData["Title"]</h1>
+<br />
+
+<h3>App Config</h3>
+<table class="table">
+    <tbody>
+        <tr>
+            <td class="font-weight-bold">Output Directory:</td>
+            <td>@Model.App.OutputDirectory</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Working Directory:</td>
+            <td>@Model.App.WorkingDirectory</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Sync History Db Path:</td>
+            <td>@Model.App.SyncHistoryDbPath</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Enable Polling:</td>
+            <td>@Model.App.EnablePolling</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Polling Interval Seconds:</td>
+            <td>@Model.App.PollingIntervalSeconds</td>
+        </tr>
+
+        <tr>
+            <td class="font-weight-bold">Close Window On Finish:</td>
+            <td>@Model.App.CloseWindowOnFinish</td>
+        </tr>
+
+        <tr>
+            <td class="font-weight-bold">Fit Directory:</td>
+            <td>@Model.App.FitDirectory</td>
+        </tr>
+
+        <tr>
+            <td class="font-weight-bold">Json Directory:</td>
+            <td>@Model.App.JsonDirectory</td>
+        </tr>
+
+        <tr>
+            <td class="font-weight-bold">TCX Directory:</td>
+            <td>@Model.App.TcxDirectory</td>
+        </tr>
+
+        <tr>
+            <td class="font-weight-bold">Failed Directory:</td>
+            <td>@Model.App.FailedDirectory</td>
+        </tr>
+
+        <tr>
+            <td class="font-weight-bold">Downloaded Directory:</td>
+            <td>@Model.App.DownloadDirectory</td>
+        </tr>
+
+        <tr>
+            <td class="font-weight-bold">Upload Directory:</td>
+            <td>@Model.App.UploadDirectory</td>
+        </tr>
+    </tbody>
+</table>
+<br />
+
+<h3>Format Config</h3>
+<table class="table">
+    <tbody>
+        <tr>
+            <td class="font-weight-bold">Fit:</td>
+            <td>@Model.Format.Fit</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Json:</td>
+            <td>@Model.Format.Json</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">TCX:</td>
+            <td>@Model.Format.Tcx</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Save Local Copy:</td>
+            <td>@Model.Format.SaveLocalCopy</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Include Time in HR Zones:</td>
+            <td>@Model.Format.IncludeTimeInHRZones</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Include Time in Power Zones:</td>
+            <td>@Model.Format.IncludeTimeInPowerZones</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Device Info Path:</td>
+            <td>@Model.Format.DeviceInfoPath</td>
+        </tr>
+    </tbody>
+</table>
+<br />
+
+<h3>Peloton Config</h3>
+<table class="table">
+    <tbody>
+        <tr>
+            <td class="font-weight-bold">Email:</td>
+            <td>@Model.Peloton.Email</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Password:</td>
+            <td>@Model.Peloton.Password</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Number of Workouts to Download:</td>
+            <td>@Model.Peloton.NumWorkoutsToDownload</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Excluded Workout Types:</td>
+            <td>@Model.Peloton.ExcludeWorkoutTypes</td>
+        </tr>
+    </tbody>
+</table>
+<br />
+
+<h3>Garmin Config</h3>
+<table class="table">
+    <tbody>
+        <tr>
+            <td class="font-weight-bold">Email:</td>
+            <td>@Model.Garmin.Email</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Password:</td>
+            <td>@Model.Garmin.Password</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Upload:</td>
+            <td>@Model.Garmin.Upload</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Format To Upload:</td>
+            <td>@Model.Garmin.FormatToUpload</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Garmin Upload Strategy:</td>
+            <td>@Model.Garmin.UploadStrategy</td>
+        </tr>
+    </tbody>
+</table>
+<br />
+
+<h3>Observability Config</h3>
+<table class="table">
+    <tbody>
+        <tr>
+            <td class="font-weight-bold">Prometheus Enabled:</td>
+            <td>@Model.Observability.Prometheus.Enabled</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Prometheus Port:</td>
+            <td>@Model.Observability.Prometheus.Port</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Jaeger Enabled:</td>
+            <td>@Model.Observability.Jaeger.Enabled</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Jaeger Agent Host:</td>
+            <td>@Model.Observability.Jaeger.AgentHost</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">Jaeger Agent Port:</td>
+            <td>@Model.Observability.Jaeger.AgentPort</td>
+        </tr>
+    </tbody>
+</table>
+<br />

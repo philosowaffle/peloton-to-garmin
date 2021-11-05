@@ -27,8 +27,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{614A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{A7F642D9-7954-4547-84DB-67A04AE1043D}"
 	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
 		docker-compose.yaml = docker-compose.yaml
 		Dockerfile = Dockerfile
+		entrypoint.sh = entrypoint.sh
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}"
@@ -45,6 +47,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "grafana", "grafana", "{D569
 	ProjectSection(SolutionItems) = preProject
 		grafana\p2g_dashboard.json = grafana\p2g_dashboard.json
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp", "src\WebApp\WebApp.csproj", "{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -76,6 +80,10 @@ Global
 		{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

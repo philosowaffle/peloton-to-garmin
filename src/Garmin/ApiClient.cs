@@ -23,11 +23,13 @@ namespace Garmin
 		private const string ORIGIN = SSO_URL;
 		private static string USERAGENT = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/50.0";
 
-		private readonly Configuration _config;
+		private static readonly ILogger _logger = LogContext.ForClass<ApiClient>();
+
+		private readonly IAppConfiguration _config;
 
 		private CookieJar _jar;
 
-		public ApiClient(Configuration config)
+		public ApiClient(IAppConfiguration config)
 		{
 			_config = config;
 
@@ -77,7 +79,7 @@ namespace Garmin
 			}
 			catch (FlurlHttpException e)
 			{
-				Log.Error(e, "No login form.");
+				_logger.Error(e, "No login form.");
 				throw;
 			}
 
@@ -104,7 +106,7 @@ namespace Garmin
 			}
 			catch (FlurlHttpException e)
 			{
-				Log.Error(e, "Authentication Failed.");
+				_logger.Error(e, "Authentication Failed.");
 				throw;
 			}
 
@@ -120,14 +122,14 @@ namespace Garmin
 			var match = regex2.Match(authResponse);
 			if (!match.Success)
 			{
-				Log.Error("Missing service ticket.");
+				_logger.Error("Missing service ticket.");
 				throw new Exception("Failed to find service ticket.");
 			}
 
 			var ticket = match.Groups.GetValueOrDefault("ticket").Value;
 			if (string.IsNullOrEmpty(ticket))
 			{
-				Log.Error("Failed to parse service ticket.");
+				_logger.Error("Failed to parse service ticket.");
 				throw new Exception("Failed to parse service ticket.");
 			}
 
@@ -147,7 +149,7 @@ namespace Garmin
 			}
 			catch (FlurlHttpException e)
 			{
-				Log.Error(e, "Second auth step failed.");
+				_logger.Error(e, "Second auth step failed.");
 				throw;
 			}
 
@@ -162,7 +164,7 @@ namespace Garmin
 			}
 			catch (FlurlHttpException e)
 			{
-				Log.Error(e, "Login check failed.");
+				_logger.Error(e, "Login check failed.");
 				throw;
 			}
 		}
@@ -393,10 +395,10 @@ namespace Garmin
 						{
 							if (message.Code == 202)
 							{
-								Log.Information("Activity already uploaded {garminWorkout}", result.FileName);
+								_logger.Information("Activity already uploaded {garminWorkout}", result.FileName);
 							} else
 							{
-								Log.Error("Failed to upload activity to Garmin. Message: {errorMessage}", message);
+								_logger.Error("Failed to upload activity to Garmin. Message: {errorMessage}", message);
 							}
 						}
 					}
@@ -440,11 +442,11 @@ namespace Garmin
 						{
 							if (message.Code == 202)
 							{
-								Log.Information("Activity already uploaded {garminWorkout}", result.FileName);
+								_logger.Information("Activity already uploaded {garminWorkout}", result.FileName);
 							}
 							else
 							{
-								Log.Error("Failed to upload activity to Garmin. Message: {errorMessage}", message);
+								_logger.Error("Failed to upload activity to Garmin. Message: {errorMessage}", message);
 							}
 						}
 					}

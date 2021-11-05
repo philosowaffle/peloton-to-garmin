@@ -1,11 +1,21 @@
-﻿using Common.Dto;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace Common
 {
-	public class Configuration
+	public interface IAppConfiguration 
+	{
+		App App { get; set; }
+		Format Format { get; set; }
+		Peloton Peloton { get; set; }
+		Garmin Garmin { get; set; }
+
+		Observability Observability { get; set; }
+		Developer Developer { get; set; }
+	}
+
+	public class Configuration : IAppConfiguration
 	{
 		public Configuration()
 		{
@@ -33,6 +43,7 @@ namespace Common
 			OutputDirectory = Path.Join(Environment.CurrentDirectory, "output");
 			WorkingDirectory = Path.Join(Environment.CurrentDirectory, "working");
 			SyncHistoryDbPath = Path.Join(OutputDirectory, "syncHistory.json");
+			ConfigDbPath = Path.Join(OutputDirectory, "config_db.json");
 
 			EnablePolling = true;
 			PollingIntervalSeconds = 3600;
@@ -42,6 +53,7 @@ namespace Common
 		public string WorkingDirectory { get; set; }
 		
 		public string SyncHistoryDbPath { get; set; }
+		public string ConfigDbPath { get; set; }
 		public bool EnablePolling { get; set; }
 		public int PollingIntervalSeconds { get; set; }
 		public bool? PythonAndGUploadInstalled { get; set; }

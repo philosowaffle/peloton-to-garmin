@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - P2G</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="wrapper">
+        <nav id="nav-menu" class="nav nav-pills">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebApp</a>
+
+            <input type="hidden" id="currentPageId" value="@(ViewBag.Page ?? "home")" />
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item nav-link" data-menuPageId="home">
+                    <a asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                </li>
+                <li class="nav-item nav-link" data-menuPageId="sync">
+                    <a asp-area="" asp-controller="Sync" asp-action="Index">Sync</a>
+                </li>
+                <li class="nav-item nav-link" data-menuPageId="settings">
+                    <a asp-area="" asp-controller="Settings" asp-action="Index">Settings</a>
+                </li>
+                <li class="nav-item nav-link" data-menuPageId="about">
+                    <a asp-area="" asp-controller="SystemInfo" asp-action="Index">About</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="container">
+            <div class="border-bottom header text-muted text-right">
+                <a class="text-right" href="https://github.com/philosowaffle/peloton-to-garmin">Github</a> <a class="text-right" href="https://philosowaffle.github.io/peloton-to-garmin/">Docs</a>
+            </div>
+
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+
+            <div class="border-top footer text-muted">
+                &copy; 2022 - PelotonToGarmin
+            </div>
+        </div>        
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

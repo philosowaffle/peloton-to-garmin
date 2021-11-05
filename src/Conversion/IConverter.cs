@@ -28,11 +28,11 @@ namespace Conversion
 
 		public static readonly float _metersPerMile = 1609.34f;
 
-		protected Configuration _config;
+		protected IAppConfiguration _config;
 		protected IDbClient _dbClient;
 		protected IFileHandling _fileHandler;
 
-		public Converter(Configuration config, IDbClient dbClient, IFileHandling fileHandler)
+		public Converter(IAppConfiguration config, IDbClient dbClient, IFileHandling fileHandler)
 		{
 			_config = config;
 			_dbClient = dbClient;

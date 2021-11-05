@@ -9,8 +9,17 @@ using System.Threading.Tasks;
 
 namespace Peloton
 {
-	public class ApiClient
+	public interface IPelotonApi
 	{
+		Task InitAuthAsync(string overrideUserAgent = null);
+		Task<RecentWorkouts> GetWorkoutsAsync(int numWorkouts, int page);
+		Task<JObject> GetWorkoutByIdAsync(string id);
+		Task<JObject> GetWorkoutSamplesByIdAsync(string id);
+	}
+
+	public class ApiClient : IPelotonApi
+	{
+		private static readonly ILogger _logger = LogContext.ForClass<ApiClient>();
 		private static readonly string BaseUrl = "https://api.onepeloton.com/api";
 		private static readonly string AuthBaseUrl = "https://api.onepeloton.com/auth/login";
 
@@ -20,6 +29,13 @@ namespace Peloton
 
 		private string UserId;
 		private string SessionId;
+
+		public ApiClient(IAppConfiguration config)
+		{
+			_userEmail = config.Peloton.Email;
+			_userPassword = config.Peloton.Password;
+			_observabilityEnabled = config.Observability.Prometheus.Enabled;
+		}
 
 		public ApiClient(string email, string password, bool observabilityEnabled)
 		{
@@ -43,7 +59,7 @@ namespace Peloton
 					c.BeforeCallAsync = null;
 					c.BeforeCall = (FlurlCall call) =>
 					{
-						Log.Verbose("HTTP Request: {@HttpMethod} {@Uri} {@Content}", call.HttpRequestMessage.Method, call.HttpRequestMessage.RequestUri, "userAuthParams");
+						_logger.Verbose("HTTP Request: {@HttpMethod} {@Uri} {@Content}", call.HttpRequestMessage.Method, call.HttpRequestMessage.RequestUri, "userAuthParams");
 					};
 				})
 				.PostJsonAsync(new AuthRequest()
@@ -57,7 +73,7 @@ namespace Peloton
 				SessionId = response.session_id;
 			} catch(Exception e)
 			{
-				Log.Error(e, "Failed to authenticate with Peloton.");
+				_logger.Fatal(e, "Failed to authenticate with Peloton.");
 				throw new PelotonAuthenticationError("Failed to authenticate with Peloton", e);
 			}
 		}
@@ -76,7 +92,7 @@ namespace Peloton
 			{
 				c.AfterCallAsync = async (FlurlCall call) => 
 				{
-					Log.Verbose("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}", 
+					_logger.Verbose("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}", 
 								call.HttpResponseMessage?.StatusCode, 
 								call.HttpRequestMessage?.Method, 
 								call.HttpRequestMessage?.RequestUri, 
@@ -112,7 +128,7 @@ namespace Peloton
 				{
 					c.AfterCallAsync = async (FlurlCall call) =>
 					{
-						Log.Verbose("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
+						_logger.Verbose("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
 								call.HttpResponseMessage?.StatusCode,
 								call.HttpRequestMessage?.Method,
 								call.HttpRequestMessage?.RequestUri,
@@ -148,7 +164,7 @@ namespace Peloton
 				{
 					c.AfterCallAsync = async (FlurlCall call) =>
 					{
-						Log.Verbose("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
+						_logger.Verbose("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
 								call.HttpResponseMessage?.StatusCode,
 								call.HttpRequestMessage?.Method,
 								call.HttpRequestMessage?.RequestUri,

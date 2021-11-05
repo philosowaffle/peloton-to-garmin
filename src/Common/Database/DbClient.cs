@@ -12,6 +12,8 @@ namespace Common.Database
 	{
 		SyncHistoryItem Get(string id);
 		void Upsert(SyncHistoryItem item);
+		SyncServiceStatus GetSyncStatus();
+		void UpsertSyncStatus(SyncServiceStatus syncTime);
 	}
 
 	public class DbClient : IDbClient
@@ -20,38 +22,42 @@ namespace Common.Database
 		{
 			LabelNames = new[] { Metrics.Label.DbMethod, Metrics.Label.DbQuery }
 		});
+		private static readonly ILogger _logger = LogContext.ForClass<DbClient>();
 
-		private DataStore _database;
+		private DataStore _configDatabase;
 		private Lazy<IDocumentCollection<SyncHistoryItem>> _syncHistoryTable;
 		private IFileHandling _fileHandler;
 
-		public DbClient(Configuration configuration, IFileHandling fileHandler)
+		public DbClient(IAppConfiguration configuration, IFileHandling fileHandler)
 		{
 			_fileHandler = fileHandler;
 
-			using var metrics = DbActionDuration
-									.WithLabels("using", "syncHistoryTable")
-									.NewTimer();
-			using var tracing = Tracing.Trace("LoadTable", TagValue.Db).WithWorkoutId("SyncHistoryItem");
+			MakeDbIfNotExist(configuration.App.ConfigDbPath);
+			MakeDbIfNotExist(configuration.App.SyncHistoryDbPath);
 
-			if (!File.Exists(configuration.App.SyncHistoryDbPath))
+			_configDatabase = new DataStore(configuration.App.ConfigDbPath);
+			var syncHistoryDb = new DataStore(configuration.App.SyncHistoryDbPath);
+			_syncHistoryTable = new Lazy<IDocumentCollection<SyncHistoryItem>>(() => syncHistoryDb.GetCollection<SyncHistoryItem>());		
+		}
+
+		private void MakeDbIfNotExist(string dbPath)
+		{
+			if (!File.Exists(dbPath))
 			{
-				Log.Debug("Creating syncHistory db: {@Path}", configuration.App.SyncHistoryDbPath);
+				_logger.Debug("Creating db: {@Path}", dbPath);
 				try
 				{
-					var dir = Path.GetDirectoryName(configuration.App.SyncHistoryDbPath);
+					var dir = Path.GetDirectoryName(dbPath);
 					_fileHandler.MkDirIfNotExists(dir);
-					File.WriteAllText(configuration.App.SyncHistoryDbPath, "{}");
+					File.WriteAllText(dbPath, "{}");
 
-				} catch (Exception e)
+				}
+				catch (Exception e)
 				{
-					Log.Error(e, "Failed to create syncHistory db file: {@Path}", configuration.App.SyncHistoryDbPath);
+					_logger.Fatal(e, "Failed to create db file: {@Path}", dbPath);
 					throw;
 				}
 			}
-
-			_database = new DataStore(configuration.App.SyncHistoryDbPath);
-			_syncHistoryTable = new Lazy<IDocumentCollection<SyncHistoryItem>>(() => _database.GetCollection<SyncHistoryItem>());
 		}
 
 		public SyncHistoryItem Get(string id)
@@ -69,8 +75,47 @@ namespace Common.Database
 			} 
 			catch (Exception e)
 			{
-				Log.Error(e, "Failed to get workout from db: {@WorkoutId}", id);
+				_logger.Error(e, "Failed to get workout from db: {@WorkoutId}", id);
 				return null;
+			}
+		}
+
+		public SyncServiceStatus GetSyncStatus()
+		{
+			using var metrics = DbActionDuration
+									.WithLabels("select", "SyncTime")
+									.NewTimer();
+			using var tracing = Tracing.Trace("select", TagValue.Db)
+										.WithTable("SyncTime");
+
+			try
+			{
+				var syncTime = _configDatabase.GetItem<SyncServiceStatus>("syncTime");
+				return syncTime ?? new SyncServiceStatus();
+
+			}
+			catch (Exception e)
+			{
+				_logger.Error(e, "Failed to get last sync time from db.");
+				return new SyncServiceStatus();
+			}
+		}
+
+		public void UpsertSyncStatus(SyncServiceStatus newSyncTime)
+		{
+			using var metrics = DbActionDuration
+									.WithLabels("upsert", "SyncTime")
+									.NewTimer();
+			using var tracing = Tracing.Trace("upsert", TagValue.Db)
+										.WithTable("SyncTime");
+
+			try
+			{
+				_configDatabase.ReplaceItem("syncTime", newSyncTime, upsert: true);
+			}
+			catch (Exception e)
+			{
+				_logger.Error(e, "Failed to upsert sync time in db.");
 			}
 		}
 
@@ -89,7 +134,7 @@ namespace Common.Database
 			}
 			catch (Exception e)
 			{
-				Log.Error(e, "Failed to upsert workout to db: {@WorkoutId}", item?.Id);
+				_logger.Error(e, "Failed to upsert workout to db: {@WorkoutId}", item?.Id);
 			}
 		}
 	}
