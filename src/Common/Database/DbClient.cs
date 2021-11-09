@@ -2,6 +2,7 @@
 using Prometheus;
 using Serilog;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using PromMetrics = Prometheus.Metrics;
@@ -83,20 +84,26 @@ namespace Common.Database
 		public SyncServiceStatus GetSyncStatus()
 		{
 			using var metrics = DbActionDuration
-									.WithLabels("select", "SyncTime")
+									.WithLabels("select", "SyncStatus")
 									.NewTimer();
 			using var tracing = Tracing.Trace("select", TagValue.Db)
-										.WithTable("SyncTime");
+										.WithTable("SyncStatus");
 
 			try
 			{
-				var syncTime = _configDatabase.GetItem<SyncServiceStatus>("syncTime");
+				var syncTime = _configDatabase.GetItem<SyncServiceStatus>("syncStatus");
 				return syncTime ?? new SyncServiceStatus();
 
 			}
+			catch (KeyNotFoundException ke)
+			{
+				_logger.Debug("SyncStatus object not found in DB, creating now.");
+				UpsertSyncStatus(new SyncServiceStatus());
+				return _configDatabase.GetItem<SyncServiceStatus>("syncStatus");
+			}
 			catch (Exception e)
 			{
-				_logger.Error(e, "Failed to get last sync time from db.");
+				_logger.Error(e, "Failed to get last sync status from db.");
 				return new SyncServiceStatus();
 			}
 		}
@@ -104,18 +111,18 @@ namespace Common.Database
 		public void UpsertSyncStatus(SyncServiceStatus newSyncTime)
 		{
 			using var metrics = DbActionDuration
-									.WithLabels("upsert", "SyncTime")
+									.WithLabels("upsert", "SyncStatus")
 									.NewTimer();
 			using var tracing = Tracing.Trace("upsert", TagValue.Db)
-										.WithTable("SyncTime");
+										.WithTable("SyncStatus");
 
 			try
 			{
-				_configDatabase.ReplaceItem("syncTime", newSyncTime, upsert: true);
+				_configDatabase.ReplaceItem("syncStatus", newSyncTime, upsert: true);
 			}
 			catch (Exception e)
 			{
-				_logger.Error(e, "Failed to upsert sync time in db.");
+				_logger.Error(e, "Failed to upsert sync status in db.");
 			}
 		}
 

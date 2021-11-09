@@ -15,12 +15,14 @@ using Peloton;
 using Prometheus;
 using Prometheus.DotNetRuntime;
 using Serilog;
+using Serilog.Events;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using WebApp.Services;
 
 namespace WebApp
 {
@@ -72,6 +74,7 @@ namespace WebApp
 			services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
 			services.AddSingleton<IPelotonService, PelotonService>();
 			services.AddSingleton<IGarminUploader, GarminUploader>();
+			services.AddSingleton<ISyncService, SyncService>();
 
 			services.AddSingleton<IConverter, FitConverter>();
 			services.AddSingleton<IConverter, TcxConverter>();
@@ -120,7 +123,9 @@ namespace WebApp
 				app.UseHsts();
 			}
 
-			app.UseSerilogRequestLogging();
+			if (Log.IsEnabled(LogEventLevel.Verbose))
+				app.UseSerilogRequestLogging();
+
 			app.UseSwagger();
 			app.UseSwaggerUI();
 

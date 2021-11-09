@@ -62,7 +62,7 @@ namespace Peloton
 			{
 				_logger.Debug("Fetching recent workouts page: {@Page}", page);
 
-				var workouts = await _pelotonApi.GetWorkoutsAsync(_config.Peloton.NumWorkoutsToDownload, page);
+				var workouts = await _pelotonApi.GetWorkoutsAsync(numWorkoutsToDownload, page);
 				if (workouts.data is null || workouts.data.Count <= 0)
 				{
 					_logger.Debug("No more workouts found from Peloton.");
