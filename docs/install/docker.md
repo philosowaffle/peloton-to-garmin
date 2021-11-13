@@ -20,7 +20,7 @@ version: "3.9"
 services:
   p2g:
     container_name: p2g
-    image: philosowaffle/peloton-to-garmin
+    image: philosowaffle/peloton-to-garmin:stable
     environment:
       - TZ=America/Chicago
     volumes:
@@ -53,5 +53,6 @@ services:
 
 The P2G docker image is available on [DockerHub](https://hub.docker.com/r/philosowaffle/peloton-to-garmin). The following tags are provided:
 
-1. `latest` - The bleeding edge of master
+1. `stable` - Always points to the latest release
+1. `latest` - The bleeding edge of the master branch
 1. `vX.Y.Z` - For using a specific released version
