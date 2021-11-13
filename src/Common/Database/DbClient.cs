@@ -95,7 +95,7 @@ namespace Common.Database
 				return syncTime ?? new SyncServiceStatus();
 
 			}
-			catch (KeyNotFoundException ke)
+			catch (KeyNotFoundException)
 			{
 				_logger.Debug("SyncStatus object not found in DB, creating now.");
 				UpsertSyncStatus(new SyncServiceStatus());

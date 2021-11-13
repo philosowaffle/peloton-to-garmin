@@ -121,14 +121,22 @@ namespace Conversion
 
 			var workoutSteps = new List<WorkoutStepMesg>();
 			var laps = new List<LapMesg>();
-			if (workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "cadence")?.Graph_Data is object)
+			var preferredLapType = PreferredLapType.Default;
+
+			if (sport == Sport.Cycling)
+				preferredLapType = _config.Format.Cycling.PreferredLapType;
+			if (sport == Sport.Running)
+				preferredLapType = _config.Format.Running.PreferredLapType;
+
+			if ((preferredLapType == PreferredLapType.Class_Targets || preferredLapType == PreferredLapType.Default) 
+				&& workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "cadence")?.Graph_Data is object)
 			{
 				var stepsAndLaps = GetWorkoutStepsAndLaps(workoutSamples, startTime, sport, subSport);
 				workoutSteps = stepsAndLaps.Values.Select(v => v.Item1).ToList();
 				laps = stepsAndLaps.Values.Select(v => v.Item2).ToList();
 			} else
 			{
-				laps = GetWorkoutLaps(workoutSamples, startTime, sport, subSport).ToList();
+				laps = GetLaps(preferredLapType, workoutSamples, startTime, sport, subSport).ToList();
 			}	
 
 			var workoutMesg = new WorkoutMesg();
@@ -572,7 +580,16 @@ namespace Conversion
 			return stepsAndLaps;
 		}
 
-		public ICollection<LapMesg> GetWorkoutLaps(WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime, Sport sport, SubSport subSport)
+		public ICollection<LapMesg> GetLaps(PreferredLapType preferredLapType, WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime, Sport sport, SubSport subSport)
+		{
+			if ((preferredLapType == PreferredLapType.Default || preferredLapType == PreferredLapType.Class_Segments)
+				&& workoutSamples.Segment_List.Any())
+				return GetLapsBasedOnSegments(workoutSamples, startTime, sport, subSport);
+
+			return GetLapsBasedOnDistance(workoutSamples, startTime, sport, subSport);
+		}
+
+		public ICollection<LapMesg> GetLapsBasedOnSegments(WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime, Sport sport, SubSport subSport)
 		{
 			var stepsAndLaps = new List<LapMesg>();
 
@@ -619,6 +636,65 @@ namespace Conversion
 
 					stepIndex++;
 				}
+			}
+
+			return stepsAndLaps;
+		}
+
+		public ICollection<LapMesg> GetLapsBasedOnDistance(WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime, Sport sport, SubSport subSport)
+		{
+			var stepsAndLaps = new List<LapMesg>();
+
+			if (workoutSamples is null)
+				return stepsAndLaps;
+
+			
+			var speedMetrics = GetSpeedSummary(workoutSamples);
+			var speedUnit = GetDistanceUnit(speedMetrics?.Display_Unit);
+			var lapMeters = 0;
+			switch (speedUnit)
+			{
+				case DistanceUnit.Kilometers: lapMeters = 1000; break;
+				default: lapMeters = 1600; break;
+			}
+
+			LapMesg lap = null;
+			ushort stepIndex = 0;			
+			var lapDistanceInMeters = 0f;
+			float lapLengthSeconds = 0;
+
+			for (var secondsSinceStart = 0; secondsSinceStart < speedMetrics.Values.Length; secondsSinceStart++)
+			{	
+				if (lap is null || lap.GetTotalElapsedTime() is not null)
+				{
+					// Start new Lap
+					var lapStartTime = new Dynastream.Fit.DateTime(startTime);
+					lapStartTime.Add(secondsSinceStart);
+
+					lap = new LapMesg();
+					lap.SetStartTime(lapStartTime);
+					lap.SetMessageIndex(stepIndex);
+					lap.SetEvent(Event.Lap);
+					lap.SetLapTrigger(LapTrigger.Time);
+					lap.SetSport(sport);
+					lap.SetSubSport(subSport);
+
+					lapLengthSeconds = 0;
+					lapDistanceInMeters = 0f;
+				}
+
+				var currentSpeedInMPS = ConvertToMetersPerSecond(speedMetrics.GetValue(secondsSinceStart), workoutSamples);
+				lapDistanceInMeters += 1 * currentSpeedInMPS;
+				lapLengthSeconds++;
+
+				if (lapDistanceInMeters >= lapMeters || secondsSinceStart == speedMetrics.Values.Length - 1)
+				{
+					lap.SetTotalElapsedTime(lapLengthSeconds);
+					lap.SetTotalTimerTime(lapLengthSeconds);
+					lap.SetTotalDistance(lapDistanceInMeters);
+					stepsAndLaps.Add(lap);
+					stepIndex++;
+				}				
 			}
 
 			return stepsAndLaps;

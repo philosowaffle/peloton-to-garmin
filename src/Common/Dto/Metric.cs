@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Serilog;
+﻿using Serilog;
 using System;
 using System.Collections.Generic;
 

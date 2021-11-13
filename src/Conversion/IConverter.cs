@@ -190,13 +190,14 @@ namespace Conversion
 
 		protected float ConvertDistanceToMeters(double value, string unit)
 		{
-			switch (unit.ToLower())
+			var distanceUnit = GetDistanceUnit(unit);
+			switch (distanceUnit)
 			{
-				case "km":
+				case DistanceUnit.Kilometers:
 					return (float)value * 1000;
-				case "mi":
+				case DistanceUnit.Miles:
 					return (float)value * _metersPerMile;
-				case "ft":
+				case DistanceUnit.Feet:
 					return (float)value * 0.3048f;
 				default:
 					Log.Debug("Found unkown distance unit {@Unit}", unit);
@@ -507,6 +508,22 @@ namespace Conversion
 			}
 
 			return info;
+		}
+
+		protected DistanceUnit GetDistanceUnit(string unit)
+		{
+			switch (unit.ToLower())
+			{
+				case "km":
+					return DistanceUnit.Kilometers;
+				case "mi":
+					return DistanceUnit.Miles;
+				case "ft":
+					return DistanceUnit.Feet;
+				default:
+					Log.Debug("Found unkown distance unit {@Unit}", unit);
+					return DistanceUnit.Unknown;
+			}
 		}
 	}
 }

@@ -61,7 +61,13 @@ This section provides settings related to conversions and what formats should be
     "SaveLocalCopy": false,
     "IncldudeTimeInHRZones": false,
     "IncludeTimeInPowerZones": false,
-    "DeviceInfoPath": "./deviceInfo.xml"
+    "DeviceInfoPath": "./deviceInfo.xml",
+    "Cycling": {
+      "PreferredLapType": "Class_Targets"      
+    },
+    "Running": {
+      "PreferredLapType": "Distance"
+    }
   }
 ```
 
@@ -74,6 +80,10 @@ This section provides settings related to conversions and what formats should be
 | IncludeTimeInHRZones | no | `false` | **Only use this if you are unable to configure your Max HR on Garmin Connect.** When set to True, P2G will attempt to capture the time spent in each HR Zone per the data returned by Peloton. See [understanding custom zones](#understanding-custom-zones).
 | IncludePowerInHRZones  | no | `false` | **Only use this if you are unable to configure your FTP and Power Zones on Garmin Connect.** When set to True, P2G will attempt to capture the time spent in each Power Zone per the data returned by Peloton. See [understanding custom zones](#understanding-custom-zones). |
 | DeviceInfoPath | no | `null` | The path to your `deviceInfo.xml` file. See [providing device info](#custom-device-info) |
+| Cycling | no | `null` | Configuration specific to Cycling workouts. |
+| Cycling.PreferredLapType | no | `Default` | The preferred [lap type to use](#lap-types). |
+| Running | no | `null` | Configuration specific to Running workouts. |
+| Running.PreferredLapType | no | `Default` | The preferred [lap type to use](#lap-types). |
 
 ### Understanding Custom Zones
 
@@ -94,6 +104,20 @@ By default, P2G using a custom device when converting and upload workouts.  This
 If you choose, you can provide P2G with your personal Device Info which will cause the Garmin workout to show the correct to device. Note, **this is completely optional and is only for cosmetic preference**, your workout will be converted, uploaded, and counted towards challenges regardless of whether this matches your personal device.
 
 See [configuring device info]({{ site.baseurl }}{% link configuration/providing-device-info.md %}) for detailed steps on how to create your `deviceInfo.xml`.
+
+### Lap Types
+
+P2G supports several different strategies for creating Laps in Garmin Connect.  If a certain strategy is not available is not available P2G will attempt to fallback to a different strategy.  You can override this behavior by specifying your preferred Lap type in the config. When `PreferredLapType` is set, P2G will first attempt to generate your preferred type and then fall back to the default behavior if it is unable to.  By default P2G will:
+
+1. First try to create laps based on `Class_Targets`
+1. Then try to create laps based on `Class_Segments`
+1. Finally fallback to create laps based on `Distance`
+
+| Strategy  | Config Value | Description |
+|:----------|:-------------|:------------|
+| Class Targets | `Class_Targets` | If the Peloton data includes Target Cadence information, then laps will be created to match any time the Target Cadence changed.  You must use this strategy if you want the Target Cadence to show up in Garmin on the Cadence chart. |
+| Class Segments | `Class_Segments` | If the Peloton data includes Class Segment information, then laps will be created to match each segment: Warm Up, Cycling, Weights, Cool Down, etc. |
+| Distance | `Distance` | P2G will caclulate Laps based on distance for each 1mi or 1km based on your distance setting in Peloton. |
 
 ## Peloton Config
 
