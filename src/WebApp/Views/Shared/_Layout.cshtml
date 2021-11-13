@@ -6,11 +6,12 @@
     <title>@ViewData["Title"] - P2G</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    @RenderSection("styles", false)
 </head>
 <body>
     <div class="wrapper">
         <nav id="nav-menu" class="nav nav-pills">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebApp</a>
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">P2G</a>
 
             <input type="hidden" id="currentPageId" value="@(ViewBag.Page ?? "home")" />
             <ul class="navbar-nav mr-auto">

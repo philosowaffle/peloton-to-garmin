@@ -1,12 +1,12 @@
 ﻿using Common;
 using Common.Database;
+using Common.Helpers;
 using Prometheus;
 using Serilog;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Metrics = Prometheus.Metrics;
 
@@ -95,15 +95,25 @@ namespace Garmin
 				{
 					var response = await _api.UploadActivity(file, _config.Format.Fit ? ".fit" : ".tcx");
 					if (!string.IsNullOrEmpty(response.DetailedImportResult.UploadId))
-					{
-						// TODO: update upload datetime in DBClient
-						_logger.Information("Uploaded workout {@workoutName}", file);
-					}
+						UpdateSyncItem(file);
+
 					await RateLimit();
 				} catch (Exception e)
 				{
 					throw new GarminUploadException($"NativeImplV1 failed to upload workout {file}", -1, e);
 				}
+			}
+		}
+
+		private void UpdateSyncItem(string file)
+		{
+			_logger.Information("Uploaded workout {@workoutName}", file);
+			var workoutId = WorkoutHelper.GetWorkoutIdFromFileName(file);
+			var syncItem = _dbClient.Get(workoutId);
+			if (syncItem is not null)
+			{
+				syncItem.UploadDate = DateTime.Now;
+				_dbClient.Upsert(syncItem);
 			}
 		}
 

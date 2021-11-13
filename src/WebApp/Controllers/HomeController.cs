@@ -31,7 +31,8 @@ namespace WebApp.Controllers
 				SyncStatus = syncTime.SyncStatus,
 				LastSuccessfulSyncTime = syncTime.LastSuccessfulSyncTime,
 				LastSyncTime = syncTime.LastSyncTime,
-				NextSyncTime = syncTime.NextSyncTime
+				NextSyncTime = syncTime.NextSyncTime,
+				RecentWorkouts = _db.GetRecentlySyncedItems(10)
 			};
 			return View(model);
 		}

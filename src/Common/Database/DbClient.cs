@@ -12,6 +12,7 @@ namespace Common.Database
 	public interface IDbClient
 	{
 		SyncHistoryItem Get(string id);
+		ICollection<SyncHistoryItem> GetRecentlySyncedItems(int limit);
 		void Upsert(SyncHistoryItem item);
 		SyncServiceStatus GetSyncStatus();
 		void UpsertSyncStatus(SyncServiceStatus syncTime);
@@ -142,6 +143,30 @@ namespace Common.Database
 			catch (Exception e)
 			{
 				_logger.Error(e, "Failed to upsert workout to db: {@WorkoutId}", item?.Id);
+			}
+		}
+
+		public ICollection<SyncHistoryItem> GetRecentlySyncedItems(int limit)
+		{
+			using var metrics = DbActionDuration
+									.WithLabels("select", "workoutIds")
+									.NewTimer();
+			using var tracing = Tracing.Trace("select", TagValue.Db)
+										.WithTable("SyncHistoryItem");
+
+			try
+			{
+				return _syncHistoryTable.Value
+					.AsQueryable()
+					.OrderByDescending(i => i.WorkoutDate)
+					.ThenByDescending(i => i.UploadDate)
+					.Take(limit)
+					.ToList();
+			}
+			catch (Exception e)
+			{
+				_logger.Error(e, "Failed to get recently synced items.");
+				return null;
 			}
 		}
 	}

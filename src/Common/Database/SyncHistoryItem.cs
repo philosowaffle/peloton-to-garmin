@@ -1,4 +1,5 @@
 ﻿using Common.Dto;
+using Common.Helpers;
 using System;
 
 namespace Common.Database
@@ -22,7 +23,7 @@ namespace Common.Database
 			dtDateTime = dtDateTime.AddSeconds(startTimeInSeconds).ToLocalTime();
 
 			Id = workout.Id;
-			WorkoutTitle = workout.Ride?.Title;
+			WorkoutTitle = WorkoutHelper.GetTitle(workout);
 			WorkoutDate = dtDateTime;
 		}
 	}

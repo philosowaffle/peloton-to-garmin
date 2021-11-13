@@ -35,7 +35,7 @@ namespace WebApp.Services
 		private readonly IEnumerable<IConverter> _converters;
 		private readonly IFileHandling _fileHandler;
 		private readonly IDbClient _db;
-		private bool _previousPollingState;
+		private bool? _previousPollingState;
 
 		public BackgroundSyncJob(IAppConfiguration config, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, IFileHandling fileHandling, IDbClient db)
 		{
@@ -48,7 +48,7 @@ namespace WebApp.Services
 
 			SyncServiceState.Enabled = _config.App.EnablePolling;
 			SyncServiceState.PollingIntervalSeconds = _config.App.PollingIntervalSeconds;
-			_previousPollingState = SyncServiceState.Enabled;
+			_previousPollingState = null;
 		}
 
 		protected override Task ExecuteAsync(CancellationToken stoppingToken)
