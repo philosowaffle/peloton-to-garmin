@@ -70,6 +70,12 @@ namespace Common
 
 	public class Format
 	{
+		public Format()
+		{
+			Cycling = new Cycling();
+			Running = new Running();
+		}
+
 		public bool Fit { get; set; }
 		public bool Json { get; set; }
 		public bool Tcx { get; set; }
@@ -77,6 +83,26 @@ namespace Common
 		public bool IncludeTimeInHRZones { get; set; }
 		public bool IncludeTimeInPowerZones { get; set; }
 		public string DeviceInfoPath { get; set; }
+		public Cycling Cycling { get; set; }
+		public Running Running { get; set; }
+	}
+
+	public class Cycling
+	{
+		public PreferredLapType PreferredLapType { get; set; }
+	}
+
+	public class Running
+	{
+		public PreferredLapType PreferredLapType { get; set; }
+	}
+
+	public enum PreferredLapType
+	{
+		Default = 0,
+		Distance = 1,
+		Class_Segments = 2,
+		Class_Targets = 3
 	}
 
 	public class Peloton
