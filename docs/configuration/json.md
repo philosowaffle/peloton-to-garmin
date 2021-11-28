@@ -107,7 +107,7 @@ See [configuring device info]({{ site.baseurl }}{% link configuration/providing-
 
 ### Lap Types
 
-P2G supports several different strategies for creating Laps in Garmin Connect.  If a certain strategy is not available is not available P2G will attempt to fallback to a different strategy.  You can override this behavior by specifying your preferred Lap type in the config. When `PreferredLapType` is set, P2G will first attempt to generate your preferred type and then fall back to the default behavior if it is unable to.  By default P2G will:
+P2G supports several different strategies for creating Laps in Garmin Connect.  If a certain strategy is not available P2G will attempt to fallback to a different strategy.  You can override this behavior by specifying your preferred Lap type in the config. When `PreferredLapType` is set, P2G will first attempt to generate your preferred type and then fall back to the default behavior if it is unable to.  By default P2G will:
 
 1. First try to create laps based on `Class_Targets`
 1. Then try to create laps based on `Class_Segments`
