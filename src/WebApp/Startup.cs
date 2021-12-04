@@ -1,10 +1,10 @@
 using Common;
 using Common.Database;
+using Common.Service;
 using Conversion;
 using Garmin;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,16 +17,13 @@ using Prometheus.DotNetRuntime;
 using Serilog;
 using Serilog.Events;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using WebApp.Services;
 
 namespace WebApp
 {
-	public class Startup
+    public class Startup
 	{
 		private static readonly Gauge BuildInfo = Prometheus.Metrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
 		{
@@ -54,6 +51,9 @@ namespace WebApp
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddSingleton<ISettingsDb, SettingsDb>();
+			services.AddSingleton<ISettingsService, SettingsService>();
+
 			services.AddSingleton<IAppConfiguration>((serviceProvider) =>
 			{
 				var config = new Configuration();
@@ -152,10 +152,6 @@ namespace WebApp
 
 		private void LoadConfigValues(Configuration config)
 		{
-			ConfigurationProvider.GetSection(nameof(App)).Bind(config.App);
-			ConfigurationProvider.GetSection(nameof(Format)).Bind(config.Format);
-			ConfigurationProvider.GetSection(nameof(Peloton)).Bind(config.Peloton);
-			ConfigurationProvider.GetSection(nameof(Garmin)).Bind(config.Garmin);
 			ConfigurationProvider.GetSection(nameof(Observability)).Bind(config.Observability);
 			ConfigurationProvider.GetSection(nameof(Developer)).Bind(config.Developer);
 		}

@@ -8,62 +8,63 @@
 <br />
 
 <h3>App Config</h3>
+
 <table class="table">
     <tbody>
         <tr>
             <td class="font-weight-bold">Output Directory:</td>
-            <td>@Model.App.OutputDirectory</td>
+            <td>@Model.Settings.App.OutputDirectory</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Working Directory:</td>
-            <td>@Model.App.WorkingDirectory</td>
+            <td>@Model.Settings.App.WorkingDirectory</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Sync History Db Path:</td>
-            <td>@Model.App.SyncHistoryDbPath</td>
+            <td>@Model.Settings.App.SyncHistoryDbPath</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Enable Polling:</td>
-            <td>@Model.App.EnablePolling</td>
+            <td>@Model.Settings.App.EnablePolling</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Polling Interval Seconds:</td>
-            <td>@Model.App.PollingIntervalSeconds</td>
+            <td>@Model.Settings.App.PollingIntervalSeconds</td>
         </tr>
 
         <tr>
             <td class="font-weight-bold">Close Window On Finish:</td>
-            <td>@Model.App.CloseWindowOnFinish</td>
+            <td>@Model.Settings.App.CloseWindowOnFinish</td>
         </tr>
 
         <tr>
             <td class="font-weight-bold">Fit Directory:</td>
-            <td>@Model.App.FitDirectory</td>
+            <td>@Model.Settings.App.FitDirectory</td>
         </tr>
 
         <tr>
             <td class="font-weight-bold">Json Directory:</td>
-            <td>@Model.App.JsonDirectory</td>
+            <td>@Model.Settings.App.JsonDirectory</td>
         </tr>
 
         <tr>
             <td class="font-weight-bold">TCX Directory:</td>
-            <td>@Model.App.TcxDirectory</td>
+            <td>@Model.Settings.App.TcxDirectory</td>
         </tr>
 
         <tr>
             <td class="font-weight-bold">Failed Directory:</td>
-            <td>@Model.App.FailedDirectory</td>
+            <td>@Model.Settings.App.FailedDirectory</td>
         </tr>
 
         <tr>
             <td class="font-weight-bold">Downloaded Directory:</td>
-            <td>@Model.App.DownloadDirectory</td>
+            <td>@Model.Settings.App.DownloadDirectory</td>
         </tr>
 
         <tr>
             <td class="font-weight-bold">Upload Directory:</td>
-            <td>@Model.App.UploadDirectory</td>
+            <td>@Model.Settings.App.UploadDirectory</td>
         </tr>
     </tbody>
 </table>
@@ -74,39 +75,39 @@
     <tbody>
         <tr>
             <td class="font-weight-bold">Fit:</td>
-            <td>@Model.Format.Fit</td>
+            <td>@Model.Settings.Format.Fit</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Json:</td>
-            <td>@Model.Format.Json</td>
+            <td>@Model.Settings.Format.Json</td>
         </tr>
         <tr>
             <td class="font-weight-bold">TCX:</td>
-            <td>@Model.Format.Tcx</td>
+            <td>@Model.Settings.Format.Tcx</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Save Local Copy:</td>
-            <td>@Model.Format.SaveLocalCopy</td>
+            <td>@Model.Settings.Format.SaveLocalCopy</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Include Time in HR Zones:</td>
-            <td>@Model.Format.IncludeTimeInHRZones</td>
+            <td>@Model.Settings.Format.IncludeTimeInHRZones</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Include Time in Power Zones:</td>
-            <td>@Model.Format.IncludeTimeInPowerZones</td>
+            <td>@Model.Settings.Format.IncludeTimeInPowerZones</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Device Info Path:</td>
-            <td>@Model.Format.DeviceInfoPath</td>
+            <td>@Model.Settings.Format.DeviceInfoPath</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Cycling Preferred Lap Type:</td>
-            <td>@Model.Format.Cycling.PreferredLapType</td>
+            <td>@Model.Settings.Format.Cycling.PreferredLapType</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Running Preferred Lap Type:</td>
-            <td>@Model.Format.Running.PreferredLapType</td>
+            <td>@Model.Settings.Format.Running.PreferredLapType</td>
         </tr>
     </tbody>
 </table>
@@ -117,19 +118,19 @@
     <tbody>
         <tr>
             <td class="font-weight-bold">Email:</td>
-            <td>@Model.Peloton.Email</td>
+            <td>@Model.Settings.Peloton.Email</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Password:</td>
-            <td>@Model.Peloton.Password</td>
+            <td>@Model.Settings.Peloton.Password</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Number of Workouts to Download:</td>
-            <td>@Model.Peloton.NumWorkoutsToDownload</td>
+            <td>@Model.Settings.Peloton.NumWorkoutsToDownload</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Excluded Workout Types:</td>
-            <td>@Model.Peloton.ExcludeWorkoutTypes</td>
+            <td>@Model.Settings.Peloton.ExcludeWorkoutTypes</td>
         </tr>
     </tbody>
 </table>
@@ -140,23 +141,23 @@
     <tbody>
         <tr>
             <td class="font-weight-bold">Email:</td>
-            <td>@Model.Garmin.Email</td>
+            <td>@Model.Settings.Garmin.Email</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Password:</td>
-            <td>@Model.Garmin.Password</td>
+            <td>@Model.Settings.Garmin.Password</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Upload:</td>
-            <td>@Model.Garmin.Upload</td>
+            <td>@Model.Settings.Garmin.Upload</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Format To Upload:</td>
-            <td>@Model.Garmin.FormatToUpload</td>
+            <td>@Model.Settings.Garmin.FormatToUpload</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Garmin Upload Strategy:</td>
-            <td>@Model.Garmin.UploadStrategy</td>
+            <td>@Model.Settings.Garmin.UploadStrategy</td>
         </tr>
     </tbody>
 </table>
@@ -167,23 +168,23 @@
     <tbody>
         <tr>
             <td class="font-weight-bold">Prometheus Enabled:</td>
-            <td>@Model.Observability.Prometheus.Enabled</td>
+            <td>@Model.App.Observability.Prometheus.Enabled</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Prometheus Port:</td>
-            <td>@Model.Observability.Prometheus.Port</td>
+            <td>@Model.App.Observability.Prometheus.Port</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Jaeger Enabled:</td>
-            <td>@Model.Observability.Jaeger.Enabled</td>
+            <td>@Model.App.Observability.Jaeger.Enabled</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Jaeger Agent Host:</td>
-            <td>@Model.Observability.Jaeger.AgentHost</td>
+            <td>@Model.App.Observability.Jaeger.AgentHost</td>
         </tr>
         <tr>
             <td class="font-weight-bold">Jaeger Agent Port:</td>
-            <td>@Model.Observability.Jaeger.AgentPort</td>
+            <td>@Model.App.Observability.Jaeger.AgentPort</td>
         </tr>
     </tbody>
 </table>

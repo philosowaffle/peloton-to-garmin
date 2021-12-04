@@ -1,6 +1,7 @@
 ﻿using Prometheus;
 using Serilog;
 using System;
+using PromMetrics = Prometheus.Metrics;
 
 namespace Common
 {
@@ -60,5 +61,13 @@ namespace Common
 			public static int UnHealthy = 1;
 			public static int Dead = 0;
 		}
+	}
+
+	public static class DbMetrics
+	{
+		public static readonly Histogram DbActionDuration = PromMetrics.CreateHistogram(TagValue.P2G + "_db_duration_seconds", "Counter of db actions.", new HistogramConfiguration()
+		{
+			LabelNames = new[] { Metrics.Label.DbMethod, Metrics.Label.DbQuery }
+		});
 	}
 }

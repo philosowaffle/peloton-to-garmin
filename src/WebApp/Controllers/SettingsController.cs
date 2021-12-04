@@ -1,45 +1,66 @@
-﻿using Common;
+﻿using Common.Service;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 using WebApp.Models;
 
 namespace WebApp.Controllers
 {
-	[ApiController]
+    [ApiController]
 	public class SettingsController : Controller
 	{
-		private IAppConfiguration _config;
+		private ISettingsService _settingsService;
 
-		public SettingsController(IAppConfiguration config)
+		public SettingsController(ISettingsService settingsService)
 		{
-			_config = config;
+			_settingsService = settingsService;
 		}
 
 		[HttpGet]
 		[Route("/settings")]
 		[ApiExplorerSettings(IgnoreApi = true)]
-		public ActionResult Index()
+		public async Task<ActionResult> Index()
 		{
-			return View(GetData());
+			return View(await GetDataAsync());
 		}
 
 		[HttpGet]
 		[Route("/api/settngs")]
-		public SettingsGetResponse Get()
+		public Task<SettingsGetResponse> Get()
 		{
-			return GetData();
+			return GetDataAsync();
 		}
 
-		private SettingsGetResponse GetData()
+		private async Task<SettingsGetResponse> GetDataAsync()
 		{
-			var response = new SettingsGetResponse(_config);
+			var settings = await _settingsService.GetSettingsAsync();
+			var appConfig = _settingsService.GetAppConfiguration();
 
-			response.Peloton.Email = "******" + _config.Peloton.Email.Substring(6);
-			response.Peloton.Password = string.IsNullOrEmpty(_config.Peloton.Password) ? "not set" : "******";
+			var response = new SettingsGetResponse() 
+			{
+				Settings = settings,
+				App = appConfig
+			};
 
-			response.Garmin.Email = "******" + _config.Garmin.Email.Substring(6);
-			response.Garmin.Password = string.IsNullOrEmpty(_config.Garmin.Password) ? "not set" : "******";
+			response.Settings.Peloton.Email = string.IsNullOrEmpty(response.Settings.Peloton.Email) ? "not set"
+												: "******" + response.Settings.Peloton.Email.Substring(6);
+			response.Settings.Peloton.Password = string.IsNullOrEmpty(response.Settings.Peloton.Password) ? "not set" : "******";
+
+			response.Settings.Garmin.Email = string.IsNullOrEmpty(response.Settings.Garmin.Email) ? "not set"
+												: "******" + response.Settings.Garmin.Email.Substring(6);
+			response.Settings.Garmin.Password = string.IsNullOrEmpty(response.Settings.Garmin.Password) ? "not set" : "******";
 
 			return response;
 		}
+
+		[HttpPost]
+		[Route("/settings")]
+		[ApiExplorerSettings(IgnoreApi = true)]
+		public async Task<ActionResult> SaveAsync([FromForm] SettingsGetResponse request)
+        {
+			// TODO: Validation
+			await _settingsService.UpdateSettings(request.Settings);
+
+			return View("Index");
+        }
 	}
 }

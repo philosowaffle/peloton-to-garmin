@@ -36,6 +36,28 @@ namespace Common
 		public Developer Developer { get; set; }
 	}
 
+	public class AppConfiguration
+    {
+		public Observability Observability { get; set; }
+		public Developer Developer { get; set; }
+    }
+
+	public class Settings
+    {
+		public Settings()
+		{
+			App = new App();
+			Format = new Format();
+			Peloton = new Peloton();
+			Garmin = new Garmin();
+		}
+
+		public App App { get; set; }
+		public Format Format { get; set; }
+		public Peloton Peloton { get; set; }
+		public Garmin Garmin { get; set; }
+	}
+
 	public class App
 	{
 		public App()
