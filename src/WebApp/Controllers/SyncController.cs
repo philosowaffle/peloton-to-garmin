@@ -16,9 +16,9 @@ namespace WebApp.Controllers
 
 		private readonly IAppConfiguration _config;
 		private readonly ISyncService _syncService;
-		private readonly IDbClient _db;
+		private readonly ISyncStatusDb _db;
 
-		public SyncController(IAppConfiguration appConfiguration, ISyncService syncService, IDbClient db)
+		public SyncController(IAppConfiguration appConfiguration, ISyncService syncService, ISyncStatusDb db)
 		{
 			_config = appConfiguration;
 			_syncService = syncService;
@@ -28,9 +28,9 @@ namespace WebApp.Controllers
 		[HttpGet]
 		[Route("/sync")]
 		[ApiExplorerSettings(IgnoreApi = true)]
-		public ActionResult Index()
+		public async Task<ActionResult> Index()
 		{
-			var syncTime = _db.GetSyncStatus();
+			var syncTime = await _db.GetSyncStatusAsync();
 
 			var model = new SyncViewModel()
 			{
@@ -54,7 +54,7 @@ namespace WebApp.Controllers
 			var model = new SyncViewModel();
 			model.Response = await _syncService.SyncAsync(request.NumWorkouts);
 
-			var syncTime = _db.GetSyncStatus();
+			var syncTime = await _db.GetSyncStatusAsync();
 			model.GetResponse = new SyncGetResponse()
 			{
 				SyncEnabled = _config.App.EnablePolling,

@@ -74,6 +74,8 @@ namespace WebApp
 			services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
 			services.AddSingleton<IPelotonService, PelotonService>();
 			services.AddSingleton<IGarminUploader, GarminUploader>();
+
+			services.AddSingleton<ISyncStatusDb, SyncStatusDb>();
 			services.AddSingleton<ISyncService, SyncService>();
 
 			services.AddSingleton<IConverter, FitConverter>();

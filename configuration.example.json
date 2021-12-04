@@ -2,7 +2,6 @@
   "App": {
     "OutputDirectory": "./output",
     "WorkingDirectory": "./working",
-    "SyncHistoryDbPath": "./output/syncHistory.json",
     "EnablePolling": true,
     "PollingIntervalSeconds": 86400,
     "CloseWindowOnFinish": false

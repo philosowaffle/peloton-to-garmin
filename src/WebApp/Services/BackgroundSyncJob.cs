@@ -34,17 +34,17 @@ namespace WebApp.Services
 		private readonly IGarminUploader _garminUploader;
 		private readonly IEnumerable<IConverter> _converters;
 		private readonly IFileHandling _fileHandler;
-		private readonly IDbClient _db;
+		private readonly ISyncStatusDb _syncStatusDb;
 		private bool? _previousPollingState;
 
-		public BackgroundSyncJob(IAppConfiguration config, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, IFileHandling fileHandling, IDbClient db)
+		public BackgroundSyncJob(IAppConfiguration config, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, IFileHandling fileHandling, ISyncStatusDb syncStatusDb)
 		{
 			_config = config;
 			_pelotonService = pelotonService;
 			_garminUploader = garminUploader;
 			_converters = converters;
 			_fileHandler = fileHandling;
-			_db = db;
+			_syncStatusDb = syncStatusDb;
 
 			SyncServiceState.Enabled = _config.App.EnablePolling;
 			SyncServiceState.PollingIntervalSeconds = _config.App.PollingIntervalSeconds;
@@ -60,7 +60,7 @@ namespace WebApp.Services
 		{
 			while (!stoppingToken.IsCancellationRequested)
 			{
-				if (NotPolling())
+				if (await NotPollingAsync())
 					continue;
 
 				await SyncAsync();
@@ -79,16 +79,16 @@ namespace WebApp.Services
 			return _previousPollingState != SyncServiceState.Enabled;
 		}
 
-		private bool NotPolling()
+		private async Task<bool> NotPollingAsync()
 		{			
 			var shouldPoll = SyncServiceState.Enabled;			
 
 			if (StateChanged())
 			{
-				var syncTime = _db.GetSyncStatus();
+				var syncTime = await _syncStatusDb.GetSyncStatusAsync();
 				syncTime.NextSyncTime = shouldPoll ? DateTime.Now : null;
 				syncTime.SyncStatus = shouldPoll ? Status.Running : Status.NotRunning;
-				_db.UpsertSyncStatus(syncTime);
+				await _syncStatusDb.UpsertSyncStatusAsync(syncTime);
 
 				if (shouldPoll) _logger.Information("Sync Service started.");
 				else _logger.Information("Sync Service stopped.");
@@ -135,7 +135,7 @@ namespace WebApp.Services
 				var now = DateTime.UtcNow;
 				var nextRunTime = now.AddSeconds(_config.App.PollingIntervalSeconds);
 
-				var syncStatus = _db.GetSyncStatus();
+				var syncStatus = await _syncStatusDb.GetSyncStatusAsync();
 				syncStatus.LastSyncTime = DateTime.Now;
 				syncStatus.LastSuccessfulSyncTime = Health.Value == HealthStatus.Healthy ? DateTime.Now : syncStatus.LastSuccessfulSyncTime;
 				syncStatus.NextSyncTime = nextRunTime;
@@ -143,7 +143,7 @@ namespace WebApp.Services
 										Health.Value == HealthStatus.Dead ? Status.Dead :
 										Status.Running;
 
-				_db.UpsertSyncStatus(syncStatus);
+				await _syncStatusDb.UpsertSyncStatusAsync(syncStatus);
 
 				NextSyncTime.Set(new DateTimeOffset(nextRunTime).ToUnixTimeSeconds());
 			}

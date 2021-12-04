@@ -14,8 +14,6 @@ namespace Common.Database
 		SyncHistoryItem Get(string id);
 		ICollection<SyncHistoryItem> GetRecentlySyncedItems(int limit);
 		void Upsert(SyncHistoryItem item);
-		SyncServiceStatus GetSyncStatus();
-		void UpsertSyncStatus(SyncServiceStatus syncTime);
 	}
 
 	public class DbClient : IDbClient
@@ -26,7 +24,6 @@ namespace Common.Database
 		});
 		private static readonly ILogger _logger = LogContext.ForClass<DbClient>();
 
-		private DataStore _configDatabase;
 		private Lazy<IDocumentCollection<SyncHistoryItem>> _syncHistoryTable;
 		private IFileHandling _fileHandler;
 
@@ -34,10 +31,8 @@ namespace Common.Database
 		{
 			_fileHandler = fileHandler;
 
-			MakeDbIfNotExist(configuration.App.ConfigDbPath);
 			MakeDbIfNotExist(configuration.App.SyncHistoryDbPath);
 
-			_configDatabase = new DataStore(configuration.App.ConfigDbPath);
 			var syncHistoryDb = new DataStore(configuration.App.SyncHistoryDbPath);
 			_syncHistoryTable = new Lazy<IDocumentCollection<SyncHistoryItem>>(() => syncHistoryDb.GetCollection<SyncHistoryItem>());		
 		}
@@ -79,51 +74,6 @@ namespace Common.Database
 			{
 				_logger.Error(e, "Failed to get workout from db: {@WorkoutId}", id);
 				return null;
-			}
-		}
-
-		public SyncServiceStatus GetSyncStatus()
-		{
-			using var metrics = DbActionDuration
-									.WithLabels("select", "SyncStatus")
-									.NewTimer();
-			using var tracing = Tracing.Trace("select", TagValue.Db)
-										.WithTable("SyncStatus");
-
-			try
-			{
-				var syncTime = _configDatabase.GetItem<SyncServiceStatus>("syncStatus");
-				return syncTime ?? new SyncServiceStatus();
-
-			}
-			catch (KeyNotFoundException)
-			{
-				_logger.Debug("SyncStatus object not found in DB, creating now.");
-				UpsertSyncStatus(new SyncServiceStatus());
-				return _configDatabase.GetItem<SyncServiceStatus>("syncStatus");
-			}
-			catch (Exception e)
-			{
-				_logger.Error(e, "Failed to get last sync status from db.");
-				return new SyncServiceStatus();
-			}
-		}
-
-		public void UpsertSyncStatus(SyncServiceStatus newSyncTime)
-		{
-			using var metrics = DbActionDuration
-									.WithLabels("upsert", "SyncStatus")
-									.NewTimer();
-			using var tracing = Tracing.Trace("upsert", TagValue.Db)
-										.WithTable("SyncStatus");
-
-			try
-			{
-				_configDatabase.ReplaceItem("syncStatus", newSyncTime, upsert: true);
-			}
-			catch (Exception e)
-			{
-				_logger.Error(e, "Failed to upsert sync status in db.");
 			}
 		}
 

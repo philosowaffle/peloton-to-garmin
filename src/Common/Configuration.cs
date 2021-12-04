@@ -36,12 +36,18 @@ namespace Common
 		public Developer Developer { get; set; }
 	}
 
+	/// <summary>
+	/// Configuration that must be provided prior to runtime. Typically via config file, command line args, or env variables.
+	/// </summary>
 	public class AppConfiguration
     {
 		public Observability Observability { get; set; }
 		public Developer Developer { get; set; }
     }
 
+	/// <summary>
+	/// Settings that can be looked up after app start, changed on demand, and saved to the SettingsDb.
+	/// </summary>
 	public class Settings
     {
 		public Settings()
@@ -65,7 +71,6 @@ namespace Common
 			OutputDirectory = Path.Join(Environment.CurrentDirectory, "output");
 			WorkingDirectory = Path.Join(Environment.CurrentDirectory, "working");
 			SyncHistoryDbPath = Path.Join(OutputDirectory, "syncHistory.json");
-			ConfigDbPath = Path.Join(OutputDirectory, "config_db.json");
 
 			EnablePolling = true;
 			PollingIntervalSeconds = 3600;
@@ -74,13 +79,14 @@ namespace Common
 		public string OutputDirectory { get; set; }
 		public string WorkingDirectory { get; set; }
 		
+		[Obsolete("Use DataDirectory as folder path.")]
 		public string SyncHistoryDbPath { get; set; }
-		public string ConfigDbPath { get; set; }
 		public bool EnablePolling { get; set; }
 		public int PollingIntervalSeconds { get; set; }
 		public bool? PythonAndGUploadInstalled { get; set; }
 		public bool CloseWindowOnFinish { get; set; }
 
+		public static string DataDirectory = Path.Join(Environment.CurrentDirectory, "data");
 		public string FitDirectory => Path.Join(OutputDirectory, "fit");
 		public string JsonDirectory => Path.Join(OutputDirectory, "json");
 		public string TcxDirectory => Path.Join(OutputDirectory, "tcx");

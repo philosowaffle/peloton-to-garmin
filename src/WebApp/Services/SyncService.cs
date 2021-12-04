@@ -24,9 +24,9 @@ namespace WebApp.Services
 		private readonly IPelotonService _pelotonService;
 		private readonly IGarminUploader _garminUploader;
 		private readonly IEnumerable<IConverter> _converters;
-		private readonly IDbClient _db;
+		private readonly ISyncStatusDb _db;
 
-		public SyncService(IAppConfiguration config, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, IDbClient dbClient)
+		public SyncService(IAppConfiguration config, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, ISyncStatusDb dbClient)
 		{
 			_config = config;
 			_pelotonService = pelotonService;
@@ -39,7 +39,7 @@ namespace WebApp.Services
 		{
 			_logger.Verbose("Reached the SyncController.");
 			var response = new SyncPostResponse();
-			var syncTime = _db.GetSyncStatus();
+			var syncTime = await _db.GetSyncStatusAsync();
 
 			try
 			{
@@ -91,7 +91,7 @@ namespace WebApp.Services
 
 			syncTime.LastSyncTime = DateTime.Now;
 			syncTime.LastSuccessfulSyncTime = DateTime.Now;
-			_db.UpsertSyncStatus(syncTime);
+			await _db.UpsertSyncStatusAsync(syncTime);
 
 			response.SyncSuccess = true;
 			return response;

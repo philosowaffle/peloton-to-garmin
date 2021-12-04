@@ -6,25 +6,25 @@ using System.Threading.Tasks;
 
 namespace Common.Database
 {
-    public interface ISettingsDb
+    public interface ISyncStatusDb
     {
-        Task<Settings> GetSettingsAsync();
-        Task UpsertSettingsAsync(Settings settings);
+        Task<SyncServiceStatus> GetSyncStatusAsync();
+        Task UpsertSyncStatusAsync(SyncServiceStatus status);
     }
 
-    public class SettingsDb : DbBase<Settings>, ISettingsDb
+    public class SyncStatusDb : DbBase<SyncServiceStatus>, ISyncStatusDb
     {
-        private static readonly ILogger _logger = LogContext.ForClass<SettingsDb>();
-
+        private static readonly ILogger _logger = LogContext.ForClass<SyncStatusDb>();
+        
         private readonly DataStore _db;
-        private readonly Settings _defaultSettings = new Settings();
+        private readonly SyncServiceStatus _defaultSyncServiceStatus = new SyncServiceStatus();
 
-        public SettingsDb(IFileHandling fileHandler) : base("Settings", fileHandler)
+        public SyncStatusDb(IFileHandling fileHandling) : base("SyncStatus", fileHandling)
         {
             _db = new DataStore(DbPath);
         }
 
-        public Task<Settings> GetSettingsAsync()
+        public Task<SyncServiceStatus> GetSyncStatusAsync()
         {
             using var metrics = DbMetrics.DbActionDuration
                                     .WithLabels("get", DbName)
@@ -34,16 +34,16 @@ namespace Common.Database
 
             try
             {
-                return Task.FromResult(_db.GetItem<Settings>("settings"));
+                return Task.FromResult(_db.GetItem<SyncServiceStatus>("syncServiceStatus"));
             }
             catch (Exception e)
             {
-                _logger.Error(e, "Failed to get settings from db");
-                return Task.FromResult(_defaultSettings);
+                _logger.Error(e, "Failed to get syncServiceStatus from db");
+                return Task.FromResult(_defaultSyncServiceStatus);
             }
         }
 
-        public Task UpsertSettingsAsync(Settings settings)
+        public Task UpsertSyncStatusAsync(SyncServiceStatus status)
         {
             using var metrics = DbMetrics.DbActionDuration
                                     .WithLabels("upsert", DbName)
@@ -53,11 +53,11 @@ namespace Common.Database
 
             try
             {
-                return _db.ReplaceItemAsync("settings", settings, upsert: true);
+                return _db.ReplaceItemAsync("syncServiceStatus", status, upsert: true);
             }
             catch (Exception e)
             {
-                _logger.Error(e, "Failed to upsert settings to db");
+                _logger.Error(e, "Failed to upsert syncServiceStatus to db");
                 return Task.FromResult(false);
             }
         }

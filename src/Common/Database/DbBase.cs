@@ -16,10 +16,10 @@ namespace Common.Database
 		protected readonly string DbName;
 		protected readonly string DbPath;
 
-		public DbBase(string dbName, string dbPath, IFileHandling fileHandler)
+		public DbBase(string dbName, IFileHandling fileHandler)
 		{
 			DbName = dbName;
-			DbPath = dbPath;
+			DbPath = Path.Join(App.DataDirectory, $"{dbName}Db.json");
 			_fileHandler = fileHandler;
 
 			CreateDbIfNotExist(DbPath, DbName);
