@@ -9,18 +9,8 @@ nav_order: 1
 
 For convenience a compiled windows executable is provided. This can easily be downloaded and run on your machine.
 
-1. Download and extract the [latest stable rlease](https://github.com/philosowaffle/peloton-to-garmin/releases)
+1. Download and extract the [latest stable release](https://github.com/philosowaffle/peloton-to-garmin/releases)
 1. In the unzipped directory find the `configuration.local.json` and open it in a text editor of your choice
-    1. In the Garmin Config section set: `"UploadStrategy": 2`
-    ```json
-        "Garmin": {
-        "Email": "garmin@gmail.com",
-        "Password": "garmin",
-        "Upload": false,
-        "FormatToUpload": "fit",
-        "UploadStrategy": 2
-        }
-    ```
     1. Be sure to set your usernames and passwords in Garmin and Peloton config sections respectively.
     1. Save and close the file
 1. Find the `PelotonToGarminConsole.exe`
