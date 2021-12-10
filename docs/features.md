@@ -29,10 +29,12 @@ Convert workout data from Peloton into a format that can be uploaded to Garmin.
 
 ## Typical Usage
 
-1. You either manually start the application or have it running in the background polling Peloton for new workouts regularly
-1. In either scenario, when a new workout is found, the application fetches all of the relevant workout data from Peloton
-1. Based on your configuration, P2G can save the raw data from Peloton as JSON, TCX, and/or FIT files on your file system
-1. Based on your configuration, P2G can then automatically upload either the TCX or FIT file to Garmin Connect
+1. Do a Peloton Workout!
+    1. If you use your Garmin device to send HR data to the Peloton then at the end of your workout **do not save the workout on your watch, discard it.**
+1. Sync your workout with P2G
+    1. You can go to your computer and manually run P2G to sync recent workouts
+    1. **OR** You can configure P2G to run in the background on your computer, syncing workouts every hour
+1. P2G can be configured to download your workout data and save it to your computer **AND** it can automatically upload those workouts to Garmin Connect
 
 ## Screenshots
 
