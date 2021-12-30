@@ -13,7 +13,8 @@ The recommended and easiest way to get started is with Docker. To learn more abo
 
 A sample [docker-compose.yaml](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker-compose.yaml) file and [configuration.local.json](https://github.com/philosowaffle/peloton-to-garmin/blob/master/configuration.example.json) can be found in the project repo.
 
-The Docker container expects a valid `configuration.local.json` file is mounted into the container.  Additionally, you can mount the `app/working` and `app/output` directories.  You can learn more about the configuration file over in the [Configuration Section](/{{ site.baseurl }}{% link configuration/index.md %}).
+The Docker container expects a valid `configuration.local.json` file is mounted into the container.  Additionally, you can mount the `app/working` and `app/output` directories.  You can learn more about the configuration file over in the [Configuration Section]({{ site.baseurl }}{% link configuration/index.md %})
+
 
 ```yaml
 version: "3.9"
