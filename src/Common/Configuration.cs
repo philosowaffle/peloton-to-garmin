@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 
 namespace Common
@@ -76,12 +77,20 @@ namespace Common
 			PollingIntervalSeconds = 3600;
 		}
 
+		[DisplayName("Output Directory")]
+		[Description("Where downloaded and converted files should be saved to.")] 
 		public string OutputDirectory { get; set; }
+		[DisplayName("Working Directory")]
+		[Description("The directory where P2G can work. When running, P2G will create and delete files and needs a dedicated directory to do that.")]
 		public string WorkingDirectory { get; set; }
 		
 		[Obsolete("Use DataDirectory as folder path.")]
 		public string SyncHistoryDbPath { get; set; }
+		[DisplayName("Enable Polling")]
+		[Description("Enabled if you wish P2G to run continuously and poll Peloton for new workouts.")]
 		public bool EnablePolling { get; set; }
+		[DisplayName("Polling Interval in Seconds")]
+		[Description("The polling interval in seconds determines how frequently P2G should check for new workouts. Be warned, that setting this to a frequency of hourly or less may get you flagged by Peloton as a bad actor and they may reset your password.")]
 		public int PollingIntervalSeconds { get; set; }
 		public bool? PythonAndGUploadInstalled { get; set; }
 		public bool CloseWindowOnFinish { get; set; }
@@ -104,12 +113,26 @@ namespace Common
 			Running = new Running();
 		}
 
+		[DisplayName("FIT")]
+		[Description("Enabled indicates you wish downloaded workouts to be converted to FIT")]
 		public bool Fit { get; set; }
+		[DisplayName("JSON")]
+		[Description("Enabled indicates you wish downloaded workouts to be converted to JSON")]
 		public bool Json { get; set; }
+		[DisplayName("TCX")]
+		[Description("Enabled indicates you wish downloaded workouts to be converted to TCX.")]
 		public bool Tcx { get; set; }
+		[DisplayName("Save a local copy")]
+		[Description("Save any converted workouts to your specified Output Directory")]
 		public bool SaveLocalCopy { get; set; }
+		[DisplayName("Include Time in HR Zones")]
+		[Description("Only use this if you are unable to configure your Max HR on Garmin Connect. When set to True, P2G will attempt to capture the time spent in each HR Zone per the data returned by Peloton.")]
 		public bool IncludeTimeInHRZones { get; set; }
+		[DisplayName("Include Time in Power Zones")]
+		[Description("Only use this if you are unable to configure your FTP and Power Zones on Garmin Connect. When set to True, P2G will attempt to capture the time spent in each Power Zone per the data returned by Peloton.")]
 		public bool IncludeTimeInPowerZones { get; set; }
+		[DisplayName("Device Info Path")]
+		[Description("The path to your deviceInfo.xml file.")]
 		public string DeviceInfoPath { get; set; }
 		public Cycling Cycling { get; set; }
 		public Running Running { get; set; }
@@ -117,11 +140,15 @@ namespace Common
 
 	public class Cycling
 	{
+		[DisplayName("Preferred Lap Type")]
+		[Description("")]
 		public PreferredLapType PreferredLapType { get; set; }
 	}
 
 	public class Running
 	{
+		[DisplayName("Preferred Lap Type")]
+		[Description("")]
 		public PreferredLapType PreferredLapType { get; set; }
 	}
 
@@ -143,7 +170,9 @@ namespace Common
 
 		public string Email { get; set; }
 		public string Password { get; set; }
+		[DisplayName("Number of Workouts to Download")]
 		public int NumWorkoutsToDownload { get; set; }
+		[DisplayName("Exclude Workout Types")]
 		public ICollection<string> ExcludeWorkoutTypes { get; set; }
 	}
 
@@ -152,7 +181,9 @@ namespace Common
 		public string Email { get; set; }
 		public string Password { get; set; }
 		public bool Upload { get; set; }
+		[DisplayName("Format to Upload")]
 		public string FormatToUpload { get; set; }
+		[DisplayName("Upload Strategy")]
 		public UploadStrategy UploadStrategy { get; set; }
 	}
 

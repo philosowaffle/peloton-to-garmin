@@ -19,14 +19,24 @@
     <table class="table">
         <tbody>
             <tr>                
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.App.OutputDirectory):</td>
-                <td class="editor-field">
+                <td class="font-weight-bold editor-label">
+                    @Html.LabelFor(model => model.Settings.App.OutputDirectory):
+                    <small id="outputDirHelp" class="form-text text-muted">
+                        Where downloaded and converted files should be saved to.
+                    </small>
+                </td>
+                <td class="custom-file">
                     @Html.EditorFor(model => model.Settings.App.OutputDirectory)
                     @Html.ValidationMessageFor(model => model.Settings.App.OutputDirectory)
                 </td>                
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.App.WorkingDirectory):</td>
+                <td class="font-weight-bold editor-label">
+                    @Html.LabelFor(model => model.Settings.App.WorkingDirectory):
+                    <small id="workingDirHelp" class="form-text text-muted">
+                        The directory where P2G can work. When running, P2G will create and delete files and needs a dedicated directory to do that.
+                    </small>
+                </td>
                 <td class="editor-field">
                     @Html.EditorFor(model => model.Settings.App.WorkingDirectory)
                     @Html.ValidationMessageFor(model => model.Settings.App.WorkingDirectory)
@@ -124,28 +134,28 @@
     <table class="table">
         <tbody>
             <tr>
-                <td class="font-weight-bold editor-label">Cycling @Html.LabelFor(model => model.Settings.Peloton.Email):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Peloton.Email):</td>
                 <td class="editor-field">
                     @Html.EditorFor(model => model.Settings.Peloton.Email)
                     @Html.ValidationMessageFor(model => model.Settings.Peloton.Email)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">Cycling @Html.LabelFor(model => model.Settings.Peloton.Password):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Peloton.Password):</td>
                 <td class="editor-field">
                     @Html.EditorFor(model => model.Settings.Peloton.Password)
                     @Html.ValidationMessageFor(model => model.Settings.Peloton.Password)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">Cycling @Html.LabelFor(model => model.Settings.Peloton.NumWorkoutsToDownload):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Peloton.NumWorkoutsToDownload):</td>
                 <td class="editor-field">
                     @Html.EditorFor(model => model.Settings.Peloton.NumWorkoutsToDownload)
                     @Html.ValidationMessageFor(model => model.Settings.Peloton.NumWorkoutsToDownload)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">Cycling @Html.LabelFor(model => model.Settings.Peloton.ExcludeWorkoutTypes):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Peloton.ExcludeWorkoutTypes):</td>
                 <td class="editor-field">
                     @Html.EditorFor(model => model.Settings.Peloton.ExcludeWorkoutTypes)
                     @Html.ValidationMessageFor(model => model.Settings.Peloton.ExcludeWorkoutTypes)
@@ -159,35 +169,35 @@
     <table class="table">
         <tbody>
             <tr>
-                <td class="font-weight-bold editor-label">Cycling @Html.LabelFor(model => model.Settings.Garmin.Email):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Garmin.Email):</td>
                 <td class="editor-field">
                     @Html.EditorFor(model => model.Settings.Garmin.Email)
                     @Html.ValidationMessageFor(model => model.Settings.Garmin.Email)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">Cycling @Html.LabelFor(model => model.Settings.Garmin.Password):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Garmin.Password):</td>
                 <td class="editor-field">
                     @Html.EditorFor(model => model.Settings.Garmin.Password)
                     @Html.ValidationMessageFor(model => model.Settings.Garmin.Password)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">Cycling @Html.LabelFor(model => model.Settings.Garmin.Upload):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Garmin.Upload):</td>
                 <td class="editor-field">
                     @Html.EditorFor(model => model.Settings.Garmin.Upload)
                     @Html.ValidationMessageFor(model => model.Settings.Garmin.Upload)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">Cycling @Html.LabelFor(model => model.Settings.Garmin.FormatToUpload):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Garmin.FormatToUpload):</td>
                 <td class="editor-field">
                     @Html.EditorFor(model => model.Settings.Garmin.FormatToUpload)
                     @Html.ValidationMessageFor(model => model.Settings.Garmin.FormatToUpload)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">Cycling @Html.LabelFor(model => model.Settings.Garmin.UploadStrategy):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Garmin.UploadStrategy):</td>
                 <td class="editor-field">
                     @Html.EditorFor(model => model.Settings.Garmin.UploadStrategy)
                     @Html.ValidationMessageFor(model => model.Settings.Garmin.UploadStrategy)
