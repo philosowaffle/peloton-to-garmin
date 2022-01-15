@@ -25,29 +25,32 @@ namespace WebApp.Controllers
 
 		[HttpGet]
 		[Route("/api/settngs")]
-		public Task<SettingsGetResponse> Get()
+		public async Task<SettingsGetResponse> Get()
 		{
-			return GetDataAsync();
+			return (await GetDataAsync()).GetResponse;
 		}
 
-		private async Task<SettingsGetResponse> GetDataAsync()
+		private async Task<SettingsViewModel> GetDataAsync()
 		{
 			var settings = await _settingsService.GetSettingsAsync();
 			var appConfig = _settingsService.GetAppConfiguration();
 
-			var response = new SettingsGetResponse() 
+			var response = new SettingsViewModel() 
 			{
-				Settings = settings,
-				App = appConfig
+				GetResponse = new SettingsGetResponse()
+				{
+					Settings = settings,
+					App = appConfig
+				}
 			};
 
-			response.Settings.Peloton.Email = string.IsNullOrEmpty(response.Settings.Peloton.Email) ? "not set"
-												: "******" + response.Settings.Peloton.Email.Substring(6);
-			response.Settings.Peloton.Password = string.IsNullOrEmpty(response.Settings.Peloton.Password) ? "not set" : "******";
+			response.GetResponse.Settings.Peloton.Email = string.IsNullOrEmpty(response.GetResponse.Settings.Peloton.Email) ? "not set"
+												: "******" + response.GetResponse.Settings.Peloton.Email.Substring(6);
+			response.GetResponse.Settings.Peloton.Password = string.IsNullOrEmpty(response.GetResponse.Settings.Peloton.Password) ? "not set" : "******";
 
-			response.Settings.Garmin.Email = string.IsNullOrEmpty(response.Settings.Garmin.Email) ? "not set"
-												: "******" + response.Settings.Garmin.Email.Substring(6);
-			response.Settings.Garmin.Password = string.IsNullOrEmpty(response.Settings.Garmin.Password) ? "not set" : "******";
+			response.GetResponse.Settings.Garmin.Email = string.IsNullOrEmpty(response.GetResponse.Settings.Garmin.Email) ? "not set"
+												: "******" + response.GetResponse.Settings.Garmin.Email.Substring(6);
+			response.GetResponse.Settings.Garmin.Password = string.IsNullOrEmpty(response.GetResponse.Settings.Garmin.Password) ? "not set" : "******";
 
 			return response;
 		}
@@ -55,12 +58,12 @@ namespace WebApp.Controllers
 		[HttpPost]
 		[Route("/settings")]
 		[ApiExplorerSettings(IgnoreApi = true)]
-		public async Task<ActionResult> SaveAsync([FromForm] SettingsGetResponse request)
+		public async Task<ActionResult> SaveAsync([FromForm] SettingsViewModel request)
         {
 			// TODO: Validation
-			await _settingsService.UpdateSettings(request.Settings);
+			await _settingsService.UpdateSettings(request.GetResponse.Settings);
 
-			return View("Index");
+			return View("Index", await GetDataAsync());
         }
 	}
 }

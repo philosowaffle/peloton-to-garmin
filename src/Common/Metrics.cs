@@ -53,6 +53,8 @@ namespace Common
 			public static string OsVersion = "os_version";
 			public static string Version = "version";
 			public static string DotNetRuntime = "dotnet_runtime";
+
+			public static string ReflectionMethod = "reflection_method";
 		}
 
 		public static class HealthStatus

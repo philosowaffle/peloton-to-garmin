@@ -1,4 +1,4 @@
-﻿@model SettingsGetResponse
+﻿@model SettingsViewModel
 @{
     ViewData["Title"] = "Settings";
     ViewBag.Page = "settings";
@@ -20,40 +20,50 @@
         <tbody>
             <tr>                
                 <td class="font-weight-bold editor-label">
-                    @Html.LabelFor(model => model.Settings.App.OutputDirectory):
+                    @Html.LabelFor(model => model.GetResponse.Settings.App.OutputDirectory):
                     <small id="outputDirHelp" class="form-text text-muted">
-                        Where downloaded and converted files should be saved to.
+                        @Model.Copy.Settings.AppOutputDirectory
                     </small>
                 </td>
                 <td class="custom-file">
-                    @Html.EditorFor(model => model.Settings.App.OutputDirectory)
-                    @Html.ValidationMessageFor(model => model.Settings.App.OutputDirectory)
+                    @Html.EditorFor(model => model.GetResponse.Settings.App.OutputDirectory)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.App.OutputDirectory)
                 </td>                
             </tr>
             <tr>
                 <td class="font-weight-bold editor-label">
-                    @Html.LabelFor(model => model.Settings.App.WorkingDirectory):
+                    @Html.LabelFor(model => model.GetResponse.Settings.App.WorkingDirectory):
                     <small id="workingDirHelp" class="form-text text-muted">
-                        The directory where P2G can work. When running, P2G will create and delete files and needs a dedicated directory to do that.
+                        @Model.Copy.Settings.AppWorkingDirectory
                     </small>
                 </td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.App.WorkingDirectory)
-                    @Html.ValidationMessageFor(model => model.Settings.App.WorkingDirectory)
+                    @Html.EditorFor(model => model.GetResponse.Settings.App.WorkingDirectory)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.App.WorkingDirectory)
                 </td> 
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.App.EnablePolling):</td>
+                <td class="font-weight-bold editor-label">
+                    @Html.LabelFor(model => model.GetResponse.Settings.App.EnablePolling):
+                    <small id="workingDirHelp" class="form-text text-muted">
+                        @Model.Copy.Settings.AppEnablePolling
+                    </small>
+                </td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.App.EnablePolling)
-                    @Html.ValidationMessageFor(model => model.Settings.App.EnablePolling)
+                    @Html.EditorFor(model => model.GetResponse.Settings.App.EnablePolling)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.App.EnablePolling)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.App.PollingIntervalSeconds):</td>
+                <td class="font-weight-bold editor-label">
+                    @Html.LabelFor(model => model.GetResponse.Settings.App.PollingIntervalSeconds):
+                    <small id="workingDirHelp" class="form-text text-muted">
+                        @Model.Copy.Settings.AppPollingIntervalSeconds
+                    </small>
+                </td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.App.PollingIntervalSeconds)
-                    @Html.ValidationMessageFor(model => model.Settings.App.PollingIntervalSeconds)
+                    @Html.EditorFor(model => model.GetResponse.Settings.App.PollingIntervalSeconds)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.App.PollingIntervalSeconds)
                 </td>
             </tr>
         </tbody>
@@ -64,66 +74,111 @@
     <table class="table">
         <tbody>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Format.Fit):</td>
+                <td class="font-weight-bold editor-label">
+                    @Html.LabelFor(model => model.GetResponse.Settings.Format.Fit):
+                    <small id="workingDirHelp" class="form-text text-muted">
+                        @Model.Copy.Settings.FormatFit
+                    </small>
+                </td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Format.Fit)
-                    @Html.ValidationMessageFor(model => model.Settings.Format.Fit)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Format.Fit)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Format.Fit)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Format.Json):</td>
+                <td class="font-weight-bold editor-label">
+                    @Html.LabelFor(model => model.GetResponse.Settings.Format.Json):
+                    <small id="workingDirHelp" class="form-text text-muted">
+                        @Model.Copy.Settings.FormatJson
+                    </small>
+                </td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Format.Json)
-                    @Html.ValidationMessageFor(model => model.Settings.Format.Json)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Format.Json)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Format.Json)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Format.Tcx):</td>
+                <td class="font-weight-bold editor-label">
+                    @Html.LabelFor(model => model.GetResponse.Settings.Format.Tcx):
+                    <small id="workingDirHelp" class="form-text text-muted">
+                        @Model.Copy.Settings.FormatTcx
+                    </small>
+                </td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Format.Tcx)
-                    @Html.ValidationMessageFor(model => model.Settings.Format.Tcx)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Format.Tcx)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Format.Tcx)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Format.SaveLocalCopy):</td>
+                <td class="font-weight-bold editor-label">
+                    @Html.LabelFor(model => model.GetResponse.Settings.Format.SaveLocalCopy):
+                    <small id="workingDirHelp" class="form-text text-muted">
+                        @Model.Copy.Settings.FormatSaveLocalCopy
+                    </small>
+                </td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Format.SaveLocalCopy)
-                    @Html.ValidationMessageFor(model => model.Settings.Format.SaveLocalCopy)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Format.SaveLocalCopy)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Format.SaveLocalCopy)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Format.IncludeTimeInHRZones):</td>
+                <td class="font-weight-bold editor-label">
+                    @Html.LabelFor(model => model.GetResponse.Settings.Format.IncludeTimeInHRZones):
+                    <small id="workingDirHelp" class="form-text text-muted">
+                        @Model.Copy.Settings.FormatIncludeTimeInHRZones
+                    </small>
+                </td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Format.IncludeTimeInHRZones)
-                    @Html.ValidationMessageFor(model => model.Settings.Format.IncludeTimeInHRZones)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Format.IncludeTimeInHRZones)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Format.IncludeTimeInHRZones)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Format.IncludeTimeInPowerZones):</td>
+                <td class="font-weight-bold editor-label">
+                    @Html.LabelFor(model => model.GetResponse.Settings.Format.IncludeTimeInPowerZones):
+                    <small id="workingDirHelp" class="form-text text-muted">
+                        @Model.Copy.Settings.FormatIncludeTimeInPowerZones
+                    </small>
+                    </td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Format.IncludeTimeInPowerZones)
-                    @Html.ValidationMessageFor(model => model.Settings.Format.IncludeTimeInPowerZones)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Format.IncludeTimeInPowerZones)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Format.IncludeTimeInPowerZones)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Format.DeviceInfoPath):</td>
+                <td class="font-weight-bold editor-label">
+                    @Html.LabelFor(model => model.GetResponse.Settings.Format.DeviceInfoPath):
+                    <small id="workingDirHelp" class="form-text text-muted">
+                        @Model.Copy.Settings.FormatDeviceInfoPath
+                    </small>
+                </td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Format.DeviceInfoPath)
-                    @Html.ValidationMessageFor(model => model.Settings.Format.DeviceInfoPath)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Format.DeviceInfoPath)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Format.DeviceInfoPath)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">Running @Html.LabelFor(model => model.Settings.Format.Running.PreferredLapType):</td>
+                <td class="font-weight-bold editor-label">
+                    @Html.LabelFor(model => model.GetResponse.Settings.Format.Running.PreferredLapType):
+                    <small id="workingDirHelp" class="form-text text-muted">
+                        @Model.Copy.Settings.FormatRunningPreferredLapType
+                    </small>
+                </td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Format.Running.PreferredLapType)
-                    @Html.ValidationMessageFor(model => model.Settings.Format.Running.PreferredLapType)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Format.Running.PreferredLapType)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Format.Running.PreferredLapType)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">Cycling @Html.LabelFor(model => model.Settings.Format.Cycling.PreferredLapType):</td>
+                <td class="font-weight-bold editor-label">
+                    @Html.LabelFor(model => model.GetResponse.Settings.Format.Cycling.PreferredLapType):
+                    <small id="workingDirHelp" class="form-text text-muted">
+                        @Model.Copy.Settings.FormatCyclingPreferredLapType
+                    </small>
+                </td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Format.Cycling.PreferredLapType)
-                    @Html.ValidationMessageFor(model => model.Settings.Format.Cycling.PreferredLapType)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Format.Cycling.PreferredLapType)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Format.Cycling.PreferredLapType)
                 </td>
             </tr>
         </tbody>
@@ -134,31 +189,31 @@
     <table class="table">
         <tbody>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Peloton.Email):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.GetResponse.Settings.Peloton.Email):</td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Peloton.Email)
-                    @Html.ValidationMessageFor(model => model.Settings.Peloton.Email)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Peloton.Email)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Peloton.Email)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Peloton.Password):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.GetResponse.Settings.Peloton.Password):</td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Peloton.Password)
-                    @Html.ValidationMessageFor(model => model.Settings.Peloton.Password)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Peloton.Password)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Peloton.Password)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Peloton.NumWorkoutsToDownload):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.GetResponse.Settings.Peloton.NumWorkoutsToDownload):</td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Peloton.NumWorkoutsToDownload)
-                    @Html.ValidationMessageFor(model => model.Settings.Peloton.NumWorkoutsToDownload)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Peloton.NumWorkoutsToDownload)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Peloton.NumWorkoutsToDownload)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Peloton.ExcludeWorkoutTypes):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.GetResponse.Settings.Peloton.ExcludeWorkoutTypes):</td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Peloton.ExcludeWorkoutTypes)
-                    @Html.ValidationMessageFor(model => model.Settings.Peloton.ExcludeWorkoutTypes)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Peloton.ExcludeWorkoutTypes)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Peloton.ExcludeWorkoutTypes)
                 </td>
             </tr>
         </tbody>
@@ -169,38 +224,38 @@
     <table class="table">
         <tbody>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Garmin.Email):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.GetResponse.Settings.Garmin.Email):</td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Garmin.Email)
-                    @Html.ValidationMessageFor(model => model.Settings.Garmin.Email)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Garmin.Email)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Garmin.Email)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Garmin.Password):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.GetResponse.Settings.Garmin.Password):</td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Garmin.Password)
-                    @Html.ValidationMessageFor(model => model.Settings.Garmin.Password)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Garmin.Password)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Garmin.Password)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Garmin.Upload):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.GetResponse.Settings.Garmin.Upload):</td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Garmin.Upload)
-                    @Html.ValidationMessageFor(model => model.Settings.Garmin.Upload)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Garmin.Upload)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Garmin.Upload)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Garmin.FormatToUpload):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.GetResponse.Settings.Garmin.FormatToUpload):</td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Garmin.FormatToUpload)
-                    @Html.ValidationMessageFor(model => model.Settings.Garmin.FormatToUpload)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Garmin.FormatToUpload)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Garmin.FormatToUpload)
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.Settings.Garmin.UploadStrategy):</td>
+                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.GetResponse.Settings.Garmin.UploadStrategy):</td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.Settings.Garmin.UploadStrategy)
-                    @Html.ValidationMessageFor(model => model.Settings.Garmin.UploadStrategy)
+                    @Html.EditorFor(model => model.GetResponse.Settings.Garmin.UploadStrategy)
+                    @Html.ValidationMessageFor(model => model.GetResponse.Settings.Garmin.UploadStrategy)
                 </td>
             </tr>
         </tbody>
@@ -212,23 +267,23 @@
         <tbody>
             <tr>
                 <td class="font-weight-bold">Prometheus Enabled:</td>
-                <td>@Model.App.Observability.Prometheus.Enabled</td>
+                <td>@Model.GetResponse.App.Observability.Prometheus.Enabled</td>
             </tr>
             <tr>
                 <td class="font-weight-bold">Prometheus Port:</td>
-                <td>@Model.App.Observability.Prometheus.Port</td>
+                <td>@Model.GetResponse.App.Observability.Prometheus.Port</td>
             </tr>
             <tr>
                 <td class="font-weight-bold">Jaeger Enabled:</td>
-                <td>@Model.App.Observability.Jaeger.Enabled</td>
+                <td>@Model.GetResponse.App.Observability.Jaeger.Enabled</td>
             </tr>
             <tr>
                 <td class="font-weight-bold">Jaeger Agent Host:</td>
-                <td>@Model.App.Observability.Jaeger.AgentHost</td>
+                <td>@Model.GetResponse.App.Observability.Jaeger.AgentHost</td>
             </tr>
             <tr>
                 <td class="font-weight-bold">Jaeger Agent Port:</td>
-                <td>@Model.App.Observability.Jaeger.AgentPort</td>
+                <td>@Model.GetResponse.App.Observability.Jaeger.AgentPort</td>
             </tr>
         </tbody>
     </table>
