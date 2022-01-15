@@ -1,5 +1,6 @@
 using Common;
 using Common.Database;
+using Common.Observe;
 using Common.Service;
 using Conversion;
 using Garmin;
@@ -16,10 +17,10 @@ using Prometheus;
 using Prometheus.DotNetRuntime;
 using Serilog;
 using Serilog.Events;
+using Sync;
 using System;
 using System.Diagnostics;
 using System.Reflection;
-using WebApp.Services;
 
 namespace WebApp
 {
@@ -27,7 +28,7 @@ namespace WebApp
 	{
 		private static readonly Gauge BuildInfo = Prometheus.Metrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
 		{
-			LabelNames = new[] { Common.Metrics.Label.Version, Common.Metrics.Label.Os, Common.Metrics.Label.OsVersion, Common.Metrics.Label.DotNetRuntime }
+			LabelNames = new[] { Common.Observe.Metrics.Label.Version, Common.Observe.Metrics.Label.Os, Common.Observe.Metrics.Label.OsVersion, Common.Observe.Metrics.Label.DotNetRuntime }
 		});
 
 		private readonly Configuration _config;

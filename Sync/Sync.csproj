@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="2.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\Common\Common.csproj" />
+    <ProjectReference Include="..\src\Conversion\Conversion.csproj" />
+    <ProjectReference Include="..\src\Garmin\Garmin.csproj" />
+    <ProjectReference Include="..\src\Peloton\Peloton.csproj" />
+  </ItemGroup>
+
+</Project>

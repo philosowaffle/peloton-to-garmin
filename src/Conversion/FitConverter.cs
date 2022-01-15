@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Conversion
 {
-	public class FitConverter : Converter<Tuple<string, ICollection<Mesg>>>
+    public class FitConverter : Converter<Tuple<string, ICollection<Mesg>>>
 	{
 		private static readonly string _spaceSeparator = "_";
 		private static readonly ILogger _logger = LogContext.ForClass<FitConverter>();

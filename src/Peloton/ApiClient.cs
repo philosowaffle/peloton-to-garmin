@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Peloton
 {
-	public interface IPelotonApi
+    public interface IPelotonApi
 	{
 		Task InitAuthAsync(string overrideUserAgent = null);
 		Task<RecentWorkouts> GetWorkoutsAsync(int numWorkouts, int page);

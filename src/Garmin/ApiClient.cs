@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Garmin
 {
-	public class ApiClient
+    public class ApiClient
 	{
 		private const string BASE_URL = "https://connect.garmin.com";
 		private const string SSO_URL = "https://sso.garmin.com";

@@ -1,8 +1,12 @@
 ﻿using Common;
 using Common.Database;
+using Common.Observe;
+using Common.Service;
 using Conversion;
 using Garmin;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 using Peloton;
 using Peloton.Dto;
@@ -16,17 +20,17 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using static Common.Metrics;
+using static Common.Observability.Metrics;
 using Metrics = Prometheus.Metrics;
 
 namespace PelotonToGarminConsole
 {
-	class Program
+    class Program
 	{
 		private static readonly Histogram SyncHistogram = Metrics.CreateHistogram("p2g_sync_duration_seconds", "The histogram of sync jobs that have run.");
 		private static readonly Gauge BuildInfo = Metrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
 		{
-			LabelNames = new[] { Common.Metrics.Label.Version, Common.Metrics.Label.Os, Common.Metrics.Label.OsVersion, Common.Metrics.Label.DotNetRuntime }
+			LabelNames = new[] { Common.Observability.Metrics.Label.Version, Common.Observability.Metrics.Label.Os, Common.Observability.Metrics.Label.OsVersion, Common.Observability.Metrics.Label.DotNetRuntime }
 		});
 		private static readonly Gauge Health = Metrics.CreateGauge("p2g_health_info", "Health status for P2G.");
 		private static readonly Gauge NextSyncTime = Metrics.CreateGauge("p2g_next_sync_time", "The next time the sync will run in seconds since epoch.");
@@ -88,7 +92,7 @@ namespace PelotonToGarminConsole
 
 				PelotonService.ValidateConfig(config.Peloton);
 				GarminUploader.ValidateConfig(config);
-				Common.Metrics.ValidateConfig(config.Observability);
+                Common.Observability.Metrics.ValidateConfig(config.Observability);
 				Tracing.ValidateConfig(config.Observability);
 
 				FlurlConfiguration.Configure(config);
@@ -106,7 +110,7 @@ namespace PelotonToGarminConsole
 			IDisposable dotNetRuntimeMetrics = null;
 			try
 			{
-				using var metrics = Common.Metrics.EnableMetricsServer(config.Observability.Prometheus);
+				using var metrics = Common.Observability.Metrics.EnableMetricsServer(config.Observability.Prometheus);
 				using var tracing = Tracing.EnableTracing(config.Observability.Jaeger);
 				using var tracingSource = new ActivitySource("ROOT");
 

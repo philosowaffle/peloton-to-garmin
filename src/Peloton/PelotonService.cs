@@ -15,7 +15,7 @@ using Metrics = Prometheus.Metrics;
 
 namespace Peloton
 {
-	public interface IPelotonService
+    public interface IPelotonService
 	{
 		Task DownloadLatestWorkoutDataAsync();
 		Task DownloadLatestWorkoutDataAsync(int numWorkoutsToDownload);

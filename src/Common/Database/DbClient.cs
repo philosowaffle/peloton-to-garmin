@@ -9,7 +9,7 @@ using PromMetrics = Prometheus.Metrics;
 
 namespace Common.Database
 {
-	public interface IDbClient
+    public interface IDbClient
 	{
 		SyncHistoryItem Get(string id);
 		ICollection<SyncHistoryItem> GetRecentlySyncedItems(int limit);

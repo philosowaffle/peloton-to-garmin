@@ -7,7 +7,7 @@ using PromMetrics = Prometheus.Metrics;
 
 namespace Common
 {
-	public static class FlurlConfiguration
+    public static class FlurlConfiguration
 	{
 		public static readonly Histogram HttpRequestHistogram = PromMetrics.CreateHistogram("p2g_http_duration_seconds", "The histogram of http requests.", new HistogramConfiguration
 		{
@@ -22,7 +22,7 @@ namespace Common
 			}
 		});
 
-		public static void Configure(Configuration config)
+		public static void Configure(IAppConfiguration config)
 		{
 			Func<FlurlCall, Task> beforeCallAsync = (FlurlCall call) =>
 			{

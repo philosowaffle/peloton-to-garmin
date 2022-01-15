@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 
 namespace Common
 {
-	public interface IFileHandling
+    public interface IFileHandling
 	{
 		void MkDirIfNotExists(string path);
 		bool DirExists(string path);

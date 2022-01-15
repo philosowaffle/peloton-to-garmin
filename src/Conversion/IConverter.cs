@@ -13,7 +13,7 @@ using Summary = Common.Dto.Summary;
 
 namespace Conversion
 {
-	public interface IConverter
+    public interface IConverter
 	{
 		public void Convert();
 		public void Decode(string filePath);
@@ -23,7 +23,7 @@ namespace Conversion
 	{
 		private static readonly Histogram WorkoutsConverted = Metrics.CreateHistogram("p2g_workouts_converted_duration_seconds", "The histogram of workouts converted.", new HistogramConfiguration()
 		{
-			LabelNames = new string[] { Common.Metrics.Label.FileType }
+			LabelNames = new string[] { Common.Observability.Metrics.Label.FileType }
 		});
 
 		public static readonly float _metersPerMile = 1609.34f;

@@ -9,7 +9,7 @@ using WebApp.Services;
 
 namespace WebApp.Controllers
 {
-	[ApiController]
+    [ApiController]
 	public class SyncController : Controller
 	{
 		private static readonly ILogger _logger = LogContext.ForClass<SyncController>();

@@ -5,7 +5,7 @@ using System;
 
 namespace UnitTests.Common
 {
-	public class MetricsTests
+    public class MetricsTests
 	{
 		[Test]
 		public void ValidateConfig_InvalidPort_Throws([Values(-1, 0)] int port)

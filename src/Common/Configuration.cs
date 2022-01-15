@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -14,6 +15,19 @@ namespace Common
 
 		Observability Observability { get; set; }
 		Developer Developer { get; set; }
+	}
+
+	public static class ConfigurationSetup
+	{
+		public static void LoadConfigValues(IConfiguration provider, IAppConfiguration config)
+		{
+			provider.GetSection(nameof(App)).Bind(config.App);
+			provider.GetSection(nameof(Format)).Bind(config.Format);
+			provider.GetSection(nameof(Peloton)).Bind(config.Peloton);
+			provider.GetSection(nameof(Garmin)).Bind(config.Garmin);
+			provider.GetSection(nameof(Observability)).Bind(config.Observability);
+			provider.GetSection(nameof(Developer)).Bind(config.Developer);
+		}
 	}
 
 	public class Configuration : IAppConfiguration
