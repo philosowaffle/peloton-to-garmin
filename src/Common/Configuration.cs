@@ -141,14 +141,12 @@ namespace Common
 	public class Cycling
 	{
 		[DisplayName("Cycling Preferred Lap Type")]
-		[Description("")]
 		public PreferredLapType PreferredLapType { get; set; }
 	}
 
 	public class Running
 	{
 		[DisplayName("Running Preferred Lap Type")]
-		[Description("")]
 		public PreferredLapType PreferredLapType { get; set; }
 	}
 

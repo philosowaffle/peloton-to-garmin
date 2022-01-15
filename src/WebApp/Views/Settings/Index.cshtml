@@ -1,4 +1,5 @@
-﻿@model SettingsViewModel
+﻿@using Common
+@model SettingsViewModel
 @{
     ViewData["Title"] = "Settings";
     ViewBag.Page = "settings";
@@ -15,7 +16,6 @@
     </p>
 
     <h3>App Config</h3>
-
     <table class="table">
         <tbody>
             <tr>                
@@ -165,7 +165,7 @@
                     </small>
                 </td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.GetResponse.Settings.Format.Running.PreferredLapType)
+                    @Html.DropDownListFor(model => model.GetResponse.Settings.Format.Running.PreferredLapType, Html.GetEnumSelectList<PreferredLapType>())
                     @Html.ValidationMessageFor(model => model.GetResponse.Settings.Format.Running.PreferredLapType)
                 </td>
             </tr>
@@ -177,7 +177,7 @@
                     </small>
                 </td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.GetResponse.Settings.Format.Cycling.PreferredLapType)
+                    @Html.DropDownListFor(model => model.GetResponse.Settings.Format.Cycling.PreferredLapType, Html.GetEnumSelectList<PreferredLapType>())
                     @Html.ValidationMessageFor(model => model.GetResponse.Settings.Format.Cycling.PreferredLapType)
                 </td>
             </tr>
