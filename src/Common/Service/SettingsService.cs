@@ -34,9 +34,24 @@ namespace Common.Service
             };
         }
 
-        public Task<Settings> GetSettingsAsync()
+        public async Task<Settings> GetSettingsAsync()
         {
-            return _db.GetSettingsAsync();
+            using var tracing = Tracing.Trace(nameof(GetSettingsAsync));
+
+            var settings = await _db.GetSettingsAsync();
+
+            if (settings is null)
+            {
+                return new Settings()
+                {
+                    App = _appConfiguration.App,
+                    Format = _appConfiguration.Format,
+                    Garmin = _appConfiguration.Garmin,
+                    Peloton = _appConfiguration.Peloton,
+                };
+            }
+
+            return settings;
         }
 
         public Task UpdateSettings(Settings settings)

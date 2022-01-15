@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Database;
+using Common.Service;
 using Common.Stateful;
 using Conversion;
 using Garmin;
@@ -29,25 +30,26 @@ namespace WebApp.Services
 
 		private static readonly ILogger _logger = LogContext.ForClass<BackgroundSyncJob>();
 
-		private readonly IAppConfiguration _config;
+		private readonly ISettingsService _settingsService;
 		private readonly IPelotonService _pelotonService;
 		private readonly IGarminUploader _garminUploader;
 		private readonly IEnumerable<IConverter> _converters;
 		private readonly IFileHandling _fileHandler;
 		private readonly ISyncStatusDb _syncStatusDb;
+		
 		private bool? _previousPollingState;
+		private Settings _config;
 
-		public BackgroundSyncJob(IAppConfiguration config, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, IFileHandling fileHandling, ISyncStatusDb syncStatusDb)
+
+		public BackgroundSyncJob(ISettingsService settingsService, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, IFileHandling fileHandling, ISyncStatusDb syncStatusDb)
 		{
-			_config = config;
+			_settingsService = settingsService;
 			_pelotonService = pelotonService;
 			_garminUploader = garminUploader;
 			_converters = converters;
 			_fileHandler = fileHandling;
 			_syncStatusDb = syncStatusDb;
 
-			SyncServiceState.Enabled = _config.App.EnablePolling;
-			SyncServiceState.PollingIntervalSeconds = _config.App.PollingIntervalSeconds;
 			_previousPollingState = null;
 		}
 
@@ -58,6 +60,10 @@ namespace WebApp.Services
 
 		private async Task RunAsync(CancellationToken stoppingToken)
 		{
+			_config = await _settingsService.GetSettingsAsync();
+			SyncServiceState.Enabled = _config.App.EnablePolling;
+			SyncServiceState.PollingIntervalSeconds = _config.App.PollingIntervalSeconds;
+
 			while (!stoppingToken.IsCancellationRequested)
 			{
 				if (await NotPollingAsync())
@@ -69,33 +75,35 @@ namespace WebApp.Services
 				for (int i = 1; i < SyncServiceState.PollingIntervalSeconds; i++)
 				{
 					Thread.Sleep(1000);
-					if (StateChanged()) break;
+					if (await StateChangedAsync()) break;
 				}				
 			}
 		}
 
-		private bool StateChanged()
+		private async Task<bool> StateChangedAsync()
 		{
+			_config = await _settingsService.GetSettingsAsync();
+			SyncServiceState.Enabled = _config.App.EnablePolling;
+			SyncServiceState.PollingIntervalSeconds = _config.App.PollingIntervalSeconds;
+
 			return _previousPollingState != SyncServiceState.Enabled;
 		}
 
 		private async Task<bool> NotPollingAsync()
-		{			
-			var shouldPoll = SyncServiceState.Enabled;			
-
-			if (StateChanged())
+		{
+			if (await StateChangedAsync())
 			{
 				var syncTime = await _syncStatusDb.GetSyncStatusAsync();
-				syncTime.NextSyncTime = shouldPoll ? DateTime.Now : null;
-				syncTime.SyncStatus = shouldPoll ? Status.Running : Status.NotRunning;
+				syncTime.NextSyncTime = SyncServiceState.Enabled ? DateTime.Now : null;
+				syncTime.SyncStatus = SyncServiceState.Enabled ? Status.Running : Status.NotRunning;
 				await _syncStatusDb.UpsertSyncStatusAsync(syncTime);
 
-				if (shouldPoll) _logger.Information("Sync Service started.");
+				if (SyncServiceState.Enabled) _logger.Information("Sync Service started.");
 				else _logger.Information("Sync Service stopped.");
 			}
 
-			_previousPollingState = shouldPoll;
-			return !shouldPoll;
+			_previousPollingState = SyncServiceState.Enabled;
+			return !SyncServiceState.Enabled;
 		}
 
 		private async Task SyncAsync()
