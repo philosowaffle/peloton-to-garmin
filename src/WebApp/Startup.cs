@@ -78,15 +78,15 @@ namespace WebApp
 
 			services.AddSingleton<IDbClient, DbClient>();
 			services.AddSingleton<IFileHandling, IOWrapper>();
-			services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
-			services.AddSingleton<IPelotonService, PelotonService>();
-			services.AddSingleton<IGarminUploader, GarminUploader>();
+			services.AddTransient<IPelotonApi, Peloton.ApiClient>();
+			services.AddTransient<IPelotonService, PelotonService>();
+			services.AddTransient<IGarminUploader, GarminUploader>();
 
 			services.AddSingleton<ISyncStatusDb, SyncStatusDb>();
-			services.AddSingleton<ISyncService, SyncService>();
+			services.AddTransient<ISyncService, SyncService>();
 
-			services.AddSingleton<IConverter, FitConverter>();
-			services.AddSingleton<IConverter, TcxConverter>();
+			services.AddTransient<IConverter, FitConverter>();
+			services.AddTransient<IConverter, TcxConverter>();
 
 			FlurlConfiguration.Configure(_config.Observability);
 

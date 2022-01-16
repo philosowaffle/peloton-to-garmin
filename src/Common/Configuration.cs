@@ -28,6 +28,12 @@ namespace Common
 	/// </summary>
 	public class AppConfiguration
     {
+		public AppConfiguration()
+        {
+			Observability = new Observability();
+			Developer = new Developer();
+        }
+
 		public Observability Observability { get; set; }
 		public Developer Developer { get; set; }
     }

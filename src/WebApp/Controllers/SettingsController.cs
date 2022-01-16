@@ -46,12 +46,10 @@ namespace WebApp.Controllers
 				}
 			};
 
-			response.GetResponse.Settings.Peloton.Email = string.IsNullOrEmpty(response.GetResponse.Settings.Peloton.Email) ? "not set"
-												: "******" + response.GetResponse.Settings.Peloton.Email.Substring(6);
+			response.GetResponse.Settings.Peloton.Email = string.IsNullOrEmpty(response.GetResponse.Settings.Peloton.Email) ? "not set" : "******";
 			response.GetResponse.Settings.Peloton.Password = string.IsNullOrEmpty(response.GetResponse.Settings.Peloton.Password) ? "not set" : "******";
 
-			response.GetResponse.Settings.Garmin.Email = string.IsNullOrEmpty(response.GetResponse.Settings.Garmin.Email) ? "not set"
-												: "******" + response.GetResponse.Settings.Garmin.Email.Substring(6);
+			response.GetResponse.Settings.Garmin.Email = string.IsNullOrEmpty(response.GetResponse.Settings.Garmin.Email) ? "not set" : "******";
 			response.GetResponse.Settings.Garmin.Password = string.IsNullOrEmpty(response.GetResponse.Settings.Garmin.Password) ? "not set" : "******";
 
 			return response;
@@ -62,7 +60,22 @@ namespace WebApp.Controllers
 		[ApiExplorerSettings(IgnoreApi = true)]
 		public async Task<ActionResult> SaveAsync([FromForm] SettingsViewModel request)
         {
+			var updatedSettings = request.GetResponse.Settings;
+
 			// TODO: Validation
+
+			if (updatedSettings.Garmin.Email == "not set" || updatedSettings.Garmin.Email == "******")
+				updatedSettings.Garmin.Email = null;
+
+			if (updatedSettings.Garmin.Password == "not set" || updatedSettings.Garmin.Password == "******")
+				updatedSettings.Garmin.Password = null;
+
+			if (updatedSettings.Peloton.Email == "not set" || updatedSettings.Peloton.Email == "******")
+				updatedSettings.Peloton.Email = null;
+
+			if (updatedSettings.Peloton.Password == "not set" || updatedSettings.Peloton.Password == "******")
+				updatedSettings.Peloton.Password = null;
+
 			await _settingsService.UpdateSettings(request.GetResponse.Settings);
 
 			return View("Index", await GetDataAsync());
