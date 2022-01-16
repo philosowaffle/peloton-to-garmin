@@ -22,7 +22,7 @@ namespace Conversion
 		{
 			if (!_config.Format.Fit) return;
 
-			base.Convert("fit");
+			base.Convert(FileFormat.Fit);
 		}
 
 		protected override void Save(Tuple<string, ICollection<Mesg>> data, string path)
@@ -371,19 +371,19 @@ namespace Conversion
 			var fitnessDiscipline = workout.Fitness_Discipline;
 			switch (fitnessDiscipline)
 			{
-				case "cycling":
-				case "bike_bootcamp":
+				case FitnessDiscipline.Cycling:
+				case FitnessDiscipline.Bike_Bootcamp:
 					return Sport.Cycling;
-				case "running":
+				case FitnessDiscipline.Running:
 					return Sport.Running;
-				case "walking":
+				case FitnessDiscipline.Walking:
 					return Sport.Walking;
-				case "cardio":
-				case "circuit":
-				case "strength":
-				case "stretching":
-				case "yoga":
-				case "meditation":
+				case FitnessDiscipline.Cardio:
+				case FitnessDiscipline.Circuit:
+				case FitnessDiscipline.Strength:
+				case FitnessDiscipline.Stretching:
+				case FitnessDiscipline.Yoga:
+				case FitnessDiscipline.Meditation:
 					return Sport.Training;
 				default:
 					return Sport.Invalid;
@@ -395,22 +395,22 @@ namespace Conversion
 			var fitnessDiscipline = workout.Fitness_Discipline;
 			switch (fitnessDiscipline)
 			{
-				case "cycling":
-				case "bike_bootcamp":
+				case FitnessDiscipline.Cycling:
+				case FitnessDiscipline.Bike_Bootcamp:
 					return SubSport.IndoorCycling;
-				case "running":
+				case FitnessDiscipline.Running:
 					return SubSport.IndoorRunning;
-				case "walking":
+				case FitnessDiscipline.Walking:
 					return SubSport.IndoorWalking;
-				case "cardio":
-				case "circuit":
+				case FitnessDiscipline.Cardio:
+				case FitnessDiscipline.Circuit:
 					return SubSport.CardioTraining;
-				case "strength":
+				case FitnessDiscipline.Strength:
 					return SubSport.StrengthTraining;
-				case "stretching":
+				case FitnessDiscipline.Stretching:
 					return SubSport.FlexibilityTraining;
-				case "yoga":
-				case "meditation":
+				case FitnessDiscipline.Yoga:
+				case FitnessDiscipline.Meditation:
 					return SubSport.Yoga;
 				default:
 					return SubSport.Generic;

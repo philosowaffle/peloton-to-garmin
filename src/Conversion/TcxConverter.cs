@@ -15,7 +15,7 @@ namespace Conversion
 		{
 			if (!_config.Format.Tcx) return;
 
-			base.Convert("tcx");
+			base.Convert(FileFormat.Tcx);
 		}
 
 		protected override void Save(XElement data, string path)
@@ -156,19 +156,19 @@ namespace Conversion
 		{
 			switch (workout.Fitness_Discipline)
 			{
-				case "cycling":
-				case "bike_bootcamp":
+				case FitnessDiscipline.Cycling:
+				case FitnessDiscipline.Bike_Bootcamp:
 					return "Biking";
-				case "running":
+				case FitnessDiscipline.Running:
 					return "treadmill_running";
-				case "walking":
+				case FitnessDiscipline.Walking:
 					return "Running";
-				case "cardio":
-				case "circuit":
-				case "stretching":
-				case "strength":
-				case "yoga":
-				case "meditation":
+				case FitnessDiscipline.Cardio:
+				case FitnessDiscipline.Circuit:
+				case FitnessDiscipline.Strength:
+				case FitnessDiscipline.Stretching:
+				case FitnessDiscipline.Yoga:
+				case FitnessDiscipline.Meditation:
 				default:
 					return "Other";
 			}
@@ -178,22 +178,22 @@ namespace Conversion
 		{
 			switch (workout.Fitness_Discipline)
 			{
-				case "cycling":
-				case "bike_bootcamp":
+				case FitnessDiscipline.Cycling:
+				case FitnessDiscipline.Bike_Bootcamp:
 					return "indoor_cycling";
-				case "running":
+				case FitnessDiscipline.Running:
 					return "treadmill_running";
-				case "walking":
+				case FitnessDiscipline.Walking:
 					return "walking";
-				case "cardio":
-				case "circuit":
-				case "stretching":
+				case FitnessDiscipline.Cardio:
+				case FitnessDiscipline.Circuit:
+				case FitnessDiscipline.Stretching:
 					return "indoor_cardio";
-				case "strength":
+				case FitnessDiscipline.Strength:
 					return "strength_training";
-				case "yoga":
+				case FitnessDiscipline.Yoga:
 					return "yoga";
-				case "meditation":
+				case FitnessDiscipline.Meditation:
 					return "breathwork";
 				default:
 					return "Other";

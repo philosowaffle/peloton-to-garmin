@@ -1,4 +1,5 @@
 ﻿@using Common
+@using Common.Dto
 @model SettingsViewModel
 @{
     ViewData["Title"] = "Settings";
@@ -212,7 +213,8 @@
             <tr>
                 <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.GetResponse.Settings.Peloton.ExcludeWorkoutTypes):</td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.GetResponse.Settings.Peloton.ExcludeWorkoutTypes)
+                    @Html.ListBoxFor(model => model.GetResponse.Settings.Peloton.ExcludeWorkoutTypes, new MultiSelectList(Enum.GetNames<FitnessDiscipline>()))
+                    @*@Html.DropDownListFor(model => model.GetResponse.Settings.Peloton.ExcludeWorkoutTypes, Html.GetEnumSelectList<FitnessDiscipline>(), "multiple")*@
                     @Html.ValidationMessageFor(model => model.GetResponse.Settings.Peloton.ExcludeWorkoutTypes)
                 </td>
             </tr>
@@ -247,14 +249,14 @@
             <tr>
                 <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.GetResponse.Settings.Garmin.FormatToUpload):</td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.GetResponse.Settings.Garmin.FormatToUpload)
+                    @Html.DropDownListFor(model => model.GetResponse.Settings.Garmin.FormatToUpload, Html.GetEnumSelectList<FileFormat>())
                     @Html.ValidationMessageFor(model => model.GetResponse.Settings.Garmin.FormatToUpload)
                 </td>
             </tr>
             <tr>
                 <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.GetResponse.Settings.Garmin.UploadStrategy):</td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.GetResponse.Settings.Garmin.UploadStrategy)
+                    @Html.DropDownListFor(model => model.GetResponse.Settings.Garmin.UploadStrategy, Html.GetEnumSelectList<UploadStrategy>())
                     @Html.ValidationMessageFor(model => model.GetResponse.Settings.Garmin.UploadStrategy)
                 </td>
             </tr>

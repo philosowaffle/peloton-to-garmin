@@ -199,12 +199,6 @@ namespace Garmin
 				throw new ArgumentException("Garmin Password must be set.", nameof(config.Garmin.Password));
 			}
 
-			if (config.Garmin.FormatToUpload != "fit" && config.Garmin.FormatToUpload != "tcx")
-			{
-				_logger.Error("Garmin FormatToUpload should be \"fit\" or \"tcx\", check your configuration {@ConfigSection}.{@ConfigProperty}.", nameof(Garmin), nameof(config.Garmin.FormatToUpload));
-				throw new ArgumentException("Garmin FormatToUpload must be either \"fit\" or \"tcx\".", nameof(config.Garmin.FormatToUpload));
-			}
-
 			if (config.App.PythonAndGUploadInstalled.HasValue)
 			{
 				_logger.Warning("App.PythonAndGuploadInstalledLocally setting is deprecated and will be removed in a future release. Please swith to using Garmin.UploadStrategy config.");

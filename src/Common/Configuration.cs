@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Common.Dto;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -154,7 +155,7 @@ namespace Common
 	{
 		public Peloton()
 		{
-			ExcludeWorkoutTypes = new List<string>();
+			ExcludeWorkoutTypes = new List<FitnessDiscipline>();
 			NumWorkoutsToDownload = 5;
 		}
 
@@ -163,7 +164,7 @@ namespace Common
 		[DisplayName("Number of Workouts to Download")]
 		public int NumWorkoutsToDownload { get; set; }
 		[DisplayName("Exclude Workout Types")]
-		public ICollection<string> ExcludeWorkoutTypes { get; set; }
+		public ICollection<FitnessDiscipline> ExcludeWorkoutTypes { get; set; }
 	}
 
 	public class Garmin
@@ -172,7 +173,7 @@ namespace Common
 		public string Password { get; set; }
 		public bool Upload { get; set; }
 		[DisplayName("Format to Upload")]
-		public string FormatToUpload { get; set; }
+		public FileFormat FormatToUpload { get; set; }
 		[DisplayName("Upload Strategy")]
 		public UploadStrategy UploadStrategy { get; set; }
 	}
@@ -213,4 +214,10 @@ namespace Common
 		WindowsExeBundledPython = 1,
 		NativeImplV1 = 2
 	}
+
+	public enum FileFormat
+    {
+		Fit = 0,
+		Tcx = 1
+    }
 }

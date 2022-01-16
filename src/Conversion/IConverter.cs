@@ -48,7 +48,7 @@ namespace Conversion
 
 		protected abstract void Save(T data, string path);
 
-		protected void Convert(string format)
+		protected void Convert(FileFormat format)
 		{
 			if (!_fileHandler.DirExists(_config.App.DownloadDirectory))
 			{
@@ -70,7 +70,7 @@ namespace Conversion
 			// Foreach file in directory
 			foreach (var file in files)
 			{
-				using var workoutTimer = WorkoutsConverted.WithLabels(format).NewTimer();
+				using var workoutTimer = WorkoutsConverted.WithLabels(format.ToString()).NewTimer();
 
 				// load file and deserialize
 				P2GWorkout workoutData = null;
@@ -87,7 +87,7 @@ namespace Conversion
 
 				using var tracing = Tracing.Trace("Convert")
 										.WithWorkoutId(workoutData.Workout.Id)
-										.WithTag(TagKey.Format, format);
+										.WithTag(TagKey.Format, format.ToString());
 
 				// call internal convert method
 				T converted = default;
@@ -126,7 +126,7 @@ namespace Conversion
 					{
 						_fileHandler.MkDirIfNotExists(_config.App.TcxDirectory);
 						_fileHandler.MkDirIfNotExists(_config.App.FitDirectory);
-						var dir = format == "fit" ? _config.App.FitDirectory : _config.App.TcxDirectory;
+						var dir = format == FileFormat.Fit ? _config.App.FitDirectory : _config.App.TcxDirectory;
 
 						var backupDest = Path.Join(dir, $"{workoutTitle}.{format}");
 						_fileHandler.Copy(path, backupDest, overwrite: true);
@@ -165,8 +165,8 @@ namespace Conversion
 					};
 				}
 
-				syncRecord.ConvertedToFit = syncRecord.ConvertedToFit || format == "fit";
-				syncRecord.ConvertedToTcx = syncRecord.ConvertedToTcx || format == "tcx";
+				syncRecord.ConvertedToFit = syncRecord.ConvertedToFit || format == FileFormat.Fit;
+				syncRecord.ConvertedToTcx = syncRecord.ConvertedToTcx || format == FileFormat.Tcx;
 				_dbClient.Upsert(syncRecord);
 			}
 		}
