@@ -46,9 +46,9 @@ namespace PelotonToGarminConsole
             var version = versionInfo.ProductVersion ?? "unknown";
 
             BuildInfo.WithLabels(version, os, osVersion, runtimeVersion).Set(1);
-            Log.Debug("App Version: {@Version}", version);
-            Log.Debug("Operating System: {@Os}", osVersion);
-            Log.Debug("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
+            _logger.Debug("App Version: {@Version}", version);
+            _logger.Debug("Operating System: {@Os}", osVersion);
+            _logger.Debug("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
         }
 
         protected override Task ExecuteAsync(CancellationToken cancelToken)
@@ -76,12 +76,12 @@ namespace PelotonToGarminConsole
 
         private async Task RunAsync(CancellationToken cancelToken)
         {
+            int exitCode = 0;
+
             using var metrics = Metrics.EnableMetricsServer(_config.Observability.Prometheus);
             using var metricsCollector = Metrics.EnableCollector(_config.Observability.Prometheus);
             using var tracing = Tracing.EnableTracing(_config.Observability.Jaeger);
             using var tracingSource = new ActivitySource("ROOT");
-
-            int exitCode = 0;
 
             try
             {
@@ -112,7 +112,7 @@ namespace PelotonToGarminConsole
                     await _syncService.SyncAsync(_settings.Peloton.NumWorkoutsToDownload);
                 }
 
-                Log.Information("Done.");
+                _logger.Information("Done.");
             }
             catch (Exception ex)
             {

@@ -58,9 +58,10 @@ namespace Peloton
 				.ConfigureRequest((c) =>
 				{
 					c.BeforeCallAsync = null;
-					c.BeforeCall = (FlurlCall call) =>
+					c.BeforeCallAsync = (FlurlCall call) =>
 					{
-						_logger.Verbose("HTTP Request: {@HttpMethod} {@Uri} {@Content}", call.HttpRequestMessage.Method, call.HttpRequestMessage.RequestUri, "userAuthParams");
+						_logger.Verbose("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}", call.HttpRequestMessage.Method, call.HttpRequestMessage.RequestUri, call.HttpRequestMessage.Headers.ToString(),"userAuthParams");
+						return Task.CompletedTask;
 					};
 				})
 				.PostJsonAsync(new AuthRequest()

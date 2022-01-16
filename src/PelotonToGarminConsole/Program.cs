@@ -19,7 +19,7 @@ using Microsoft.Extensions.Primitives;
 Console.WriteLine("Welcome! P2G is starting up...");
 
 using IHost host = CreateHostBuilder(args).Build();
-host.RunAsync();
+await host.RunAsync();
 
 static IHostBuilder CreateHostBuilder(string[] args)
 {

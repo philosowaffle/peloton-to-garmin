@@ -27,34 +27,46 @@ namespace Common
 		{
 			Func<FlurlCall, Task> beforeCallAsync = (FlurlCall call) =>
 			{
-				Log.Verbose("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}", call.HttpRequestMessage.Method, call.HttpRequestMessage.RequestUri, call.HttpRequestMessage.Headers.ToString(), call.HttpRequestMessage.Content);
+				try
+				{
+					Log.Verbose("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}", call.HttpRequestMessage.Method, call.HttpRequestMessage.RequestUri, call.HttpRequestMessage.Headers.ToString(), call.HttpRequestMessage.Content);
+				}
+				catch { Console.WriteLine("Error in Flurl.beforeCallAsync"); }
+
 				return Task.CompletedTask;
 			};
 
 			Func<FlurlCall, Task> afterCallAsync = async (FlurlCall call) =>
 			{
-				Log.Verbose("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}", call.HttpResponseMessage?.StatusCode, call.HttpRequestMessage?.Method, call.HttpRequestMessage?.RequestUri, call.HttpResponseMessage.Headers.ToString(), await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
+				try
+                {
+					Log.Verbose("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}", call.HttpResponseMessage?.StatusCode, call.HttpRequestMessage?.Method, call.HttpRequestMessage?.RequestUri, call.HttpResponseMessage.Headers.ToString(), await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
 
-				if (config.Prometheus.Enabled)
-				{
-					HttpRequestHistogram
-					.WithLabels(
-						call.HttpRequestMessage.Method.ToString(),
-						call.HttpRequestMessage.RequestUri.Host,
-						call.HttpRequestMessage.RequestUri.AbsolutePath,
-						call.HttpRequestMessage.RequestUri.Query,
-						((int)call.HttpResponseMessage.StatusCode).ToString(),
-						call.HttpResponseMessage.ReasonPhrase
-					).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
-				}
+					if (config.Prometheus.Enabled)
+					{
+						HttpRequestHistogram
+						.WithLabels(
+							call.HttpRequestMessage.Method.ToString(),
+							call.HttpRequestMessage.RequestUri.Host,
+							call.HttpRequestMessage.RequestUri.AbsolutePath,
+							call.HttpRequestMessage.RequestUri.Query,
+							((int)call.HttpResponseMessage.StatusCode).ToString(),
+							call.HttpResponseMessage.ReasonPhrase
+						).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
+					}
+				} catch { Console.WriteLine("Error in Flurl.afterCallAsync"); }				
 			};
 
 			Func<FlurlCall, Task> onErrorAsync = async (FlurlCall call) =>
 			{
-				var response = string.Empty;
-				if (call.HttpResponseMessage is object)
-					response = await call.HttpResponseMessage?.Content?.ReadAsStringAsync();
-				Log.Error("Http Call Failed. {@HttpStatusCode} {@Content}", call.HttpResponseMessage?.StatusCode, response);
+				try
+                {
+					var response = string.Empty;
+					if (call.HttpResponseMessage is object)
+						response = await call.HttpResponseMessage?.Content?.ReadAsStringAsync();
+					Log.Error("Http Call Failed. {@HttpStatusCode} {@Content}", call.HttpResponseMessage?.StatusCode, response);
+				}
+				catch { Console.WriteLine("Error in Flurl.onErrorAsync"); }
 			};
 
 			FlurlHttp.Configure(settings =>
