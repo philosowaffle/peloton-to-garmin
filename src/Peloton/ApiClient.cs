@@ -31,11 +31,11 @@ namespace Peloton
 		private string UserId;
 		private string SessionId;
 
-		public ApiClient(IAppConfiguration config)
+		public ApiClient(Settings config, AppConfiguration appConfig)
 		{
 			_userEmail = config.Peloton.Email;
 			_userPassword = config.Peloton.Password;
-			_observabilityEnabled = config.Observability.Prometheus.Enabled;
+			_observabilityEnabled = appConfig.Observability.Prometheus.Enabled;
 		}
 
 		public ApiClient(string email, string password, bool observabilityEnabled)

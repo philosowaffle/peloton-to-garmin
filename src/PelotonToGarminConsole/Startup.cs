@@ -26,15 +26,17 @@ namespace PelotonToGarminConsole
         private static readonly Gauge Health = Prometheus.Metrics.CreateGauge("p2g_health_info", "Health status for P2G.");
         private static readonly Gauge NextSyncTime = Prometheus.Metrics.CreateGauge("p2g_next_sync_time", "The next time the sync will run in seconds since epoch.");
 
-        private readonly IAppConfiguration _config;
+        private readonly AppConfiguration _config;
+        private readonly Settings _settings;
         private readonly ISyncService _syncService;
 
-        public Startup(IAppConfiguration configuration, ISyncService syncService)
+        public Startup(AppConfiguration configuration, Settings settings, ISyncService syncService)
         {
             _config = configuration;
+            _settings = settings;
             _syncService = syncService;
 
-            FlurlConfiguration.Configure(_config);
+            FlurlConfiguration.Configure(_config.Observability);
 
             var runtimeVersion = Environment.Version.ToString();
             var os = Environment.OSVersion.Platform.ToString();
@@ -57,8 +59,8 @@ namespace PelotonToGarminConsole
 
             try
             {
-                PelotonService.ValidateConfig(_config.Peloton);
-                GarminUploader.ValidateConfig(_config);
+                PelotonService.ValidateConfig(_settings.Peloton);
+                GarminUploader.ValidateConfig(_settings);
                 Metrics.ValidateConfig(_config.Observability);
                 Tracing.ValidateConfig(_config.Observability);
             }
@@ -83,31 +85,31 @@ namespace PelotonToGarminConsole
 
             try
             {
-                if (_config.Peloton.NumWorkoutsToDownload <= 0)
+                if (_settings.Peloton.NumWorkoutsToDownload <= 0)
                 {
                     Console.Write("How many workouts to grab? ");
                     int num = Convert.ToInt32(Console.ReadLine());
-                    _config.Peloton.NumWorkoutsToDownload = num;
+                    _settings.Peloton.NumWorkoutsToDownload = num;
                 }
 
-                if (_config.App.EnablePolling)
+                if (_settings.App.EnablePolling)
                 {
-                    while (_config.App.EnablePolling && !cancelToken.IsCancellationRequested)
+                    while (_settings.App.EnablePolling && !cancelToken.IsCancellationRequested)
                     {
-                        var syncResult = await _syncService.SyncAsync(_config.Peloton.NumWorkoutsToDownload);
+                        var syncResult = await _syncService.SyncAsync(_settings.Peloton.NumWorkoutsToDownload);
                         Health.Set(syncResult.SyncSuccess ? HealthStatus.Healthy : HealthStatus.UnHealthy);
 
-                        Log.Information("Sleeping for {@Seconds} seconds...", _config.App.PollingIntervalSeconds);
+                        Log.Information("Sleeping for {@Seconds} seconds...", _settings.App.PollingIntervalSeconds);
 
                         var now = DateTime.UtcNow;
-                        var nextRunTime = now.AddSeconds(_config.App.PollingIntervalSeconds);
+                        var nextRunTime = now.AddSeconds(_settings.App.PollingIntervalSeconds);
                         NextSyncTime.Set(new DateTimeOffset(nextRunTime).ToUnixTimeSeconds());
-                        Thread.Sleep(_config.App.PollingIntervalSeconds * 1000);
+                        Thread.Sleep(_settings.App.PollingIntervalSeconds * 1000);
                     }
                 } 
                 else
                 {
-                    await _syncService.SyncAsync(_config.Peloton.NumWorkoutsToDownload);
+                    await _syncService.SyncAsync(_settings.Peloton.NumWorkoutsToDownload);
                 }
 
                 Log.Information("Done.");
@@ -122,7 +124,7 @@ namespace PelotonToGarminConsole
             {
                 _logger.Verbose("Exit.");
 
-                if (!_config.App.CloseWindowOnFinish)
+                if (!_settings.App.CloseWindowOnFinish)
                     Console.ReadLine();
 
                 Environment.Exit(exitCode);

@@ -23,7 +23,7 @@ namespace Common
 			}
 		});
 
-		public static void Configure(IAppConfiguration config)
+		public static void Configure(Observability config)
 		{
 			Func<FlurlCall, Task> beforeCallAsync = (FlurlCall call) =>
 			{
@@ -35,7 +35,7 @@ namespace Common
 			{
 				Log.Verbose("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}", call.HttpResponseMessage?.StatusCode, call.HttpRequestMessage?.Method, call.HttpRequestMessage?.RequestUri, call.HttpResponseMessage.Headers.ToString(), await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
 
-				if (config.Observability.Prometheus.Enabled)
+				if (config.Prometheus.Enabled)
 				{
 					HttpRequestHistogram
 					.WithLabels(

@@ -6,49 +6,21 @@ using System.IO;
 
 namespace Common
 {
-	public interface IAppConfiguration 
-	{
-		App App { get; set; }
-		Format Format { get; set; }
-		Peloton Peloton { get; set; }
-		Garmin Garmin { get; set; }
-
-		Observability Observability { get; set; }
-		Developer Developer { get; set; }
-	}
-
 	public static class ConfigurationSetup
 	{
-		public static void LoadConfigValues(IConfiguration provider, IAppConfiguration config)
+		public static void LoadConfigValues(IConfiguration provider, Settings config)
 		{
 			provider.GetSection(nameof(App)).Bind(config.App);
 			provider.GetSection(nameof(Format)).Bind(config.Format);
 			provider.GetSection(nameof(Peloton)).Bind(config.Peloton);
 			provider.GetSection(nameof(Garmin)).Bind(config.Garmin);
+		}
+
+		public static void LoadConfigValues(IConfiguration provider, AppConfiguration config)
+		{
 			provider.GetSection(nameof(Observability)).Bind(config.Observability);
 			provider.GetSection(nameof(Developer)).Bind(config.Developer);
 		}
-	}
-
-	public class Configuration : IAppConfiguration
-	{
-		public Configuration()
-		{
-			App = new App();
-			Format = new Format();
-			Peloton = new Peloton();
-			Garmin = new Garmin();
-			Observability = new Observability();
-			Developer = new Developer();
-		}
-
-		public App App { get; set; }
-		public Format Format { get; set; }
-		public Peloton Peloton { get; set; }
-		public Garmin Garmin { get; set; }
-
-		public Observability Observability { get; set; }
-		public Developer Developer { get; set; }
 	}
 
 	/// <summary>

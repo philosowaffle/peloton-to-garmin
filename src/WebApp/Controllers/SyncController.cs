@@ -16,11 +16,11 @@ namespace WebApp.Controllers
 	{
 		private static readonly ILogger _logger = LogContext.ForClass<SyncController>();
 
-		private readonly IAppConfiguration _config;
+		private readonly Settings _config;
 		private readonly ISyncService _syncService;
 		private readonly ISyncStatusDb _db;
 
-		public SyncController(IAppConfiguration appConfiguration, ISyncService syncService, ISyncStatusDb db)
+		public SyncController(Settings appConfiguration, ISyncService syncService, ISyncStatusDb db)
 		{
 			_config = appConfiguration;
 			_syncService = syncService;

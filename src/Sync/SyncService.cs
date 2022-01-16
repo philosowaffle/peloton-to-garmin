@@ -22,13 +22,13 @@ namespace Sync
         private static readonly ILogger _logger = LogContext.ForClass<SyncService>();
         private static readonly Histogram SyncHistogram = Prometheus.Metrics.CreateHistogram("p2g_sync_duration_seconds", "The histogram of sync jobs that have run.");
 
-        private readonly IAppConfiguration _config;
+        private readonly Settings _config;
         private readonly IPelotonService _pelotonService;
         private readonly IGarminUploader _garminUploader;
         private readonly IEnumerable<IConverter> _converters;
         private readonly ISyncStatusDb _db;
 
-        public SyncService(IAppConfiguration config, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, ISyncStatusDb dbClient)
+        public SyncService(Settings config, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, ISyncStatusDb dbClient)
         {
             _config = config;
             _pelotonService = pelotonService;

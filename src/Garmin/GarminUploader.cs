@@ -30,15 +30,15 @@ namespace Garmin
 			"The number of files available to be uploaded. This number sets to 0 upon successful upload.");
 		private static readonly ILogger _logger = LogContext.ForClass<GarminUploader>();
 
-		private readonly IAppConfiguration _config;
+		private readonly Settings _config;
 		private readonly ApiClient _api;
 		private readonly IDbClient _dbClient;
 		private readonly Random _random;
 
-		public GarminUploader(IAppConfiguration config, IDbClient dbClient)
+		public GarminUploader(Settings config, AppConfiguration appConfig, IDbClient dbClient)
 		{
 			_config = config;
-			_api = new ApiClient(config);
+			_api = new ApiClient(config, appConfig);
 			_dbClient = dbClient;
 			_random = new Random();
 		}
@@ -183,7 +183,7 @@ namespace Garmin
 			}
 		}
 
-		public static void ValidateConfig(IAppConfiguration config)
+		public static void ValidateConfig(Settings config)
 		{
 			if (config.Garmin.Upload == false) return;
 

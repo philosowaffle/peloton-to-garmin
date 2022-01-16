@@ -29,7 +29,7 @@ namespace Common.Database
 		private Lazy<IDocumentCollection<SyncHistoryItem>> _syncHistoryTable;
 		private IFileHandling _fileHandler;
 
-		public DbClient(IAppConfiguration configuration, IFileHandling fileHandler)
+		public DbClient(Settings configuration, IFileHandling fileHandler)
 		{
 			_fileHandler = fileHandler;
 

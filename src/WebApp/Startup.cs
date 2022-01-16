@@ -31,7 +31,7 @@ namespace WebApp
 			LabelNames = new[] { Common.Observe.Metrics.Label.Version, Common.Observe.Metrics.Label.Os, Common.Observe.Metrics.Label.OsVersion, Common.Observe.Metrics.Label.DotNetRuntime }
 		});
 
-		private readonly Configuration _config;
+		private readonly AppConfiguration _config;
 		private static IDisposable _metricCollector;
 
 		public IConfiguration ConfigurationProvider { get; }
@@ -39,7 +39,7 @@ namespace WebApp
 		public Startup(IConfiguration configuration)
 		{
 			ConfigurationProvider = configuration;
-			_config = new Configuration();
+			_config = new AppConfiguration();
 
 			LoadConfigValues(_config);
 
@@ -55,9 +55,15 @@ namespace WebApp
 			services.AddSingleton<ISettingsDb, SettingsDb>();
 			services.AddSingleton<ISettingsService, SettingsService>();
 
-			services.AddSingleton<IAppConfiguration>((serviceProvider) =>
+			services.AddTransient<Settings>((serviceProvider) => 
 			{
-				var config = new Configuration();
+				var settingsService = serviceProvider.GetService<ISettingsService>();
+				return settingsService.GetSettingsAsync().GetAwaiter().GetResult();
+			});
+
+			services.AddSingleton<AppConfiguration>((serviceProvider) =>
+			{
+				var config = new AppConfiguration();
 				LoadConfigValues(config);
 
 				ChangeToken.OnChange(() => ConfigurationProvider.GetReloadToken(), () =>
@@ -82,7 +88,7 @@ namespace WebApp
 			services.AddSingleton<IConverter, FitConverter>();
 			services.AddSingleton<IConverter, TcxConverter>();
 
-			FlurlConfiguration.Configure(_config);
+			FlurlConfiguration.Configure(_config.Observability);
 
 			Log.Logger = new LoggerConfiguration()
 					.ReadFrom.Configuration(ConfigurationProvider, sectionName: $"{nameof(Observability)}:Serilog")
@@ -153,7 +159,7 @@ namespace WebApp
 			});
 		}
 
-		private void LoadConfigValues(Configuration config)
+		private void LoadConfigValues(AppConfiguration config)
 		{
 			ConfigurationProvider.GetSection(nameof(Observability)).Bind(config.Observability);
 			ConfigurationProvider.GetSection(nameof(Developer)).Bind(config.Developer);

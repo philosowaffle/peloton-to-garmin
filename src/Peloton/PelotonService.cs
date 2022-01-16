@@ -28,13 +28,13 @@ namespace Peloton
 		public static readonly Gauge FailedDesiralizationCount = Metrics.CreateGauge("p2g_peloton_workout_download_deserialization_failed", "Number of workouts that failed to deserialize during the last sync.");
 		private static readonly ILogger _logger = LogContext.ForClass<PelotonService>();
 
-		private IAppConfiguration _config;
+		private Settings _config;
 		private IPelotonApi _pelotonApi;
 		private IDbClient _dbClient;
 		private int _failedCount;
 		private IFileHandling _fileHandler;
 
-		public PelotonService(IAppConfiguration config, IPelotonApi pelotonApi, IDbClient dbClient, IFileHandling fileHandler)
+		public PelotonService(Settings config, IPelotonApi pelotonApi, IDbClient dbClient, IFileHandling fileHandler)
 		{
 			_config = config;
 			_pelotonApi = pelotonApi;

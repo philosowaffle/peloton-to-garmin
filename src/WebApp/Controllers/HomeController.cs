@@ -13,9 +13,9 @@ namespace WebApp.Controllers
 		private readonly ILogger<HomeController> _logger;
 		private readonly ISyncStatusDb _syncStatusDb;
 		private readonly IDbClient _syncHistoryDb;
-		private readonly IAppConfiguration _config;
+		private readonly Settings _config;
 
-		public HomeController(ILogger<HomeController> logger, ISyncStatusDb db, IAppConfiguration config, IDbClient dbClient)
+		public HomeController(ILogger<HomeController> logger, ISyncStatusDb db, Settings config, IDbClient dbClient)
 		{
 			_logger = logger;
 			_syncStatusDb = db;

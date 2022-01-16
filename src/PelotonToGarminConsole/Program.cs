@@ -46,15 +46,14 @@ static IHostBuilder CreateHostBuilder(string[] args)
 		})
 		.ConfigureServices((hostContext, services) =>
 		{
-			services.AddSingleton<IAppConfiguration>((serviceProvider) =>
+			services.AddSingleton<AppConfiguration>((serviceProvider) =>
 			{
-				var config = new Configuration();
+				var config = new AppConfiguration();
 				var provider = serviceProvider.GetService<IConfiguration>();
 				if (provider is null) return config;
 
 				ConfigurationSetup.LoadConfigValues(provider, config);
-				PelotonService.ValidateConfig(config.Peloton);
-				GarminUploader.ValidateConfig(config);
+
 				Metrics.ValidateConfig(config.Observability);
 				Tracing.ValidateConfig(config.Observability);
 
@@ -62,9 +61,33 @@ static IHostBuilder CreateHostBuilder(string[] args)
 				{
 					Log.Information("Config change detected, reloading config values.");
 					ConfigurationSetup.LoadConfigValues(provider, config);
+					Metrics.ValidateConfig(config.Observability);
+					Tracing.ValidateConfig(config.Observability);
+					Log.Information("Config reloaded.");
+				});
+
+				return config;
+			});
+
+			services.AddSingleton<Settings>((serviceProvider) => 
+			{
+				var config = new Settings();
+				var provider = serviceProvider.GetService<IConfiguration>();
+				if (provider is null) return config;
+
+				ConfigurationSetup.LoadConfigValues(provider, config);
+
+				PelotonService.ValidateConfig(config.Peloton);
+				GarminUploader.ValidateConfig(config);
+
+				ChangeToken.OnChange(() => provider.GetReloadToken(), () =>
+				{
+					Log.Information("Config change detected, reloading config values.");
+					ConfigurationSetup.LoadConfigValues(provider, config);
+
 					PelotonService.ValidateConfig(config.Peloton);
 					GarminUploader.ValidateConfig(config);
-					FlurlConfiguration.Configure(config);
+
 					Log.Information("Config reloaded.");
 				});
 

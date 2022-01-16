@@ -1,4 +1,5 @@
-﻿using Common.Service;
+﻿using Common;
+using Common.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using WebApp.Models;
@@ -8,11 +9,13 @@ namespace WebApp.Controllers
     [ApiController]
 	public class SettingsController : Controller
 	{
-		private ISettingsService _settingsService;
+		private readonly ISettingsService _settingsService;
+		private readonly AppConfiguration _appConfiguration;
 
-		public SettingsController(ISettingsService settingsService)
+		public SettingsController(ISettingsService settingsService, AppConfiguration appConfiguration)
 		{
 			_settingsService = settingsService;
+			_appConfiguration = appConfiguration;
 		}
 
 		[HttpGet]
@@ -33,14 +36,13 @@ namespace WebApp.Controllers
 		private async Task<SettingsViewModel> GetDataAsync()
 		{
 			var settings = await _settingsService.GetSettingsAsync();
-			var appConfig = _settingsService.GetAppConfiguration();
 
 			var response = new SettingsViewModel() 
 			{
 				GetResponse = new SettingsGetResponse()
 				{
 					Settings = settings,
-					App = appConfig
+					App = _appConfiguration
 				}
 			};
 

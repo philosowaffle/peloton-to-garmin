@@ -3,6 +3,7 @@ using Common.Database;
 using Common.Dto;
 using Common.Helpers;
 using Common.Observe;
+using Common.Service;
 using Dynastream.Fit;
 using Prometheus;
 using Serilog;
@@ -29,11 +30,11 @@ namespace Conversion
 
 		public static readonly float _metersPerMile = 1609.34f;
 
-		protected IAppConfiguration _config;
+		protected Settings _config;
 		protected IDbClient _dbClient;
 		protected IFileHandling _fileHandler;
 
-		public Converter(IAppConfiguration config, IDbClient dbClient, IFileHandling fileHandler)
+		public Converter(Settings config, IDbClient dbClient, IFileHandling fileHandler)
 		{
 			_config = config;
 			_dbClient = dbClient;

@@ -46,7 +46,7 @@ namespace UnitTests.Conversion
 		{
 			private IOWrapper fileHandler = new IOWrapper();
 
-			public ConverterInstance() : base(new Configuration(), null, null) { }
+			public ConverterInstance() : base(new Settings(), null, null) { }
 
 			public ICollection<Mesg> ConvertForTest(string path)
 			{
