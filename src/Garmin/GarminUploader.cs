@@ -1,6 +1,7 @@
 ﻿using Common;
 using Common.Database;
 using Common.Helpers;
+using Common.Observe;
 using Prometheus;
 using Serilog;
 using System;
@@ -21,7 +22,7 @@ namespace Garmin
 	{
 		private static readonly Histogram WorkoutUploadDuration = Metrics.CreateHistogram("p2g_workout_upload_duration_seconds", "Histogram of workout upload durations.", new HistogramConfiguration()
 		{
-			LabelNames = new[] { Common.Observability.Metrics.Label.Count }
+			LabelNames = new[] { Common.Observe.Metrics.Label.Count }
 		});
 		private static readonly Gauge FailedUploadAttemptsGauge = Metrics.CreateGauge("p2g_failed_upload_attempts",
 			"The number of consecutive failed upload attempts. Resets to 0 on the first successful upload. This is not a count of the number of workouts that failed to upload. P2G uploads in bulk, so this is just a guage of number of failed upload attempts.");
@@ -182,7 +183,7 @@ namespace Garmin
 			}
 		}
 
-		public static void ValidateConfig(Configuration config)
+		public static void ValidateConfig(IAppConfiguration config)
 		{
 			if (config.Garmin.Upload == false) return;
 

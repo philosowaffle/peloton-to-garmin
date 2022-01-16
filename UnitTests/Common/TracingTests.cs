@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Observe;
 using FluentAssertions;
 using NUnit.Framework;
 using System;

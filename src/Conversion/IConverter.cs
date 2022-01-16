@@ -2,6 +2,7 @@
 using Common.Database;
 using Common.Dto;
 using Common.Helpers;
+using Common.Observe;
 using Dynastream.Fit;
 using Prometheus;
 using Serilog;
@@ -23,7 +24,7 @@ namespace Conversion
 	{
 		private static readonly Histogram WorkoutsConverted = Metrics.CreateHistogram("p2g_workouts_converted_duration_seconds", "The histogram of workouts converted.", new HistogramConfiguration()
 		{
-			LabelNames = new string[] { Common.Observability.Metrics.Label.FileType }
+			LabelNames = new string[] { Common.Observe.Metrics.Label.FileType }
 		});
 
 		public static readonly float _metersPerMile = 1609.34f;

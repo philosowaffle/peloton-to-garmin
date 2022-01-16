@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Common.Observe;
+using Serilog;
 using System;
 
 namespace Garmin

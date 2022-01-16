@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using PromMetrics = Prometheus.Metrics;
+using Metrics = Common.Observe.Metrics;
+using Common.Observe;
 
 namespace Common.Database
 {

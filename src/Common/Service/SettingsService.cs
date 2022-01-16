@@ -1,4 +1,5 @@
 ﻿using Common.Database;
+using Common.Observe;
 using Serilog;
 using System.Threading.Tasks;
 

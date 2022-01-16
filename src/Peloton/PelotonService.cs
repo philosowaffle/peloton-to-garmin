@@ -2,6 +2,7 @@
 using Common.Database;
 using Common.Dto;
 using Common.Helpers;
+using Common.Observe;
 using Newtonsoft.Json.Linq;
 using Prometheus;
 using Serilog;

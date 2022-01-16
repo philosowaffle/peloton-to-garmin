@@ -1,6 +1,8 @@
 ﻿using Common;
 using Common.Observe;
+using Garmin;
 using Microsoft.Extensions.Hosting;
+using Peloton;
 using Prometheus;
 using Serilog;
 using Sync;
@@ -24,12 +26,13 @@ namespace PelotonToGarminConsole
         private static readonly Gauge Health = Prometheus.Metrics.CreateGauge("p2g_health_info", "Health status for P2G.");
         private static readonly Gauge NextSyncTime = Prometheus.Metrics.CreateGauge("p2g_next_sync_time", "The next time the sync will run in seconds since epoch.");
 
-
         private readonly IAppConfiguration _config;
+        private readonly ISyncService _syncService;
 
-        public Startup(IAppConfiguration configuration, ISyncService service)
+        public Startup(IAppConfiguration configuration, ISyncService syncService)
         {
             _config = configuration;
+            _syncService = syncService;
 
             FlurlConfiguration.Configure(_config);
 
@@ -52,35 +55,77 @@ namespace PelotonToGarminConsole
 
             Health.Set(HealthStatus.Healthy);
 
+            try
+            {
+                PelotonService.ValidateConfig(_config.Peloton);
+                GarminUploader.ValidateConfig(_config);
+                Metrics.ValidateConfig(_config.Observability);
+                Tracing.ValidateConfig(_config.Observability);
+            }
+            catch (Exception ex)
+            {
+                _logger.Fatal(ex, "Exception during config validation.");
+                Health.Set(HealthStatus.Dead);
+                Environment.Exit(-1);
+            }            
+
             return RunAsync(cancelToken);
         }
 
-        private Task RunAsync(CancellationToken cancelToken)
+        private async Task RunAsync(CancellationToken cancelToken)
         {
             using var metrics = Metrics.EnableMetricsServer(_config.Observability.Prometheus);
             using var metricsCollector = Metrics.EnableCollector(_config.Observability.Prometheus);
             using var tracing = Tracing.EnableTracing(_config.Observability.Jaeger);
             using var tracingSource = new ActivitySource("ROOT");
 
+            int exitCode = 0;
+
             try
             {
-                _dockerClient.BeginEventMonitoringAsync();
+                if (_config.Peloton.NumWorkoutsToDownload <= 0)
+                {
+                    Console.Write("How many workouts to grab? ");
+                    int num = Convert.ToInt32(Console.ReadLine());
+                    _config.Peloton.NumWorkoutsToDownload = num;
+                }
 
-                while (!cancelToken.IsCancellationRequested) { }
+                if (_config.App.EnablePolling)
+                {
+                    while (_config.App.EnablePolling && !cancelToken.IsCancellationRequested)
+                    {
+                        var syncResult = await _syncService.SyncAsync(_config.Peloton.NumWorkoutsToDownload);
+                        Health.Set(syncResult.SyncSuccess ? HealthStatus.Healthy : HealthStatus.UnHealthy);
 
-                return Task.CompletedTask;
+                        Log.Information("Sleeping for {@Seconds} seconds...", _config.App.PollingIntervalSeconds);
 
+                        var now = DateTime.UtcNow;
+                        var nextRunTime = now.AddSeconds(_config.App.PollingIntervalSeconds);
+                        NextSyncTime.Set(new DateTimeOffset(nextRunTime).ToUnixTimeSeconds());
+                        Thread.Sleep(_config.App.PollingIntervalSeconds * 1000);
+                    }
+                } 
+                else
+                {
+                    await _syncService.SyncAsync(_config.Peloton.NumWorkoutsToDownload);
+                }
+
+                Log.Information("Done.");
             }
             catch (Exception ex)
             {
-                _logger.Fatal(ex, "RunAsync failed.");
+                _logger.Fatal(ex, "Uncaught Exception");
                 Health.Set(HealthStatus.Dead);
-                return Task.CompletedTask;
-
+                exitCode = -2;
             }
             finally
             {
-                _logger.Verbose("End.");
+                _logger.Verbose("Exit.");
+
+                if (!_config.App.CloseWindowOnFinish)
+                    Console.ReadLine();
+
+                Environment.Exit(exitCode);
             }
         }
     }

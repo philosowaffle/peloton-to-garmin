@@ -1,11 +1,13 @@
 ﻿using Common;
 using Common.Database;
+using Common.Observe;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using Sync;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using WebApp.Models;
-using WebApp.Services;
 
 namespace WebApp.Controllers
 {
@@ -52,7 +54,15 @@ namespace WebApp.Controllers
 		public async Task<ActionResult> Post([FromForm]SyncPostRequest request)
 		{
 			var model = new SyncViewModel();
-			model.Response = await _syncService.SyncAsync(request.NumWorkouts);
+			var syncResult = await _syncService.SyncAsync(request.NumWorkouts);
+			model.Response = new SyncPostResponse() 
+			{
+				SyncSuccess = syncResult.SyncSuccess,
+				PelotonDownloadSuccess = syncResult.PelotonDownloadSuccess,
+				ConverToFitSuccess = syncResult.ConversionSuccess,
+				UploadToGarminSuccess = syncResult.UploadToGarminSuccess,
+				Errors = syncResult.Errors.Select(e => new Models.ErrorResponse(e)).ToList()
+			};
 
 			var syncTime = await _db.GetSyncStatusAsync();
 			model.GetResponse = new SyncGetResponse()
@@ -61,7 +71,7 @@ namespace WebApp.Controllers
 				SyncStatus = syncTime.SyncStatus,
 				LastSuccessfulSyncTime = syncTime.LastSuccessfulSyncTime,
 				LastSyncTime = syncTime.LastSyncTime,
-				NextSyncTime = syncTime.NextSyncTime
+				NextSyncTime = syncTime.NextSyncTime,				
 			};
 
 			return View("Index", model);
@@ -70,12 +80,21 @@ namespace WebApp.Controllers
 		[HttpPost]
 		[Route("/api/sync")]
 		[ProducesResponseType(typeof(SyncPostResponse), 200)]
-		public Task<SyncPostResponse> SyncAsync([FromBody] SyncPostRequest request)
+		public async Task<SyncPostResponse> SyncAsync([FromBody] SyncPostRequest request)
 		{
 			if (request.NumWorkouts <= 0)
 				throw new Exception(); // TODO: throw correct http error
 
-			return _syncService.SyncAsync(request.NumWorkouts);
+			var syncResult = await _syncService.SyncAsync(request.NumWorkouts);
+
+			return new SyncPostResponse()
+			{
+				SyncSuccess = syncResult.SyncSuccess,
+				PelotonDownloadSuccess = syncResult.PelotonDownloadSuccess,
+				ConverToFitSuccess = syncResult.ConversionSuccess,
+				UploadToGarminSuccess = syncResult.UploadToGarminSuccess,
+				Errors = syncResult.Errors.Select(e => new Models.ErrorResponse(e)).ToList()
+			};
 		}
 	}
 }

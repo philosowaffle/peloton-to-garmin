@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Common.Observe;
+using Serilog;
 using System;
 using System.IO;
 using System.Text.Json;

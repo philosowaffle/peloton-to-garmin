@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using FluentAssertions;
 using System;
+using Common.Observe;
 
 namespace UnitTests.Common
 {

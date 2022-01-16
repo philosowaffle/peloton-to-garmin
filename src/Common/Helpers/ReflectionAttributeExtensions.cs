@@ -2,6 +2,8 @@
 using System;
 using System.ComponentModel;
 using PromMetrics = Prometheus.Metrics;
+using Metrics = Common.Observe.Metrics;
+using Common.Observe;
 
 namespace Common.Helpers
 {

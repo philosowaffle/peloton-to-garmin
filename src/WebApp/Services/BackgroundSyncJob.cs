@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Database;
+using Common.Observe;
 using Common.Service;
 using Common.Stateful;
 using Conversion;
@@ -13,20 +14,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using static Common.Observability.Metrics;
-using Metrics = Prometheus.Metrics;
+using static Common.Observe.Metrics;
+using Metrics = Common.Observe.Metrics;
+using PromMetrics = Prometheus.Metrics;
 
 namespace WebApp.Services
 {
     public class BackgroundSyncJob : BackgroundService
 	{
-		private static readonly Histogram SyncHistogram = Metrics.CreateHistogram("p2g_sync_duration_seconds", "The histogram of sync jobs that have run.");
-		private static readonly Gauge BuildInfo = Metrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
+		private static readonly Histogram SyncHistogram = PromMetrics.CreateHistogram("p2g_sync_duration_seconds", "The histogram of sync jobs that have run.");
+		private static readonly Gauge BuildInfo = PromMetrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
 		{
-			LabelNames = new[] { Common.Observability.Metrics.Label.Version, Common.Observability.Metrics.Label.Os, Common.Observability.Metrics.Label.OsVersion, Common.Observability.Metrics.Label.DotNetRuntime }
+			LabelNames = new[] { Metrics.Label.Version, Metrics.Label.Os, Metrics.Label.OsVersion, Metrics.Label.DotNetRuntime }
 		});
-		private static readonly Gauge Health = Metrics.CreateGauge("p2g_sync_service_health", "Health status for P2G Sync Service.");
-		private static readonly Gauge NextSyncTime = Metrics.CreateGauge("p2g_next_sync_time", "The next time the sync will run in seconds since epoch.");
+		private static readonly Gauge Health = PromMetrics.CreateGauge("p2g_sync_service_health", "Health status for P2G Sync Service.");
+		private static readonly Gauge NextSyncTime = PromMetrics.CreateGauge("p2g_next_sync_time", "The next time the sync will run in seconds since epoch.");
 
 		private static readonly ILogger _logger = LogContext.ForClass<BackgroundSyncJob>();
 

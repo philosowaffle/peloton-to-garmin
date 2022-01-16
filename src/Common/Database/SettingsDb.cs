@@ -1,4 +1,5 @@
-﻿using JsonFlatFileDataStore;
+﻿using Common.Observe;
+using JsonFlatFileDataStore;
 using Prometheus;
 using Serilog;
 using System;

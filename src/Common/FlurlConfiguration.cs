@@ -4,6 +4,7 @@ using Serilog;
 using System;
 using System.Threading.Tasks;
 using PromMetrics = Prometheus.Metrics;
+using Metrics = Common.Observe.Metrics;
 
 namespace Common
 {
