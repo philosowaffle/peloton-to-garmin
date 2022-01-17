@@ -53,6 +53,7 @@ COPY --from=build /build/configuration.example.json ./configuration.local.json
 
 RUN mkdir output
 RUN mkdir working
+RUN mkdir data
 
 # Setup web app
 COPY --from=build /buildweb/published .
