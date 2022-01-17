@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Common.Dto
 {
-	public class RecentWorkouts
+    public class RecentWorkouts
 	{
 		public ICollection<RecentWorkout> data { get; set; }
 	}
@@ -11,6 +12,7 @@ namespace Common.Dto
 	{
 		public string Id { get; set; }
 		public string Status { get; set; }
+		[JsonConverter(typeof(JsonStringEnumConverter))]
 		public FitnessDiscipline Fitness_Discipline { get; set; }
 	}
 
@@ -19,6 +21,7 @@ namespace Common.Dto
 		public long Created_At { get; set; }
 		public string Device_Type { get; set; }
 		public long End_Time { get; set; }
+		[JsonConverter(typeof(JsonStringEnumConverter))]
 		public FitnessDiscipline Fitness_Discipline { get; set; }
 		public bool Has_Pedaling_Metrics { get; set; }
 		public bool Has_Leaderboard_Metrics { get; set; }
@@ -60,7 +63,7 @@ namespace Common.Dto
 
 	public enum FitnessDiscipline
     {
-		Unknown = 0,
+		None = 0,
 		Cycling = 1,
 		Bike_Bootcamp = 2,
 		Running = 3,

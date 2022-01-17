@@ -51,6 +51,8 @@ namespace WebApp.Models
 
 			FormatRunningPreferredLapType = typeof(Running).GetFieldDescription("PreferredLapType");
 			FormatCyclingPreferredLapType = typeof(Cycling).GetFieldDescription("PreferredLapType");
+
+			PelotonExcludeWorkoutTypes = typeof(Common.Peloton).GetFieldDescription("ExcludeWorkoutTypes");
 		}
 
 		public string AppOutputDirectory { get; set; }
@@ -68,5 +70,8 @@ namespace WebApp.Models
 
 		public string FormatRunningPreferredLapType { get; set; }
 		public string FormatCyclingPreferredLapType { get; set; }
-    }
+
+		public string PelotonExcludeWorkoutTypes { get; set; }
+
+	}
 }

@@ -211,10 +211,14 @@
                 </td>
             </tr>
             <tr>
-                <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.GetResponse.Settings.Peloton.ExcludeWorkoutTypes):</td>
+                <td class="font-weight-bold editor-label">
+                    @Html.LabelFor(model => model.GetResponse.Settings.Peloton.ExcludeWorkoutTypes):
+                    <small id="workingDirHelp" class="form-text text-muted">
+                        @Model.Copy.Settings.PelotonExcludeWorkoutTypes
+                    </small>
+                </td>
                 <td class="editor-field">
-                    @Html.ListBoxFor(model => model.GetResponse.Settings.Peloton.ExcludeWorkoutTypes, new MultiSelectList(Enum.GetNames<FitnessDiscipline>()))
-                    @*@Html.DropDownListFor(model => model.GetResponse.Settings.Peloton.ExcludeWorkoutTypes, Html.GetEnumSelectList<FitnessDiscipline>(), "multiple")*@
+                    @Html.ListBoxFor(model => model.GetResponse.Settings.Peloton.ExcludeWorkoutTypes, new MultiSelectList(Enum.GetNames<FitnessDiscipline>(), Model.GetResponse.Settings.Peloton.ExcludeWorkoutTypes))
                     @Html.ValidationMessageFor(model => model.GetResponse.Settings.Peloton.ExcludeWorkoutTypes)
                 </td>
             </tr>
