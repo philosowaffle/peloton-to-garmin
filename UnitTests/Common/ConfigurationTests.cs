@@ -59,7 +59,7 @@ namespace UnitTests.Common
 			config.Garmin.Should().NotBeNull();
 			config.Garmin.Email.Should().BeNull();
 			config.Garmin.Password.Should().BeNull();
-			config.Garmin.FormatToUpload.Should().BeNull();
+			config.Garmin.FormatToUpload.Should().Be(FileFormat.Fit);
 		}
 
 		[Test]
