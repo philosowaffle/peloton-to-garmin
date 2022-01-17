@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Common.Observe;
+using Serilog;
 using System;
 using System.IO;
 using System.Text.Json;
@@ -7,7 +8,7 @@ using System.Xml.Serialization;
 
 namespace Common
 {
-	public interface IFileHandling
+    public interface IFileHandling
 	{
 		void MkDirIfNotExists(string path);
 		bool DirExists(string path);

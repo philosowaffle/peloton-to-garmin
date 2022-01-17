@@ -59,6 +59,11 @@ namespace WebApp.Models
 
 	public class ErrorResponse
 	{
+		public ErrorResponse(Sync.ErrorResponse resp)
+        {
+			Message = resp.Message;
+        }
+
 		public string Message { get; set; }
 	}
 }

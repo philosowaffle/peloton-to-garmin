@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Dto;
+using Common.Observe;
 using Flurl.Http;
 using Newtonsoft.Json.Linq;
 using Peloton.Dto;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Peloton
 {
-	public interface IPelotonApi
+    public interface IPelotonApi
 	{
 		Task InitAuthAsync(string overrideUserAgent = null);
 		Task<RecentWorkouts> GetWorkoutsAsync(int numWorkouts, int page);
@@ -30,11 +31,11 @@ namespace Peloton
 		private string UserId;
 		private string SessionId;
 
-		public ApiClient(IAppConfiguration config)
+		public ApiClient(Settings config, AppConfiguration appConfig)
 		{
 			_userEmail = config.Peloton.Email;
 			_userPassword = config.Peloton.Password;
-			_observabilityEnabled = config.Observability.Prometheus.Enabled;
+			_observabilityEnabled = appConfig.Observability.Prometheus.Enabled;
 		}
 
 		public ApiClient(string email, string password, bool observabilityEnabled)
@@ -57,9 +58,10 @@ namespace Peloton
 				.ConfigureRequest((c) =>
 				{
 					c.BeforeCallAsync = null;
-					c.BeforeCall = (FlurlCall call) =>
+					c.BeforeCallAsync = (FlurlCall call) =>
 					{
-						_logger.Verbose("HTTP Request: {@HttpMethod} {@Uri} {@Content}", call.HttpRequestMessage.Method, call.HttpRequestMessage.RequestUri, "userAuthParams");
+						_logger.Verbose("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}", call.HttpRequestMessage.Method, call.HttpRequestMessage.RequestUri, call.HttpRequestMessage.Headers.ToString(),"userAuthParams");
+						return Task.CompletedTask;
 					};
 				})
 				.PostJsonAsync(new AuthRequest()

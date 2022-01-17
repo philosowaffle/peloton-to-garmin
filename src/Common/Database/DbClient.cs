@@ -6,16 +6,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using PromMetrics = Prometheus.Metrics;
+using Metrics = Common.Observe.Metrics;
+using Common.Observe;
 
 namespace Common.Database
 {
-	public interface IDbClient
+    public interface IDbClient
 	{
 		SyncHistoryItem Get(string id);
 		ICollection<SyncHistoryItem> GetRecentlySyncedItems(int limit);
 		void Upsert(SyncHistoryItem item);
-		SyncServiceStatus GetSyncStatus();
-		void UpsertSyncStatus(SyncServiceStatus syncTime);
 	}
 
 	public class DbClient : IDbClient
@@ -26,18 +26,15 @@ namespace Common.Database
 		});
 		private static readonly ILogger _logger = LogContext.ForClass<DbClient>();
 
-		private DataStore _configDatabase;
 		private Lazy<IDocumentCollection<SyncHistoryItem>> _syncHistoryTable;
 		private IFileHandling _fileHandler;
 
-		public DbClient(IAppConfiguration configuration, IFileHandling fileHandler)
+		public DbClient(Settings configuration, IFileHandling fileHandler)
 		{
 			_fileHandler = fileHandler;
 
-			MakeDbIfNotExist(configuration.App.ConfigDbPath);
 			MakeDbIfNotExist(configuration.App.SyncHistoryDbPath);
 
-			_configDatabase = new DataStore(configuration.App.ConfigDbPath);
 			var syncHistoryDb = new DataStore(configuration.App.SyncHistoryDbPath);
 			_syncHistoryTable = new Lazy<IDocumentCollection<SyncHistoryItem>>(() => syncHistoryDb.GetCollection<SyncHistoryItem>());		
 		}
@@ -67,7 +64,7 @@ namespace Common.Database
 			using var metrics = DbActionDuration
 									.WithLabels("select", "workoutId")
 									.NewTimer();
-			using var tracing = Tracing.Trace("select", TagValue.Db)
+			using var tracing = Tracing.Trace($"{nameof(DbClient)}.{nameof(Get)}", TagValue.Db)
 										.WithTable("SyncHistoryItem")
 										.WithWorkoutId(id);
 
@@ -82,57 +79,12 @@ namespace Common.Database
 			}
 		}
 
-		public SyncServiceStatus GetSyncStatus()
-		{
-			using var metrics = DbActionDuration
-									.WithLabels("select", "SyncStatus")
-									.NewTimer();
-			using var tracing = Tracing.Trace("select", TagValue.Db)
-										.WithTable("SyncStatus");
-
-			try
-			{
-				var syncTime = _configDatabase.GetItem<SyncServiceStatus>("syncStatus");
-				return syncTime ?? new SyncServiceStatus();
-
-			}
-			catch (KeyNotFoundException)
-			{
-				_logger.Debug("SyncStatus object not found in DB, creating now.");
-				UpsertSyncStatus(new SyncServiceStatus());
-				return _configDatabase.GetItem<SyncServiceStatus>("syncStatus");
-			}
-			catch (Exception e)
-			{
-				_logger.Error(e, "Failed to get last sync status from db.");
-				return new SyncServiceStatus();
-			}
-		}
-
-		public void UpsertSyncStatus(SyncServiceStatus newSyncTime)
-		{
-			using var metrics = DbActionDuration
-									.WithLabels("upsert", "SyncStatus")
-									.NewTimer();
-			using var tracing = Tracing.Trace("upsert", TagValue.Db)
-										.WithTable("SyncStatus");
-
-			try
-			{
-				_configDatabase.ReplaceItem("syncStatus", newSyncTime, upsert: true);
-			}
-			catch (Exception e)
-			{
-				_logger.Error(e, "Failed to upsert sync status in db.");
-			}
-		}
-
 		public void Upsert(SyncHistoryItem item)
 		{
 			using var metrics = DbActionDuration
 									.WithLabels("upsert", "workoutId")
 									.NewTimer();
-			using var tracing = Tracing.Trace("upsert", TagValue.Db)?
+			using var tracing = Tracing.Trace($"{nameof(DbClient)}.{nameof(Upsert)}", TagValue.Db)
 											.WithTable("SyncHistoryItem")
 											.WithWorkoutId(item.Id);
 
@@ -151,7 +103,7 @@ namespace Common.Database
 			using var metrics = DbActionDuration
 									.WithLabels("select", "workoutIds")
 									.NewTimer();
-			using var tracing = Tracing.Trace("select", TagValue.Db)
+			using var tracing = Tracing.Trace($"{nameof(DbClient)}.{nameof(GetRecentlySyncedItems)}", TagValue.Db)
 										.WithTable("SyncHistoryItem");
 
 			try

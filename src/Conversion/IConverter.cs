@@ -2,6 +2,8 @@
 using Common.Database;
 using Common.Dto;
 using Common.Helpers;
+using Common.Observe;
+using Common.Service;
 using Dynastream.Fit;
 using Prometheus;
 using Serilog;
@@ -13,7 +15,7 @@ using Summary = Common.Dto.Summary;
 
 namespace Conversion
 {
-	public interface IConverter
+    public interface IConverter
 	{
 		public void Convert();
 		public void Decode(string filePath);
@@ -23,16 +25,16 @@ namespace Conversion
 	{
 		private static readonly Histogram WorkoutsConverted = Metrics.CreateHistogram("p2g_workouts_converted_duration_seconds", "The histogram of workouts converted.", new HistogramConfiguration()
 		{
-			LabelNames = new string[] { Common.Metrics.Label.FileType }
+			LabelNames = new string[] { Common.Observe.Metrics.Label.FileType }
 		});
 
 		public static readonly float _metersPerMile = 1609.34f;
 
-		protected IAppConfiguration _config;
+		protected Settings _config;
 		protected IDbClient _dbClient;
 		protected IFileHandling _fileHandler;
 
-		public Converter(IAppConfiguration config, IDbClient dbClient, IFileHandling fileHandler)
+		public Converter(Settings config, IDbClient dbClient, IFileHandling fileHandler)
 		{
 			_config = config;
 			_dbClient = dbClient;
@@ -46,8 +48,11 @@ namespace Conversion
 
 		protected abstract void Save(T data, string path);
 
-		protected void Convert(string format)
+		protected void Convert(FileFormat format)
 		{
+			using var tracingConvert = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}")
+										.WithTag(TagKey.Format, format.ToString());
+
 			if (!_fileHandler.DirExists(_config.App.DownloadDirectory))
 			{
 				Log.Information("No download directory found. Nothing to do. {@File}", _config.App.DownloadDirectory);
@@ -68,7 +73,7 @@ namespace Conversion
 			// Foreach file in directory
 			foreach (var file in files)
 			{
-				using var workoutTimer = WorkoutsConverted.WithLabels(format).NewTimer();
+				using var workoutTimer = WorkoutsConverted.WithLabels(format.ToString()).NewTimer();
 
 				// load file and deserialize
 				P2GWorkout workoutData = null;
@@ -83,9 +88,9 @@ namespace Conversion
 					continue;
 				}
 
-				using var tracing = Tracing.Trace("Convert")
+				using var tracing = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.Workout")
 										.WithWorkoutId(workoutData.Workout.Id)
-										.WithTag(TagKey.Format, format);
+										.WithTag(TagKey.Format, format.ToString());
 
 				// call internal convert method
 				T converted = default;
@@ -124,7 +129,7 @@ namespace Conversion
 					{
 						_fileHandler.MkDirIfNotExists(_config.App.TcxDirectory);
 						_fileHandler.MkDirIfNotExists(_config.App.FitDirectory);
-						var dir = format == "fit" ? _config.App.FitDirectory : _config.App.TcxDirectory;
+						var dir = format == FileFormat.Fit ? _config.App.FitDirectory : _config.App.TcxDirectory;
 
 						var backupDest = Path.Join(dir, $"{workoutTitle}.{format}");
 						_fileHandler.Copy(path, backupDest, overwrite: true);
@@ -163,8 +168,8 @@ namespace Conversion
 					};
 				}
 
-				syncRecord.ConvertedToFit = syncRecord.ConvertedToFit || format == "fit";
-				syncRecord.ConvertedToTcx = syncRecord.ConvertedToTcx || format == "tcx";
+				syncRecord.ConvertedToFit = syncRecord.ConvertedToFit || format == FileFormat.Fit;
+				syncRecord.ConvertedToTcx = syncRecord.ConvertedToTcx || format == FileFormat.Tcx;
 				_dbClient.Upsert(syncRecord);
 			}
 		}

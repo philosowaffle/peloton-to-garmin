@@ -1,6 +1,7 @@
 ﻿using Common;
 using Common.Database;
 using Common.Helpers;
+using Common.Observe;
 using Prometheus;
 using Serilog;
 using System;
@@ -12,7 +13,7 @@ using Metrics = Prometheus.Metrics;
 
 namespace Garmin
 {
-	public interface IGarminUploader
+    public interface IGarminUploader
 	{
 		Task UploadToGarminAsync();
 	}
@@ -21,7 +22,7 @@ namespace Garmin
 	{
 		private static readonly Histogram WorkoutUploadDuration = Metrics.CreateHistogram("p2g_workout_upload_duration_seconds", "Histogram of workout upload durations.", new HistogramConfiguration()
 		{
-			LabelNames = new[] { Common.Metrics.Label.Count }
+			LabelNames = new[] { Common.Observe.Metrics.Label.Count }
 		});
 		private static readonly Gauge FailedUploadAttemptsGauge = Metrics.CreateGauge("p2g_failed_upload_attempts",
 			"The number of consecutive failed upload attempts. Resets to 0 on the first successful upload. This is not a count of the number of workouts that failed to upload. P2G uploads in bulk, so this is just a guage of number of failed upload attempts.");
@@ -29,21 +30,23 @@ namespace Garmin
 			"The number of files available to be uploaded. This number sets to 0 upon successful upload.");
 		private static readonly ILogger _logger = LogContext.ForClass<GarminUploader>();
 
-		private readonly IAppConfiguration _config;
+		private readonly Settings _config;
 		private readonly ApiClient _api;
 		private readonly IDbClient _dbClient;
 		private readonly Random _random;
 
-		public GarminUploader(IAppConfiguration config, IDbClient dbClient)
+		public GarminUploader(Settings config, AppConfiguration appConfig, IDbClient dbClient)
 		{
 			_config = config;
-			_api = new ApiClient(config);
+			_api = new ApiClient(config, appConfig);
 			_dbClient = dbClient;
 			_random = new Random();
 		}
 
 		public async Task UploadToGarminAsync()
 		{
+			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(UploadToGarminAsync)}");
+
 			if (!_config.Garmin.Upload) return;
 
 			if (!Directory.Exists(_config.App.UploadDirectory))
@@ -78,7 +81,7 @@ namespace Garmin
 
 		private async Task UploadAsync(string[] files)
 		{
-			using var tracer = Tracing.Trace("UploadToGarminViaNative")
+			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(UploadAsync)}.UploadToGarminViaNative")
 										.WithTag(TagKey.Category, "nativeImplV1");
 
 			try
@@ -107,6 +110,8 @@ namespace Garmin
 
 		private void UpdateSyncItem(string file)
 		{
+			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(UpdateSyncItem)}");
+
 			_logger.Information("Uploaded workout {@workoutName}", file);
 			var workoutId = WorkoutHelper.GetWorkoutIdFromFileName(file);
 			var syncItem = _dbClient.Get(workoutId);
@@ -119,7 +124,7 @@ namespace Garmin
 
 		private async Task RateLimit()
 		{
-			using var tracer = Tracing.Trace("UploadToGarminRateLimit");
+			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(RateLimit)}");
 
 			var waitDuration = _random.Next(1000, 5000);
 			_logger.Information($"Rate limiting, upload will continue after {waitDuration / 1000} seconds...");
@@ -128,7 +133,7 @@ namespace Garmin
 
 		private void UploadViaPython(string[] files)
 		{
-			using var tracer = Tracing.Trace("UploadToGarminViaPython")
+			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(UploadViaPython)}.UploadToGarminViaPython")
 										.WithTag(TagKey.Category, "gupload");
 			
 			ProcessStartInfo start = new ProcessStartInfo();
@@ -182,7 +187,7 @@ namespace Garmin
 			}
 		}
 
-		public static void ValidateConfig(Configuration config)
+		public static void ValidateConfig(Settings config)
 		{
 			if (config.Garmin.Upload == false) return;
 
@@ -196,12 +201,6 @@ namespace Garmin
 			{
 				_logger.Error("Garmin Password required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Garmin), nameof(config.Garmin.Password));
 				throw new ArgumentException("Garmin Password must be set.", nameof(config.Garmin.Password));
-			}
-
-			if (config.Garmin.FormatToUpload != "fit" && config.Garmin.FormatToUpload != "tcx")
-			{
-				_logger.Error("Garmin FormatToUpload should be \"fit\" or \"tcx\", check your configuration {@ConfigSection}.{@ConfigProperty}.", nameof(Garmin), nameof(config.Garmin.FormatToUpload));
-				throw new ArgumentException("Garmin FormatToUpload must be either \"fit\" or \"tcx\".", nameof(config.Garmin.FormatToUpload));
 			}
 
 			if (config.App.PythonAndGUploadInstalled.HasValue)

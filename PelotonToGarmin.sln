@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30804.86
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PelotonToGarminConsole", "src\PelotonToGarminConsole\PelotonToGarminConsole.csproj", "{808B1164-D94D-456F-B0AF-E5DDE4B82B4A}"
 EndProject
@@ -50,6 +50,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "grafana", "grafana", "{D569
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp", "src\WebApp\WebApp.csproj", "{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sync", "src\Sync\Sync.csproj", "{D792AAD1-E2BB-4F45-BF49-B040A92799FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,6 +86,10 @@ Global
 		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D792AAD1-E2BB-4F45-BF49-B040A92799FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D792AAD1-E2BB-4F45-BF49-B040A92799FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D792AAD1-E2BB-4F45-BF49-B040A92799FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D792AAD1-E2BB-4F45-BF49-B040A92799FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

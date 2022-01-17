@@ -1,8 +1,10 @@
 ﻿using Common;
 using Common.Database;
+using Common.Observe;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using WebApp.Models;
 
 namespace WebApp.Controllers
@@ -10,21 +12,25 @@ namespace WebApp.Controllers
 	public class HomeController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
-		private readonly IDbClient _db;
-		private readonly IAppConfiguration _config;
+		private readonly ISyncStatusDb _syncStatusDb;
+		private readonly IDbClient _syncHistoryDb;
+		private readonly Settings _config;
 
-		public HomeController(ILogger<HomeController> logger, IDbClient db, IAppConfiguration config)
+		public HomeController(ILogger<HomeController> logger, ISyncStatusDb db, Settings config, IDbClient dbClient)
 		{
 			_logger = logger;
-			_db = db;
+			_syncStatusDb = db;
 			_config = config;
+			_syncHistoryDb = dbClient;
 		}
 
 		[HttpGet]
 		[ApiExplorerSettings(IgnoreApi = true)]
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
-			var syncTime = _db.GetSyncStatus();
+			using var tracing = Tracing.Trace($"{nameof(HomeController)}.{nameof(Index)}");
+
+			var syncTime = await _syncStatusDb.GetSyncStatusAsync();
 			var model = new HomeViewModel()
 			{
 				SyncEnabled = _config.App.EnablePolling,
@@ -32,7 +38,7 @@ namespace WebApp.Controllers
 				LastSuccessfulSyncTime = syncTime.LastSuccessfulSyncTime,
 				LastSyncTime = syncTime.LastSyncTime,
 				NextSyncTime = syncTime.NextSyncTime,
-				RecentWorkouts = _db.GetRecentlySyncedItems(10)
+				RecentWorkouts = _syncHistoryDb.GetRecentlySyncedItems(10)
 			};
 			return View(model);
 		}
@@ -40,6 +46,8 @@ namespace WebApp.Controllers
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 		public IActionResult Error()
 		{
+			using var tracing = Tracing.Trace($"{nameof(HomeController)}.{nameof(Error)}");
+
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 		}
 	}

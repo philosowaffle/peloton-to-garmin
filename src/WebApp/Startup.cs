@@ -1,10 +1,11 @@
 using Common;
 using Common.Database;
+using Common.Observe;
+using Common.Service;
 using Conversion;
 using Garmin;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -16,24 +17,21 @@ using Prometheus;
 using Prometheus.DotNetRuntime;
 using Serilog;
 using Serilog.Events;
+using Sync;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using WebApp.Services;
 
 namespace WebApp
 {
-	public class Startup
+    public class Startup
 	{
 		private static readonly Gauge BuildInfo = Prometheus.Metrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
 		{
-			LabelNames = new[] { Common.Metrics.Label.Version, Common.Metrics.Label.Os, Common.Metrics.Label.OsVersion, Common.Metrics.Label.DotNetRuntime }
+			LabelNames = new[] { Common.Observe.Metrics.Label.Version, Common.Observe.Metrics.Label.Os, Common.Observe.Metrics.Label.OsVersion, Common.Observe.Metrics.Label.DotNetRuntime }
 		});
 
-		private readonly Configuration _config;
+		private readonly AppConfiguration _config;
 		private static IDisposable _metricCollector;
 
 		public IConfiguration ConfigurationProvider { get; }
@@ -41,7 +39,7 @@ namespace WebApp
 		public Startup(IConfiguration configuration)
 		{
 			ConfigurationProvider = configuration;
-			_config = new Configuration();
+			_config = new AppConfiguration();
 
 			LoadConfigValues(_config);
 
@@ -54,9 +52,19 @@ namespace WebApp
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddSingleton<IAppConfiguration>((serviceProvider) =>
+			services.AddSingleton<ISettingsDb, SettingsDb>();
+			services.AddSingleton<ISettingsService, SettingsService>();
+
+			services.AddTransient<Settings>((serviceProvider) => 
 			{
-				var config = new Configuration();
+				using var tracing = Tracing.Trace($"{nameof(Startup)}.{nameof(ConfigureServices)}.DI");
+				var settingsService = serviceProvider.GetService<ISettingsService>();
+				return settingsService.GetSettingsAsync().GetAwaiter().GetResult();
+			});
+
+			services.AddSingleton<AppConfiguration>((serviceProvider) =>
+			{
+				var config = new AppConfiguration();
 				LoadConfigValues(config);
 
 				ChangeToken.OnChange(() => ConfigurationProvider.GetReloadToken(), () =>
@@ -71,15 +79,17 @@ namespace WebApp
 
 			services.AddSingleton<IDbClient, DbClient>();
 			services.AddSingleton<IFileHandling, IOWrapper>();
-			services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
-			services.AddSingleton<IPelotonService, PelotonService>();
-			services.AddSingleton<IGarminUploader, GarminUploader>();
-			services.AddSingleton<ISyncService, SyncService>();
+			services.AddTransient<IPelotonApi, Peloton.ApiClient>();
+			services.AddTransient<IPelotonService, PelotonService>();
+			services.AddTransient<IGarminUploader, GarminUploader>();
 
-			services.AddSingleton<IConverter, FitConverter>();
-			services.AddSingleton<IConverter, TcxConverter>();
+			services.AddSingleton<ISyncStatusDb, SyncStatusDb>();
+			services.AddTransient<ISyncService, SyncService>();
 
-			FlurlConfiguration.Configure(_config);
+			services.AddTransient<IConverter, FitConverter>();
+			services.AddTransient<IConverter, TcxConverter>();
+
+			FlurlConfiguration.Configure(_config.Observability);
 
 			Log.Logger = new LoggerConfiguration()
 					.ReadFrom.Configuration(ConfigurationProvider, sectionName: $"{nameof(Observability)}:Serilog")
@@ -148,14 +158,16 @@ namespace WebApp
 				if (_config.Observability.Prometheus.Enabled)
 					endpoints.MapMetrics();
 			});
-		}
 
-		private void LoadConfigValues(Configuration config)
+            app.Use(async (context, next) =>
+            {
+                using var tracing = Tracing.Trace($"{nameof(Startup)}.{nameof(Configure)}.Entrypoint");
+                await next.Invoke();
+            });
+        }
+
+		private void LoadConfigValues(AppConfiguration config)
 		{
-			ConfigurationProvider.GetSection(nameof(App)).Bind(config.App);
-			ConfigurationProvider.GetSection(nameof(Format)).Bind(config.Format);
-			ConfigurationProvider.GetSection(nameof(Peloton)).Bind(config.Peloton);
-			ConfigurationProvider.GetSection(nameof(Garmin)).Bind(config.Garmin);
 			ConfigurationProvider.GetSection(nameof(Observability)).Bind(config.Observability);
 			ConfigurationProvider.GetSection(nameof(Developer)).Bind(config.Developer);
 		}

@@ -2,6 +2,7 @@
 using Common.Database;
 using Common.Dto;
 using Common.Helpers;
+using Common.Observe;
 using Dynastream.Fit;
 using Serilog;
 using System;
@@ -11,21 +12,24 @@ using System.Linq;
 
 namespace Conversion
 {
-	public class FitConverter : Converter<Tuple<string, ICollection<Mesg>>>
+    public class FitConverter : Converter<Tuple<string, ICollection<Mesg>>>
 	{
 		private static readonly string _spaceSeparator = "_";
 		private static readonly ILogger _logger = LogContext.ForClass<FitConverter>();
-		public FitConverter(IAppConfiguration config, IDbClient dbClient, IFileHandling fileHandler) : base(config, dbClient, fileHandler) { }
+		public FitConverter(Settings settings, IDbClient dbClient, IFileHandling fileHandler) : base(settings, dbClient, fileHandler) { }
 
 		public override void Convert()
 		{
 			if (!_config.Format.Fit) return;
 
-			base.Convert("fit");
+			base.Convert(FileFormat.Fit);
 		}
 
 		protected override void Save(Tuple<string, ICollection<Mesg>> data, string path)
 		{
+			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(Save)}")
+										.WithTag(TagKey.Format, FileFormat.Fit.ToString());
+
 			using (FileStream fitDest = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
 			{
 				Encode encoder = new Encode(ProtocolVersion.V20);
@@ -45,6 +49,10 @@ namespace Conversion
 
 		protected override Tuple<string, ICollection<Mesg>> Convert(Workout workout, WorkoutSamples workoutSamples)
 		{
+			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(Convert)}")
+										.WithTag(TagKey.Format, FileFormat.Fit.ToString())
+										.WithWorkoutId(workout.Id);
+
 			// MESSAGE ORDER MATTERS
 			var messages = new List<Mesg>();
 
@@ -176,6 +184,9 @@ namespace Conversion
 
 		public override void Decode(string filePath)
 		{
+			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(Decode)}")
+										.WithTag(TagKey.Format, FileFormat.Fit.ToString());
+
 			Decode decoder = new Decode();
 			MesgBroadcaster mesgBroadcaster = new MesgBroadcaster();
 
@@ -298,6 +309,9 @@ namespace Conversion
 
 		private Dynastream.Fit.DateTime AddMetrics(ICollection<Mesg> messages, WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime)
 		{
+			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(AddMetrics)}")
+										.WithTag(TagKey.Format, FileFormat.Fit.ToString());
+
 			var allMetrics = workoutSamples.Metrics;
 			var hrMetrics = allMetrics.FirstOrDefault(m => m.Slug == "heart_rate");
 			var outputMetrics = allMetrics.FirstOrDefault(m => m.Slug == "output");
@@ -370,19 +384,19 @@ namespace Conversion
 			var fitnessDiscipline = workout.Fitness_Discipline;
 			switch (fitnessDiscipline)
 			{
-				case "cycling":
-				case "bike_bootcamp":
+				case FitnessDiscipline.Cycling:
+				case FitnessDiscipline.Bike_Bootcamp:
 					return Sport.Cycling;
-				case "running":
+				case FitnessDiscipline.Running:
 					return Sport.Running;
-				case "walking":
+				case FitnessDiscipline.Walking:
 					return Sport.Walking;
-				case "cardio":
-				case "circuit":
-				case "strength":
-				case "stretching":
-				case "yoga":
-				case "meditation":
+				case FitnessDiscipline.Cardio:
+				case FitnessDiscipline.Circuit:
+				case FitnessDiscipline.Strength:
+				case FitnessDiscipline.Stretching:
+				case FitnessDiscipline.Yoga:
+				case FitnessDiscipline.Meditation:
 					return Sport.Training;
 				default:
 					return Sport.Invalid;
@@ -394,22 +408,22 @@ namespace Conversion
 			var fitnessDiscipline = workout.Fitness_Discipline;
 			switch (fitnessDiscipline)
 			{
-				case "cycling":
-				case "bike_bootcamp":
+				case FitnessDiscipline.Cycling:
+				case FitnessDiscipline.Bike_Bootcamp:
 					return SubSport.IndoorCycling;
-				case "running":
+				case FitnessDiscipline.Running:
 					return SubSport.IndoorRunning;
-				case "walking":
+				case FitnessDiscipline.Walking:
 					return SubSport.IndoorWalking;
-				case "cardio":
-				case "circuit":
+				case FitnessDiscipline.Cardio:
+				case FitnessDiscipline.Circuit:
 					return SubSport.CardioTraining;
-				case "strength":
+				case FitnessDiscipline.Strength:
 					return SubSport.StrengthTraining;
-				case "stretching":
+				case FitnessDiscipline.Stretching:
 					return SubSport.FlexibilityTraining;
-				case "yoga":
-				case "meditation":
+				case FitnessDiscipline.Yoga:
+				case FitnessDiscipline.Meditation:
 					return SubSport.Yoga;
 				default:
 					return SubSport.Generic;
@@ -418,6 +432,10 @@ namespace Conversion
 
 		private SessionMesg GetSessionMesg(Workout workout, WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime, Dynastream.Fit.DateTime endTime, ushort numLaps)
 		{
+			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetSessionMesg)}")
+										.WithTag(TagKey.Format, FileFormat.Fit.ToString())
+										.WithWorkoutId(workout.Id);
+
 			var sessionMesg = new SessionMesg();
 			sessionMesg.SetTimestamp(endTime);
 			sessionMesg.SetStartTime(startTime);
@@ -499,6 +517,9 @@ namespace Conversion
 
 		private Dictionary<int, Tuple<WorkoutStepMesg, LapMesg>> GetWorkoutStepsAndLaps(WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime, Sport sport, SubSport subSport)
 		{
+			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetWorkoutStepsAndLaps)}")
+										.WithTag(TagKey.Format, FileFormat.Fit.ToString());
+
 			var stepsAndLaps = new Dictionary<int, Tuple<WorkoutStepMesg, LapMesg>>();
 
 			if (workoutSamples is null)
@@ -582,6 +603,9 @@ namespace Conversion
 
 		public ICollection<LapMesg> GetLaps(PreferredLapType preferredLapType, WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime, Sport sport, SubSport subSport)
 		{
+			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetLaps)}")
+										.WithTag(TagKey.Format, FileFormat.Fit.ToString());
+
 			if ((preferredLapType == PreferredLapType.Default || preferredLapType == PreferredLapType.Class_Segments)
 				&& workoutSamples.Segment_List.Any())
 				return GetLapsBasedOnSegments(workoutSamples, startTime, sport, subSport);
@@ -591,6 +615,9 @@ namespace Conversion
 
 		public ICollection<LapMesg> GetLapsBasedOnSegments(WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime, Sport sport, SubSport subSport)
 		{
+			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetLapsBasedOnSegments)}")
+										.WithTag(TagKey.Format, FileFormat.Fit.ToString());
+
 			var stepsAndLaps = new List<LapMesg>();
 
 			if (workoutSamples is null)
@@ -643,6 +670,9 @@ namespace Conversion
 
 		public ICollection<LapMesg> GetLapsBasedOnDistance(WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime, Sport sport, SubSport subSport)
 		{
+			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetLapsBasedOnDistance)}")
+										.WithTag(TagKey.Format, FileFormat.Fit.ToString());
+
 			var stepsAndLaps = new List<LapMesg>();
 
 			if (workoutSamples is null)

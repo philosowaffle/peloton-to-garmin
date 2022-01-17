@@ -2,6 +2,7 @@
 using Common.Database;
 using Common.Dto;
 using Common.Helpers;
+using Common.Observe;
 using Newtonsoft.Json.Linq;
 using Prometheus;
 using Serilog;
@@ -15,7 +16,7 @@ using Metrics = Prometheus.Metrics;
 
 namespace Peloton
 {
-	public interface IPelotonService
+    public interface IPelotonService
 	{
 		Task DownloadLatestWorkoutDataAsync();
 		Task DownloadLatestWorkoutDataAsync(int numWorkoutsToDownload);
@@ -27,13 +28,13 @@ namespace Peloton
 		public static readonly Gauge FailedDesiralizationCount = Metrics.CreateGauge("p2g_peloton_workout_download_deserialization_failed", "Number of workouts that failed to deserialize during the last sync.");
 		private static readonly ILogger _logger = LogContext.ForClass<PelotonService>();
 
-		private IAppConfiguration _config;
+		private Settings _config;
 		private IPelotonApi _pelotonApi;
 		private IDbClient _dbClient;
 		private int _failedCount;
 		private IFileHandling _fileHandler;
 
-		public PelotonService(IAppConfiguration config, IPelotonApi pelotonApi, IDbClient dbClient, IFileHandling fileHandler)
+		public PelotonService(Settings config, IPelotonApi pelotonApi, IDbClient dbClient, IFileHandling fileHandler)
 		{
 			_config = config;
 			_pelotonApi = pelotonApi;
@@ -52,7 +53,7 @@ namespace Peloton
 		{
 			if (numWorkoutsToDownload <= 0) return;
 
-			using var tracing = Tracing.Trace(nameof(DownloadLatestWorkoutDataAsync));
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(DownloadLatestWorkoutDataAsync)}");
 
 			await _pelotonApi.InitAuthAsync();
 
@@ -172,6 +173,8 @@ namespace Peloton
 
 		private void SaveRawData(dynamic data, string workoutTitle)
 		{
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(SaveRawData)}");
+
 			var outputDir = _config.App.JsonDirectory;
 			_fileHandler.MkDirIfNotExists(outputDir);
 

@@ -11,7 +11,7 @@ namespace UnitTests.Common
 		[Test]
 		public void DefaultConfigInit_App_ShouldHaveDefaulValues()
 		{
-			var config = new Configuration();
+			var config = new Settings();
 
 			config.App.Should().NotBeNull();
 			config.App.OutputDirectory.Should().Be(Path.Join(Environment.CurrentDirectory, "output"));
@@ -30,7 +30,7 @@ namespace UnitTests.Common
 		[Test]
 		public void DefaultConfigInit_Format_ShouldHaveDefaulValues()
 		{
-			var config = new Configuration();
+			var config = new Settings();
 
 			config.Format.Should().NotBeNull();
 			config.Format.Fit.Should().BeFalse();
@@ -42,7 +42,7 @@ namespace UnitTests.Common
 		[Test]
 		public void DefaultConfigInit_Peloton_ShouldHaveDefaulValues()
 		{
-			var config = new Configuration();
+			var config = new Settings();
 
 			config.Peloton.Should().NotBeNull();
 			config.Peloton.Email.Should().BeNull();
@@ -54,18 +54,18 @@ namespace UnitTests.Common
 		[Test]
 		public void DefaultConfigInit_Garmin_ShouldHaveDefaulValues()
 		{
-			var config = new Configuration();
+			var config = new Settings();
 
 			config.Garmin.Should().NotBeNull();
 			config.Garmin.Email.Should().BeNull();
 			config.Garmin.Password.Should().BeNull();
-			config.Garmin.FormatToUpload.Should().BeNull();
+			config.Garmin.FormatToUpload.Should().Be(FileFormat.Fit);
 		}
 
 		[Test]
 		public void DefaultConfigInit_Observability_Prometheus_ShouldHaveDefaulValues()
 		{
-			var config = new Configuration();
+			var config = new AppConfiguration();
 
 			config.Observability.Should().NotBeNull();
 			config.Observability.Prometheus.Should().NotBeNull();
@@ -76,7 +76,7 @@ namespace UnitTests.Common
 		[Test]
 		public void DefaultConfigInit_Observability_Jaeger_ShouldHaveDefaulValues()
 		{
-			var config = new Configuration();
+			var config = new AppConfiguration();
 
 			config.Observability.Should().NotBeNull();
 			config.Observability.Jaeger.Should().NotBeNull();
@@ -87,7 +87,7 @@ namespace UnitTests.Common
 		[Test]
 		public void DefaultConfigInit_Developer_ShouldHaveDefaulValues()
 		{
-			var config = new Configuration();
+			var config = new AppConfiguration();
 
 			config.Developer.Should().NotBeNull();
 			config.Developer.UserAgent.Should().BeNull();

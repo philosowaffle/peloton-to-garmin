@@ -1,10 +1,10 @@
-﻿using Common;
+﻿using Common.Observe;
 using Serilog;
 using System;
 
 namespace Garmin
 {
-	public class GarminUploadException : Exception
+    public class GarminUploadException : Exception
 	{
 		private static readonly ILogger _logger = LogContext.ForClass<GarminUploadException>();
 

@@ -1,5 +1,7 @@
 ﻿using Common;
 using Common.Database;
+using Common.Observe;
+using Common.Service;
 using Common.Stateful;
 using Conversion;
 using Garmin;
@@ -12,42 +14,44 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using static Common.Metrics;
-using Metrics = Prometheus.Metrics;
+using static Common.Observe.Metrics;
+using Metrics = Common.Observe.Metrics;
+using PromMetrics = Prometheus.Metrics;
 
 namespace WebApp.Services
 {
-	public class BackgroundSyncJob : BackgroundService
+    public class BackgroundSyncJob : BackgroundService
 	{
-		private static readonly Histogram SyncHistogram = Metrics.CreateHistogram("p2g_sync_duration_seconds", "The histogram of sync jobs that have run.");
-		private static readonly Gauge BuildInfo = Metrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
+		private static readonly Histogram SyncHistogram = PromMetrics.CreateHistogram("p2g_sync_duration_seconds", "The histogram of sync jobs that have run.");
+		private static readonly Gauge BuildInfo = PromMetrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
 		{
-			LabelNames = new[] { Common.Metrics.Label.Version, Common.Metrics.Label.Os, Common.Metrics.Label.OsVersion, Common.Metrics.Label.DotNetRuntime }
+			LabelNames = new[] { Metrics.Label.Version, Metrics.Label.Os, Metrics.Label.OsVersion, Metrics.Label.DotNetRuntime }
 		});
-		private static readonly Gauge Health = Metrics.CreateGauge("p2g_sync_service_health", "Health status for P2G Sync Service.");
-		private static readonly Gauge NextSyncTime = Metrics.CreateGauge("p2g_next_sync_time", "The next time the sync will run in seconds since epoch.");
+		private static readonly Gauge Health = PromMetrics.CreateGauge("p2g_sync_service_health", "Health status for P2G Sync Service.");
+		private static readonly Gauge NextSyncTime = PromMetrics.CreateGauge("p2g_next_sync_time", "The next time the sync will run in seconds since epoch.");
 
 		private static readonly ILogger _logger = LogContext.ForClass<BackgroundSyncJob>();
 
-		private readonly IAppConfiguration _config;
+		private readonly ISettingsService _settingsService;
 		private readonly IPelotonService _pelotonService;
 		private readonly IGarminUploader _garminUploader;
 		private readonly IEnumerable<IConverter> _converters;
 		private readonly IFileHandling _fileHandler;
-		private readonly IDbClient _db;
+		private readonly ISyncStatusDb _syncStatusDb;
+		
 		private bool? _previousPollingState;
+		private Settings _config;
 
-		public BackgroundSyncJob(IAppConfiguration config, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, IFileHandling fileHandling, IDbClient db)
+
+		public BackgroundSyncJob(ISettingsService settingsService, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, IFileHandling fileHandling, ISyncStatusDb syncStatusDb)
 		{
-			_config = config;
+			_settingsService = settingsService;
 			_pelotonService = pelotonService;
 			_garminUploader = garminUploader;
 			_converters = converters;
 			_fileHandler = fileHandling;
-			_db = db;
+			_syncStatusDb = syncStatusDb;
 
-			SyncServiceState.Enabled = _config.App.EnablePolling;
-			SyncServiceState.PollingIntervalSeconds = _config.App.PollingIntervalSeconds;
 			_previousPollingState = null;
 		}
 
@@ -58,48 +62,66 @@ namespace WebApp.Services
 
 		private async Task RunAsync(CancellationToken stoppingToken)
 		{
+			_config = await _settingsService.GetSettingsAsync();
+			SyncServiceState.Enabled = _config.App.EnablePolling;
+			SyncServiceState.PollingIntervalSeconds = _config.App.PollingIntervalSeconds;
+
 			while (!stoppingToken.IsCancellationRequested)
 			{
-				if (NotPolling())
+				int stepIntervalSeconds = 5;
+
+				if (await NotPollingAsync())
+                {
+					Thread.Sleep(stepIntervalSeconds * 1000);
 					continue;
+				}					
 
 				await SyncAsync();
 
 				_logger.Information("Sleeping for {@Seconds} seconds...", SyncServiceState.PollingIntervalSeconds);
-				for (int i = 1; i < SyncServiceState.PollingIntervalSeconds; i++)
+				
+				for (int i = 1; i < SyncServiceState.PollingIntervalSeconds; i+=stepIntervalSeconds)
 				{
-					Thread.Sleep(1000);
-					if (StateChanged()) break;
+					Thread.Sleep(stepIntervalSeconds * 1000);
+					if (await StateChangedAsync()) break;
 				}				
 			}
 		}
 
-		private bool StateChanged()
+		private async Task<bool> StateChangedAsync()
 		{
+            using var tracing = Tracing.Trace($"{nameof(BackgroundService)}.{nameof(StateChangedAsync)}");
+
+            _config = await _settingsService.GetSettingsAsync();
+			SyncServiceState.Enabled = _config.App.EnablePolling;
+			SyncServiceState.PollingIntervalSeconds = _config.App.PollingIntervalSeconds;
+
 			return _previousPollingState != SyncServiceState.Enabled;
 		}
 
-		private bool NotPolling()
-		{			
-			var shouldPoll = SyncServiceState.Enabled;			
+		private async Task<bool> NotPollingAsync()
+		{
+            using var tracing = Tracing.Trace($"{nameof(BackgroundService)}.{nameof(NotPollingAsync)}");
 
-			if (StateChanged())
+            if (await StateChangedAsync())
 			{
-				var syncTime = _db.GetSyncStatus();
-				syncTime.NextSyncTime = shouldPoll ? DateTime.Now : null;
-				syncTime.SyncStatus = shouldPoll ? Status.Running : Status.NotRunning;
-				_db.UpsertSyncStatus(syncTime);
+				var syncTime = await _syncStatusDb.GetSyncStatusAsync();
+				syncTime.NextSyncTime = SyncServiceState.Enabled ? DateTime.Now : null;
+				syncTime.SyncStatus = SyncServiceState.Enabled ? Status.Running : Status.NotRunning;
+				await _syncStatusDb.UpsertSyncStatusAsync(syncTime);
 
-				if (shouldPoll) _logger.Information("Sync Service started.");
+				if (SyncServiceState.Enabled) _logger.Information("Sync Service started.");
 				else _logger.Information("Sync Service stopped.");
 			}
 
-			_previousPollingState = shouldPoll;
-			return !shouldPoll;
+			_previousPollingState = SyncServiceState.Enabled;
+			return !SyncServiceState.Enabled;
 		}
 
 		private async Task SyncAsync()
 		{
+			using var tracing = Tracing.Trace($"{nameof(BackgroundService)}.{nameof(SyncAsync)}");
+
 			try
 			{
 				using var timer = SyncHistogram.NewTimer();
@@ -135,7 +157,7 @@ namespace WebApp.Services
 				var now = DateTime.UtcNow;
 				var nextRunTime = now.AddSeconds(_config.App.PollingIntervalSeconds);
 
-				var syncStatus = _db.GetSyncStatus();
+				var syncStatus = await _syncStatusDb.GetSyncStatusAsync();
 				syncStatus.LastSyncTime = DateTime.Now;
 				syncStatus.LastSuccessfulSyncTime = Health.Value == HealthStatus.Healthy ? DateTime.Now : syncStatus.LastSuccessfulSyncTime;
 				syncStatus.NextSyncTime = nextRunTime;
@@ -143,7 +165,7 @@ namespace WebApp.Services
 										Health.Value == HealthStatus.Dead ? Status.Dead :
 										Status.Running;
 
-				_db.UpsertSyncStatus(syncStatus);
+				await _syncStatusDb.UpsertSyncStatusAsync(syncStatus);
 
 				NextSyncTime.Set(new DateTimeOffset(nextRunTime).ToUnixTimeSeconds());
 			}

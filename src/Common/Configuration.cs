@@ -1,39 +1,61 @@
-﻿using System;
+﻿using Common.Dto;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 
 namespace Common
 {
-	public interface IAppConfiguration 
+	public static class ConfigurationSetup
 	{
-		App App { get; set; }
-		Format Format { get; set; }
-		Peloton Peloton { get; set; }
-		Garmin Garmin { get; set; }
+		public static void LoadConfigValues(IConfiguration provider, Settings config)
+		{
+			provider.GetSection(nameof(App)).Bind(config.App);
+			provider.GetSection(nameof(Format)).Bind(config.Format);
+			provider.GetSection(nameof(Peloton)).Bind(config.Peloton);
+			provider.GetSection(nameof(Garmin)).Bind(config.Garmin);
+		}
 
-		Observability Observability { get; set; }
-		Developer Developer { get; set; }
+		public static void LoadConfigValues(IConfiguration provider, AppConfiguration config)
+		{
+			provider.GetSection(nameof(Observability)).Bind(config.Observability);
+			provider.GetSection(nameof(Developer)).Bind(config.Developer);
+		}
 	}
 
-	public class Configuration : IAppConfiguration
-	{
-		public Configuration()
+	/// <summary>
+	/// Configuration that must be provided prior to runtime. Typically via config file, command line args, or env variables.
+	/// </summary>
+	public class AppConfiguration
+    {
+		public AppConfiguration()
+        {
+			Observability = new Observability();
+			Developer = new Developer();
+        }
+
+		public Observability Observability { get; set; }
+		public Developer Developer { get; set; }
+    }
+
+	/// <summary>
+	/// Settings that can be looked up after app start, changed on demand, and saved to the SettingsDb.
+	/// </summary>
+	public class Settings
+    {
+		public Settings()
 		{
 			App = new App();
 			Format = new Format();
 			Peloton = new Peloton();
 			Garmin = new Garmin();
-			Observability = new Observability();
-			Developer = new Developer();
 		}
 
 		public App App { get; set; }
 		public Format Format { get; set; }
 		public Peloton Peloton { get; set; }
 		public Garmin Garmin { get; set; }
-
-		public Observability Observability { get; set; }
-		public Developer Developer { get; set; }
 	}
 
 	public class App
@@ -43,22 +65,30 @@ namespace Common
 			OutputDirectory = Path.Join(Environment.CurrentDirectory, "output");
 			WorkingDirectory = Path.Join(Environment.CurrentDirectory, "working");
 			SyncHistoryDbPath = Path.Join(OutputDirectory, "syncHistory.json");
-			ConfigDbPath = Path.Join(OutputDirectory, "config_db.json");
 
 			EnablePolling = true;
 			PollingIntervalSeconds = 3600;
 		}
 
+		[DisplayName("Output Directory")]
+		[Description("Where downloaded and converted files should be saved to.")] 
 		public string OutputDirectory { get; set; }
+		[DisplayName("Working Directory")]
+		[Description("The directory where P2G can work. When running, P2G will create and delete files and needs a dedicated directory to do that.")]
 		public string WorkingDirectory { get; set; }
 		
+		[Obsolete("Use DataDirectory as folder path.")]
 		public string SyncHistoryDbPath { get; set; }
-		public string ConfigDbPath { get; set; }
+		[DisplayName("Enable Polling")]
+		[Description("Enabled if you wish P2G to run continuously and poll Peloton for new workouts.")]
 		public bool EnablePolling { get; set; }
+		[DisplayName("Polling Interval in Seconds")]
+		[Description("The polling interval in seconds determines how frequently P2G should check for new workouts. Be warned, that setting this to a frequency of hourly or less may get you flagged by Peloton as a bad actor and they may reset your password.")]
 		public int PollingIntervalSeconds { get; set; }
 		public bool? PythonAndGUploadInstalled { get; set; }
 		public bool CloseWindowOnFinish { get; set; }
 
+		public static string DataDirectory = Path.Join(Environment.CurrentDirectory, "data");
 		public string FitDirectory => Path.Join(OutputDirectory, "fit");
 		public string JsonDirectory => Path.Join(OutputDirectory, "json");
 		public string TcxDirectory => Path.Join(OutputDirectory, "tcx");
@@ -76,12 +106,26 @@ namespace Common
 			Running = new Running();
 		}
 
+		[DisplayName("FIT")]
+		[Description("Enabled indicates you wish downloaded workouts to be converted to FIT")]
 		public bool Fit { get; set; }
+		[DisplayName("JSON")]
+		[Description("Enabled indicates you wish downloaded workouts to be converted to JSON")]
 		public bool Json { get; set; }
+		[DisplayName("TCX")]
+		[Description("Enabled indicates you wish downloaded workouts to be converted to TCX.")]
 		public bool Tcx { get; set; }
+		[DisplayName("Save a local copy")]
+		[Description("Save any converted workouts to your specified Output Directory")]
 		public bool SaveLocalCopy { get; set; }
+		[DisplayName("Include Time in HR Zones")]
+		[Description("Only use this if you are unable to configure your Max HR on Garmin Connect. When set to True, P2G will attempt to capture the time spent in each HR Zone per the data returned by Peloton.")]
 		public bool IncludeTimeInHRZones { get; set; }
+		[DisplayName("Include Time in Power Zones")]
+		[Description("Only use this if you are unable to configure your FTP and Power Zones on Garmin Connect. When set to True, P2G will attempt to capture the time spent in each Power Zone per the data returned by Peloton.")]
 		public bool IncludeTimeInPowerZones { get; set; }
+		[DisplayName("Device Info Path")]
+		[Description("The path to your deviceInfo.xml file.")]
 		public string DeviceInfoPath { get; set; }
 		public Cycling Cycling { get; set; }
 		public Running Running { get; set; }
@@ -89,11 +133,13 @@ namespace Common
 
 	public class Cycling
 	{
+		[DisplayName("Cycling Preferred Lap Type")]
 		public PreferredLapType PreferredLapType { get; set; }
 	}
 
 	public class Running
 	{
+		[DisplayName("Running Preferred Lap Type")]
 		public PreferredLapType PreferredLapType { get; set; }
 	}
 
@@ -109,14 +155,17 @@ namespace Common
 	{
 		public Peloton()
 		{
-			ExcludeWorkoutTypes = new List<string>();
+			ExcludeWorkoutTypes = new List<FitnessDiscipline>();
 			NumWorkoutsToDownload = 5;
 		}
 
 		public string Email { get; set; }
 		public string Password { get; set; }
+		[DisplayName("Number of Workouts to Download")]
 		public int NumWorkoutsToDownload { get; set; }
-		public ICollection<string> ExcludeWorkoutTypes { get; set; }
+		[DisplayName("Exclude Workout Types")]
+		[Description("List of workout types that you do not want P2G to download/convert/upload. Hold the Ctrl key and click to multi-select.")]
+		public ICollection<FitnessDiscipline> ExcludeWorkoutTypes { get; set; }
 	}
 
 	public class Garmin
@@ -124,7 +173,9 @@ namespace Common
 		public string Email { get; set; }
 		public string Password { get; set; }
 		public bool Upload { get; set; }
-		public string FormatToUpload { get; set; }
+		[DisplayName("Format to Upload")]
+		public FileFormat FormatToUpload { get; set; }
+		[DisplayName("Upload Strategy")]
 		public UploadStrategy UploadStrategy { get; set; }
 	}
 
@@ -164,4 +215,10 @@ namespace Common
 		WindowsExeBundledPython = 1,
 		NativeImplV1 = 2
 	}
+
+	public enum FileFormat
+    {
+		Fit = 0,
+		Tcx = 1
+    }
 }

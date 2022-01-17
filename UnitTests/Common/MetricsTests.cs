@@ -2,10 +2,11 @@
 using NUnit.Framework;
 using FluentAssertions;
 using System;
+using Common.Observe;
 
 namespace UnitTests.Common
 {
-	public class MetricsTests
+    public class MetricsTests
 	{
 		[Test]
 		public void ValidateConfig_InvalidPort_Throws([Values(-1, 0)] int port)

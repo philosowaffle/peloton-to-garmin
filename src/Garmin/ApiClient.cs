@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Observe;
 using Flurl.Http;
 using Garmin.Dto;
 using Serilog;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Garmin
 {
-	public class ApiClient
+    public class ApiClient
 	{
 		private const string BASE_URL = "https://connect.garmin.com";
 		private const string SSO_URL = "https://sso.garmin.com";
@@ -25,16 +26,16 @@ namespace Garmin
 
 		private static readonly ILogger _logger = LogContext.ForClass<ApiClient>();
 
-		private readonly IAppConfiguration _config;
+		private readonly Settings _config;
 
 		private CookieJar _jar;
 
-		public ApiClient(IAppConfiguration config)
+		public ApiClient(Settings config, AppConfiguration appConfig)
 		{
 			_config = config;
 
-			if (!string.IsNullOrEmpty(_config.Developer.UserAgent))
-				USERAGENT = _config.Developer.UserAgent;
+			if (!string.IsNullOrEmpty(appConfig.Developer.UserAgent))
+				USERAGENT = appConfig.Developer.UserAgent;
 		}
 
 		/// <summary>

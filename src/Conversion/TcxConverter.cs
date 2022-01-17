@@ -1,6 +1,7 @@
 ﻿using Common;
 using Common.Database;
 using Common.Dto;
+using Common.Observe;
 using System;
 using System.Linq;
 using System.Xml.Linq;
@@ -9,22 +10,29 @@ namespace Conversion
 {
 	public class TcxConverter : Converter<XElement>
 	{
-		public TcxConverter(IAppConfiguration config, IDbClient dbClient, IFileHandling fileHandler) : base(config, dbClient, fileHandler) { }
+		public TcxConverter(Settings settings, IDbClient dbClient, IFileHandling fileHandler) : base(settings, dbClient, fileHandler) { }
 
 		public override void Convert()
 		{
 			if (!_config.Format.Tcx) return;
 
-			base.Convert("tcx");
+			base.Convert(FileFormat.Tcx);
 		}
 
 		protected override void Save(XElement data, string path)
 		{
+			using var tracing = Tracing.Trace($"{nameof(TcxConverter)}.{nameof(Save)}")
+								.WithTag(TagKey.Format, FileFormat.Tcx.ToString());
+
 			data.Save(path);
 		}
 
 		protected override XElement Convert(Workout workout, WorkoutSamples samples)
 		{
+			using var tracing = Tracing.Trace($"{nameof(TcxConverter)}.{nameof(Convert)}")
+								.WithTag(TagKey.Format, FileFormat.Tcx.ToString())
+								.WithWorkoutId(workout.Id);
+
 			XNamespace ns1 = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2";
 			XNamespace activityExtensions = "http://www.garmin.com/xmlschemas/ActivityExtension/v2";
 			XNamespace trackPointExtensions = "http://www.garmin.com/xmlschemas/TrackPointExtension/v2";
@@ -156,19 +164,19 @@ namespace Conversion
 		{
 			switch (workout.Fitness_Discipline)
 			{
-				case "cycling":
-				case "bike_bootcamp":
+				case FitnessDiscipline.Cycling:
+				case FitnessDiscipline.Bike_Bootcamp:
 					return "Biking";
-				case "running":
+				case FitnessDiscipline.Running:
 					return "treadmill_running";
-				case "walking":
+				case FitnessDiscipline.Walking:
 					return "Running";
-				case "cardio":
-				case "circuit":
-				case "stretching":
-				case "strength":
-				case "yoga":
-				case "meditation":
+				case FitnessDiscipline.Cardio:
+				case FitnessDiscipline.Circuit:
+				case FitnessDiscipline.Strength:
+				case FitnessDiscipline.Stretching:
+				case FitnessDiscipline.Yoga:
+				case FitnessDiscipline.Meditation:
 				default:
 					return "Other";
 			}
@@ -178,22 +186,22 @@ namespace Conversion
 		{
 			switch (workout.Fitness_Discipline)
 			{
-				case "cycling":
-				case "bike_bootcamp":
+				case FitnessDiscipline.Cycling:
+				case FitnessDiscipline.Bike_Bootcamp:
 					return "indoor_cycling";
-				case "running":
+				case FitnessDiscipline.Running:
 					return "treadmill_running";
-				case "walking":
+				case FitnessDiscipline.Walking:
 					return "walking";
-				case "cardio":
-				case "circuit":
-				case "stretching":
+				case FitnessDiscipline.Cardio:
+				case FitnessDiscipline.Circuit:
+				case FitnessDiscipline.Stretching:
 					return "indoor_cardio";
-				case "strength":
+				case FitnessDiscipline.Strength:
 					return "strength_training";
-				case "yoga":
+				case FitnessDiscipline.Yoga:
 					return "yoga";
-				case "meditation":
+				case FitnessDiscipline.Meditation:
 					return "breathwork";
 				default:
 					return "Other";
