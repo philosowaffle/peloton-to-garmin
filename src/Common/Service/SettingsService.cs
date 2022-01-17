@@ -24,13 +24,15 @@ namespace Common.Service
 
         public Task<Settings> GetSettingsAsync()
         {
-            using var tracing = Tracing.Trace(nameof(GetSettingsAsync));
+            using var tracing = Tracing.Trace($"{nameof(SettingsService)}.{nameof(GetSettingsAsync)}");
 
             return _db.GetSettingsAsync();
         }
 
         public async Task UpdateSettings(Settings updatedSettings)
         {
+            using var tracing = Tracing.Trace($"{nameof(SettingsService)}.{nameof(UpdateSettings)}");
+
             var originalSettings = await _db.GetSettingsAsync();
 
             if (updatedSettings.Garmin.Email is null)

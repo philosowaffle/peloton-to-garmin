@@ -32,6 +32,8 @@ namespace WebApp.Controllers
 		[ApiExplorerSettings(IgnoreApi = true)]
 		public async Task<ActionResult> Index()
 		{
+			using var tracing = Tracing.Trace($"{nameof(SyncController)}.{nameof(Index)}");
+
 			var syncTime = await _db.GetSyncStatusAsync();
 
 			var model = new SyncViewModel()
@@ -53,6 +55,8 @@ namespace WebApp.Controllers
 		[ApiExplorerSettings(IgnoreApi = true)]
 		public async Task<ActionResult> Post([FromForm]SyncPostRequest request)
 		{
+			using var tracing = Tracing.Trace($"{nameof(SyncController)}.{nameof(Post)}");
+
 			var model = new SyncViewModel();
 			var syncResult = await _syncService.SyncAsync(request.NumWorkouts);
 			model.Response = new SyncPostResponse() 
@@ -82,6 +86,8 @@ namespace WebApp.Controllers
 		[ProducesResponseType(typeof(SyncPostResponse), 200)]
 		public async Task<SyncPostResponse> SyncAsync([FromBody] SyncPostRequest request)
 		{
+			using var tracing = Tracing.Trace($"{nameof(SyncController)}.{nameof(SyncAsync)}");
+
 			if (request.NumWorkouts <= 0)
 				throw new Exception(); // TODO: throw correct http error
 

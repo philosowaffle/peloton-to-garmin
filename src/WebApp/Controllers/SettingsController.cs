@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Observe;
 using Common.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -23,6 +24,8 @@ namespace WebApp.Controllers
 		[ApiExplorerSettings(IgnoreApi = true)]
 		public async Task<ActionResult> Index()
 		{
+			using var tracing = Tracing.Trace($"{nameof(SettingsController)}.{nameof(Index)}");
+
 			return View(await GetDataAsync());
 		}
 
@@ -30,11 +33,15 @@ namespace WebApp.Controllers
 		[Route("/api/settngs")]
 		public async Task<SettingsGetResponse> Get()
 		{
+			using var tracing = Tracing.Trace($"{nameof(SettingsController)}.{nameof(Get)}");
+
 			return (await GetDataAsync()).GetResponse;
 		}
 
 		private async Task<SettingsViewModel> GetDataAsync()
 		{
+			using var tracing = Tracing.Trace($"{nameof(SettingsController)}.{nameof(GetDataAsync)}");
+
 			var settings = await _settingsService.GetSettingsAsync();
 
 			var response = new SettingsViewModel() 
@@ -60,6 +67,8 @@ namespace WebApp.Controllers
 		[ApiExplorerSettings(IgnoreApi = true)]
 		public async Task<ActionResult> SaveAsync([FromForm] SettingsViewModel request)
         {
+			using var tracing = Tracing.Trace($"{nameof(SettingsController)}.{nameof(SaveAsync)}");
+
 			var updatedSettings = request.GetResponse.Settings;
 
 			// TODO: Validation

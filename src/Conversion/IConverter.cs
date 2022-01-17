@@ -50,6 +50,9 @@ namespace Conversion
 
 		protected void Convert(FileFormat format)
 		{
+			using var tracingConvert = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}")
+										.WithTag(TagKey.Format, format.ToString());
+
 			if (!_fileHandler.DirExists(_config.App.DownloadDirectory))
 			{
 				Log.Information("No download directory found. Nothing to do. {@File}", _config.App.DownloadDirectory);
@@ -85,7 +88,7 @@ namespace Conversion
 					continue;
 				}
 
-				using var tracing = Tracing.Trace("Convert")
+				using var tracing = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.Workout")
 										.WithWorkoutId(workoutData.Workout.Id)
 										.WithTag(TagKey.Format, format.ToString());
 

@@ -30,7 +30,7 @@ namespace Common.Database
             using var metrics = DbMetrics.DbActionDuration
                                     .WithLabels("get", DbName)
                                     .NewTimer();
-            using var tracing = Tracing.Trace("get", TagValue.Db)
+            using var tracing = Tracing.Trace($"{nameof(SyncStatusDb)}.{nameof(GetSyncStatusAsync)}", TagValue.Db)
                                         .WithTable(DbName);
 
             try
@@ -49,7 +49,7 @@ namespace Common.Database
             using var metrics = DbMetrics.DbActionDuration
                                     .WithLabels("upsert", DbName)
                                     .NewTimer();
-            using var tracing = Tracing.Trace("upsert", TagValue.Db)
+            using var tracing = Tracing.Trace($"{nameof(SyncStatusDb)}.{nameof(UpsertSyncStatusAsync)}", TagValue.Db)
                                         .WithTable(DbName);
 
             try

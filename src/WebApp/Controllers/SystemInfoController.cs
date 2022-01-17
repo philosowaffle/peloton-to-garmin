@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Common.Observe;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -14,6 +15,8 @@ namespace WebApp.Controllers
 		[ApiExplorerSettings(IgnoreApi = true)]
 		public ActionResult Index()
 		{
+			using var tracing = Tracing.Trace($"{nameof(SystemInfoController)}.{nameof(Index)}");
+
 			return View(GetData());
 		}
 
@@ -21,11 +24,15 @@ namespace WebApp.Controllers
 		[Route("/api/systeminfo")]
 		public SystemInfoGetResponse Get()
 		{
+			using var tracing = Tracing.Trace($"{nameof(SystemInfoController)}.{nameof(Get)}");
+
 			return GetData();
 		}
 
 		private SystemInfoGetResponse GetData()
 		{
+			using var tracing = Tracing.Trace($"{nameof(SystemInfoController)}.{nameof(GetData)}");
+
 			return new SystemInfoGetResponse()
 			{
 				OperatingSystem = Environment.OSVersion.Platform.ToString(),

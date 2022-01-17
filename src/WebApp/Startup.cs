@@ -57,6 +57,7 @@ namespace WebApp
 
 			services.AddTransient<Settings>((serviceProvider) => 
 			{
+				using var tracing = Tracing.Trace($"{nameof(Startup)}.{nameof(ConfigureServices)}.DI");
 				var settingsService = serviceProvider.GetService<ISettingsService>();
 				return settingsService.GetSettingsAsync().GetAwaiter().GetResult();
 			});
@@ -157,7 +158,13 @@ namespace WebApp
 				if (_config.Observability.Prometheus.Enabled)
 					endpoints.MapMetrics();
 			});
-		}
+
+            app.Use(async (context, next) =>
+            {
+                using var tracing = Tracing.Trace($"{nameof(Startup)}.{nameof(Configure)}.Entrypoint");
+                await next.Invoke();
+            });
+        }
 
 		private void LoadConfigValues(AppConfiguration config)
 		{

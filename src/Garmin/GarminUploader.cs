@@ -45,6 +45,8 @@ namespace Garmin
 
 		public async Task UploadToGarminAsync()
 		{
+			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(UploadToGarminAsync)}");
+
 			if (!_config.Garmin.Upload) return;
 
 			if (!Directory.Exists(_config.App.UploadDirectory))
@@ -79,7 +81,7 @@ namespace Garmin
 
 		private async Task UploadAsync(string[] files)
 		{
-			using var tracer = Tracing.Trace("UploadToGarminViaNative")
+			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(UploadAsync)}.UploadToGarminViaNative")
 										.WithTag(TagKey.Category, "nativeImplV1");
 
 			try
@@ -108,6 +110,8 @@ namespace Garmin
 
 		private void UpdateSyncItem(string file)
 		{
+			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(UpdateSyncItem)}");
+
 			_logger.Information("Uploaded workout {@workoutName}", file);
 			var workoutId = WorkoutHelper.GetWorkoutIdFromFileName(file);
 			var syncItem = _dbClient.Get(workoutId);
@@ -120,7 +124,7 @@ namespace Garmin
 
 		private async Task RateLimit()
 		{
-			using var tracer = Tracing.Trace("UploadToGarminRateLimit");
+			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(RateLimit)}");
 
 			var waitDuration = _random.Next(1000, 5000);
 			_logger.Information($"Rate limiting, upload will continue after {waitDuration / 1000} seconds...");
@@ -129,7 +133,7 @@ namespace Garmin
 
 		private void UploadViaPython(string[] files)
 		{
-			using var tracer = Tracing.Trace("UploadToGarminViaPython")
+			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(UploadViaPython)}.UploadToGarminViaPython")
 										.WithTag(TagKey.Category, "gupload");
 			
 			ProcessStartInfo start = new ProcessStartInfo();

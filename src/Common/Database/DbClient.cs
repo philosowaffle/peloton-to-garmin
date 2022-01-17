@@ -64,7 +64,7 @@ namespace Common.Database
 			using var metrics = DbActionDuration
 									.WithLabels("select", "workoutId")
 									.NewTimer();
-			using var tracing = Tracing.Trace("select", TagValue.Db)
+			using var tracing = Tracing.Trace($"{nameof(DbClient)}.{nameof(Get)}", TagValue.Db)
 										.WithTable("SyncHistoryItem")
 										.WithWorkoutId(id);
 
@@ -84,7 +84,7 @@ namespace Common.Database
 			using var metrics = DbActionDuration
 									.WithLabels("upsert", "workoutId")
 									.NewTimer();
-			using var tracing = Tracing.Trace("upsert", TagValue.Db)?
+			using var tracing = Tracing.Trace($"{nameof(DbClient)}.{nameof(Upsert)}", TagValue.Db)
 											.WithTable("SyncHistoryItem")
 											.WithWorkoutId(item.Id);
 
@@ -103,7 +103,7 @@ namespace Common.Database
 			using var metrics = DbActionDuration
 									.WithLabels("select", "workoutIds")
 									.NewTimer();
-			using var tracing = Tracing.Trace("select", TagValue.Db)
+			using var tracing = Tracing.Trace($"{nameof(DbClient)}.{nameof(GetRecentlySyncedItems)}", TagValue.Db)
 										.WithTable("SyncHistoryItem");
 
 			try

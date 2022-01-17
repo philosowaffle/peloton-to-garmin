@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Database;
+using Common.Observe;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
@@ -27,6 +28,8 @@ namespace WebApp.Controllers
 		[ApiExplorerSettings(IgnoreApi = true)]
 		public async Task<IActionResult> Index()
 		{
+			using var tracing = Tracing.Trace($"{nameof(HomeController)}.{nameof(Index)}");
+
 			var syncTime = await _syncStatusDb.GetSyncStatusAsync();
 			var model = new HomeViewModel()
 			{
@@ -43,6 +46,8 @@ namespace WebApp.Controllers
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 		public IActionResult Error()
 		{
+			using var tracing = Tracing.Trace($"{nameof(HomeController)}.{nameof(Error)}");
+
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 		}
 	}

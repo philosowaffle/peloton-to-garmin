@@ -40,7 +40,7 @@ namespace Sync
         public async Task<SyncResult> SyncAsync(int numWorkouts)
         {
             using var timer = SyncHistogram.NewTimer();
-            using var activity = Tracing.Trace(nameof(SyncAsync));
+            using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}");
 
             var response = new SyncResult();
             var syncTime = await _db.GetSyncStatusAsync();

@@ -1,6 +1,7 @@
 ﻿using Common;
 using Common.Database;
 using Common.Dto;
+using Common.Observe;
 using System;
 using System.Linq;
 using System.Xml.Linq;
@@ -20,11 +21,18 @@ namespace Conversion
 
 		protected override void Save(XElement data, string path)
 		{
+			using var tracing = Tracing.Trace($"{nameof(TcxConverter)}.{nameof(Save)}")
+								.WithTag(TagKey.Format, FileFormat.Tcx.ToString());
+
 			data.Save(path);
 		}
 
 		protected override XElement Convert(Workout workout, WorkoutSamples samples)
 		{
+			using var tracing = Tracing.Trace($"{nameof(TcxConverter)}.{nameof(Convert)}")
+								.WithTag(TagKey.Format, FileFormat.Tcx.ToString())
+								.WithWorkoutId(workout.Id);
+
 			XNamespace ns1 = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2";
 			XNamespace activityExtensions = "http://www.garmin.com/xmlschemas/ActivityExtension/v2";
 			XNamespace trackPointExtensions = "http://www.garmin.com/xmlschemas/TrackPointExtension/v2";

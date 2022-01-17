@@ -53,7 +53,7 @@ namespace Peloton
 		{
 			if (numWorkoutsToDownload <= 0) return;
 
-			using var tracing = Tracing.Trace(nameof(DownloadLatestWorkoutDataAsync));
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(DownloadLatestWorkoutDataAsync)}");
 
 			await _pelotonApi.InitAuthAsync();
 
@@ -173,6 +173,8 @@ namespace Peloton
 
 		private void SaveRawData(dynamic data, string workoutTitle)
 		{
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(SaveRawData)}");
+
 			var outputDir = _config.App.JsonDirectory;
 			_fileHandler.MkDirIfNotExists(outputDir);
 

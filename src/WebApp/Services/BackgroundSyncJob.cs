@@ -68,15 +68,21 @@ namespace WebApp.Services
 
 			while (!stoppingToken.IsCancellationRequested)
 			{
+				int stepIntervalSeconds = 5;
+
 				if (await NotPollingAsync())
+                {
+					Thread.Sleep(stepIntervalSeconds * 1000);
 					continue;
+				}					
 
 				await SyncAsync();
 
 				_logger.Information("Sleeping for {@Seconds} seconds...", SyncServiceState.PollingIntervalSeconds);
-				for (int i = 1; i < SyncServiceState.PollingIntervalSeconds; i++)
+				
+				for (int i = 1; i < SyncServiceState.PollingIntervalSeconds; i+=stepIntervalSeconds)
 				{
-					Thread.Sleep(1000);
+					Thread.Sleep(stepIntervalSeconds * 1000);
 					if (await StateChangedAsync()) break;
 				}				
 			}
@@ -84,7 +90,9 @@ namespace WebApp.Services
 
 		private async Task<bool> StateChangedAsync()
 		{
-			_config = await _settingsService.GetSettingsAsync();
+            using var tracing = Tracing.Trace($"{nameof(BackgroundService)}.{nameof(StateChangedAsync)}");
+
+            _config = await _settingsService.GetSettingsAsync();
 			SyncServiceState.Enabled = _config.App.EnablePolling;
 			SyncServiceState.PollingIntervalSeconds = _config.App.PollingIntervalSeconds;
 
@@ -93,7 +101,9 @@ namespace WebApp.Services
 
 		private async Task<bool> NotPollingAsync()
 		{
-			if (await StateChangedAsync())
+            using var tracing = Tracing.Trace($"{nameof(BackgroundService)}.{nameof(NotPollingAsync)}");
+
+            if (await StateChangedAsync())
 			{
 				var syncTime = await _syncStatusDb.GetSyncStatusAsync();
 				syncTime.NextSyncTime = SyncServiceState.Enabled ? DateTime.Now : null;
@@ -110,6 +120,8 @@ namespace WebApp.Services
 
 		private async Task SyncAsync()
 		{
+			using var tracing = Tracing.Trace($"{nameof(BackgroundService)}.{nameof(SyncAsync)}");
+
 			try
 			{
 				using var timer = SyncHistogram.NewTimer();
