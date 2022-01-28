@@ -677,9 +677,11 @@ namespace Conversion
 
 			if (workoutSamples is null)
 				return stepsAndLaps;
-
 			
 			var speedMetrics = GetSpeedSummary(workoutSamples);
+			if (speedMetrics is null)
+				return stepsAndLaps;
+
 			var speedUnit = GetDistanceUnit(speedMetrics?.Display_Unit);
 			var lapMeters = 0;
 			switch (speedUnit)

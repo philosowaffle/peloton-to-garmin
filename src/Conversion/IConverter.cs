@@ -517,7 +517,7 @@ namespace Conversion
 
 		protected DistanceUnit GetDistanceUnit(string unit)
 		{
-			switch (unit.ToLower())
+			switch (unit?.ToLower())
 			{
 				case "km":
 					return DistanceUnit.Kilometers;
