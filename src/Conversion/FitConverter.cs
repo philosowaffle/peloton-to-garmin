@@ -85,15 +85,7 @@ namespace Conversion
 			eventMesg.SetEventGroup(0);
 			messages.Add(eventMesg);
 
-			var deviceInfoMesg = new DeviceInfoMesg();
-			deviceInfoMesg.SetTimestamp(startTime);
-			deviceInfoMesg.SetSerialNumber(deviceInfo.UnitId);
-			deviceInfoMesg.SetManufacturer(deviceInfo.ManufacturerId);
-			deviceInfoMesg.SetProduct(deviceInfo.ProductID);
-			deviceInfoMesg.SetSoftwareVersion(deviceInfo.Version.VersionMajor);
-			deviceInfoMesg.SetDeviceIndex(0);
-			deviceInfoMesg.SetSourceType(SourceType.Local);
-			deviceInfoMesg.SetProductName(deviceInfo.Name);
+			var deviceInfoMesg = GetDeviceInfoMesg(deviceInfo, startTime);
 			messages.Add(deviceInfoMesg);
 
 			var userProfileMesg = new UserProfileMesg();
@@ -618,6 +610,25 @@ namespace Conversion
 			}
 
 			return stepsAndLaps;
+		}
+
+		protected DeviceInfoMesg GetDeviceInfoMesg(GarminDeviceInfo deviceInfo, Dynastream.Fit.DateTime startTime)
+		{
+			var deviceInfoMesg = new DeviceInfoMesg();
+			deviceInfoMesg.SetTimestamp(startTime);
+			deviceInfoMesg.SetSerialNumber(deviceInfo.UnitId);
+			deviceInfoMesg.SetManufacturer(deviceInfo.ManufacturerId);
+			deviceInfoMesg.SetProduct(deviceInfo.ProductID);
+			deviceInfoMesg.SetDeviceIndex(0);
+			deviceInfoMesg.SetSourceType(SourceType.Local);
+			deviceInfoMesg.SetProductName(deviceInfo.Name);
+
+			if(deviceInfo.Version.VersionMinor <=0)
+				deviceInfoMesg.SetSoftwareVersion(deviceInfo.Version.VersionMajor);
+			else
+				deviceInfoMesg.SetSoftwareVersion(deviceInfo.Version.VersionMajor + 1/deviceInfo.Version.VersionMinor);
+
+			return deviceInfoMesg;
 		}
 	}
 }
