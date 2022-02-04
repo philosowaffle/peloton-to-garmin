@@ -20,7 +20,7 @@ using PromMetrics = Prometheus.Metrics;
 
 namespace WebApp.Services
 {
-    public class BackgroundSyncJob : BackgroundService
+	public class BackgroundSyncJob : BackgroundService
 	{
 		private static readonly Histogram SyncHistogram = PromMetrics.CreateHistogram("p2g_sync_duration_seconds", "The histogram of sync jobs that have run.");
 		private static readonly Gauge BuildInfo = PromMetrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
@@ -71,7 +71,7 @@ namespace WebApp.Services
 				int stepIntervalSeconds = 5;
 
 				if (await NotPollingAsync())
-                {
+				{
 					Thread.Sleep(stepIntervalSeconds * 1000);
 					continue;
 				}					
@@ -90,9 +90,9 @@ namespace WebApp.Services
 
 		private async Task<bool> StateChangedAsync()
 		{
-            using var tracing = Tracing.Trace($"{nameof(BackgroundService)}.{nameof(StateChangedAsync)}");
+			using var tracing = Tracing.Trace($"{nameof(BackgroundService)}.{nameof(StateChangedAsync)}");
 
-            _config = await _settingsService.GetSettingsAsync();
+			_config = await _settingsService.GetSettingsAsync();
 			SyncServiceState.Enabled = _config.App.EnablePolling;
 			SyncServiceState.PollingIntervalSeconds = _config.App.PollingIntervalSeconds;
 
@@ -101,9 +101,9 @@ namespace WebApp.Services
 
 		private async Task<bool> NotPollingAsync()
 		{
-            using var tracing = Tracing.Trace($"{nameof(BackgroundService)}.{nameof(NotPollingAsync)}");
+			using var tracing = Tracing.Trace($"{nameof(BackgroundService)}.{nameof(NotPollingAsync)}");
 
-            if (await StateChangedAsync())
+			if (await StateChangedAsync())
 			{
 				var syncTime = await _syncStatusDb.GetSyncStatusAsync();
 				syncTime.NextSyncTime = SyncServiceState.Enabled ? DateTime.Now : null;
@@ -125,9 +125,9 @@ namespace WebApp.Services
 			try
 			{
 				using var timer = SyncHistogram.NewTimer();
-				using var activity = Tracing.Trace(nameof(SyncAsync));				
+				using var activity = Tracing.Trace(nameof(SyncAsync));
 
-				await _pelotonService.DownloadLatestWorkoutDataAsync();								
+				await _pelotonService.DownloadLatestWorkoutDataAsync();
 
 				foreach (var converter in _converters)
 					converter.Convert();
