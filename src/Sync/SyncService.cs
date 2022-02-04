@@ -46,6 +46,7 @@ namespace Sync
 
 			var response = new SyncResult();
 			var syncTime = await _db.GetSyncStatusAsync();
+			syncTime.LastSyncTime = DateTime.Now;
 
 			try
 			{
@@ -56,6 +57,7 @@ namespace Sync
 			catch (Exception e)
 			{
 				_logger.Error(e, "Failed to download workouts from Peleoton.");
+				await _db.UpsertSyncStatusAsync(syncTime);
 				response.SyncSuccess = false;
 				response.PelotonDownloadSuccess = false;
 				response.Errors.Add(new ErrorResponse() { Message = "Failed to download workouts from Peloton. Check logs for more details." });
@@ -74,6 +76,8 @@ namespace Sync
 			catch (Exception e)
 			{
 				_logger.Error(e, "Failed to convert workouts to FIT format.");
+				await _db.UpsertSyncStatusAsync(syncTime);
+
 				response.SyncSuccess = false;
 				response.ConversionSuccess = false;
 				response.Errors.Add(new ErrorResponse() { Message = "Failed to convert workouts to FIT format. Check logs for more details." });
@@ -92,13 +96,14 @@ namespace Sync
 				_logger.Error(e, "GUpload returned an error code. Failed to upload workouts.");
 				_logger.Warning("GUpload failed to upload files. You can find the converted files at {@Path} \n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", _config.App.OutputDirectory);
 
+				await _db.UpsertSyncStatusAsync(syncTime);
+
 				response.SyncSuccess = false;
 				response.UploadToGarminSuccess = false;
 				response.Errors.Add(new ErrorResponse() { Message = "Failed to upload to Garmin Connect. Check logs for more details." });
 				return response;
 			}
 
-			syncTime.LastSyncTime = DateTime.Now;
 			syncTime.LastSuccessfulSyncTime = DateTime.Now;
 			await _db.UpsertSyncStatusAsync(syncTime);
 

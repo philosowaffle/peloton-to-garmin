@@ -3,15 +3,11 @@ using Common.Database;
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
-using Conversion;
-using Garmin;
 using Microsoft.Extensions.Hosting;
-using Peloton;
 using Prometheus;
 using Serilog;
+using Sync;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using static Common.Observe.Metrics;
@@ -33,26 +29,22 @@ namespace WebApp.Services
 		private static readonly ILogger _logger = LogContext.ForClass<BackgroundSyncJob>();
 
 		private readonly ISettingsService _settingsService;
-		private readonly IPelotonService _pelotonService;
-		private readonly IGarminUploader _garminUploader;
-		private readonly IEnumerable<IConverter> _converters;
 		private readonly IFileHandling _fileHandler;
 		private readonly ISyncStatusDb _syncStatusDb;
+		private readonly ISyncService _syncService;
 		
 		private bool? _previousPollingState;
 		private Settings _config;
 
 
-		public BackgroundSyncJob(ISettingsService settingsService, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, IFileHandling fileHandling, ISyncStatusDb syncStatusDb)
+		public BackgroundSyncJob(ISettingsService settingsService, IFileHandling fileHandling, ISyncStatusDb syncStatusDb, ISyncService syncService)
 		{
 			_settingsService = settingsService;
-			_pelotonService = pelotonService;
-			_garminUploader = garminUploader;
-			_converters = converters;
 			_fileHandler = fileHandling;
 			_syncStatusDb = syncStatusDb;
 
 			_previousPollingState = null;
+			_syncService = syncService;
 		}
 
 		protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -124,42 +116,20 @@ namespace WebApp.Services
 
 			try
 			{
-				using var timer = SyncHistogram.NewTimer();
-				using var activity = Tracing.Trace(nameof(SyncAsync));
-
-				await _pelotonService.DownloadLatestWorkoutDataAsync();
-
-				foreach (var converter in _converters)
-					converter.Convert();
-
-				try
-				{
-					await _garminUploader.UploadToGarminAsync();
-					Health.Set(HealthStatus.Healthy);
-
-					_fileHandler.Cleanup(_config.App.DownloadDirectory);
-					_fileHandler.Cleanup(_config.App.UploadDirectory);
-					foreach (var file in Directory.GetFiles(_config.App.WorkingDirectory))
-						File.Delete(file);
-				}
-				catch (GarminUploadException e)
-				{
-					_logger.Error(e, "Garmin upload returned an error code. Failed to upload workouts.");
-					_logger.Warning("GUpload failed to upload files. You can find the converted files at {@Path} \n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", _config.App.OutputDirectory);
+				var result = await _syncService.SyncAsync(_config.Peloton.NumWorkoutsToDownload);
+				if(!result.SyncSuccess)
 					Health.Set(HealthStatus.UnHealthy);
-				}
 
 			} catch (Exception e)
 			{
 				_logger.Error(e, "Uncaught Exception.");
+
 			} finally
 			{
 				var now = DateTime.UtcNow;
 				var nextRunTime = now.AddSeconds(_config.App.PollingIntervalSeconds);
 
 				var syncStatus = await _syncStatusDb.GetSyncStatusAsync();
-				syncStatus.LastSyncTime = DateTime.Now;
-				syncStatus.LastSuccessfulSyncTime = Health.Value == HealthStatus.Healthy ? DateTime.Now : syncStatus.LastSuccessfulSyncTime;
 				syncStatus.NextSyncTime = nextRunTime;
 				syncStatus.SyncStatus = Health.Value == HealthStatus.UnHealthy ? Status.UnHealthy :
 										Health.Value == HealthStatus.Dead ? Status.Dead :
