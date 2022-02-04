@@ -29,7 +29,6 @@ namespace WebApp.Services
 		private static readonly ILogger _logger = LogContext.ForClass<BackgroundSyncJob>();
 
 		private readonly ISettingsService _settingsService;
-		private readonly IFileHandling _fileHandler;
 		private readonly ISyncStatusDb _syncStatusDb;
 		private readonly ISyncService _syncService;
 		
@@ -37,10 +36,9 @@ namespace WebApp.Services
 		private Settings _config;
 
 
-		public BackgroundSyncJob(ISettingsService settingsService, IFileHandling fileHandling, ISyncStatusDb syncStatusDb, ISyncService syncService)
+		public BackgroundSyncJob(ISettingsService settingsService,ISyncStatusDb syncStatusDb, ISyncService syncService)
 		{
 			_settingsService = settingsService;
-			_fileHandler = fileHandling;
 			_syncStatusDb = syncStatusDb;
 
 			_previousPollingState = null;
