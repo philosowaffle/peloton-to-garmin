@@ -47,6 +47,7 @@ namespace WebApp.Services
 
 		protected override Task ExecuteAsync(CancellationToken stoppingToken)
 		{
+			Health.Set(HealthStatus.Healthy);
 			return RunAsync(stoppingToken);
 		}
 
@@ -115,8 +116,13 @@ namespace WebApp.Services
 			try
 			{
 				var result = await _syncService.SyncAsync(_config.Peloton.NumWorkoutsToDownload);
-				if(!result.SyncSuccess)
+				if(result.SyncSuccess)
+				{
+					Health.Set(HealthStatus.Healthy);
+				} else
+				{
 					Health.Set(HealthStatus.UnHealthy);
+				}
 
 			} catch (Exception e)
 			{
@@ -130,7 +136,6 @@ namespace WebApp.Services
 				var syncStatus = await _syncStatusDb.GetSyncStatusAsync();
 				syncStatus.NextSyncTime = nextRunTime;
 				syncStatus.SyncStatus = Health.Value == HealthStatus.UnHealthy ? Status.UnHealthy :
-										Health.Value == HealthStatus.Dead ? Status.Dead :
 										Status.Running;
 
 				await _syncStatusDb.UpsertSyncStatusAsync(syncStatus);

@@ -344,7 +344,7 @@ namespace Conversion
 
 					if (resistanceMetrics is object && i < resistanceMetrics.Values.Length)
 					{
-						var resistancePercent = resistanceMetrics.Values[i] / 1;
+						var resistancePercent = resistanceMetrics.Values[i] / 100 ?? 0;
 						record.SetResistance((byte)(254 * resistancePercent));
 					}
 
