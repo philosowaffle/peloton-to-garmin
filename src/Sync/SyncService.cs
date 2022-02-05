@@ -71,7 +71,6 @@ namespace Sync
 				response.ConversionSuccess = true;
 
 				_fileHandler.Cleanup(_config.App.DownloadDirectory);
-				_fileHandler.Cleanup(_config.App.WorkingDirectory);
 			}
 			catch (Exception e)
 			{
@@ -90,6 +89,7 @@ namespace Sync
 				response.UploadToGarminSuccess = true;
 				
 				_fileHandler.Cleanup(_config.App.UploadDirectory);
+				_fileHandler.Cleanup(_config.App.WorkingDirectory);
 			}
 			catch (Exception e)
 			{
