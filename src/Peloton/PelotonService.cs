@@ -92,7 +92,7 @@ namespace Peloton
 				return false;
 			});
 
-			_logger.Debug("Total workouts found after filtering InProgress and ExcludeWorkoutTypes: {@FoundWorkouts}", filteredWorkouts.Count());
+			_logger.Debug("Total workouts found after filtering out InProgress and ExcludedWorkoutTypes: {@FoundWorkouts}", filteredWorkouts.Count());
 
 			var workingDir = _config.App.DownloadDirectory;
 			_fileHandler.MkDirIfNotExists(workingDir);
@@ -104,7 +104,7 @@ namespace Peloton
 				SyncHistoryItem syncRecord = _dbClient.Get(recentWorkout.Id);
 				if ((syncRecord?.DownloadDate is object))
 				{
-					_logger.Debug("Workout {@WorkoutId} already downloaded, skipping.", recentWorkout.Id);
+					_logger.Debug("Workout {@WorkoutId} already downloaded from Peloton, skipping.", recentWorkout.Id);
 					continue;
 				}
 

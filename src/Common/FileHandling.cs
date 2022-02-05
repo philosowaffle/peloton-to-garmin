@@ -3,12 +3,11 @@ using Serilog;
 using System;
 using System.IO;
 using System.Text.Json;
-using System.Xml;
 using System.Xml.Serialization;
 
 namespace Common
 {
-    public interface IFileHandling
+	public interface IFileHandling
 	{
 		void MkDirIfNotExists(string path);
 		bool DirExists(string path);
@@ -23,13 +22,15 @@ namespace Common
 
 	public class IOWrapper : IFileHandling
 	{
+		private static readonly ILogger _logger = LogContext.ForClass<IOWrapper>();
+
 		public void MkDirIfNotExists(string path)
 		{
 			using var trace1 = Tracing.Trace(nameof(MkDirIfNotExists), "io");
 			if (!DirExists(path))
 			{
 				using var trace2 = Tracing.Trace("CreateDirectory", "io");
-				Log.Debug("Creating directory {@Directory}", path);
+				_logger.Debug("Creating directory {@Directory}", path);
 				Directory.CreateDirectory(path);
 			}
 		}
@@ -68,7 +69,7 @@ namespace Common
 					return (T)serializer.Deserialize(stream);
 				} catch (Exception e)
 				{
-					Log.Error(e, "Failed to read device info xml.");
+					_logger.Error(e, "Failed to read device info xml.");
 					return default;
 				}				
 			}
@@ -81,13 +82,13 @@ namespace Common
 			{
 				MkDirIfNotExists(toPath);
 				toPath = Path.Join(toPath, Path.GetFileName(fromPath));
-				Log.Debug("Moving failed file from {@FromPath} to {@ToPath}", fromPath, toPath);
+				_logger.Debug("Moving failed file from {@FromPath} to {@ToPath}", fromPath, toPath);
 				File.Copy(fromPath, toPath, overwrite: true);
 
 			}
 			catch (Exception e)
 			{
-				Log.Error(e, "Failed to move file from {@FromPath} to {@ToPath}", fromPath, toPath);
+				_logger.Error(e, "Failed to move file from {@FromPath} to {@ToPath}", fromPath, toPath);
 			}
 		}
 
@@ -106,12 +107,12 @@ namespace Common
 			try
 			{
 				using var trace2 = Tracing.Trace("DeleteDir", "io");
-				Log.Debug("Deleting directory.");
+				_logger.Debug("Deleting directory.");
 				Directory.Delete(dir, recursive: true);
 			}
 			catch (Exception e)
 			{
-				Log.Error(e, "Failed to clean up working directory: {@Directory}", dir);
+				_logger.Error(e, "Failed to clean up working directory: {@Directory}", dir);
 			}
 		}
 	}

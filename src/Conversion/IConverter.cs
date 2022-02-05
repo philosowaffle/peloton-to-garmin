@@ -15,7 +15,7 @@ using Summary = Common.Dto.Summary;
 
 namespace Conversion
 {
-    public interface IConverter
+	public interface IConverter
 	{
 		public void Convert();
 		public void Decode(string filePath);
@@ -63,7 +63,7 @@ namespace Conversion
 
 			if (files.Length == 0)
 			{
-				Log.Information("No files to convert in download directory. Nothing to do.");
+				Log.Information("No files to convert in download directory. Nothing to do. {@File}", _config.App.DownloadDirectory);
 				return;
 			}
 
@@ -101,7 +101,7 @@ namespace Conversion
 					
 				} catch (Exception e)
 				{
-					Log.Error(e, "Failed to convert workout data {@Workout} {@File}", workoutTitle, file);
+					Log.Error(e, "Failed to convert workout data to format {@Format} {@Workout} {@File}", format, workoutTitle, file);
 				}				
 
 				if (converted is null)
@@ -149,7 +149,7 @@ namespace Conversion
 					{
 						var uploadDest = Path.Join(_config.App.UploadDirectory, $"{workoutTitle}.{format}");
 						_fileHandler.Copy(path, uploadDest, overwrite: true);
-						Log.Debug("Prepped {@Format} file {@Path} for upload.", format, uploadDest);
+						Log.Debug("Prepped {@Format} for upload: {@Path}", format, uploadDest);
 					}
 					catch (Exception e)
 					{
@@ -205,7 +205,7 @@ namespace Conversion
 				case DistanceUnit.Feet:
 					return (float)value * 0.3048f;
 				default:
-					Log.Debug("Found unkown distance unit {@Unit}", unit);
+					Log.Verbose("Found unkown distance unit {@Unit}", unit);
 					return (float)value;
 			}
 		}
@@ -238,14 +238,14 @@ namespace Conversion
 		{
 			if (workoutSamples?.Summaries is null)
 			{
-				Log.Debug("No workout Summaries found.");
+				Log.Verbose("No workout Summaries found.");
 				return null;
 			}
 
 			var summaries = workoutSamples.Summaries;
 			var distanceSummary = summaries.FirstOrDefault(s => s.Slug == "distance");
 			if (distanceSummary is null)
-				Log.Debug("No distance slug found.");
+				Log.Verbose("No distance slug found.");
 
 			return distanceSummary;
 		}
@@ -254,14 +254,14 @@ namespace Conversion
 		{
 			if (workoutSamples?.Summaries is null)
 			{
-				Log.Debug("No workout Summaries found.");
+				Log.Verbose("No workout Summaries found.");
 				return null;
 			}
 
 			var summaries = workoutSamples.Summaries;
 			var caloriesSummary = summaries.FirstOrDefault(s => s.Slug == "calories");
 			if (caloriesSummary is null)
-				Log.Debug("No calories slug found.");
+				Log.Verbose("No calories slug found.");
 
 			return caloriesSummary;
 		}
@@ -467,7 +467,7 @@ namespace Conversion
 		{
 			if (workoutSamples?.Metrics is null)
 			{
-				Log.Debug("No workout Metrics found.");
+				Log.Verbose("No workout Metrics found.");
 				return null;
 			}
 
@@ -481,7 +481,7 @@ namespace Conversion
 			}
 
 			if (metric is null)
-				Log.Debug($"No {slug} found.");
+				Log.Verbose($"No {slug} found.");
 
 			return metric;
 		}
@@ -526,7 +526,7 @@ namespace Conversion
 				case "ft":
 					return DistanceUnit.Feet;
 				default:
-					Log.Debug("Found unkown distance unit {@Unit}", unit);
+					Log.Verbose("Found unkown distance unit {@Unit}", unit);
 					return DistanceUnit.Unknown;
 			}
 		}
