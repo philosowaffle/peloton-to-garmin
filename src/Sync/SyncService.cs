@@ -91,7 +91,7 @@ namespace Sync
 				
 				_fileHandler.Cleanup(_config.App.UploadDirectory);
 			}
-			catch (GarminUploadException e)
+			catch (Exception e)
 			{
 				_logger.Error(e, "GUpload returned an error code. Failed to upload workouts.");
 				_logger.Warning("GUpload failed to upload files. You can find the converted files at {@Path} \n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", _config.App.OutputDirectory);
