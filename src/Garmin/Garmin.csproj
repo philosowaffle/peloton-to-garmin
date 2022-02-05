@@ -1,20 +1,25 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="FitSdk\Cookbook\**" />
     <Compile Remove="FitSdk\Examples\**" />
     <Compile Remove="FitSdk\plugins\examples\**" />
+    <Compile Remove="FitSdk_prev\**" />
+    <Compile Remove="Fit\**" />
+    <EmbeddedResource Remove="FitSdk\Cookbook\**" />
     <EmbeddedResource Remove="FitSdk\Examples\**" />
     <EmbeddedResource Remove="FitSdk\plugins\examples\**" />
+    <EmbeddedResource Remove="FitSdk_prev\**" />
+    <EmbeddedResource Remove="Fit\**" />
+    <None Remove="FitSdk\Cookbook\**" />
     <None Remove="FitSdk\Examples\**" />
     <None Remove="FitSdk\plugins\examples\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Fit\" />
+    <None Remove="FitSdk_prev\**" />
+    <None Remove="Fit\**" />
   </ItemGroup>
 
   <ItemGroup>
