@@ -107,7 +107,7 @@ namespace Common
 			try
 			{
 				using var trace2 = Tracing.Trace("DeleteDir", "io");
-				_logger.Debug("Deleting directory.");
+				_logger.Debug("Deleting directory: {@Directory}", dir);
 				Directory.Delete(dir, recursive: true);
 			}
 			catch (Exception e)
