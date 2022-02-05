@@ -118,3 +118,5 @@ configuration.local.json
 */**/output/**
 /src/WebApp/WebApp.csproj.user
 /Output
+/src/PelotonToGarminConsole/data
+/src/WebApp/data

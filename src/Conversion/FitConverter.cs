@@ -423,8 +423,9 @@ namespace Conversion
 				case FitnessDiscipline.Stretching:
 					return SubSport.FlexibilityTraining;
 				case FitnessDiscipline.Yoga:
-				case FitnessDiscipline.Meditation:
 					return SubSport.Yoga;
+				case FitnessDiscipline.Meditation:
+					return SubSport.Breathing;
 				default:
 					return SubSport.Generic;
 			}

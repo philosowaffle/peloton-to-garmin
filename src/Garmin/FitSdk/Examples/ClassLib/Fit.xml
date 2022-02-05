@@ -3682,6 +3682,76 @@
             Units: s</summary>
             <param name="bottomTime_">Nullable field value to be set</param>
         </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.GetAvgAscentRate">
+            <summary>
+             Retrieves the AvgAscentRate field
+             Units: m/s
+             Comment: Average ascent rate, not including descents or stops</summary>
+             <returns>Returns nullable float representing the AvgAscentRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.SetAvgAscentRate(System.Nullable{System.Single})">
+            <summary>
+            Set AvgAscentRate field
+            Units: m/s
+            Comment: Average ascent rate, not including descents or stops</summary>
+            <param name="avgAscentRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.GetAvgDescentRate">
+            <summary>
+             Retrieves the AvgDescentRate field
+             Units: m/s
+             Comment: Average descent rate, not including ascents or stops</summary>
+             <returns>Returns nullable float representing the AvgDescentRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.SetAvgDescentRate(System.Nullable{System.Single})">
+            <summary>
+            Set AvgDescentRate field
+            Units: m/s
+            Comment: Average descent rate, not including ascents or stops</summary>
+            <param name="avgDescentRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.GetMaxAscentRate">
+            <summary>
+             Retrieves the MaxAscentRate field
+             Units: m/s
+             Comment: Maximum ascent rate</summary>
+             <returns>Returns nullable float representing the MaxAscentRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.SetMaxAscentRate(System.Nullable{System.Single})">
+            <summary>
+            Set MaxAscentRate field
+            Units: m/s
+            Comment: Maximum ascent rate</summary>
+            <param name="maxAscentRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.GetMaxDescentRate">
+            <summary>
+             Retrieves the MaxDescentRate field
+             Units: m/s
+             Comment: Maximum descent rate</summary>
+             <returns>Returns nullable float representing the MaxDescentRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.SetMaxDescentRate(System.Nullable{System.Single})">
+            <summary>
+            Set MaxDescentRate field
+            Units: m/s
+            Comment: Maximum descent rate</summary>
+            <param name="maxDescentRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.GetHangTime">
+            <summary>
+             Retrieves the HangTime field
+             Units: s
+             Comment: Time spent neither ascending nor descending</summary>
+             <returns>Returns nullable float representing the HangTime field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.SetHangTime(System.Nullable{System.Single})">
+            <summary>
+            Set HangTime field
+            Units: s
+            Comment: Time spent neither ascending nor descending</summary>
+            <param name="hangTime_">Nullable field value to be set</param>
+        </member>
         <member name="T:Dynastream.Fit.DiveSummaryMesg.FieldDefNum">
             <summary>
             Field Numbers for <see cref="T:Dynastream.Fit.DiveSummaryMesg"/>
@@ -7427,6 +7497,42 @@
             Comment: fractional part of total_descent</summary>
             <param name="totalFractionalDescent_">Nullable field value to be set</param>
         </member>
+        <member name="M:Dynastream.Fit.LapMesg.GetAvgCoreTemperature">
+            <summary>
+             Retrieves the AvgCoreTemperature field
+             Units: C</summary>
+             <returns>Returns nullable float representing the AvgCoreTemperature field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.LapMesg.SetAvgCoreTemperature(System.Nullable{System.Single})">
+            <summary>
+            Set AvgCoreTemperature field
+            Units: C</summary>
+            <param name="avgCoreTemperature_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.LapMesg.GetMinCoreTemperature">
+            <summary>
+             Retrieves the MinCoreTemperature field
+             Units: C</summary>
+             <returns>Returns nullable float representing the MinCoreTemperature field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.LapMesg.SetMinCoreTemperature(System.Nullable{System.Single})">
+            <summary>
+            Set MinCoreTemperature field
+            Units: C</summary>
+            <param name="minCoreTemperature_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.LapMesg.GetMaxCoreTemperature">
+            <summary>
+             Retrieves the MaxCoreTemperature field
+             Units: C</summary>
+             <returns>Returns nullable float representing the MaxCoreTemperature field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.LapMesg.SetMaxCoreTemperature(System.Nullable{System.Single})">
+            <summary>
+            Set MaxCoreTemperature field
+            Units: C</summary>
+            <param name="maxCoreTemperature_">Nullable field value to be set</param>
+        </member>
         <member name="T:Dynastream.Fit.LapMesg.FieldDefNum">
             <summary>
             Field Numbers for <see cref="T:Dynastream.Fit.LapMesg"/>
@@ -9944,6 +10050,18 @@
             Set EbikeAssistLevelPercent field
             Units: percent</summary>
             <param name="ebikeAssistLevelPercent_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.RecordMesg.GetCoreTemperature">
+            <summary>
+             Retrieves the CoreTemperature field
+             Units: C</summary>
+             <returns>Returns nullable float representing the CoreTemperature field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.RecordMesg.SetCoreTemperature(System.Nullable{System.Single})">
+            <summary>
+            Set CoreTemperature field
+            Units: C</summary>
+            <param name="coreTemperature_">Nullable field value to be set</param>
         </member>
         <member name="T:Dynastream.Fit.RecordMesg.FieldDefNum">
             <summary>
@@ -13765,6 +13883,42 @@
             Units: m
             Comment: fractional part of total_descent</summary>
             <param name="totalFractionalDescent_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetAvgCoreTemperature">
+            <summary>
+             Retrieves the AvgCoreTemperature field
+             Units: C</summary>
+             <returns>Returns nullable float representing the AvgCoreTemperature field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetAvgCoreTemperature(System.Nullable{System.Single})">
+            <summary>
+            Set AvgCoreTemperature field
+            Units: C</summary>
+            <param name="avgCoreTemperature_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetMinCoreTemperature">
+            <summary>
+             Retrieves the MinCoreTemperature field
+             Units: C</summary>
+             <returns>Returns nullable float representing the MinCoreTemperature field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetMinCoreTemperature(System.Nullable{System.Single})">
+            <summary>
+            Set MinCoreTemperature field
+            Units: C</summary>
+            <param name="minCoreTemperature_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetMaxCoreTemperature">
+            <summary>
+             Retrieves the MaxCoreTemperature field
+             Units: C</summary>
+             <returns>Returns nullable float representing the MaxCoreTemperature field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetMaxCoreTemperature(System.Nullable{System.Single})">
+            <summary>
+            Set MaxCoreTemperature field
+            Units: C</summary>
+            <param name="maxCoreTemperature_">Nullable field value to be set</param>
         </member>
         <member name="T:Dynastream.Fit.SessionMesg.FieldDefNum">
             <summary>
