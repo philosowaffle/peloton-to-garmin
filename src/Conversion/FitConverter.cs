@@ -61,7 +61,7 @@ namespace Conversion
 			var title = WorkoutHelper.GetTitle(workout);
 			var sport = GetGarminSport(workout);
 			var subSport = GetGarminSubSport(workout);
-			var deviceInfo = GetDeviceInfo();
+			var deviceInfo = GetDeviceInfo(workout.Fitness_Discipline);
 
 			if (sport == Sport.Invalid)
 			{

@@ -3,7 +3,6 @@ using Common.Database;
 using Common.Dto;
 using Common.Helpers;
 using Common.Observe;
-using Common.Service;
 using Dynastream.Fit;
 using Prometheus;
 using Serilog;
@@ -27,6 +26,34 @@ namespace Conversion
 		{
 			LabelNames = new string[] { Common.Observe.Metrics.Label.FileType }
 		});
+
+		private static readonly GarminDeviceInfo CyclingDevice = new GarminDeviceInfo()
+		{
+			Name = "TacxTrainingAppWin", // Max 20 Chars
+			ProductID = GarminProduct.TacxTrainingAppWin,
+			UnitId = 1,
+			Version = new GarminDeviceVersion()
+			{
+				VersionMajor = 1,
+				VersionMinor = 30,
+				BuildMajor = 0,
+				BuildMinor = 0,
+			}
+		};
+
+		private static readonly GarminDeviceInfo DefaultDevice = new GarminDeviceInfo()
+		{
+			Name = "fenix 6", // Max 20 Chars
+			ProductID = GarminProduct.Fenix6,
+			UnitId = 1,
+			Version = new GarminDeviceVersion()
+			{
+				VersionMajor = 19,
+				VersionMinor = 2,
+				BuildMajor = 0,
+				BuildMinor = 0,
+			}
+		};
 
 		public static readonly float _metersPerMile = 1609.34f;
 
@@ -486,33 +513,21 @@ namespace Conversion
 			return metric;
 		}
 
-		protected GarminDeviceInfo GetDeviceInfo()
+		protected GarminDeviceInfo GetDeviceInfo(FitnessDiscipline sport)
 		{
-			GarminDeviceInfo info = null;
+			GarminDeviceInfo userProvidedDeviceInfo = null;
+			var userDevicePath = _config.Format.DeviceInfoPath;
 
-			if (!string.IsNullOrEmpty(_config.Format.DeviceInfoPath))
+			if (!string.IsNullOrEmpty(userDevicePath))
 			{
-				info = _fileHandler.DeserializeXml<GarminDeviceInfo>(_config.Format.DeviceInfoPath);
+				if(_fileHandler.TryDeserializeXml(userDevicePath, out userProvidedDeviceInfo))
+					return userProvidedDeviceInfo;
 			}
 
-			if (info is null)
-			{
-				info = new GarminDeviceInfo()
-				{
-					Name = "PelotonToGarmin", // Max 20 Chars
-					ProductID = GarminProduct.Fr945,
-					UnitId = 1,
-					Version = new GarminDeviceVersion()
-					{
-						VersionMajor = 5,
-						VersionMinor = 0,
-						BuildMajor = 0,
-						BuildMinor = 0,
-					}
-				};
-			}
+			if(sport == FitnessDiscipline.Cycling)
+				return CyclingDevice;
 
-			return info;
+			return DefaultDevice;
 		}
 
 		protected DistanceUnit GetDistanceUnit(string unit)

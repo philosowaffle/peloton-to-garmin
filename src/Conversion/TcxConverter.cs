@@ -47,7 +47,7 @@ namespace Conversion
 			var hrSummary = GetHeartRateSummary(samples);
 			var cadenceSummary = GetCadenceSummary(samples);
 			var resistanceSummary = GetResistanceSummary(samples);
-			var deviceInfo = GetDeviceInfo();
+			var deviceInfo = GetDeviceInfo(workout.Fitness_Discipline);
 
 			var lx = new XElement(activityExtensions + "TPX");
 			lx.Add(new XElement(activityExtensions + "TotalPower", workout?.Total_Work));
