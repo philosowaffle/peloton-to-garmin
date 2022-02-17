@@ -2,7 +2,6 @@
 using Common.Database;
 using Common.Dto;
 using Common.Observe;
-using System;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -47,7 +46,7 @@ namespace Conversion
 			var hrSummary = GetHeartRateSummary(samples);
 			var cadenceSummary = GetCadenceSummary(samples);
 			var resistanceSummary = GetResistanceSummary(samples);
-			var deviceInfo = GetDeviceInfo();
+			var deviceInfo = GetDeviceInfo(workout.Fitness_Discipline);
 
 			var lx = new XElement(activityExtensions + "TPX");
 			lx.Add(new XElement(activityExtensions + "TotalPower", workout?.Total_Work));
@@ -206,11 +205,6 @@ namespace Conversion
 				default:
 					return "Other";
 			}
-		}
-
-		public override void Decode(string filePath)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

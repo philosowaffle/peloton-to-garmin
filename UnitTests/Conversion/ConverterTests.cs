@@ -1,6 +1,10 @@
-﻿using Common.Dto;
+﻿using Common;
+using Common.Database;
+using Common.Dto;
 using Conversion;
+using Dynastream.Fit;
 using FluentAssertions;
+using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
 using System;
@@ -13,8 +17,8 @@ namespace UnitTests.Conversion
 		[Test]
 		public void GetStartTimeTest()
 		{
-			var epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-			var nowCst = DateTime.Now;
+			var epoch = new System.DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+			var nowCst = System.DateTime.Now;
 			TimeSpan diff = nowCst.ToUniversalTime() - epoch;
 			var seconds = (long)Math.Floor(diff.TotalSeconds);
 
@@ -33,7 +37,7 @@ namespace UnitTests.Conversion
 		[Test]
 		public void GetTimeStampTest([Values(0,10)] long offset)
 		{
-			var now = DateTime.Parse("2021-04-01 03:14:12");
+			var now = System.DateTime.Parse("2021-04-01 03:14:12");
 
 			var autoMocker = new AutoMocker();
 			var converter = autoMocker.CreateInstance<ConverterInstance>();
@@ -430,16 +434,144 @@ namespace UnitTests.Conversion
 			hr.Average_Value.Should().Be(50);
 		}
 
+		[TestCase(FitnessDiscipline.Bike_Bootcamp)]
+		[TestCase(FitnessDiscipline.Circuit)]
+		[TestCase(FitnessDiscipline.Cardio)]
+		[TestCase(FitnessDiscipline.Cycling)]
+		[TestCase(FitnessDiscipline.Meditation)]
+		[TestCase(FitnessDiscipline.Running)]
+		[TestCase(FitnessDiscipline.Strength)]
+		[TestCase(FitnessDiscipline.Stretching)]
+		[TestCase(FitnessDiscipline.Walking)]
+		[TestCase(FitnessDiscipline.Yoga)]
+		public void GetDeviceInfo_ChoosesUserDevice_WhenProvided(FitnessDiscipline sport)
+		{
+			// SETUP
+			var mocker = new AutoMocker();			
+			var config = new Settings() { Format = new Format() { DeviceInfoPath = "somePath" } };
+			mocker.Use(config);
+
+			var converter = mocker.CreateInstance<ConverterInstance>();
+
+			var fileHandler = mocker.GetMock<IFileHandling>();
+			GarminDeviceInfo outDevice = new GarminDeviceInfo()
+			{
+				Name = "UserDevice", // Max 20 Chars
+				ProductID = GarminProduct.Amx,
+				UnitId = 1,
+				Version = new GarminDeviceVersion()
+				{
+					VersionMajor = 11,
+					VersionMinor = 10,
+					BuildMajor = 0,
+					BuildMinor = 0,
+				}
+			}; 
+			fileHandler.Setup(x => x.TryDeserializeXml<GarminDeviceInfo>("somePath", out outDevice))
+				.Returns(true);
+
+			// ACT
+			var deviceInfo = converter.GetDeviceInfo1(sport);
+
+			// ASSERT
+			deviceInfo.Name.Should().Be("UserDevice");
+			deviceInfo.ProductID.Should().Be(GarminProduct.Amx);
+			deviceInfo.UnitId.Should().Be(1);
+			deviceInfo.Version.Should().NotBeNull();
+			deviceInfo.Version.VersionMajor.Should().Be(11);
+			deviceInfo.Version.VersionMinor.Should().Be(10);
+			deviceInfo.Version.BuildMajor.Should().Be(0);
+			deviceInfo.Version.BuildMinor.Should().Be(0);
+		}
+
+		[Test]
+		public void GetDeviceInfo_FallsBackToDefault_WhenUserDeviceFailsToDeserialize()
+		{
+			// SETUP
+			var mocker = new AutoMocker();
+			var config = new Settings() { Format = new Format() { DeviceInfoPath = "somePath" } };
+			mocker.Use(config);
+
+			var converter = mocker.CreateInstance<ConverterInstance>();
+
+			var fileHandler = mocker.GetMock<IFileHandling>();
+			GarminDeviceInfo outDevice = null;
+			fileHandler.Setup(x => x.TryDeserializeXml<GarminDeviceInfo>("somePath", out outDevice))
+				.Callback(() =>
+				{
+					outDevice = new GarminDeviceInfo(); ;
+				})
+				.Returns(false);
+
+			// ACT
+			var deviceInfo = converter.GetDeviceInfo1(FitnessDiscipline.Bike_Bootcamp);
+
+			// ASSERT
+			deviceInfo.Name.Should().Be("fenix 6");
+			deviceInfo.ProductID.Should().Be(GarminProduct.Fenix6);
+			deviceInfo.UnitId.Should().Be(1);
+			deviceInfo.Version.Should().NotBeNull();
+			deviceInfo.Version.VersionMajor.Should().Be(19);
+			deviceInfo.Version.VersionMinor.Should().Be(2);
+			deviceInfo.Version.BuildMajor.Should().Be(0);
+			deviceInfo.Version.BuildMinor.Should().Be(0);
+		}
+
+		[Test]
+		public void GetDeviceInfo_ForCycling_ShouldReturn_CyclingDevice()
+		{
+			// SETUP
+			var mocker = new AutoMocker();
+			var converter = mocker.CreateInstance<ConverterInstance>();
+
+			// ACT
+			var deviceInfo = converter.GetDeviceInfo1(FitnessDiscipline.Cycling);
+
+			// ASSERT
+			deviceInfo.Name.Should().Be("TacxTrainingAppWin");
+			deviceInfo.ProductID.Should().Be(GarminProduct.TacxTrainingAppWin);
+			deviceInfo.UnitId.Should().Be(1);
+			deviceInfo.Version.Should().NotBeNull();
+			deviceInfo.Version.VersionMajor.Should().Be(1);
+			deviceInfo.Version.VersionMinor.Should().Be(30);
+			deviceInfo.Version.BuildMajor.Should().Be(0);
+			deviceInfo.Version.BuildMinor.Should().Be(0);
+		}
+
+		[TestCase(FitnessDiscipline.Bike_Bootcamp)]
+		[TestCase(FitnessDiscipline.Circuit)]
+		[TestCase(FitnessDiscipline.Cardio)]
+		[TestCase(FitnessDiscipline.Meditation)]
+		[TestCase(FitnessDiscipline.Running)]
+		[TestCase(FitnessDiscipline.Strength)]
+		[TestCase(FitnessDiscipline.Stretching)]
+		[TestCase(FitnessDiscipline.Walking)]
+		[TestCase(FitnessDiscipline.Yoga)]
+		public void GetDeviceInfo_ForNonCycling_ShouldReturn_DefaultDevice(FitnessDiscipline sport)
+		{
+			// SETUP
+			var mocker = new AutoMocker();
+			var converter = mocker.CreateInstance<ConverterInstance>();
+
+			// ACT
+			var deviceInfo = converter.GetDeviceInfo1(sport);
+
+			// ASSERT
+			deviceInfo.Name.Should().Be("fenix 6");
+			deviceInfo.ProductID.Should().Be(GarminProduct.Fenix6);
+			deviceInfo.UnitId.Should().Be(1);
+			deviceInfo.Version.Should().NotBeNull();
+			deviceInfo.Version.VersionMajor.Should().Be(19);
+			deviceInfo.Version.VersionMinor.Should().Be(2);
+			deviceInfo.Version.BuildMajor.Should().Be(0);
+			deviceInfo.Version.BuildMinor.Should().Be(0);
+		}
+
 		private class ConverterInstance : Converter<string>
 		{
-			public ConverterInstance() : base(null, null, null) { }
+			public ConverterInstance(Settings settings, IDbClient dbClient, IFileHandling fileHandling) : base(settings, dbClient, fileHandling) { }
 
 			public override void Convert()
-			{
-				throw new NotImplementedException();
-			}
-
-			public override void Decode(string filePath)
 			{
 				throw new NotImplementedException();
 			}
@@ -454,12 +586,12 @@ namespace UnitTests.Conversion
 				throw new NotImplementedException();
 			}
 
-			public DateTime GetStartTime1(Workout workout)
+			public System.DateTime GetStartTime1(Workout workout)
 			{
 				return this.GetStartTimeUtc(workout);
 			}
 
-			public string GetTimeStamp1(DateTime startTime, long offset)
+			public string GetTimeStamp1(System.DateTime startTime, long offset)
 			{
 				return this.GetTimeStamp(startTime, offset);
 			}
@@ -517,6 +649,11 @@ namespace UnitTests.Conversion
 			public Metric GetCadenceSummary1(WorkoutSamples workoutSamples)
 			{
 				return base.GetCadenceSummary(workoutSamples);
+			}
+
+			public GarminDeviceInfo GetDeviceInfo1(FitnessDiscipline sport)
+			{
+				return base.GetDeviceInfo(sport);
 			}
 		}
 	}

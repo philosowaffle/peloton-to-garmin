@@ -14,7 +14,7 @@ namespace Common
 		string[] GetFiles(string path);
 
 		T DeserializeJson<T>(string file);
-		T DeserializeXml<T>(string file) where T : new();
+		bool TryDeserializeXml<T>(string file, out T result) where T : new();
 		void MoveFailedFile(string fromPath, string toPath);
 		void Copy(string from, string to, bool overwrite);
 		void Cleanup(string dir);
@@ -56,21 +56,24 @@ namespace Common
 			}
 		}
 
-		public T DeserializeXml<T>(string file) where T : new()
+		public bool TryDeserializeXml<T>(string file, out T result) where T : new()
 		{
-			using var trace1 = Tracing.Trace(nameof(DeserializeXml), "io");
-			if (!File.Exists(file)) return default;
+			result = default;
+
+			using var trace = Tracing.Trace(nameof(TryDeserializeXml), "io");
+			if (!File.Exists(file)) return false;
 
 			XmlSerializer serializer = new XmlSerializer(typeof(T), new XmlRootAttribute("Creator"));
 			using (Stream stream = new FileStream(file, FileMode.Open))
 			{
 				try
 				{
-					return (T)serializer.Deserialize(stream);
+					result = (T)serializer.Deserialize(stream);
+					return true;
 				} catch (Exception e)
 				{
-					_logger.Error(e, "Failed to read device info xml.");
-					return default;
+					_logger.Error(e, "Failed to deserialize {@File} from xml to type {@Type}.", file, typeof(T));
+					return false;
 				}				
 			}
 		}
