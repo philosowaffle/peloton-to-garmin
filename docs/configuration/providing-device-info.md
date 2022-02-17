@@ -5,11 +5,22 @@ parent: Configuration
 nav_order: 3
 ---
 
+# Device Info
+
+A given workout must be associated with a Garmin device in order for it to count towards Challenges and Badges on Garmin.  Additionaly, certain devices also unlock additional data fields and measurements on Garmin Connect.  The default devices used by P2G have been chosen specifically to ensure you get the most data possible out of your Peloton workouts.
+
+By default, P2G uses the TACX App device type for Cycling activities. At this time, TACX is the only device that is known to unlock the cycling VO2 Max calculation on Garmin Connect.  For all other workout types, P2G defaults to using a Fenix 6 device.
+
+This means on Garmin Connect your Peloton workouts will show a device image that does not match your personal Garmin device.
+
 # Custom Device Info
 
-By default, P2G using a custom device when converting and upload workouts. This device information is needed in order to count your Peloton workouts towards Challenges and Badges on Garmin. However, you may observe on Garmin Connect that your Peloton workouts will show a device image that does not match your personal device.
+If you choose, you can provide P2G with your personal Device Info which will cause the workouts to show the same device you normally use. 
 
-If you choose, you can provide P2G with your personal Device Info which will cause the Garmin workout to show the correct to device. Note, this is completely optional and is only for cosmetic preference, your workout will be converted, uploaded, and counted towards challenges regardless of whether this matches your personal device.
+**Note:**
+* Setting your personal device is completely optional, P2G will work just fine without this extra information
+* Setting your personal device *may* cause you to not see certain fields on Garmin (see notes about VO2 max above)
+* Setting your personal device will mean it is applied on **all** workout types from Peloton
 
 ## Steps
 

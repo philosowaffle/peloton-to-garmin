@@ -41,3 +41,14 @@ To compile and run P2G on your machine, follow the below steps:
 ```bash
 > dotnet run --project ./src/PelotonToGarminConsole/PelotonToGarminConsole.csproj
 ```
+
+## Updating
+
+```bash
+> git fetch
+> git pull
+> cd peloton-to-garmin
+> dotnet restore
+> dotnet build
+> dotnet run --project ./src/PelotonToGarminConsole/PelotonToGarminConsole.csproj
+```
