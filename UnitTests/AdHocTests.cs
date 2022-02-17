@@ -31,11 +31,8 @@ namespace UnitTests
 		//[Test]
 		//public void DecodeFitFile()
 		//{
-		//	var autoMocker = new AutoMocker();
-		//	var fitConverter = autoMocker.CreateInstance<FitConverter>();
-
-		//	var syncMyWorkoutFitFile = Path.Join(DataDirectory, "garmin_training_effect.fit");
-		//	fitConverter.Decode(syncMyWorkoutFitFile);
+		//	var syncMyWorkoutFitFile = Path.Join(DataDirectory, "Fenix_Incline.fit");
+		//	FitDecoder.Decode(syncMyWorkoutFitFile);
 		//}
 
 		//[Test]
@@ -44,7 +41,7 @@ namespace UnitTests
 		//	var email = "";
 		//	var password = "";
 
-			//var workoutId = "aaa6527fd5a74b7e8e2f8975c6025e60";
+		//var workoutId = "aaa6527fd5a74b7e8e2f8975c6025e60";
 
 		//	var client = new ApiClient(email, password, false);
 		//	await client.InitAuthAsync();

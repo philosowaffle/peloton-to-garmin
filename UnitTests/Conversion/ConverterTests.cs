@@ -576,11 +576,6 @@ namespace UnitTests.Conversion
 				throw new NotImplementedException();
 			}
 
-			public override void Decode(string filePath)
-			{
-				throw new NotImplementedException();
-			}
-
 			protected override string Convert(Workout workout, WorkoutSamples workoutSamples)
 			{
 				throw new NotImplementedException();

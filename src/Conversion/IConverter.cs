@@ -17,7 +17,6 @@ namespace Conversion
 	public interface IConverter
 	{
 		public void Convert();
-		public void Decode(string filePath);
 	}
 
 	public abstract class Converter<T> : IConverter
@@ -69,7 +68,6 @@ namespace Conversion
 		}
 
 		public abstract void Convert();
-		public abstract void Decode(string filePath);
 
 		protected abstract T Convert(Workout workout, WorkoutSamples workoutSamples);
 

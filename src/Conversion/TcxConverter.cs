@@ -2,7 +2,6 @@
 using Common.Database;
 using Common.Dto;
 using Common.Observe;
-using System;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -206,11 +205,6 @@ namespace Conversion
 				default:
 					return "Other";
 			}
-		}
-
-		public override void Decode(string filePath)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }
