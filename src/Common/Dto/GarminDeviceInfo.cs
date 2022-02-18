@@ -12,8 +12,8 @@
 	public class GarminDeviceVersion
 	{
 		public int VersionMajor { get; set; }
-		public int VersionMinor { get; set; }
+		public double VersionMinor { get; set; }
 		public int BuildMajor { get; set; }
-		public int BuildMinor { get; set; }
+		public double BuildMinor { get; set; }
 	}
 }
