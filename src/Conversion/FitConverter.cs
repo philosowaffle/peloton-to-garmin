@@ -626,7 +626,11 @@ namespace Conversion
 			if(deviceInfo.Version.VersionMinor <=0)
 				deviceInfoMesg.SetSoftwareVersion(deviceInfo.Version.VersionMajor);
 			else
-				deviceInfoMesg.SetSoftwareVersion(deviceInfo.Version.VersionMajor + 1/deviceInfo.Version.VersionMinor);
+			{
+				var adjustedMinor = deviceInfo.Version.VersionMinor < 10 ? deviceInfo.Version.VersionMinor * 10 : deviceInfo.Version.VersionMinor;
+				var minor = adjustedMinor / 100;
+				deviceInfoMesg.SetSoftwareVersion((float)(deviceInfo.Version.VersionMajor + minor));
+			}
 
 			return deviceInfoMesg;
 		}
