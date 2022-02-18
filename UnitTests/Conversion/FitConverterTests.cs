@@ -72,7 +72,47 @@ namespace UnitTests.Conversion
 			} finally
 			{
 				System.IO.File.Delete(dest);
-			}			
+			}
+		}
+
+		[Test]
+		public void Fit_Converter_Builds_Valid_DeviceInfoMesg([Values(5)] int major, [Values(0,-1,3,12)] int minor)
+		{
+			var info = new GarminDeviceInfo()
+			{
+				ManufacturerId = 1,
+				Name = "test",
+				ProductID = 2,
+				UnitId = 3,
+				Version = new GarminDeviceVersion()
+				{
+					VersionMajor = major,
+					VersionMinor = minor,
+				}
+			};
+
+			var converter = new ConverterInstance();
+
+			var mesg = converter.GetDeviceInfo(info, new Dynastream.Fit.DateTime(System.DateTime.Now));
+
+			mesg.GetSerialNumber().Should().Be(info.UnitId);
+			mesg.GetManufacturer().Should().Be(info.ManufacturerId);
+			mesg.GetProduct().Should().Be(info.ProductID);
+			mesg.GetDeviceIndex().Should().Be(0);
+			mesg.GetSourceType().Should().Be(SourceType.Local);
+
+			var version = mesg.GetSoftwareVersion();
+
+			if (minor <= 0)
+			{
+				version.Should().Be(5.0f);
+			} else if (minor == 3)
+			{
+				version.Should().Be(5.3f);
+			} else if (minor == 12)
+			{
+				version.Should().Be(5.12f);
+			}
 		}
 
 		private class ConverterInstance : FitConverter
@@ -89,6 +129,11 @@ namespace UnitTests.Conversion
 				var converted = this.Convert(workoutData.Workout, workoutData.WorkoutSamples);
 
 				return converted.Item2;
+			}
+
+			public DeviceInfoMesg GetDeviceInfo(GarminDeviceInfo deviceInfo, Dynastream.Fit.DateTime startTime)
+			{
+				return this.GetDeviceInfoMesg(deviceInfo, startTime);
 			}
 		}
 	}
