@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Peloton;
 using Serilog;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
@@ -88,6 +89,34 @@ namespace UnitTests
 		//	var messages = fitConverter.ConvertForTest(file);
 		//}
 
+		//[Test]
+		//public async Task InsertHrData()
+		//{
+		//	var file = Path.Join(DataDirectory, "e105c80dde614c1483e4f151f8236724_workout.json");
+
+		//	var autoMocker = new AutoMocker();
+		//	var settings = new Settings();
+
+		//	var fitConverter = new ConverterInstance(settings);
+		//	var messages = fitConverter.Convert(file);
+
+		//	var output = Path.Join(DataDirectory, "output.fit");
+
+		//	using(FileStream fitDest = new FileStream(output, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
+		//	{
+		//		Encode encoder = new Encode(ProtocolVersion.V20);
+		//		try
+		//		{
+		//			encoder.Open(fitDest);
+		//			encoder.Write(messages.Item2);
+		//		}
+		//		finally
+		//		{
+		//			encoder.Close();
+		//		}
+		//	}
+		//}
+
 		private void SaveRawData(dynamic data, string workoutId, string path)
 		{
 			System.IO.File.WriteAllText(Path.Join(path, $"{workoutId}_workout.json"), data.ToString());
@@ -97,8 +126,8 @@ namespace UnitTests
 		{
 			private IOWrapper fileHandler = new IOWrapper();
 
-			public ConverterInstance() : base(new Settings(), null, null) { }
-			public ConverterInstance(Settings settings) : base(settings, null, null) { }
+			public ConverterInstance() : base(new Settings(), null, new IOWrapper()) { }
+			public ConverterInstance(Settings settings) : base(settings, null, new IOWrapper()) { }
 
 			public ICollection<Mesg> ConvertForTest(string path)
 			{
@@ -106,6 +135,14 @@ namespace UnitTests
 				var converted = this.Convert(workoutData.Workout, workoutData.WorkoutSamples);
 
 				return converted.Item2;
+			}
+
+			public Tuple<string, ICollection<Mesg>> Convert(string path)
+			{
+				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
+				var converted = this.Convert(workoutData.Workout, workoutData.WorkoutSamples);
+
+				return converted;
 			}
 		}
 	}
