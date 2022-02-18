@@ -27,7 +27,6 @@ services:
     volumes:
       - ./configuration.local.json:/app/configuration.local.json
       - ./output:/app/output
-      - ./working:/app/working
 ```
 
 ### Prometheus
