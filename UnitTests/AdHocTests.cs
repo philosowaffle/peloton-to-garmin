@@ -71,28 +71,7 @@ namespace UnitTests
 		//[Test]
 		//public async Task Convert()
 		//{
-		//	var file = Path.Join(DataDirectory, "running_workout_01.json");
-
-		//	var autoMocker = new AutoMocker();
-		//	var settings = new Settings()
-		//	{
-		//		Format = new Format()
-		//		{
-		//			Running = new Running()
-		//			{
-		//				PreferredLapType = PreferredLapType.Distance
-		//			}
-		//		}
-		//	};
-
-		//	var fitConverter = new ConverterInstance(settings);
-		//	var messages = fitConverter.ConvertForTest(file);
-		//}
-
-		//[Test]
-		//public async Task InsertHrData()
-		//{
-		//	var file = Path.Join(DataDirectory, "e105c80dde614c1483e4f151f8236724_workout.json");
+		//	var file = Path.Join(DataDirectory, "lanebreaker.json");
 
 		//	var autoMocker = new AutoMocker();
 		//	var settings = new Settings();
@@ -102,20 +81,25 @@ namespace UnitTests
 
 		//	var output = Path.Join(DataDirectory, "output.fit");
 
-		//	using(FileStream fitDest = new FileStream(output, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
-		//	{
-		//		Encode encoder = new Encode(ProtocolVersion.V20);
-		//		try
-		//		{
-		//			encoder.Open(fitDest);
-		//			encoder.Write(messages.Item2);
-		//		}
-		//		finally
-		//		{
-		//			encoder.Close();
-		//		}
-		//	}
+		//	SaveFit(messages, output);
 		//}
+
+		private void SaveFit(Tuple<string, ICollection<Mesg>> messages, string outputPath)
+		{
+			using(FileStream fitDest = new FileStream(outputPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
+			{
+				Encode encoder = new Encode(ProtocolVersion.V20);
+				try
+				{
+					encoder.Open(fitDest);
+					encoder.Write(messages.Item2);
+				}
+				finally
+				{
+					encoder.Close();
+				}
+			}
+		}
 
 		private void SaveRawData(dynamic data, string workoutId, string path)
 		{
