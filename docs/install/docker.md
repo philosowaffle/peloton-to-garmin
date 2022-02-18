@@ -38,7 +38,7 @@ version: "3.9"
 services:
   p2g:
     container_name: p2g
-    image: philosowaffle/peloton-to-garmin
+    image: philosowaffle/peloton-to-garmin:stable
     environment:
       - TZ=America/Chicago
     ports:
@@ -46,7 +46,6 @@ services:
     volumes:
       - ./configuration.local.json:/app/configuration.local.json
       - ./output:/app/output
-      - ./working:/app/working
 ```
 
 ## Docker Tags
