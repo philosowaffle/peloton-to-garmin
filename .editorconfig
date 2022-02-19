@@ -41,7 +41,7 @@ csharp_space_after_cast = false
 #require a space before the colon for bases or interfaces in a type declaration
 csharp_space_after_colon_in_inheritance_clause = true
 #require NO space after a keyword in a control flow statement such as a for loop
-csharp_space_after_keywords_in_control_flow_statements = false
+csharp_space_after_keywords_in_control_flow_statements =true
 #require a space before the colon for bases or interfaces in a type declaration
 csharp_space_before_colon_in_inheritance_clause = true
 #remove space within empty argument list parentheses
