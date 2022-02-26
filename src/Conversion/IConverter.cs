@@ -42,8 +42,8 @@ namespace Conversion
 
 		private static readonly GarminDeviceInfo DefaultDevice = new GarminDeviceInfo()
 		{
-			Name = "fenix 6", // Max 20 Chars
-			ProductID = GarminProduct.Fenix6,
+			Name = "Forerunner 945", // Max 20 Chars
+			ProductID = GarminProduct.Fr945,
 			UnitId = 1,
 			Version = new GarminDeviceVersion()
 			{
