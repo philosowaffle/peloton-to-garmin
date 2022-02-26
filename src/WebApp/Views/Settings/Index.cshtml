@@ -200,7 +200,7 @@
             <tr>
                 <td class="font-weight-bold editor-label">@Html.LabelFor(model => model.GetResponse.Settings.Peloton.Password):</td>
                 <td class="editor-field">
-                    @Html.EditorFor(model => model.GetResponse.Settings.Peloton.Password)
+                    @Html.PasswordFor(model => model.GetResponse.Settings.Peloton.Password)
                     @Html.ValidationMessageFor(model => model.GetResponse.Settings.Peloton.Password)
                 </td>
             </tr>

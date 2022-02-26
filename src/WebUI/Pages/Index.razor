@@ -1,0 +1,86 @@
+﻿@page "/"
+@using Flurl.Http;
+
+<PageTitle>Home</PageTitle>
+
+<h1>Welcome to the Peloton to Garmin UI!</h1>
+
+This is a work in progress and not guaranteed to fully work yet. Breaking changes will happen. Feel free to check it out.
+
+@if (syncRunning)
+{
+	<p><em>Syncing...</em></p>
+}
+else
+{
+	if (syncResponse is object)
+	{
+		if (syncResponse.Errors.Any())
+		{
+			foreach (var error in syncResponse.Errors)
+			{
+				<ul>
+					<li><em>@error.Message</em></li>
+				</ul>
+			}
+		} else
+		{
+			<p>Success!</p>
+		}
+	}
+
+	<button class="btn btn-primary" @onclick="SyncAsync">Sync Now</button>
+}
+
+
+@code {
+
+	private SyncPostResponse? syncResponse;
+	private bool syncRunning;
+
+	protected override async Task OnInitializedAsync()
+	{
+		syncResponse = null;
+		syncRunning = false;
+	}
+
+	private async Task SyncAsync()
+	{
+		try
+		{
+			syncRunning = true;
+			syncResponse = null;
+			syncResponse = await "https://localhost:44349/api/sync"
+						.PostJsonAsync(new SyncPostRequest() { NumWorkouts = 1 })
+						.ReceiveJson<SyncPostResponse>();
+		} 
+		finally
+		{
+			syncRunning = false;
+		}
+	}
+
+	public class SyncPostRequest
+	{
+		public int NumWorkouts { get; set; }
+	}
+
+    public class SyncPostResponse
+	{
+		public SyncPostResponse()
+		{
+			Errors = new List<ErrorResponse>();
+		}
+
+		public bool SyncSuccess { get; set; }
+		public bool PelotonDownloadSuccess { get; set; }
+		public bool? ConverToFitSuccess { get; set; }
+		public bool? UploadToGarminSuccess { get; set; }
+		public ICollection<ErrorResponse> Errors { get; set; }
+	}
+
+	public class ErrorResponse
+	{
+		public string Message { get; set; }
+	}
+}

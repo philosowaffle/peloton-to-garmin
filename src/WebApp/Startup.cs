@@ -126,6 +126,13 @@ namespace WebApp
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
+
+				// TODO: this needs to be something else long term
+				app.UseCors(options =>
+				{
+					options.WithOrigins("http://localhost:7039", "https://localhost:7039",
+										"http://localhost:44349", "https://localhost:44349");
+				});
 			}
 			else
 			{
