@@ -1,7 +1,6 @@
 {
   "App": {
     "OutputDirectory": "./output",
-    "WorkingDirectory": "./working",
     "EnablePolling": true,
     "PollingIntervalSeconds": 86400,
     "CloseWindowOnFinish": false

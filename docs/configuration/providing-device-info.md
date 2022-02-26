@@ -13,16 +13,23 @@ By default, P2G uses the TACX App device type for Cycling activities. At this ti
 
 This means on Garmin Connect your Peloton workouts will show a device image that does not match your personal Garmin device.
 
-# Custom Device Info
+## VO2 Max
 
-If you choose, you can provide P2G with your personal Device Info which will cause the workouts to show the same device you normally use. 
+Garmin _unlocks_ certain workout metrics and fields based on the Garmin device you personally own, one of those metrics is VO2 Max.  This means that if your personal device supports VO2 Max calucations, then your Peloton workouts will also generate VO2 Max when using the default P2G device settings.  If your personal device does not support VO2 Max calculations, then unfortunately your Peloton workouts will also not generate any VO2 Max data.
+
+You can check the [Owners Manual](https://support.garmin.com/en-US/ql/?focus=manuals) for your personal device to see if it already supports the VO2 max field.
+
+## Custom Device Info
+
+If you choose, you can provide P2G with your personal Device Info which will cause the workouts to show the same device you normally use.
 
 **Note:**
+
 * Setting your personal device is completely optional, P2G will work just fine without this extra information
 * Setting your personal device *may* cause you to not see certain fields on Garmin (see notes about VO2 max above)
 * Setting your personal device will mean it is applied on **all** workout types from Peloton
 
-## Steps
+### Steps
 
 1. Get your Garmin current device info
     1. Log on to Garmin connect and find an activity you recorded with your device
@@ -39,7 +46,7 @@ If you choose, you can provide P2G with your personal Device Info which will cau
     1. Modify the [DeviceInfoPath]({{ site.baseurl }}{% link configuration/json.md %}#format-config) to point to the location of your `deviceInfo.xml`
         1. If you are using Docker, ensure you have mounted the files location into the container
 
-## Example
+### Example
 
 ```xml
 <Creator>

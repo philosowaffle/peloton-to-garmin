@@ -32,7 +32,7 @@ namespace UnitTests
 		//[Test]
 		//public void DecodeFitFile()
 		//{
-		//	var syncMyWorkoutFitFile = Path.Join(DataDirectory, "Fenix_Incline.fit");
+		//	var syncMyWorkoutFitFile = Path.Join(DataDirectory, "fenix_outdoor_run_vo2.fit");
 		//	FitDecoder.Decode(syncMyWorkoutFitFile);
 		//}
 

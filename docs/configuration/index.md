@@ -21,8 +21,6 @@ P2G supports configuration via [command line arguments]({{ site.baseurl }}{% lin
 {
   "App": {
     "OutputDirectory": "./output",
-    "WorkingDirectory": "./working",
-    "SyncHistoryDbPath": "./output/syncHistory.json",
     "EnablePolling": false,
     "PollingIntervalSeconds": 86400,
     "CloseWindowOnFinish": false

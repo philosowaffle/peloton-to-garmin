@@ -507,8 +507,8 @@ namespace UnitTests.Conversion
 			var deviceInfo = converter.GetDeviceInfo1(FitnessDiscipline.Bike_Bootcamp);
 
 			// ASSERT
-			deviceInfo.Name.Should().Be("fenix 6");
-			deviceInfo.ProductID.Should().Be(GarminProduct.Fenix6);
+			deviceInfo.Name.Should().Be("Forerunner 945");
+			deviceInfo.ProductID.Should().Be(GarminProduct.Fr945);
 			deviceInfo.UnitId.Should().Be(1);
 			deviceInfo.Version.Should().NotBeNull();
 			deviceInfo.Version.VersionMajor.Should().Be(19);
@@ -557,8 +557,8 @@ namespace UnitTests.Conversion
 			var deviceInfo = converter.GetDeviceInfo1(sport);
 
 			// ASSERT
-			deviceInfo.Name.Should().Be("fenix 6");
-			deviceInfo.ProductID.Should().Be(GarminProduct.Fenix6);
+			deviceInfo.Name.Should().Be("Forerunner 945");
+			deviceInfo.ProductID.Should().Be(GarminProduct.Fr945);
 			deviceInfo.UnitId.Should().Be(1);
 			deviceInfo.Version.Should().NotBeNull();
 			deviceInfo.Version.VersionMajor.Should().Be(19);
