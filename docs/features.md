@@ -15,7 +15,7 @@ Convert workout data from Peloton into a format that can be uploaded to Garmin.
 1. Syncs all available metric data from Peloton over to Garmin Connect
 1. Syncs laps and target cadence
 1. Synced workouts count towards Garmin Badges and Challenges
-1. Synced workouts will count towards VO2 max calculations
+1. Synced workouts will count towards VO2 max calculations [1]({{ site.baseurl }}{% link configuration/providing-device-info.md %})
 1. Syncs on demand or on a schedule
 1. Highly Configurable
 1. Docker-ized

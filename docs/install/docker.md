@@ -9,12 +9,15 @@ nav_order: 0
 
 The recommended and easiest way to get started is with Docker. To learn more about Docker head on over to their [website](https://www.docker.com/).
 
+```yaml
+docker run philosowaffle/peloton-to-garmin:stable -v ./configuration.local.json:/app/configuration.local.json -v ./output:/app/output
+```
+
 ## docker-compose
 
 A sample [docker-compose.yaml](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker-compose.yaml) file and [configuration.local.json](https://github.com/philosowaffle/peloton-to-garmin/blob/master/configuration.example.json) can be found in the project repo.
 
 The Docker container expects a valid `configuration.local.json` file is mounted into the container.  Additionally, you can mount the `app/working` and `app/output` directories.  You can learn more about the configuration file over in the [Configuration Section]({{ site.baseurl }}{% link configuration/index.md %})
-
 
 ```yaml
 version: "3.9"

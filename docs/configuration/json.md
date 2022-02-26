@@ -31,8 +31,6 @@ This section provides global settings for the P2G application.
 ```json
  "App": {
     "OutputDirectory": "./output",
-    "WorkingDirectory": "./working",
-    "SyncHistoryDbPath": "./syncHistory.json",
     "EnablePolling": true,
     "PollingIntervalSeconds": 86400,
     "PythonAndGUploadInstalled": true,
@@ -43,8 +41,6 @@ This section provides global settings for the P2G application.
 | Field      | Required | Default | Description |
 |:-----------|:---------|:--------|:------------|
 | OutputDirectory | no | `$PWD/output` | Where downloaded and converted files should be saved to. |
-| WorkingDirectory  | no | `$PWD/working` | The directory where P2G can work. When running, P2G will create and delete files and needs a dedicated directory to do that.  |
-| SyncHistoryDbPath  | no | `$PWD/syncHistory.json` | The path to the `syncHistory.json` file. This is the file that saves your sync history which can be used to avoid attempting to upload duplicates. Its recommended to not modify this setting unless you know what you are doing. |
 | EnablePolling  | no | `true` | `true` if you wish P2G to run continuously and poll Peloton for new workouts. |
 | PollingIntervalSeconds | no | 3600 | The polling interval in seconds determines how frequently P2G should check for new workouts. Be warned, that setting this to a frequency of hourly or less may get you flagged by Peloton as a bad actor and they may reset your password. |
 | CloseWindowOnFinish | no | `false` | `true` if you wish the console window to close automatically when the program finishes. Not that if you have Polling enabled the program will never 'finish' as it remains active to poll regularly. |
@@ -132,7 +128,7 @@ This section provides settings related to fetching workouts from Peloton.
   }
 ```
 
-⚠️ Your username and password for Peloton and Garmin Connect are stored in clear text, which is **is not secure**. Please be aware of the risks. ⚠️
+⚠️ Your username and password for Peloton and Garmin Connect are stored in clear text, which **is not secure**. Please be aware of the risks. ⚠️
 
 | Field      | Required | Default | Description |
 |:-----------|:---------|:--------|:------------|
@@ -166,7 +162,7 @@ This section provides settings related to uploading workouts to Garmin.
   }
 ```
 
-⚠️ Your username and password for Peloton and Garmin Connect are stored in clear text, which is **is not secure**. Please be aware of the risks. ⚠️
+⚠️ Your username and password for Peloton and Garmin Connect are stored in clear text, which **is not secure**. Please be aware of the risks. ⚠️
 
 | Field      | Required | Default | Description |
 |:-----------|:---------|:--------|:------------|
