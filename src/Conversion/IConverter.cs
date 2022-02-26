@@ -31,6 +31,7 @@ namespace Conversion
 			Name = "TacxTrainingAppWin", // Max 20 Chars
 			ProductID = GarminProduct.TacxTrainingAppWin,
 			UnitId = 1,
+			ManufacturerId = 1, // Garmin
 			Version = new GarminDeviceVersion()
 			{
 				VersionMajor = 1,
@@ -45,6 +46,7 @@ namespace Conversion
 			Name = "Forerunner 945", // Max 20 Chars
 			ProductID = GarminProduct.Fr945,
 			UnitId = 1,
+			ManufacturerId = 1, // Garmin
 			Version = new GarminDeviceVersion()
 			{
 				VersionMajor = 19,
