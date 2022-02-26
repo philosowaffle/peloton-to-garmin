@@ -46,6 +46,9 @@ RUN pip3 --version
 # Setup console app
 WORKDIR /app
 
+RUN useradd 1030
+USER 1030
+
 COPY --from=build /build/published .
 COPY --from=build /build/python/requirements.txt ./requirements.txt
 COPY --from=build /build/LICENSE ./LICENSE
