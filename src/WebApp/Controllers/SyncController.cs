@@ -75,7 +75,7 @@ namespace WebApp.Controllers
 				SyncStatus = syncTime.SyncStatus,
 				LastSuccessfulSyncTime = syncTime.LastSuccessfulSyncTime,
 				LastSyncTime = syncTime.LastSyncTime,
-				NextSyncTime = syncTime.NextSyncTime,				
+				NextSyncTime = syncTime.NextSyncTime,
 			};
 
 			return View("Index", model);
@@ -83,7 +83,7 @@ namespace WebApp.Controllers
 
 		[HttpPost]
 		[Route("/api/sync")]
-		[ProducesResponseType(typeof(SyncPostResponse), 200)]
+		[ProducesResponseType(typeof(SyncPostResponse), 204)]
 		public async Task<SyncPostResponse> SyncAsync([FromBody] SyncPostRequest request)
 		{
 			using var tracing = Tracing.Trace($"{nameof(SyncController)}.{nameof(SyncAsync)}");
@@ -101,6 +101,27 @@ namespace WebApp.Controllers
 				UploadToGarminSuccess = syncResult.UploadToGarminSuccess,
 				Errors = syncResult.Errors.Select(e => new Models.ErrorResponse(e)).ToList()
 			};
+		}
+
+		[HttpGet]
+		[Route("/api/sync")]
+		[ProducesResponseType(typeof(SyncGetResponse), 200)]
+		public async Task<SyncGetResponse> GetAsync()
+		{
+			using var tracing = Tracing.Trace($"{nameof(SyncController)}.{nameof(GetAsync)}");
+
+			var syncTime = await _db.GetSyncStatusAsync();
+
+			var response = new SyncGetResponse()
+			{
+				SyncEnabled = _config.App.EnablePolling,
+				SyncStatus = syncTime.SyncStatus,
+				LastSuccessfulSyncTime = syncTime.LastSuccessfulSyncTime,
+				LastSyncTime = syncTime.LastSyncTime,
+				NextSyncTime = syncTime.NextSyncTime
+			};
+
+			return response;
 		}
 	}
 }

@@ -30,7 +30,7 @@ namespace WebApp.Controllers
 		}
 
 		[HttpGet]
-		[Route("/api/settngs")]
+		[Route("/api/settings")]
 		public async Task<SettingsGetResponse> Get()
 		{
 			using var tracing = Tracing.Trace($"{nameof(SettingsController)}.{nameof(Get)}");

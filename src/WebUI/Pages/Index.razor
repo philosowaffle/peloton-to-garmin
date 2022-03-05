@@ -5,7 +5,24 @@
 
 <h1>Welcome to the Peloton to Garmin UI!</h1>
 
-This is a work in progress and not guaranteed to fully work yet. Breaking changes will happen. Feel free to check it out.
+<p>This is a work in progress and not guaranteed to fully work yet. Breaking changes will happen. Feel free to check it out.</p>
+
+<div class="row">
+	<div class="col-sm-2">
+        <div class="card @syncStatusBorderClass mb-3">
+            <div class="card-body @syncStatusTextClass">
+                <h5 class="card-title">Sync Service  <span class="p-2 rounded-circle @syncStatusBadgeClass home-page-badge"></span></h5>
+                <p class="font-weight-bold">@syncStatus.AutoSyncHealthString</p>
+                @if (syncStatus.SyncStatus != Common.Database.Status.NotRunning)
+                {
+                    <p><span class="font-weight-bold">Last Sync: </span><br />@syncStatus.LastSyncTime</p>
+                    <p><span class="font-weight-bold">Last Successful Sync: </span><br />@syncStatus.LastSuccessfulSyncTime</p>
+                    <p><span class="font-weight-bold">Next Scheduled Sync: </span><br />@syncStatus.NextSyncTime</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
 
 @if (syncRunning)
 {
@@ -36,12 +53,58 @@ else
 @code {
 
 	private SyncPostResponse? syncResponse;
+	private SyncGetResponse syncStatus;
+	private SettingsGetResponse? settings;
 	private bool syncRunning;
+
+	private string syncStatusBorderClass = "border-light";
+	private string syncStatusTextClass = "";
+	private string syncStatusBadgeClass = "bg-light";
+
+	public Index() : base()
+	{
+		syncStatus = new SyncGetResponse();
+		syncResponse = null;
+		
+		settings = new SettingsGetResponse();
+		syncRunning = false;
+	}
 
 	protected override async Task OnInitializedAsync()
 	{
-		syncResponse = null;
-		syncRunning = false;
+		var getSettingsTask = "https://localhost:44349/api/settings"
+							.GetJsonAsync<SettingsGetResponse>();
+
+		await Task.WhenAll(getSettingsTask, LoadSyncStatusAsync());
+
+		settings = getSettingsTask.GetAwaiter().GetResult();
+	}
+
+	private async Task LoadSyncStatusAsync()
+	{
+		syncStatus = await "https://localhost:44349/api/sync"
+							.GetJsonAsync<SyncGetResponse>();
+
+		switch (syncStatus.SyncStatus)
+		{
+			case Common.Database.Status.Running:
+				syncStatusBorderClass = "border-success";
+				syncStatusBadgeClass = "bg-success";
+				break;
+			case Common.Database.Status.NotRunning:
+				syncStatusBorderClass = "border-secondary";
+				syncStatusTextClass = "text-secondary";
+				break;
+			case Common.Database.Status.Dead:
+				syncStatusBorderClass = "border-danger";
+				syncStatusTextClass = "text-danger";
+				syncStatusBadgeClass = "bg-danger";
+				break;
+			case Common.Database.Status.UnHealthy:
+				syncStatusBorderClass = "border-warning";
+				syncStatusBadgeClass = "bg-warning";
+				break;
+		}
 	}
 
 	private async Task SyncAsync()
@@ -51,36 +114,12 @@ else
 			syncRunning = true;
 			syncResponse = null;
 			syncResponse = await "https://localhost:44349/api/sync"
-						.PostJsonAsync(new SyncPostRequest() { NumWorkouts = 1 })
+						.PostJsonAsync(new SyncPostRequest() { NumWorkouts = settings.Settings.Peloton.NumWorkoutsToDownload })
 						.ReceiveJson<SyncPostResponse>();
 		} 
 		finally
 		{
 			syncRunning = false;
 		}
-	}
-
-	public class SyncPostRequest
-	{
-		public int NumWorkouts { get; set; }
-	}
-
-    public class SyncPostResponse
-	{
-		public SyncPostResponse()
-		{
-			Errors = new List<ErrorResponse>();
-		}
-
-		public bool SyncSuccess { get; set; }
-		public bool PelotonDownloadSuccess { get; set; }
-		public bool? ConverToFitSuccess { get; set; }
-		public bool? UploadToGarminSuccess { get; set; }
-		public ICollection<ErrorResponse> Errors { get; set; }
-	}
-
-	public class ErrorResponse
-	{
-		public string Message { get; set; }
 	}
 }
