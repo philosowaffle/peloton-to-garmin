@@ -126,16 +126,6 @@ namespace WebApp
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
-
-				// TODO: this needs to be something else long term
-				app.UseCors(options =>
-				{
-					options
-					.WithOrigins("http://localhost:7039", "https://localhost:7039",
-								"http://localhost:44349", "https://localhost:44349")
-					.WithMethods("GET", "POST")
-					.AllowAnyHeader();
-				});
 			}
 			else
 			{
@@ -143,6 +133,14 @@ namespace WebApp
 				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
+
+			// TODO: this needs to be something else long term
+			app.UseCors(options =>
+			{
+				options
+				.SetIsOriginAllowed((_) => true)
+				.AllowAnyHeader();
+			});
 
 			if (Log.IsEnabled(LogEventLevel.Verbose))
 				app.UseSerilogRequestLogging();

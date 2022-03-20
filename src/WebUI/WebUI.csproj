@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Flurl" Version="3.0.4" />
     <PackageReference Include="Flurl.Http" Version="3.2.2" />
+    <PackageReference Include="Havit.Blazor.Components.Web.Bootstrap" Version="2.2.6" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0" PrivateAssets="all" />
 	  <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />

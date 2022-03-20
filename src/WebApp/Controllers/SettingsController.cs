@@ -38,6 +38,89 @@ namespace WebApp.Controllers
 			return (await GetDataAsync()).GetResponse;
 		}
 
+		[HttpPost]
+		[Route("/api/settings")]
+		public async Task<SettingsGetResponse> Post([FromBody]SettingsGetResponse request)
+		{
+			using var tracing = Tracing.Trace($"{nameof(SettingsController)}.{nameof(Post)}");
+
+			var updatedSettings = request.Settings;
+
+			// TODO: Validation
+
+			await _settingsService.UpdateSettings(updatedSettings);
+
+			return (await GetDataAsync()).GetResponse;
+		}
+
+		[HttpPost]
+		[Route("/api/settings/app")]
+		public async Task<App> AppPost([FromBody] App updatedAppSettings)
+		{
+			using var tracing = Tracing.Trace($"{nameof(SettingsController)}.{nameof(AppPost)}");
+
+			// TODO: Validation
+
+			var settings = await _settingsService.GetSettingsAsync();
+			settings.App = updatedAppSettings;
+
+			await _settingsService.UpdateSettings(settings);
+			var updatedSettings = await _settingsService.GetSettingsAsync();
+
+			return updatedSettings.App;
+		}
+
+		[HttpPost]
+		[Route("/api/settings/format")]
+		public async Task<Format> FormatPost([FromBody] Format updatedFormatSettings)
+		{
+			using var tracing = Tracing.Trace($"{nameof(SettingsController)}.{nameof(FormatPost)}");
+
+			// TODO: Validation
+
+			var settings = await _settingsService.GetSettingsAsync();
+			settings.Format = updatedFormatSettings;
+
+			await _settingsService.UpdateSettings(settings);
+			var updatedSettings = await _settingsService.GetSettingsAsync();
+
+			return updatedSettings.Format;
+		}
+
+		[HttpPost]
+		[Route("/api/settings/peloton")]
+		public async Task<Common.Peloton> PelotonPost([FromBody] Common.Peloton updatedPelotonSettings)
+		{
+			using var tracing = Tracing.Trace($"{nameof(SettingsController)}.{nameof(PelotonPost)}");
+
+			// TODO: Validation
+
+			var settings = await _settingsService.GetSettingsAsync();
+			settings.Peloton = updatedPelotonSettings;
+
+			await _settingsService.UpdateSettings(settings);
+			var updatedSettings = await _settingsService.GetSettingsAsync();
+
+			return updatedSettings.Peloton;
+		}
+
+		[HttpPost]
+		[Route("/api/settings/garmin")]
+		public async Task<Common.Garmin> GarminPost([FromBody] Common.Garmin updatedGarminSettings)
+		{
+			using var tracing = Tracing.Trace($"{nameof(SettingsController)}.{nameof(GarminPost)}");
+
+			// TODO: Validation
+
+			var settings = await _settingsService.GetSettingsAsync();
+			settings.Garmin = updatedGarminSettings;
+
+			await _settingsService.UpdateSettings(settings);
+			var updatedSettings = await _settingsService.GetSettingsAsync();
+
+			return updatedSettings.Garmin;
+		}
+
 		private async Task<SettingsViewModel> GetDataAsync()
 		{
 			using var tracing = Tracing.Trace($"{nameof(SettingsController)}.{nameof(GetDataAsync)}");
@@ -52,12 +135,6 @@ namespace WebApp.Controllers
 					App = _appConfiguration
 				}
 			};
-
-			response.GetResponse.Settings.Peloton.Email = string.IsNullOrEmpty(response.GetResponse.Settings.Peloton.Email) ? "not set" : "******";
-			response.GetResponse.Settings.Peloton.Password = string.IsNullOrEmpty(response.GetResponse.Settings.Peloton.Password) ? "not set" : "******";
-
-			response.GetResponse.Settings.Garmin.Email = string.IsNullOrEmpty(response.GetResponse.Settings.Garmin.Email) ? "not set" : "******";
-			response.GetResponse.Settings.Garmin.Password = string.IsNullOrEmpty(response.GetResponse.Settings.Garmin.Password) ? "not set" : "******";
 
 			return response;
 		}
@@ -85,7 +162,7 @@ namespace WebApp.Controllers
 			if (updatedSettings.Peloton.Password == "not set" || updatedSettings.Peloton.Password == "******")
 				updatedSettings.Peloton.Password = null;
 
-			await _settingsService.UpdateSettings(request.GetResponse.Settings);
+			await _settingsService.UpdateSettings(updatedSettings);
 
 			return View("Index", await GetDataAsync());
         }

@@ -1,0 +1,148 @@
+﻿@page "/settings"
+
+<PageTitle>Settings</PageTitle>
+
+<HxTabPanel InitialActiveTabId="tab0">
+	<HxTab Id="tab0" Title="App">
+		<Content>
+			<EditForm Model="@appSettings">
+
+				<HxInputText @bind-Value="appSettings.OutputDirectory" Label="Output Directory" />
+
+				<HxInputSwitch Label="Poll for new workouts" @bind-Value="appSettings.EnablePolling" />
+				<HxFormState Enabled="@appSettings.EnablePolling">
+					<HxInputNumber Label="Check for new workouts every X (seconds)" TValue="int" @bind-Value="appSettings.PollingIntervalSeconds" />
+				</HxFormState>
+
+				<HxSubmit Color="ThemeColor.Primary" OnClick="SaveAppSettings">Save</HxSubmit>
+
+			</EditForm>
+		</Content>
+	</HxTab>
+	<HxTab Id="tab1" Title="Conversion">
+		<Content>
+			<EditForm Model="@formatSettings">
+
+				<HxInputSwitch Label="Convert to FIT" @bind-Value="formatSettings.Fit" />
+				<HxInputSwitch Label="Convert to TCX" @bind-Value="formatSettings.Tcx" />
+				<HxInputSwitch Label="Convert to JSON" @bind-Value="formatSettings.Json" />
+
+				<HxInputText @bind-Value="formatSettings.DeviceInfoPath" Label="Path to custom deviceInfo.xml file" />
+
+				<HxSelect
+					Label="Cycling Lap Type"
+					Data="@lapTypes"
+					Nullable="false"
+					NullDataText="Loading info..."
+					@bind-Value="formatSettings.Cycling.PreferredLapType" />
+
+				<HxSelect
+					Label="Running Lap Type"
+					Data="@lapTypes"
+					Nullable="false"
+					NullDataText="Loading info..."
+					@bind-Value="formatSettings.Running.PreferredLapType" />
+
+				<HxSubmit Color="ThemeColor.Primary" OnClick="SaveFormatSettings">Save</HxSubmit>
+
+			</EditForm>
+		</Content>
+	</HxTab>
+	<HxTab Id="tab2" Title="Peloton">
+		<Content>
+			<HxInputText @bind-Value="pelotonSettings.Password" Label="Password" Type="InputType.Password" />
+			<HxInputText @bind-Value="pelotonSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
+
+			<HxSubmit Color="ThemeColor.Primary" OnClick="SavePelotonSettings">Save</HxSubmit>
+		</Content>		
+	</HxTab>
+	<HxTab Id="tab3" Title="Garmin">
+		<Content>
+			<HxInputSwitch Label="Automatically upload to Garmin Connect" @bind-Value="garminSettings.Upload" />
+			<HxFormState Enabled="@garminSettings.Upload">
+				<HxInputText @bind-Value="garminSettings.Password" Label="Password" Type="InputType.Password" />
+				<HxInputText @bind-Value="garminSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
+
+				<HxSelect
+						Label="Format to Upload"
+						Data="@formatTypes"
+						Nullable="false"
+						NullDataText="Loading info..."
+						@bind-Value="garminSettings.FormatToUpload" />
+			
+				<HxSelect
+						Label="Upload Strategy to user"
+						Data="@uploadStrategyTypes"
+						Nullable="false"
+						NullDataText="Loading info..."
+						@bind-Value="garminSettings.UploadStrategy" />
+			</HxFormState>
+
+			<HxSubmit Color="ThemeColor.Primary" OnClick="SaveGarminSettings">Save</HxSubmit>
+		</Content>
+	</HxTab>
+</HxTabPanel>
+
+@code {
+	private Common.App appSettings;
+	private Format formatSettings;
+	private Peloton pelotonSettings;
+	private Garmin garminSettings;
+
+	private static ICollection<PreferredLapType> lapTypes = Enum.GetValues(typeof(PreferredLapType)).Cast<PreferredLapType>().ToList();
+	private static ICollection<FileFormat> formatTypes = Enum.GetValues(typeof(FileFormat)).Cast<FileFormat>().ToList();
+	private static ICollection<UploadStrategy> uploadStrategyTypes = Enum.GetValues(typeof(UploadStrategy)).Cast<UploadStrategy>().ToList();
+
+	public Settings() : base()
+	{
+		var settings = new SettingsGetResponse();
+		appSettings = settings.Settings.App;
+		formatSettings = settings.Settings.Format;
+		pelotonSettings = settings.Settings.Peloton;
+		garminSettings = settings.Settings.Garmin;
+	}
+
+	protected override Task OnInitializedAsync()
+	{
+		return LoadDataAsync();
+	}
+
+	protected async Task SaveAppSettings()
+	{
+		appSettings = await "https://localhost:44349/api/settings/app"
+					.PostJsonAsync(appSettings)
+					.ReceiveJson<Common.App>();
+	}
+
+	protected async Task SaveFormatSettings() 
+	{
+		formatSettings = await "https://localhost:44349/api/settings/format"
+						.PostJsonAsync(formatSettings)
+						.ReceiveJson<Format>();
+	}
+
+	protected async Task SavePelotonSettings() 
+	{
+		pelotonSettings = await "https://localhost:44349/api/settings/peloton"
+						.PostJsonAsync(pelotonSettings)
+						.ReceiveJson<Peloton>();
+	}
+
+	protected async Task SaveGarminSettings() 
+	{
+		garminSettings = await "https://localhost:44349/api/settings/garmin"
+						.PostJsonAsync(garminSettings)
+						.ReceiveJson<Garmin>();
+	}
+
+	private async Task LoadDataAsync()
+	{
+		var settings = await "https://localhost:44349/api/settings"
+							.GetJsonAsync<SettingsGetResponse>();
+
+		appSettings = settings.Settings.App;
+		formatSettings = settings.Settings.Format;
+		pelotonSettings = settings.Settings.Peloton;
+		garminSettings = settings.Settings.Garmin;
+	}
+}
