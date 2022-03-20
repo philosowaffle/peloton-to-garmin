@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+	  <PackageId>PelotonToGarmin.Api</PackageId>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+	<RuntimeIdentifiers>win10-x64;osx-x64;linux-x64</RuntimeIdentifiers>
+	<PackageProjectUrl>https://github.com/philosowaffle/peloton-to-garmin</PackageProjectUrl>
+	<RepositoryUrl>https://github.com/philosowaffle/peloton-to-garmin</RepositoryUrl>
+	<Authors>Bailey Belvis</Authors>
+	<ApplicationIcon>../../images/logo/256x256.ico</ApplicationIcon>
+	<PackageIcon>../../images/logo/256x256.png</PackageIcon>
+	<RepositoryType>git</RepositoryType>
+	<VersionPrefix>2.2.0</VersionPrefix>
+	<SignAssembly>false</SignAssembly>
+	<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+	<ServerGarbageCollection>false</ServerGarbageCollection>
+	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	<DockerfileContext>..\..</DockerfileContext>
+	<DockerfileFile>../../Dockerfile</DockerfileFile>
+	<DockerfileRunArguments>-v $(pwd)/configuration.local.json:/app/configuration.local.json:ro</DockerfileRunArguments>
+	<UserSecretsId>94e9df33-6fd6-4f04-9eb2-9a0b820668e2</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="1.1.0" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc9" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc9" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc9" />
+    <PackageReference Include="prometheus-net" Version="6.0.0" />
+    <PackageReference Include="prometheus-net.DotNetRuntime" Version="4.2.3" />
+    <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
+    <PackageReference Include="Serilog.Enrichers.Span" Version="2.2.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.Grafana.Loki" Version="7.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\Sync\Sync.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="configuration.local.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

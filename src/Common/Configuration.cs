@@ -31,6 +31,7 @@ namespace Common
     {
 		public AppConfiguration()
         {
+			Api = new ApiSettings();
 			Observability = new Observability();
 			Developer = new Developer();
         }
