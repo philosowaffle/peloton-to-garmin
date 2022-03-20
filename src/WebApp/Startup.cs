@@ -134,7 +134,6 @@ namespace WebApp
 				app.UseHsts();
 			}
 
-			// TODO: this needs to be something else long term
 			app.UseCors(options =>
 			{
 				options

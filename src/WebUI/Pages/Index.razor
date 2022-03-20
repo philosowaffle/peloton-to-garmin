@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject IApiClient _apiClient
 
 <PageTitle>Home</PageTitle>
 
@@ -64,15 +65,14 @@ else
 	{
 		syncStatus = new SyncGetResponse();
 		syncResponse = null;
-		
+
 		settings = new SettingsGetResponse();
 		syncRunning = false;
 	}
 
 	protected override async Task OnInitializedAsync()
 	{
-		var getSettingsTask = "https://localhost:44349/api/settings"
-							.GetJsonAsync<SettingsGetResponse>();
+		var getSettingsTask = _apiClient.SettingsGetAsync();
 
 		await Task.WhenAll(getSettingsTask, LoadSyncStatusAsync());
 
@@ -81,8 +81,7 @@ else
 
 	private async Task LoadSyncStatusAsync()
 	{
-		syncStatus = await "https://localhost:44349/api/sync"
-							.GetJsonAsync<SyncGetResponse>();
+		syncStatus = await _apiClient.SyncGetAsync();
 
 		switch (syncStatus.SyncStatus)
 		{
@@ -112,9 +111,7 @@ else
 		{
 			syncRunning = true;
 			syncResponse = null;
-			syncResponse = await "https://localhost:44349/api/sync"
-						.PostJsonAsync(new SyncPostRequest() { NumWorkouts = settings.Settings.Peloton.NumWorkoutsToDownload })
-						.ReceiveJson<SyncPostResponse>();
+			syncResponse = await _apiClient.SyncPostAsync(new SyncPostRequest() { NumWorkouts = settings.Settings.Peloton.NumWorkoutsToDownload });
 		} 
 		finally
 		{

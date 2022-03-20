@@ -1,4 +1,5 @@
 ﻿@page "/settings"
+@inject IApiClient _apiClient
 
 <PageTitle>Settings</PageTitle>
 
@@ -84,14 +85,15 @@
 </HxTabPanel>
 
 @code {
-	private Common.App appSettings;
-	private Format formatSettings;
-	private Peloton pelotonSettings;
-	private Garmin garminSettings;
 
 	private static ICollection<PreferredLapType> lapTypes = Enum.GetValues(typeof(PreferredLapType)).Cast<PreferredLapType>().ToList();
 	private static ICollection<FileFormat> formatTypes = Enum.GetValues(typeof(FileFormat)).Cast<FileFormat>().ToList();
 	private static ICollection<UploadStrategy> uploadStrategyTypes = Enum.GetValues(typeof(UploadStrategy)).Cast<UploadStrategy>().ToList();
+
+	private Common.App appSettings;
+	private Format formatSettings;
+	private Peloton pelotonSettings;
+	private Garmin garminSettings;
 
 	public Settings() : base()
 	{
@@ -109,36 +111,27 @@
 
 	protected async Task SaveAppSettings()
 	{
-		appSettings = await "https://localhost:44349/api/settings/app"
-					.PostJsonAsync(appSettings)
-					.ReceiveJson<Common.App>();
+		appSettings = await _apiClient.SettingsAppPostAsync(appSettings);
 	}
 
 	protected async Task SaveFormatSettings() 
 	{
-		formatSettings = await "https://localhost:44349/api/settings/format"
-						.PostJsonAsync(formatSettings)
-						.ReceiveJson<Format>();
+		formatSettings = await _apiClient.SettingsFormatPostAsync(formatSettings);
 	}
 
 	protected async Task SavePelotonSettings() 
 	{
-		pelotonSettings = await "https://localhost:44349/api/settings/peloton"
-						.PostJsonAsync(pelotonSettings)
-						.ReceiveJson<Peloton>();
+		pelotonSettings = await _apiClient.SettingsPelotonPostAsync(pelotonSettings);
 	}
 
 	protected async Task SaveGarminSettings() 
 	{
-		garminSettings = await "https://localhost:44349/api/settings/garmin"
-						.PostJsonAsync(garminSettings)
-						.ReceiveJson<Garmin>();
+		garminSettings = await _apiClient.SettingsGarminPostAsync(garminSettings);
 	}
 
 	private async Task LoadDataAsync()
 	{
-		var settings = await "https://localhost:44349/api/settings"
-							.GetJsonAsync<SettingsGetResponse>();
+		var settings = await _apiClient.SettingsGetAsync();
 
 		appSettings = settings.Settings.App;
 		formatSettings = settings.Settings.Format;
