@@ -54,9 +54,15 @@ RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
 # BUILD WEB APP
 ###################
 RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
-		dotnet publish /build/src/WebApp/WebApp.csproj -c Release -r linux-arm64 -o /buildweb/published --version-suffix $VERSION ; \
+		dotnet publish /build/src/Api/Api.csproj -c Release -r linux-arm64 -o /buildapi/published --version-suffix $VERSION ; \
 	else \
-		dotnet publish /build/src/WebApp/WebApp.csproj -c Release -r linux-x64 -o /buildweb/published --version-suffix $VERSION ; \
+		dotnet publish /build/src/Api/Api.csproj -c Release -r linux-x64 -o /buildapi/published --version-suffix $VERSION ; \
+ 	fi
+
+RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
+		dotnet publish /build/src/WebUI/WebUI.csproj -c Release -r linux-arm64 -o /buildweb/published --version-suffix $VERSION ; \
+	else \
+		dotnet publish /build/src/WebUI/WebUI.csproj -c Release -r linux-x64 -o /buildweb/published --version-suffix $VERSION ; \
  	fi
 
 ###################
@@ -69,7 +75,8 @@ COPY --from=build /build/LICENSE ./LICENSE
 COPY --from=build /build/configuration.example.json ./configuration.local.json
 
 # Setup web app
-COPY --from=build /buildweb/published .
+COPY --from=build /buildapi/published ./api
+COPY --from=build /buildweb/published ./webui
 
 COPY --chmod=777 ./entrypoint.sh .
 

@@ -48,8 +48,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "grafana", "grafana", "{D569
 		grafana\p2g_dashboard.json = grafana\p2g_dashboard.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp", "src\WebApp\WebApp.csproj", "{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{08D5FE41-2EA1-4240-BCE2-796CA3B9D370}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -59,7 +57,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sync", "src\Sync\Sync.cspro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebUI", "src\WebUI\WebUI.csproj", "{22BB0799-FE82-4C09-95E9-801E84DAC203}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "src\Api\Api.csproj", "{63A354CC-C2D3-4860-995E-C3072EC76C46}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "src\Api\Api.csproj", "{63A354CC-C2D3-4860-995E-C3072EC76C46}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,10 +89,6 @@ Global
 		{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EE76DAF8-90B6-4909-B060-2B881A3F3ED7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D792AAD1-E2BB-4F45-BF49-B040A92799FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D792AAD1-E2BB-4F45-BF49-B040A92799FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D792AAD1-E2BB-4F45-BF49-B040A92799FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
