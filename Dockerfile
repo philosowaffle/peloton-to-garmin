@@ -15,6 +15,9 @@ RUN apt-get update \
 	&& python --version \
 	&& pip3 --version
 
+COPY ./python/requirements.txt ./requirements.txt
+RUN pip3 install -r requirements.txt
+
 RUN useradd 1030
 USER 1030
 
@@ -66,14 +69,11 @@ RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
 FROM final
 
 COPY --from=build /build/published .
-COPY --from=build /build/python/requirements.txt ./requirements.txt
 COPY --from=build /build/LICENSE ./LICENSE
 COPY --from=build /build/configuration.example.json ./configuration.local.json
 
 # Setup web app
 COPY --from=build /buildweb/published .
-
-RUN pip3 install -r requirements.txt
 
 COPY --chmod=770 --chown=1030 ./entrypoint.sh .
 
