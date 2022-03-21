@@ -15,6 +15,9 @@ RUN apt-get update \
 	&& python --version \
 	&& pip3 --version
 
+RUN useradd 1030
+USER 1030
+
 # Setup console app
 WORKDIR /app
 
@@ -72,8 +75,7 @@ COPY --from=build /buildweb/published .
 
 RUN pip3 install -r requirements.txt
 
-COPY --chmod=770 ./entrypoint.sh .
-#RUN chmod +x entrypoint.sh
+COPY --chmod=770 --chown=1030 ./entrypoint.sh .
 
 EXPOSE 80 443
 ENTRYPOINT ["/app/entrypoint.sh"]
