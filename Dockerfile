@@ -18,7 +18,7 @@ RUN apt-get update \
 COPY ./python/requirements.txt ./requirements.txt
 RUN pip3 install -r requirements.txt
 
-RUN useradd 1030:1030
+RUN useradd -g 1030 1030
 USER 1030
 
 # Setup console app
