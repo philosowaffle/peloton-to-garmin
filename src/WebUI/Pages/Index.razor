@@ -54,7 +54,7 @@ else
 
 	private SyncPostResponse? syncResponse;
 	private SyncGetResponse syncStatus;
-	private SettingsGetResponse? settings;
+	private Common.Settings settings;
 	private bool syncRunning;
 
 	private string syncStatusBorderClass = "border-light";
@@ -66,7 +66,7 @@ else
 		syncStatus = new SyncGetResponse();
 		syncResponse = null;
 
-		settings = new SettingsGetResponse();
+		settings = new Common.Settings();
 		syncRunning = false;
 	}
 
@@ -76,7 +76,7 @@ else
 
 		await Task.WhenAll(getSettingsTask, LoadSyncStatusAsync());
 
-		settings = getSettingsTask.GetAwaiter().GetResult();
+		settings = await getSettingsTask;
 	}
 
 	private async Task LoadSyncStatusAsync()
@@ -111,7 +111,7 @@ else
 		{
 			syncRunning = true;
 			syncResponse = null;
-			syncResponse = await _apiClient.SyncPostAsync(new SyncPostRequest() { NumWorkouts = settings.Settings.Peloton.NumWorkoutsToDownload });
+			syncResponse = await _apiClient.SyncPostAsync(new SyncPostRequest() { NumWorkouts = settings.Peloton.NumWorkoutsToDownload });
 		} 
 		finally
 		{

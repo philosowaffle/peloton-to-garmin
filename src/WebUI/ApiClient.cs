@@ -1,11 +1,12 @@
 ﻿using Common;
 using Flurl.Http;
+using WebUI.Domain;
 
 namespace WebUI
 {
 	public interface IApiClient
 	{
-		Task<SettingsGetResponse> SettingsGetAsync();
+		Task<Settings> SettingsGetAsync();
 		Task<Common.App> SettingsAppPostAsync(Common.App appSettings);
 		Task<Format> SettingsFormatPostAsync(Format formatSettings);
 		Task<Peloton> SettingsPelotonPostAsync(Peloton pelotonSettings);
@@ -13,6 +14,8 @@ namespace WebUI
 
 		Task<SyncGetResponse> SyncGetAsync();
 		Task<SyncPostResponse> SyncPostAsync(SyncPostRequest syncPostRequest);
+
+		Task<SystemInfoGetResponse> SystemInfoGetAsync();
 	}
 
 	public class ApiClient : IApiClient
@@ -24,10 +27,10 @@ namespace WebUI
 			_apiUrl = apiUrl;
 		}
 
-		public Task<SettingsGetResponse> SettingsGetAsync()
+		public Task<Settings> SettingsGetAsync()
 		{
 			return $"{_apiUrl}/api/settings"
-					.GetJsonAsync<SettingsGetResponse>();
+					.GetJsonAsync<Settings>();
 		}
 
 		public Task<Common.App> SettingsAppPostAsync(Common.App appSettings)
@@ -69,6 +72,12 @@ namespace WebUI
 			return $"{_apiUrl}/api/sync"
 					.PostJsonAsync(syncPostRequest)
 					.ReceiveJson<SyncPostResponse>();
+		}
+
+		public Task<SystemInfoGetResponse> SystemInfoGetAsync()
+		{
+			return $"{_apiUrl}/api/systemInfo"
+					.GetJsonAsync<SystemInfoGetResponse>();
 		}
 	}
 }

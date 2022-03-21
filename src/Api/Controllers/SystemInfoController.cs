@@ -10,16 +10,6 @@ namespace WebApp.Controllers
 	public class SystemInfoController : Controller
 	{
 		[HttpGet]
-		[Route("/about")]
-		[ApiExplorerSettings(IgnoreApi = true)]
-		public ActionResult Index()
-		{
-			using var tracing = Tracing.Trace($"{nameof(SystemInfoController)}.{nameof(Index)}");
-
-			return View(GetData());
-		}
-
-		[HttpGet]
 		[Route("/api/systeminfo")]
 		public SystemInfoGetResponse Get()
 		{

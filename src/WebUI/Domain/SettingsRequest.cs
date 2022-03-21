@@ -2,6 +2,8 @@
 using Common;
 using Common.Helpers;
 
+namespace WebUI.Domain;
+
 public class SettingsGetResponse
 {
 	public SettingsGetResponse()

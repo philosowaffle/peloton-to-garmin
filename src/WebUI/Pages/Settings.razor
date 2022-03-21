@@ -133,9 +133,9 @@
 	{
 		var settings = await _apiClient.SettingsGetAsync();
 
-		appSettings = settings.Settings.App;
-		formatSettings = settings.Settings.Format;
-		pelotonSettings = settings.Settings.Peloton;
-		garminSettings = settings.Settings.Garmin;
+		appSettings = settings.App;
+		formatSettings = settings.Format;
+		pelotonSettings = settings.Peloton;
+		garminSettings = settings.Garmin;
 	}
 }
