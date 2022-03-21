@@ -18,7 +18,7 @@ RUN apt-get update \
 COPY ./python/requirements.txt ./requirements.txt
 RUN pip3 install -r requirements.txt
 
-RUN useradd 1030
+RUN useradd 1030:1030
 USER 1030
 
 # Setup console app
@@ -68,14 +68,14 @@ RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
 ###################
 FROM final
 
-COPY --from=build /build/published .
-COPY --from=build /build/LICENSE ./LICENSE
-COPY --from=build /build/configuration.example.json ./configuration.local.json
+COPY  --from=build --chown=1030:1030 /build/published .
+COPY --from=build --chown=1030:1030 /build/LICENSE ./LICENSE
+COPY --from=build --chown=1030:1030 /build/configuration.example.json ./configuration.local.json
 
 # Setup web app
-COPY --from=build /buildweb/published .
+COPY --from=build --chown=1030:1030 /buildweb/published .
 
-COPY --chmod=770 --chown=1030 ./entrypoint.sh .
+COPY --chmod=770 --chown=1030:1030 ./entrypoint.sh .
 
 EXPOSE 80 443
 ENTRYPOINT ["/app/entrypoint.sh"]
