@@ -72,8 +72,8 @@ COPY --from=build /buildweb/published .
 
 RUN pip3 install -r requirements.txt
 
-COPY --chmod ./entrypoint.sh .
-RUN chmod +x entrypoint.sh
+COPY --chmod=+x ./entrypoint.sh .
+#RUN chmod +x entrypoint.sh
 
 EXPOSE 80 443
 ENTRYPOINT ["/app/entrypoint.sh"]
