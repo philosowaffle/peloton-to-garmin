@@ -1,3 +1,26 @@
+###################
+# CREATE FINAL LAYER
+###################
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 as final
+
+ENV PYTHONUNBUFFERED=1
+RUN apt-get update \
+	&& apt-get -y install bash python3 python3-pip tzdata \
+	&& ln -sf python3 /usr/bin/python \
+	&& pip3 install --no-cache --upgrade pip setuptools \
+	&& python --version \
+	&& pip3 --version
+
+# Setup console app
+WORKDIR /app
+
+RUN mkdir output \
+	&& mkdir working \
+	&& mkdir data
+
+###################
+# BUILD LAYER
+###################
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 
 COPY . /build
@@ -8,8 +31,8 @@ SHELL ["/bin/bash", "-c"]
 ARG TARGETPLATFORM
 ARG VERSION
 
-RUN echo $TARGETPLATFORM
-RUN echo $VERSION
+RUN echo $TARGETPLATFORM \
+	&& echo $VERSION
 ENV VERSION=${VERSION}
 
 ###################
@@ -33,30 +56,12 @@ RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
 ###################
 # FINAL
 ###################
-FROM mcr.microsoft.com/dotnet/aspnet:5.0
-
-ENV PYTHONUNBUFFERED=1
-RUN apt-get update
-RUN apt-get -y install bash python3 python3-pip tzdata && ln -sf python3 /usr/bin/python
-RUN pip3 install --no-cache --upgrade pip setuptools
-
-RUN python --version
-RUN pip3 --version
-
-# Setup console app
-WORKDIR /app
-
-RUN useradd 1030
-USER 1030
+FROM final
 
 COPY --from=build /build/published .
 COPY --from=build /build/python/requirements.txt ./requirements.txt
 COPY --from=build /build/LICENSE ./LICENSE
 COPY --from=build /build/configuration.example.json ./configuration.local.json
-
-RUN mkdir output
-RUN mkdir working
-RUN mkdir data
 
 # Setup web app
 COPY --from=build /buildweb/published .
