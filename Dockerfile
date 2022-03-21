@@ -6,6 +6,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:5.0 as final
 ENV PYTHONUNBUFFERED=1
 RUN apt-get update \
 	&& apt-get -y install bash python3 python3-pip tzdata \
+	&& apt-get purge -y -f --force-yes $EXT_BUILD_DEPS \
+	&& apt-get autoremove -y \
+	&& apt-get clean \
+	&& rm -rf /var/lib/apt/lists/* \
 	&& ln -sf python3 /usr/bin/python \
 	&& pip3 install --no-cache --upgrade pip setuptools \
 	&& python --version \
@@ -68,8 +72,8 @@ COPY --from=build /buildweb/published .
 
 RUN pip3 install -r requirements.txt
 
-COPY ./entrypoint.sh .
-RUN chmod 777 entrypoint.sh
+COPY --chmod ./entrypoint.sh .
+RUN chmod +x entrypoint.sh
 
 EXPOSE 80 443
 ENTRYPOINT ["/app/entrypoint.sh"]
