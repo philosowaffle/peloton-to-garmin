@@ -9,7 +9,7 @@ nav_order: 0
 
 The recommended and easiest way to get started is with Docker. To learn more about Docker head on over to their [website](https://www.docker.com/).
 
-```yaml
+```bash
 docker run philosowaffle/peloton-to-garmin:stable -v ./configuration.local.json:/app/configuration.local.json -v ./output:/app/output
 ```
 
@@ -17,7 +17,7 @@ docker run philosowaffle/peloton-to-garmin:stable -v ./configuration.local.json:
 
 A sample [docker-compose.yaml](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker-compose.yaml) file and [configuration.local.json](https://github.com/philosowaffle/peloton-to-garmin/blob/master/configuration.example.json) can be found in the project repo.
 
-The Docker container expects a valid `configuration.local.json` file is mounted into the container.  Additionally, you can mount the `app/working` and `app/output` directories.  You can learn more about the configuration file over in the [Configuration Section]({{ site.baseurl }}{% link configuration/index.md %})
+The Docker container expects a valid `configuration.local.json` file is mounted into the container.  Additionally, you can mount the `app/output` directories.  You can learn more about the configuration file over in the [Configuration Section]({{ site.baseurl }}{% link configuration/index.md %})
 
 ```yaml
 version: "3.9"
@@ -30,6 +30,20 @@ services:
     volumes:
       - ./configuration.local.json:/app/configuration.local.json:ro
       - ./output:/app/output
+```
+
+### Permissions
+
+P2G runs with the user and group `p2g:p2g`.  You will need to ensure that this user/group has read and write permissions to any mounted directories.
+
+You can choose to run P2G with a specified user and group using dockers `--user` flag or docker-compose `user:` property.
+
+For example:
+
+```bash
+> mkdir output
+> sudo chown myuser:mygroup output
+> docker run philosowaffle/peloton-to-garmin:stable -u myuser:mygroup -v ./configuration.local.json:/app/configuration.local.json -v ./output:/app/output
 ```
 
 ### Prometheus
@@ -56,5 +70,5 @@ services:
 The P2G docker image is available on [DockerHub](https://hub.docker.com/r/philosowaffle/peloton-to-garmin). The following tags are provided:
 
 1. `stable` - Always points to the latest release
-1. `latest` - The bleeding edge of the master branch
+1. `latest` - The bleeding edge of the master branch, breaking changes may happen
 1. `vX.Y.Z` - For using a specific released version
