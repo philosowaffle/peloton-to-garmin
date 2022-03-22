@@ -1,8 +1,10 @@
 #!/bin/bash
 set -e
 
+chown -R p2g:p2g /app
+
 if [[ "$1" == "web" ]]; then
-    ./WebApp
+    exec runuser -u p2g ./WebApp
 else
-   ./PelotonToGarminConsole
+   exec runuser -u p2g ./PelotonToGarminConsole
 fi
