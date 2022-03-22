@@ -21,12 +21,9 @@ RUN pip3 install -r requirements.txt
 RUN groupadd -r p2g && useradd -r -g p2g p2g
 USER p2g
 
-# Setup console app
 WORKDIR /app
 
-RUN mkdir output \
-	&& mkdir working \
-	&& mkdir data
+RUN mkdir -m770 {output,data,working}
 
 ###################
 # BUILD LAYER
