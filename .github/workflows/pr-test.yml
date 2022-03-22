@@ -134,7 +134,7 @@ jobs:
       with:
         push: true
         file: ./Dockerfile
-        tags: philosowaffle/peloton-to-garmin:pr-validator
+        tags: philosowaffle/peloton-to-garmin:pr-validator-A
         platforms: linux/amd64
         build-args: VERSION=${{ env.BUILD_VERSION }}
         cache-from: type=local,src=/tmp/.buildx-cache
