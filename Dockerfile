@@ -75,7 +75,7 @@ COPY --from=build --chown=p2g:p2g /build/configuration.example.json ./configurat
 # Setup web app
 COPY --from=build --chown=p2g:p2g /buildweb/published .
 
-COPY --chmod=770 --chown=p2g:p2g ./entrypoint.sh .
+COPY --chmod=777 --chown=p2g:p2g ./entrypoint.sh .
 
 EXPOSE 80 443
 ENTRYPOINT ["/app/entrypoint.sh"]
