@@ -18,8 +18,8 @@ RUN apt-get update \
 COPY ./python/requirements.txt ./requirements.txt
 RUN pip3 install -r requirements.txt
 
-RUN useradd -g 1030 1030
-USER 1030
+RUN groupadd -r p2g && useradd -r -g p2g p2g
+USER p2g
 
 # Setup console app
 WORKDIR /app
@@ -68,14 +68,14 @@ RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
 ###################
 FROM final
 
-COPY  --from=build --chown=1030:1030 /build/published .
-COPY --from=build --chown=1030:1030 /build/LICENSE ./LICENSE
-COPY --from=build --chown=1030:1030 /build/configuration.example.json ./configuration.local.json
+COPY --from=build --chown=p2g:p2g /build/published .
+COPY --from=build --chown=p2g:p2g /build/LICENSE ./LICENSE
+COPY --from=build --chown=p2g:p2g /build/configuration.example.json ./configuration.local.json
 
 # Setup web app
-COPY --from=build --chown=1030:1030 /buildweb/published .
+COPY --from=build --chown=p2g:p2g /buildweb/published .
 
-COPY --chmod=770 --chown=1030:1030 ./entrypoint.sh .
+COPY --chmod=770 --chown=p2g:p2g ./entrypoint.sh .
 
 EXPOSE 80 443
 ENTRYPOINT ["/app/entrypoint.sh"]
