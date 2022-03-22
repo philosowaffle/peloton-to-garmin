@@ -28,7 +28,7 @@ services:
     environment:
       - TZ=America/Chicago
     volumes:
-      - ./configuration.local.json:/app/configuration.local.json
+      - ./configuration.local.json:/app/configuration.local.json:ro
       - ./output:/app/output
 ```
 
@@ -47,7 +47,7 @@ services:
     ports:
         - 4000:4000
     volumes:
-      - ./configuration.local.json:/app/configuration.local.json
+      - ./configuration.local.json:/app/configuration.local.json:ro
       - ./output:/app/output
 ```
 
