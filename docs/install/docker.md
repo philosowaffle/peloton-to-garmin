@@ -13,11 +13,19 @@ The recommended and easiest way to get started is with Docker. To learn more abo
 docker run philosowaffle/peloton-to-garmin:stable -v ./configuration.local.json:/app/configuration.local.json -v ./output:/app/output
 ```
 
+## Docker Tags
+
+The P2G docker image is available on [DockerHub](https://hub.docker.com/r/philosowaffle/peloton-to-garmin). The following tags are provided:
+
+1. `stable` - Always points to the latest release
+1. `latest` - The bleeding edge of the master branch, breaking changes may happen
+1. `vX.Y.Z` - For using a specific released version
+
 ## docker-compose
 
 A sample [docker-compose.yaml](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker-compose.yaml) file and [configuration.local.json](https://github.com/philosowaffle/peloton-to-garmin/blob/master/configuration.example.json) can be found in the project repo.
 
-The Docker container expects a valid `configuration.local.json` file is mounted into the container.  Additionally, you can mount the `app/output` directories.  You can learn more about the configuration file over in the [Configuration Section]({{ site.baseurl }}{% link configuration/index.md %})
+The Docker container expects a valid `configuration.local.json` file is mounted into the container. You can learn more about the configuration file over in the [Configuration Section]({{ site.baseurl }}{% link configuration/index.md %})
 
 ```yaml
 version: "3.9"
@@ -28,25 +36,25 @@ services:
     environment:
       - TZ=America/Chicago
     volumes:
-      - ./configuration.local.json:/app/configuration.local.json:ro
+      - ./configuration.local.json:/app/configuration.local.json
+```
+
+The generated `tcx`, `fit`, `json`, and log files can be found in `app/output` which can be mounted as seen below.
+
+```yaml
+version: "3.9"
+services:
+  p2g:
+    container_name: p2g
+    image: philosowaffle/peloton-to-garmin:stable
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - ./configuration.local.json:/app/configuration.local.json
       - ./output:/app/output
 ```
 
-### Permissions
-
-P2G runs with the user and group `p2g:p2g`.  You will need to ensure that this user/group has read and write permissions to any mounted directories.
-
-You can choose to run P2G with a specified user and group using dockers `--user` flag or docker-compose `user:` property.
-
-For example:
-
-```bash
-> mkdir output
-> sudo chown myuser:mygroup output
-> docker run philosowaffle/peloton-to-garmin:stable -u myuser:mygroup -v ./configuration.local.json:/app/configuration.local.json -v ./output:/app/output
-```
-
-### Prometheus
+## Prometheus
 
 If you configure P2G to server Prometheus metrics then you will also need to map the corresponding port for your docker container. By default, Prometheus metrics will be served on port `4000`. You can learn more about P2G and Prometheus in the [Observability Configuration]({{ site.baseurl }}{% link configuration/index.md %}) section.
 
@@ -61,14 +69,5 @@ services:
     ports:
         - 4000:4000
     volumes:
-      - ./configuration.local.json:/app/configuration.local.json:ro
-      - ./output:/app/output
+      - ./configuration.local.json:/app/configuration.local.json
 ```
-
-## Docker Tags
-
-The P2G docker image is available on [DockerHub](https://hub.docker.com/r/philosowaffle/peloton-to-garmin). The following tags are provided:
-
-1. `stable` - Always points to the latest release
-1. `latest` - The bleeding edge of the master branch, breaking changes may happen
-1. `vX.Y.Z` - For using a specific released version

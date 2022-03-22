@@ -19,7 +19,6 @@ COPY ./python/requirements.txt ./requirements.txt
 RUN pip3 install -r requirements.txt
 
 RUN groupadd -r p2g && useradd -r -g p2g p2g
-# USER p2g
 
 WORKDIR /app
 
