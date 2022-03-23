@@ -155,7 +155,7 @@ namespace Common
 	{
 		public Peloton()
 		{
-			ExcludeWorkoutTypes = new List<FitnessDiscipline>();
+			ExcludeWorkoutTypes = new List<WorkoutType>();
 			NumWorkoutsToDownload = 5;
 		}
 
@@ -165,7 +165,7 @@ namespace Common
 		public int NumWorkoutsToDownload { get; set; }
 		[DisplayName("Exclude Workout Types")]
 		[Description("List of workout types that you do not want P2G to download/convert/upload. Hold the Ctrl key and click to multi-select.")]
-		public ICollection<FitnessDiscipline> ExcludeWorkoutTypes { get; set; }
+		public ICollection<WorkoutType> ExcludeWorkoutTypes { get; set; }
 	}
 
 	public class Garmin

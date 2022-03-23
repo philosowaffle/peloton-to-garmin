@@ -85,19 +85,12 @@ namespace Peloton
 				return false;
 			});
 
-			var filteredWorkouts = completedWorkouts.Where(w => 
-			{
-				if (!_config.Peloton.ExcludeWorkoutTypes?.Contains(w.Fitness_Discipline) ?? true) return true;
-				_logger.Debug("Skipping excluded workout type. {@WorkoutId} {@WorkoutStatus} {@WorkoutType}", w.Id, w.Status, w.Fitness_Discipline);
-				return false;
-			});
-
-			_logger.Debug("Total workouts found after filtering out InProgress and ExcludedWorkoutTypes: {@FoundWorkouts}", filteredWorkouts.Count());
+			_logger.Debug("Total workouts found after filtering out InProgress: {@FoundWorkouts}", completedWorkouts.Count());
 
 			var workingDir = _config.App.DownloadDirectory;
 			_fileHandler.MkDirIfNotExists(workingDir);
 
-			foreach (var recentWorkout in filteredWorkouts)
+			foreach (var recentWorkout in completedWorkouts)
 			{
 				var workoutId = recentWorkout.Id;
 
@@ -137,6 +130,13 @@ namespace Peloton
 					var title = "workout_failed_to_deserialize_" + workoutId;
 					_logger.Error("Failed to deserialize workout from Peloton. You can find the raw data from the workout here: @FileName", title, e);
 					SaveRawData(data, title);
+					continue;
+				}
+
+				_logger.Debug("Check if workout is in ExcludeWorkoutTypes list. {@WorkoutId}", workoutId);
+				if (!_config.Peloton.ExcludeWorkoutTypes?.Contains(deSerializedData.WorkoutType) ?? true)
+				{
+					_logger.Debug("Skipping excluded workout type. {@WorkoutId} {@WorkoutType}", deSerializedData.Workout.Id, deSerializedData.WorkoutType);
 					continue;
 				}
 
