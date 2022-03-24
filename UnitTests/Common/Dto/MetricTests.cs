@@ -1,4 +1,4 @@
-﻿using Common.Dto;
+﻿using Common.Dto.Peloton;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Text.Json;

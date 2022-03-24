@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Common.Dto
+namespace Common.Dto.Peloton
 {
-    public class RecentWorkouts
+	public class RecentWorkouts
 	{
 		public ICollection<RecentWorkout> data { get; set; }
 	}
@@ -60,7 +60,7 @@ namespace Common.Dto
 	}
 
 	public enum FitnessDiscipline
-    {
+	{
 		None = 0,
 		Cycling = 1,
 		Bike_Bootcamp = 2,
@@ -72,5 +72,5 @@ namespace Common.Dto
 		Stretching = 8,
 		Yoga = 9,
 		Meditation = 10
-    }
+	}
 }

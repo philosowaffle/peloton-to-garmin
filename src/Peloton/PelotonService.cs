@@ -1,6 +1,7 @@
 ﻿using Common;
 using Common.Database;
 using Common.Dto;
+using Common.Dto.Peloton;
 using Common.Helpers;
 using Common.Observe;
 using Newtonsoft.Json.Linq;
@@ -16,7 +17,7 @@ using Metrics = Prometheus.Metrics;
 
 namespace Peloton
 {
-    public interface IPelotonService
+	public interface IPelotonService
 	{
 		Task DownloadLatestWorkoutDataAsync();
 		Task DownloadLatestWorkoutDataAsync(int numWorkoutsToDownload);

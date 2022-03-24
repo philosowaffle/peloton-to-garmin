@@ -1,4 +1,4 @@
-﻿using Common.Dto;
+﻿using Common.Dto.Peloton;
 using Common.Helpers;
 using System;
 

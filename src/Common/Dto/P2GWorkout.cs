@@ -1,4 +1,6 @@
-﻿namespace Common.Dto
+﻿using Common.Dto.Peloton;
+
+namespace Common.Dto
 {
 	public class P2GWorkout
 	{

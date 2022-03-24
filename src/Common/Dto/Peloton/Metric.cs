@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Common.Dto
+namespace Common.Dto.Peloton
 {
 	public class Metric
 	{
@@ -17,15 +17,15 @@ namespace Common.Dto
 		public ICollection<Metric> Alternatives { get; set; }
 	}
 
-	public static class MetricExtensions 
+	public static class MetricExtensions
 	{
 		public static double GetValue(this Metric metric, int index)
 		{
 			try
 			{
 				return metric.Values[index].GetValueOrDefault(0);
-			} 
-			catch(IndexOutOfRangeException)
+			}
+			catch (IndexOutOfRangeException)
 			{
 				Log.Debug("Index out of range exception. Returning 0 for Metric value. Index: {@Index}, Metric: {@Slug}", index, metric.Slug);
 				return 0;

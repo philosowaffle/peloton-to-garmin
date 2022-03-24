@@ -1,6 +1,7 @@
 ﻿using Common;
 using Common.Database;
-using Common.Dto;
+using Common.Dto.Garmin;
+using Common.Dto.Peloton;
 using Conversion;
 using Dynastream.Fit;
 using FluentAssertions;

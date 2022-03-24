@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Common.Dto
+namespace Common.Dto.Peloton
 {
 	public class Ride
 	{

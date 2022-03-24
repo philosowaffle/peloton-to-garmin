@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Dto;
+using Common.Dto.Garmin;
 using Conversion;
 using Dynastream.Fit;
 using FluentAssertions;
