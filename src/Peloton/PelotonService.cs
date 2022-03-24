@@ -157,6 +157,8 @@ namespace Peloton
 
 		protected async Task<List<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)
 		{
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetRecentWorkoutsAsync)}");
+
 			List<RecentWorkout> recentWorkouts = new List<RecentWorkout>();
 			var page = 0;
 			while (numWorkoutsToDownload > 0)

@@ -73,7 +73,7 @@ namespace UnitTests.Peloton
 		{
 		}
 
-		public Task<List<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)
+		public new Task<List<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)
 		{
 			return base.GetRecentWorkoutsAsync(numWorkoutsToDownload);
 		}
