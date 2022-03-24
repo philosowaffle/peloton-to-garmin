@@ -58,24 +58,7 @@ namespace Peloton
 
 			await _pelotonApi.InitAuthAsync();
 
-			List<RecentWorkout> recentWorkouts = new List<RecentWorkout>();
-			var page = 0;
-			while(numWorkoutsToDownload > 0)
-			{
-				_logger.Debug("Fetching recent workouts page: {@Page}", page);
-
-				var workouts = await _pelotonApi.GetWorkoutsAsync(numWorkoutsToDownload, page);
-				if (workouts.data is null || workouts.data.Count <= 0)
-				{
-					_logger.Debug("No more workouts found from Peloton.");
-					break;
-				}
-
-				recentWorkouts.AddRange(workouts.data);
-
-				numWorkoutsToDownload -= workouts.data.Count;
-				page++;
-			}
+			List<RecentWorkout> recentWorkouts = await GetRecentWorkoutsAsync(numWorkoutsToDownload);
 
 			_logger.Debug("Total workouts found: {@FoundWorkouts}", recentWorkouts.Count);
 
@@ -170,6 +153,30 @@ namespace Peloton
 				_logger.Error("Peloton Password required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Peloton), nameof(config.Password));
 				throw new ArgumentException("Peloton Password must be set.", nameof(config.Password));
 			}
+		}
+
+		protected async Task<List<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)
+		{
+			List<RecentWorkout> recentWorkouts = new List<RecentWorkout>();
+			var page = 0;
+			while (numWorkoutsToDownload > 0)
+			{
+				_logger.Debug("Fetching recent workouts page: {@Page}", page);
+
+				var workouts = await _pelotonApi.GetWorkoutsAsync(numWorkoutsToDownload, page);
+				if (workouts.data is null || workouts.data.Count <= 0)
+				{
+					_logger.Debug("No more workouts found from Peloton.");
+					break;
+				}
+
+				recentWorkouts.AddRange(workouts.data);
+
+				numWorkoutsToDownload -= workouts.data.Count;
+				page++;
+			}
+
+			return recentWorkouts;
 		}
 
 		private void SaveRawData(dynamic data, string workoutTitle)
