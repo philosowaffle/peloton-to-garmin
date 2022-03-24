@@ -1,6 +1,8 @@
 ﻿using Common;
 using Common.Database;
 using Common.Dto;
+using Common.Dto.Garmin;
+using Common.Dto.Peloton;
 using Common.Helpers;
 using Common.Observe;
 using Dynastream.Fit;
@@ -12,7 +14,7 @@ using System.Linq;
 
 namespace Conversion
 {
-    public class FitConverter : Converter<Tuple<string, ICollection<Mesg>>>
+	public class FitConverter : Converter<Tuple<string, ICollection<Mesg>>>
 	{
 		private static readonly string _spaceSeparator = "_";
 		private static readonly ILogger _logger = LogContext.ForClass<FitConverter>();

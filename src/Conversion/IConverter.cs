@@ -1,6 +1,8 @@
 ﻿using Common;
 using Common.Database;
 using Common.Dto;
+using Common.Dto.Garmin;
+using Common.Dto.Peloton;
 using Common.Helpers;
 using Common.Observe;
 using Dynastream.Fit;
@@ -10,7 +12,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Metrics = Prometheus.Metrics;
-using Summary = Common.Dto.Summary;
+using Summary = Common.Dto.Peloton.Summary;
 
 namespace Conversion
 {

@@ -148,6 +148,23 @@ Example use cases:
 1. You take a wide variety of Peloton classes, including meditation and you want to skip uploading meditation classes.
 1. You want to avoid double-counting activities you already track directly on a Garmin device, such as outdoor running workouts.
 
+The available values are:
+
+```json
+		Cycling
+		BikeBootcamp
+		TreadmillRunning
+		OutdoorRunning
+		TreadmillWalking
+		OutdoorWalking
+		Cardio
+		Circuit
+		Strength
+		Stretching
+		Yoga
+		Meditation
+```
+
 ## Garmin Config
 
 This section provides settings related to uploading workouts to Garmin.

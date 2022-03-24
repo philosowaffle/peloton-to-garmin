@@ -1,6 +1,6 @@
 ﻿using Common;
 using Common.Database;
-using Common.Dto;
+using Common.Dto.Peloton;
 using Common.Observe;
 using System.Linq;
 using System.Xml.Linq;

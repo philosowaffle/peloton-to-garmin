@@ -1,6 +1,7 @@
 ﻿using Common;
 using Common.Database;
 using Common.Dto;
+using Common.Dto.Peloton;
 using Common.Helpers;
 using Common.Observe;
 using Newtonsoft.Json.Linq;
@@ -16,7 +17,7 @@ using Metrics = Prometheus.Metrics;
 
 namespace Peloton
 {
-    public interface IPelotonService
+	public interface IPelotonService
 	{
 		Task DownloadLatestWorkoutDataAsync();
 		Task DownloadLatestWorkoutDataAsync(int numWorkoutsToDownload);
@@ -57,24 +58,7 @@ namespace Peloton
 
 			await _pelotonApi.InitAuthAsync();
 
-			List<RecentWorkout> recentWorkouts = new List<RecentWorkout>();
-			var page = 0;
-			while(numWorkoutsToDownload > 0)
-			{
-				_logger.Debug("Fetching recent workouts page: {@Page}", page);
-
-				var workouts = await _pelotonApi.GetWorkoutsAsync(numWorkoutsToDownload, page);
-				if (workouts.data is null || workouts.data.Count <= 0)
-				{
-					_logger.Debug("No more workouts found from Peloton.");
-					break;
-				}
-
-				recentWorkouts.AddRange(workouts.data);
-
-				numWorkoutsToDownload -= workouts.data.Count;
-				page++;
-			}
+			List<RecentWorkout> recentWorkouts = await GetRecentWorkoutsAsync(numWorkoutsToDownload);
 
 			_logger.Debug("Total workouts found: {@FoundWorkouts}", recentWorkouts.Count);
 
@@ -85,19 +69,12 @@ namespace Peloton
 				return false;
 			});
 
-			var filteredWorkouts = completedWorkouts.Where(w => 
-			{
-				if (!_config.Peloton.ExcludeWorkoutTypes?.Contains(w.Fitness_Discipline) ?? true) return true;
-				_logger.Debug("Skipping excluded workout type. {@WorkoutId} {@WorkoutStatus} {@WorkoutType}", w.Id, w.Status, w.Fitness_Discipline);
-				return false;
-			});
-
-			_logger.Debug("Total workouts found after filtering out InProgress and ExcludedWorkoutTypes: {@FoundWorkouts}", filteredWorkouts.Count());
+			_logger.Debug("Total workouts found after filtering out InProgress: {@FoundWorkouts}", completedWorkouts.Count());
 
 			var workingDir = _config.App.DownloadDirectory;
 			_fileHandler.MkDirIfNotExists(workingDir);
 
-			foreach (var recentWorkout in filteredWorkouts)
+			foreach (var recentWorkout in completedWorkouts)
 			{
 				var workoutId = recentWorkout.Id;
 
@@ -140,6 +117,13 @@ namespace Peloton
 					continue;
 				}
 
+				_logger.Debug("Check if workout is in ExcludeWorkoutTypes list. {@WorkoutId}", workoutId);
+				if (!_config.Peloton.ExcludeWorkoutTypes?.Contains(deSerializedData.WorkoutType) ?? true)
+				{
+					_logger.Debug("Skipping excluded workout type. {@WorkoutId} {@WorkoutType}", deSerializedData.Workout.Id, deSerializedData.WorkoutType);
+					continue;
+				}
+
 				_logger.Debug("Write peloton workout details to file for {@WorkoutId}.", workoutId);
 				File.WriteAllText(Path.Join(workingDir, $"{workoutTitle}.json"), data.ToString());
 
@@ -169,6 +153,32 @@ namespace Peloton
 				_logger.Error("Peloton Password required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Peloton), nameof(config.Password));
 				throw new ArgumentException("Peloton Password must be set.", nameof(config.Password));
 			}
+		}
+
+		protected async Task<List<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)
+		{
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetRecentWorkoutsAsync)}");
+
+			List<RecentWorkout> recentWorkouts = new List<RecentWorkout>();
+			var page = 0;
+			while (numWorkoutsToDownload > 0)
+			{
+				_logger.Debug("Fetching recent workouts page: {@Page}", page);
+
+				var workouts = await _pelotonApi.GetWorkoutsAsync(numWorkoutsToDownload, page);
+				if (workouts.data is null || workouts.data.Count <= 0)
+				{
+					_logger.Debug("No more workouts found from Peloton.");
+					break;
+				}
+
+				recentWorkouts.AddRange(workouts.data);
+
+				numWorkoutsToDownload -= workouts.data.Count;
+				page++;
+			}
+
+			return recentWorkouts;
 		}
 
 		private void SaveRawData(dynamic data, string workoutTitle)
