@@ -53,7 +53,3 @@ COPY --from=build /build/LICENSE ./LICENSE
 COPY --from=build /build/configuration.example.json ./configuration.local.json
 
 COPY --chmod=770 ./docker/entrypoint.sh .
-
-EXPOSE 80 443
-ENTRYPOINT ["/app/entrypoint.sh"]
-CMD ["web"]
