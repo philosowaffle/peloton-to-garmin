@@ -15,8 +15,6 @@ RUN groupadd -r p2g && useradd -r -g p2g p2g
 
 WORKDIR /app
 
-RUN mkdir -m770 {output,data,working}
-
 ###################
 # BUILD LAYER
 ###################
@@ -48,8 +46,6 @@ RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
 ###################
 FROM final
 
-COPY --from=build /build/published /usr/share/nginx/html
+COPY --from=build /build/published/wwwroot /usr/share/nginx/html
 COPY --from=build /build/LICENSE ./LICENSE
-COPY --from=build /build/configuration.example.json ./configuration.local.json
-
-COPY --chmod=770 ./docker/entrypoint.sh .
+COPY --from=build /build/configuration.example.json /usr/share/nginx/html/configuration.local.json
