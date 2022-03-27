@@ -136,7 +136,7 @@ jobs:
         run: echo ${{ steps.docker_build.outputs.digest }}
 
   docker-image-webui:
-    name: Publish Docker API - Latest
+    name: Publish Docker WebUI - Latest
     runs-on: ubuntu-latest
 
     steps:
