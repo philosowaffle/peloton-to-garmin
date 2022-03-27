@@ -25,7 +25,7 @@ services:
     container_name: p2g-api
     image: philosowaffle/peloton-to-garmin:api-latest
     ports:
-      - 8001:80
+      - 8001:80 # only need to do this if you want /metrics or to use the api directly
     environment:
       - TZ=America/Chicago
     volumes:
@@ -41,7 +41,7 @@ services:
     environment:
       - TZ=America/Chicago
     volumes:
-      - ./appsettings.json:/usr/share/nginx/html/appsettings.json # see sample below
+      - ./configuration.local.json:/app/configuration.local.json # see sample below
 ```
 
 ### Sample configuration.local.json
@@ -52,6 +52,10 @@ The only exception to this is the Observability configuration section, which is 
 
 ```json
 {
+  "Api": {
+    "HostUrl": "http://p2g-api"
+  },
+
   "Observability": {
 
     "Prometheus": {
@@ -83,31 +87,6 @@ The only exception to this is the Observability configuration section, which is 
   }
 }
 ```
-
-### Sample appsettings.json
-
-The Web UI container needs to know how to communicate with the API container, this file provides the Url and Port for the API.
-
-In the below example:
-
-- `192.168.1.94` is the IP address of the computer hosting the API
-- `80` is the Port exposed from the `p2g-api` container
-
-```json
-{
-  "Api": {
-    "HostUrl": "http://192.168.1.94:8001"
-  }
-}
-```
-
-#### Notes for the docker savvy
-
-The web ui container runs as a client side blazor app in the browser, so it cannot benefit from Docker's shared networking. You must expose the API on a port and you must give the UI the full hosturl and port.
-
-At this time, it is not recommended to expose the API outside of your network unless you have other network wide security in place to prevent unwanted API access.
-
-There are future plans to lock down the API with either user based access or API key based access to make this safer to expose publicly.
 
 ### Polling Service
 

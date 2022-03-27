@@ -19,6 +19,8 @@ namespace Peloton
 {
 	public interface IPelotonService
 	{
+		Task<ICollection<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload);
+		Task<P2GWorkout[]> GetP2GWorkoutsAsync(ICollection<RecentWorkout> workoutIds);
 		Task DownloadLatestWorkoutDataAsync();
 		Task DownloadLatestWorkoutDataAsync(int numWorkoutsToDownload);
 	}
@@ -58,7 +60,7 @@ namespace Peloton
 
 			await _pelotonApi.InitAuthAsync();
 
-			List<RecentWorkout> recentWorkouts = await GetRecentWorkoutsAsync(numWorkoutsToDownload);
+			var recentWorkouts = await GetRecentWorkoutsAsync(numWorkoutsToDownload);
 
 			_logger.Debug("Total workouts found: {@FoundWorkouts}", recentWorkouts.Count);
 
@@ -155,9 +157,11 @@ namespace Peloton
 			}
 		}
 
-		protected async Task<List<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)
+		public async Task<ICollection<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)
 		{
 			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetRecentWorkoutsAsync)}");
+
+			await _pelotonApi.InitAuthAsync();
 
 			List<RecentWorkout> recentWorkouts = new List<RecentWorkout>();
 			var page = 0;
@@ -190,6 +194,60 @@ namespace Peloton
 
 			_logger.Debug("Write peloton json to file for {@WorkoutId}", data.Workout.Id);
 			File.WriteAllText(Path.Join(outputDir, $"{workoutTitle}.json"), data.ToString());
+		}
+
+		public Task<P2GWorkout[]> GetP2GWorkoutsAsync(ICollection<RecentWorkout> workoutIds)
+		{
+			var tasks = new List<Task<P2GWorkout>>();
+			foreach (var recentWorkout in workoutIds)
+			{
+				var workoutId = recentWorkout.Id;
+
+				tasks.Add(GetWorkoutDetailsAsync(workoutId));
+			}
+
+			return Task.WhenAll(tasks);
+		}
+
+		private async Task<P2GWorkout> GetWorkoutDetailsAsync(string workoutId)
+		{
+			using var workoutTimer = WorkoutDownloadDuration.NewTimer();
+
+			var workoutTask = _pelotonApi.GetWorkoutByIdAsync(workoutId);
+			var workoutSamplesTask = _pelotonApi.GetWorkoutSamplesByIdAsync(workoutId);
+
+			await Task.WhenAll(workoutTask, workoutSamplesTask);
+
+			var workout = await workoutTask;
+			var workoutSamples = await workoutSamplesTask;
+
+			return BuildP2GWorkout(workoutId, workout, workoutSamples);
+		}
+
+		private P2GWorkout BuildP2GWorkout(string workoutId, JObject workout, JObject workoutSamples)
+		{
+			dynamic data = new JObject();
+			data.Workout = workout;
+			data.WorkoutSamples = workoutSamples;
+
+			P2GWorkout deSerializedData = null;
+			try
+			{
+				deSerializedData = JsonSerializer.Deserialize<P2GWorkout>(data.ToString(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+				var workoutTitle = WorkoutHelper.GetUniqueTitle(deSerializedData.Workout);
+
+				if (_config.Format.Json && _config.Format.SaveLocalCopy) SaveRawData(data, workoutTitle);
+
+			}
+			catch (Exception e)
+			{
+				_failedCount++;
+				var title = "workout_failed_to_deserialize_" + workoutId;
+				_logger.Error("Failed to deserialize workout from Peloton. You can find the raw data from the workout here: @FileName", title, e);
+				SaveRawData(data, title);
+			}
+
+			return deSerializedData;
 		}
 	}
 }

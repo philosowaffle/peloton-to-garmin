@@ -11,7 +11,7 @@
 	<div class="col-sm-2">
         <div class="card @syncStatusBorderClass mb-3">
             <div class="card-body @syncStatusTextClass">
-                <h5 class="card-title">Sync Service  <span class="p-2 rounded-circle @syncStatusBadgeClass home-page-badge"></span></h5>
+                <h5 class="card-title">Automatic Syncing <i class="fa-solid fa-circle" style="@syncStatusBadgeClass"></i></h5>
                 <p class="font-weight-bold">@syncStatus.AutoSyncHealthString</p>
                 @if (syncStatus.SyncStatus != Common.Database.Status.NotRunning)
                 {
@@ -59,7 +59,7 @@ else
 
 	private string syncStatusBorderClass = "border-light";
 	private string syncStatusTextClass = "";
-	private string syncStatusBadgeClass = "bg-light";
+	private string syncStatusBadgeClass = "color:gray";
 
 	public Index() : base()
 	{
@@ -87,20 +87,21 @@ else
 		{
 			case Common.Database.Status.Running:
 				syncStatusBorderClass = "border-success";
-				syncStatusBadgeClass = "bg-success";
+				syncStatusBadgeClass = "color:green";
 				break;
 			case Common.Database.Status.NotRunning:
 				syncStatusBorderClass = "border-secondary";
 				syncStatusTextClass = "text-secondary";
+				syncStatusBadgeClass = "color:gray";
 				break;
 			case Common.Database.Status.Dead:
 				syncStatusBorderClass = "border-danger";
 				syncStatusTextClass = "text-danger";
-				syncStatusBadgeClass = "bg-danger";
+				syncStatusBadgeClass = "color:red";
 				break;
 			case Common.Database.Status.UnHealthy:
 				syncStatusBorderClass = "border-warning";
-				syncStatusBadgeClass = "bg-warning";
+				syncStatusBadgeClass = "color:yellow";
 				break;
 		}
 	}

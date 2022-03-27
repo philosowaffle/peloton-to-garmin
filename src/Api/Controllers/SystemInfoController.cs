@@ -1,16 +1,28 @@
 ﻿using Api.Contracts;
+using Common;
 using Common.Observe;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using System.Reflection;
 
 namespace WebApp.Controllers
 {
 	[ApiController]
 	public class SystemInfoController : Controller
 	{
+		private readonly AppConfiguration _appConfiguration;
+
+		public SystemInfoController(AppConfiguration appConfiguration)
+		{
+			_appConfiguration = appConfiguration;
+		}
+
+		/// <summary>
+		/// Fetches information about the service and system.
+		/// </summary>
+		/// <returns>SystemInfoGetResponse</returns>
+		/// <response code="200">Returns the system information</response>
 		[HttpGet]
 		[Route("/api/systeminfo")]
+		[Produces("application/json")]
 		public SystemInfoGetResponse Get()
 		{
 			using var tracing = Tracing.Trace($"{nameof(SystemInfoController)}.{nameof(Get)}");
@@ -29,14 +41,14 @@ namespace WebApp.Controllers
 
 				RunTimeVersion = Environment.Version.ToString(),
 
-				Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion,
+				Version = Constants.AppVersion,
 
 				GitHub = "https://github.com/philosowaffle/peloton-to-garmin",
 				Documentation = "https://philosowaffle.github.io/peloton-to-garmin/",
 				Forums = "https://github.com/philosowaffle/peloton-to-garmin/discussions",
 				Donate = "https://www.buymeacoffee.com/philosowaffle",
 				Issues = "https://github.com/philosowaffle/peloton-to-garmin/issues",
-				Api = "/swagger"
+				Api = $"{_appConfiguration.Api.HostUrl}/swagger"
 			};
 		}
 	}

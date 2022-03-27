@@ -4,11 +4,8 @@ using WebUI;
 using Serilog;
 using Serilog.Enrichers.Span;
 using Serilog.Events;
-using System.Reflection;
-using System.Diagnostics;
 using Prometheus;
 using Common.Observe;
-using Prometheus.DotNetRuntime;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Resources;
 
@@ -62,11 +59,9 @@ if (config.Observability.Jaeger.Enabled)
 var runtimeVersion = Environment.Version.ToString();
 var os = Environment.OSVersion.Platform.ToString();
 var osVersion = Environment.OSVersion.VersionString;
-var assembly = Assembly.GetExecutingAssembly();
-var versionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-var version = versionInfo.ProductVersion ?? "unknown_version";
+var version = Constants.AppVersion;
 
-Prometheus.Metrics.CreateGauge("p2g_webui_build_info", "Build info for the running instance.", new GaugeConfiguration()
+Prometheus.Metrics.CreateGauge($"{Constants.WebUIName}_build_info", "Build info for the running instance.", new GaugeConfiguration()
 {
 	LabelNames = new[] { Common.Observe.Metrics.Label.Version, Common.Observe.Metrics.Label.Os, Common.Observe.Metrics.Label.OsVersion, Common.Observe.Metrics.Label.DotNetRuntime }
 }).WithLabels(version, os, osVersion, runtimeVersion)
@@ -94,7 +89,7 @@ app.Use(async (context, next) =>
 if (config.Observability.Prometheus.Enabled)
 {
 	Log.Information("Metrics Enabled");
-	Common.Observe.Metrics.EnableCollector(config.Observability.Prometheus);
+	Common.Observe.Metrics.EnableCollector(config.Observability.Prometheus, Constants.WebUIName);
 
 	app.MapMetrics();
 	app.UseHttpMetrics();
@@ -126,8 +121,8 @@ void ConfigureTracing(IServiceCollection services, AppConfiguration config)
 {
 	services.AddOpenTelemetryTracing(
 		(builder) => builder
-			.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("p2g-webui"))
-			.AddSource("P2G-WebUI")
+			.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Constants.WebUIName))
+			.AddSource(Constants.WebUIName)
 			.SetSampler(new AlwaysOnSampler())
 			.SetErrorStatusOnException()
 			.AddAspNetCoreInstrumentation(c =>

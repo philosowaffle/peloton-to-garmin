@@ -9,13 +9,10 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Peloton;
 using Prometheus;
-using Prometheus.DotNetRuntime;
 using Serilog;
 using Serilog.Enrichers.Span;
 using Serilog.Events;
 using Sync;
-using System.Diagnostics;
-using System.Reflection;
 
 ///////////////////////////////////////////////////////////
 /// HOST
@@ -69,6 +66,7 @@ builder.Services.AddTransient<Settings>((serviceProvider) =>
 builder.Services.AddSingleton<AppConfiguration>((serviceProvider) =>
 {
 	var config = new AppConfiguration();
+	builder.Configuration.GetSection("Api").Bind(config.Api);
 	builder.Configuration.GetSection(nameof(Observability)).Bind(config.Observability);
 	builder.Configuration.GetSection(nameof(Developer)).Bind(config.Developer);
 	return config;
@@ -99,9 +97,7 @@ if (config.Observability.Jaeger.Enabled)
 var runtimeVersion = Environment.Version.ToString();
 var os = Environment.OSVersion.Platform.ToString();
 var osVersion = Environment.OSVersion.VersionString;
-var assembly = Assembly.GetExecutingAssembly();
-var versionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-var version = versionInfo.ProductVersion ?? "unknown_version";
+var version = Constants.AppVersion;
 
 Prometheus.Metrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
 {
@@ -141,21 +137,11 @@ app.Use(async (context, next) =>
 if (config.Observability.Prometheus.Enabled)
 {
 	Log.Information("Metrics Enabled");
-	DotNetRuntimeStatsBuilder
-		.Customize()
-		.WithContentionStats()
-		.WithJitStats()
-		.WithThreadPoolStats()
-		.WithGcStats()
-		.WithExceptionStats()
-		//.WithDebuggingMetrics(true)
-		.WithErrorHandler(ex => Log.Error(ex, "Unexpected exception occurred in prometheus-net.DotNetRuntime"))
-		.StartCollecting();
+	Common.Observe.Metrics.EnableCollector(config.Observability.Prometheus, Constants.ApiName);
 
 	app.MapMetrics();
 	app.UseHttpMetrics();
 }
-	
 
 app.UseHttpsRedirection();
 app.UseAuthorization();

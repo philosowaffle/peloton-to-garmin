@@ -8,7 +8,6 @@ using Serilog;
 using Sync;
 using System;
 using System.Diagnostics;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using static Common.Observe.Metrics;
@@ -41,9 +40,7 @@ namespace PelotonToGarminConsole
 			var runtimeVersion = Environment.Version.ToString();
 			var os = Environment.OSVersion.Platform.ToString();
 			var osVersion = Environment.OSVersion.VersionString;
-			var assembly = Assembly.GetExecutingAssembly();
-			var versionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-			var version = versionInfo.ProductVersion ?? "unknown";
+			var version = Constants.AppVersion;
 
 			BuildInfo.WithLabels(version, os, osVersion, runtimeVersion).Set(1);
 			_logger.Debug("App Version: {@Version}", version);
@@ -79,7 +76,7 @@ namespace PelotonToGarminConsole
 			int exitCode = 0;
 
 			using var metrics = Metrics.EnableMetricsServer(_config.Observability.Prometheus);
-			using var metricsCollector = Metrics.EnableCollector(_config.Observability.Prometheus);
+			using var metricsCollector = Metrics.EnableCollector(_config.Observability.Prometheus, Constants.ConsoleAppName);
 			using var tracing = Tracing.EnableTracing(_config.Observability.Jaeger);
 			using var tracingSource = new ActivitySource("ROOT");
 
