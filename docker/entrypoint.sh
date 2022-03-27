@@ -3,10 +3,7 @@ set -e
 
 chown -R p2g:p2g /app
 
-if [[ "$1" == "web" ]]; then
-    # exec runuser -u p2g ./WebUI
-    echo "Running webui"
-elif [[ "$1" == "api" ]]; then
+if [[ "$1" == "api" ]]; then
     exec runuser -u p2g ./Api
 else
    exec runuser -u p2g ./PelotonToGarminConsole

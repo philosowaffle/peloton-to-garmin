@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build-and-test:
+  build-and-test-console:
 
     runs-on: ${{ matrix.os }}
     strategy:
@@ -20,18 +20,18 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet }}
     - name: Clean
-      run: dotnet clean --configuration Debug && dotnet nuget locals all --clear
+      run: dotnet clean ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --configuration Debug && dotnet nuget locals all --clear
     
     - name: Restore
-      run: dotnet restore
+      run: dotnet restore ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj
 
     - name: Build
-      run: dotnet build --no-restore --configuration Debug
+      run: dotnet build ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --no-restore --configuration Debug
 
     - name: Test
       run: dotnet test
 
-  compile_distro:
+  compile-distro-console:
     name: Compile Distro
     runs-on: 'windows-latest'
     strategy:
@@ -50,10 +50,10 @@ jobs:
         dotnet-version: ${{ matrix.dotnet }}
     
     - name: Clean
-      run: dotnet clean --configuration Release && dotnet nuget locals all --clear
+      run: dotnet clean ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --configuration Release && dotnet nuget locals all --clear
     
     - name: Restore
-      run: dotnet restore
+      run: dotnet restore ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj
 
     - name: Prepare env
       run: |
