@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build-and-test-console:
+  build-console-dotnet5:
 
     runs-on: ${{ matrix.os }}
     strategy:
@@ -28,6 +28,29 @@ jobs:
     - name: Build
       run: dotnet build ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --no-restore --configuration Debug
 
+  build-and-test-dotnet6:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        dotnet: [ '6.0']
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core SDK ${{ matrix.dotnet }}
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+        dotnet-version: ${{ matrix.dotnet }}
+    - name: Clean
+      run: dotnet clean --configuration Debug && dotnet nuget locals all --clear
+    
+    - name: Restore
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore --configuration Debug
+
     - name: Test
       run: dotnet test
 
@@ -37,7 +60,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        dotnet: [ '5.0.201' ]
+        dotnet: [ '6.0' ]
         os: [ 'win10-x64' ]
         python-version: [ 3.9.6 ]
 
