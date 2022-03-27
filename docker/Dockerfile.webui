@@ -1,9 +1,8 @@
 ###################
 # CREATE FINAL LAYER
 ###################
-FROM nginx:stable as final
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 as final
 
-ENV PYTHONUNBUFFERED=1
 RUN apt-get update \
 	&& apt-get -y install bash tzdata \
 	&& apt-get purge -y -f --force-yes $EXT_BUILD_DEPS \
@@ -33,19 +32,25 @@ RUN echo $TARGETPLATFORM \
 ENV VERSION=${VERSION}
 
 ###################
-# BUILD WEB APP
+# BUILD WebUI
 ###################
 RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
 		dotnet publish /build/src/WebUI/WebUI.csproj -c Release -r linux-arm64 -o /build/published --version-suffix $VERSION ; \
 	else \
 		dotnet publish /build/src/WebUI/WebUI.csproj -c Release -r linux-x64 -o /build/published --version-suffix $VERSION ; \
- 	fi
+	fi
 
 ###################
 # FINAL
 ###################
 FROM final
 
-COPY --from=build /build/published/wwwroot /usr/share/nginx/html
+COPY --from=build /build/published .
 COPY --from=build /build/LICENSE ./LICENSE
-COPY --from=build /build/configuration.example.json /usr/share/nginx/html/configuration.local.json
+COPY --from=build /build/configuration.example.json ./configuration.local.json
+
+COPY --chmod=770 ./docker/entrypoint.sh .
+
+EXPOSE 80 443
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["webui"]

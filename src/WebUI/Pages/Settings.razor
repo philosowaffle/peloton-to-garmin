@@ -51,6 +51,7 @@
 	</HxTab>
 	<HxTab Id="tab2" Title="Peloton">
 		<Content>
+			<HxInputNumber Label="Default number of workouts to download" TValue="int" @bind-Value="pelotonSettings.NumWorkoutsToDownload" />
 			<HxInputText @bind-Value="pelotonSettings.Password" Label="Password" Type="InputType.Password" />
 			<HxInputText @bind-Value="pelotonSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
 

@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Database;
+using Common.Dto.Peloton;
 using Common.Observe;
 using Conversion;
 using Garmin;
@@ -8,6 +9,7 @@ using Prometheus;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sync
@@ -15,6 +17,7 @@ namespace Sync
 	public interface ISyncService
 	{
 		Task<SyncResult> SyncAsync(int numWorkouts);
+		Task<SyncResult> SyncAsync(ICollection<string> workoutIds);
 	}
 
 	public class SyncService : ISyncService
@@ -106,6 +109,64 @@ namespace Sync
 
 			syncTime.LastSuccessfulSyncTime = DateTime.Now;
 			await _db.UpsertSyncStatusAsync(syncTime);
+
+			response.SyncSuccess = true;
+			return response;
+		}
+
+		public async Task<SyncResult> SyncAsync(ICollection<string> workoutIds)
+		{
+			using var timer = SyncHistogram.NewTimer();
+			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.ByWorkoutIds");
+
+			var response = new SyncResult();
+			var recentWorkouts = workoutIds.Select(w => new RecentWorkout() { Id = w }).ToList();
+			try
+			{
+				var workouts = await _pelotonService.GetP2GWorkoutsAsync(recentWorkouts);
+				response.PelotonDownloadSuccess = true;
+			}
+			catch (Exception e)
+			{
+				_logger.Error(e, "Failed to download workouts from Peleoton.");
+				response.SyncSuccess = false;
+				response.PelotonDownloadSuccess = false;
+				response.Errors.Add(new ErrorResponse() { Message = "Failed to download workouts from Peloton. Check logs for more details." });
+				return response;
+			}
+
+			try
+			{
+				/// TODO: Support passing in P2GWorkout
+				foreach (var converter in _converters)
+					converter.Convert();
+				response.ConversionSuccess = true;
+			}
+			catch (Exception e)
+			{
+				_logger.Error(e, "Failed to convert workouts to FIT format.");
+
+				response.SyncSuccess = false;
+				response.ConversionSuccess = false;
+				response.Errors.Add(new ErrorResponse() { Message = "Failed to convert workouts to FIT format. Check logs for more details." });
+				return response;
+			}
+
+			try
+			{
+				await _garminUploader.UploadToGarminAsync();
+				response.UploadToGarminSuccess = true;
+			}
+			catch (Exception e)
+			{
+				_logger.Error(e, "GUpload returned an error code. Failed to upload workouts.");
+				_logger.Warning("GUpload failed to upload files. You can find the converted files at {@Path} \n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", _config.App.OutputDirectory);
+
+				response.SyncSuccess = false;
+				response.UploadToGarminSuccess = false;
+				response.Errors.Add(new ErrorResponse() { Message = "Failed to upload to Garmin Connect. Check logs for more details." });
+				return response;
+			}
 
 			response.SyncSuccess = true;
 			return response;

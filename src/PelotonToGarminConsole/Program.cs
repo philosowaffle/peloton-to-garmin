@@ -33,7 +33,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
 
 			configBuilder
 				.AddJsonFile(Path.Join(configPath, "configuration.local.json"), optional: true, reloadOnChange: true)
-				.AddEnvironmentVariables(prefix: $"{Constants.AppName}_")
+				.AddEnvironmentVariables(prefix: $"{Constants.EnvironmentVariablePrefix}_")
 				.AddCommandLine(args)
 				.Build();
 		})
