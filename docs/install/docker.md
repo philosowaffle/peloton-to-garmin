@@ -23,7 +23,7 @@ The P2G docker image is available on [DockerHub](https://hub.docker.com/r/philos
 
 ## docker-compose
 
-A sample [docker-compose.yaml](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker-compose.yaml) file and [configuration.local.json](https://github.com/philosowaffle/peloton-to-garmin/blob/master/configuration.example.json) can be found in the project repo.
+A sample [docker-compose.yaml](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/docker-compose.yaml) file and [configuration.local.json](https://github.com/philosowaffle/peloton-to-garmin/blob/master/configuration.example.json) can be found in the project repo.
 
 The Docker container expects a valid `configuration.local.json` file is mounted into the container. You can learn more about the configuration file over in the [Configuration Section]({{ site.baseurl }}{% link configuration/index.md %})
 
