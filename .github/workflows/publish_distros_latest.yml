@@ -23,7 +23,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        dotnet: [ '5.0.201' ]
+        dotnet: [ '6.0' ]
         #os: [ 'win10-x64', 'osx-x64' ] # osx signing issue, mac wont run the executable
         os: [ 'win10-x64' ]
         python-version: [ 3.9.6 ]

@@ -134,6 +134,13 @@ namespace WebApp
 				app.UseHsts();
 			}
 
+			app.UseCors(options =>
+			{
+				options
+				.SetIsOriginAllowed((_) => true)
+				.AllowAnyHeader();
+			});
+
 			if (Log.IsEnabled(LogEventLevel.Verbose))
 				app.UseSerilogRequestLogging();
 

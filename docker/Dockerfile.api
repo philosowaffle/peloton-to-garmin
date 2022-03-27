@@ -1,7 +1,7 @@
 ###################
 # CREATE FINAL LAYER
 ###################
-FROM mcr.microsoft.com/dotnet/aspnet:5.0 as final
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 as final
 
 ENV PYTHONUNBUFFERED=1
 RUN apt-get update \
@@ -27,7 +27,7 @@ RUN mkdir -m770 {output,data,working}
 ###################
 # BUILD LAYER
 ###################
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
 COPY . /build
 WORKDIR /build
@@ -42,22 +42,13 @@ RUN echo $TARGETPLATFORM \
 ENV VERSION=${VERSION}
 
 ###################
-# BUILD CONSOLE APP
+# BUILD API
 ###################
 RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
-		dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-arm64 -o /build/published --version-suffix $VERSION ; \
+		dotnet publish /build/src/Api/Api.csproj -c Release -r linux-arm64 -o /build/published --version-suffix $VERSION ; \
 	else \
-		dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-x64 -o /build/published --version-suffix $VERSION ; \
+		dotnet publish /build/src/Api/Api.csproj -c Release -r linux-x64 -o /build/published --version-suffix $VERSION ; \
 	fi
-
-###################
-# BUILD WEB APP
-###################
-RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
-		dotnet publish /build/src/WebApp/WebApp.csproj -c Release -r linux-arm64 -o /buildweb/published --version-suffix $VERSION ; \
-	else \
-		dotnet publish /build/src/WebApp/WebApp.csproj -c Release -r linux-x64 -o /buildweb/published --version-suffix $VERSION ; \
- 	fi
 
 ###################
 # FINAL
@@ -68,11 +59,8 @@ COPY --from=build /build/published .
 COPY --from=build /build/LICENSE ./LICENSE
 COPY --from=build /build/configuration.example.json ./configuration.local.json
 
-# Setup web app
-COPY --from=build /buildweb/published .
-
-COPY --chmod=777 ./entrypoint.sh .
+COPY --chmod=770 ./docker/entrypoint.sh .
 
 EXPOSE 80 443
 ENTRYPOINT ["/app/entrypoint.sh"]
-CMD ["console"]
+CMD ["api"]
