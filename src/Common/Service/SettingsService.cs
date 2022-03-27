@@ -35,14 +35,8 @@ namespace Common.Service
 
             var originalSettings = await _db.GetSettingsAsync();
 
-            if (updatedSettings.Garmin.Email is null)
-                updatedSettings.Garmin.Email = originalSettings.Garmin.Email;
-
             if (updatedSettings.Garmin.Password is null)
                 updatedSettings.Garmin.Password = originalSettings.Garmin.Password;
-
-            if (updatedSettings.Peloton.Email is null)
-                updatedSettings.Peloton.Email = originalSettings.Peloton.Email;
 
             if (updatedSettings.Peloton.Password is null)
                 updatedSettings.Peloton.Password = originalSettings.Peloton.Password;

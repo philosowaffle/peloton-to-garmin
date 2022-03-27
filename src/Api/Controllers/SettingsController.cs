@@ -23,7 +23,12 @@ public class SettingsController : Controller
 	{
 		using var tracing = Tracing.Trace($"{nameof(SettingsController)}.{nameof(Get)}");
 
-		return await _settingsService.GetSettingsAsync();
+		var settings = await _settingsService.GetSettingsAsync();
+
+		settings.Peloton.Password = null;
+		settings.Garmin.Password = null;
+
+		return settings;
 	}
 
 	[HttpPost]
