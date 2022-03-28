@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Environmnet Variables
+title: Environment Variables
 parent: Configuration
 nav_order: 2
 ---

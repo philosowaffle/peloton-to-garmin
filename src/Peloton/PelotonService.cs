@@ -120,7 +120,7 @@ namespace Peloton
 				}
 
 				_logger.Debug("Check if workout is in ExcludeWorkoutTypes list. {@WorkoutId}", workoutId);
-				if (!_config.Peloton.ExcludeWorkoutTypes?.Contains(deSerializedData.WorkoutType) ?? true)
+				if (_config.Peloton.ExcludeWorkoutTypes.Contains(deSerializedData.WorkoutType))
 				{
 					_logger.Debug("Skipping excluded workout type. {@WorkoutId} {@WorkoutType}", deSerializedData.Workout.Id, deSerializedData.WorkoutType);
 					continue;

@@ -1,0 +1,80 @@
+# This is a workflow that will automatically sync your Peloton rides with Garmin
+
+name: Sync workflow
+
+# Controls when the action will run.
+on:
+  workflow_dispatch:
+    inputs:
+      workoutsToDownload:
+        type: number
+        default: "5"
+  schedule:
+    - cron: '0 1 * * *'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    # The type of runner that the job will run on
+    container: 
+      image:  philosowaffle/peloton-to-garmin:stable
+    steps:
+    - run: mkdir -p /app/output
+    - name: Create device info file
+      run: |
+        cat <<EOT > /app/deviceInfo.xml
+        ${{secrets.DEVICE_INFO}}
+        EOT
+    - name: Create config file
+      env:
+        DEFAULT_WORKOUT_NUM: 5
+      run: |
+        cat <<EOT > /app/configuration.local.json 
+        {
+          "App": {
+            "OutputDirectory": "/app/output",
+            "EnablePolling": false,
+            "CloseWindowOnFinish": true
+          },
+          "Format": {
+            "Fit": true,
+            "Json": false,
+            "Tcx": false,
+            "SaveLocalCopy": false,
+            "IncludeTimeInHRZones": false,
+            "IncludeTimeInPowerZones": false,
+            "DeviceInfoPath": "./deviceInfo.xml"
+          },
+          "Peloton": {
+            "NumWorkoutsToDownload": ${{ github.event.inputs.workoutsToDownload || env.DEFAULT_WORKOUT_NUM }},
+            "ExcludeWorkoutTypes": [ "meditation" ],
+          },
+          "Garmin": {
+            "Upload": true,
+            "FormatToUpload": "fit",
+            "UploadStrategy": 2
+          },
+          "Observability": {
+            "Prometheus": {
+              "Enabled": false
+            },
+            "Jaeger": {
+              "Enabled": false
+            },
+            "Serilog": {
+              "Using": [ "Serilog.Sinks.Console"],
+              "MinimumLevel": "Information",
+              "WriteTo": [
+                { "Name": "Console" }
+              ]
+            }
+          }
+        }
+        EOT
+    - run: /app/PelotonToGarminConsole
+      working-directory: /app
+      env:
+        P2G_PELOTON__EMAIL: ${{ secrets.P2G_PELOTON__EMAIL }}
+        P2G_PELOTON__PASSWORD: ${{ secrets.P2G_PELOTON__PASSWORD }}
+        P2G_GARMIN__EMAIL: ${{ secrets.P2G_GARMIN__EMAIL }}
+        P2G_GARMIN__PASSWORD: ${{ secrets.P2G_GARMIN__PASSWORD }}
