@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using Serilog
 @inject IApiClient _apiClient
 
 <PageTitle>Home</PageTitle>
@@ -49,6 +50,11 @@ else
 	<button class="btn btn-primary" @onclick="SyncAsync">Sync Now</button>
 }
 
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+	<p>@ErrorMessage</p>
+}
+
 
 @code {
 
@@ -56,6 +62,8 @@ else
 	private SyncGetResponse syncStatus;
 	private Common.Settings settings;
 	private bool syncRunning;
+
+	private string ErrorMessage;
 
 	private string syncStatusBorderClass = "border-light";
 	private string syncStatusTextClass = "";
@@ -68,6 +76,8 @@ else
 
 		settings = new Common.Settings();
 		syncRunning = false;
+
+		ErrorMessage = string.Empty;
 	}
 
 	protected override async Task OnInitializedAsync()
@@ -81,7 +91,14 @@ else
 
 	private async Task LoadSyncStatusAsync()
 	{
-		syncStatus = await _apiClient.SyncGetAsync();
+		try
+		{
+			syncStatus = await _apiClient.SyncGetAsync();
+		} 
+		catch (Exception e)
+		{
+			Log.Error("Failed to fetch Sync status.", e);
+		}
 
 		switch (syncStatus.SyncStatus)
 		{
@@ -113,7 +130,13 @@ else
 			syncRunning = true;
 			syncResponse = null;
 			syncResponse = await _apiClient.SyncPostAsync(new SyncPostRequest() { NumWorkouts = settings.Peloton.NumWorkoutsToDownload });
+			ErrorMessage = string.Empty;
 		} 
+		catch(Exception e)
+		{
+			ErrorMessage = "Failed to sync. See logs for details.";
+			Log.Error("Failed to sync from ui.", e);
+		}
 		finally
 		{
 			syncRunning = false;
