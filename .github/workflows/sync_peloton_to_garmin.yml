@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     # The type of runner that the job will run on
     container: 
-      image:  philosowaffle/peloton-to-garmin:latest
+      image:  dkuwahara/peloton-to-garmin:latest
     steps:
     - run: mkdir -p /app/output
     - name: Create device info file
@@ -47,7 +47,7 @@ jobs:
           },
           "Peloton": {
             "NumWorkoutsToDownload": ${{ github.event.inputs.workoutsToDownload || env.DEFAULT_WORKOUT_NUM }},
-            "ExcludeWorkoutTypes": [ "cycling" ],
+            "ExcludeWorkoutTypes": [ "meditation" ],
           },
           "Garmin": {
             "Upload": true,
