@@ -120,3 +120,4 @@ configuration.local.json
 /Output
 /src/PelotonToGarminConsole/data
 /src/WebApp/data
+/.vs/ProjectSettings.json

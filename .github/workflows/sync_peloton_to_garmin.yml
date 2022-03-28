@@ -32,7 +32,7 @@ jobs:
         cat <<EOT > /app/configuration.local.json 
         {
           "App": {
-            "OutputDirectory": "./output",
+            "OutputDirectory": "/app/output",
             "EnablePolling": false,
             "CloseWindowOnFinish": true
           },
