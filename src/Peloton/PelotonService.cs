@@ -20,7 +20,7 @@ namespace Peloton
 	public interface IPelotonService
 	{
 		Task<ICollection<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload);
-		Task<P2GWorkout[]> GetP2GWorkoutsAsync(ICollection<RecentWorkout> workoutIds);
+		Task<P2GWorkout[]> GetWorkoutDetailsAsync(ICollection<RecentWorkout> workoutIds);
 		Task DownloadLatestWorkoutDataAsync();
 		Task DownloadLatestWorkoutDataAsync(int numWorkoutsToDownload);
 	}
@@ -52,14 +52,13 @@ namespace Peloton
 
 		public async Task DownloadLatestWorkoutDataAsync(int numWorkoutsToDownload) 
 		{
-			if (numWorkoutsToDownload <= 0) return;
-
 			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(DownloadLatestWorkoutDataAsync)}");
+
+			if (numWorkoutsToDownload <= 0) return;			
 
 			await _pelotonApi.InitAuthAsync();
 
 			var recentWorkouts = await GetRecentWorkoutsAsync(numWorkoutsToDownload);
-
 			_logger.Debug("Total workouts found: {@FoundWorkouts}", recentWorkouts.Count);
 
 			var completedWorkouts = recentWorkouts.Where(w => 
@@ -68,7 +67,6 @@ namespace Peloton
 				_logger.Debug("Skipping in progress workout. {@WorkoutId} {@WorkoutStatus} {@WorkoutType} {@WorkoutTitle}", w.Id, w.Status, w.Fitness_Discipline, w.Title);
 				return false;
 			});
-
 			_logger.Debug("Total workouts found after filtering out InProgress: {@FoundWorkouts}", completedWorkouts.Count());
 
 			var workingDir = _config.App.DownloadDirectory;
@@ -93,22 +91,9 @@ namespace Peloton
 				data.WorkoutSamples = workoutSamples;
 
 				var workoutTitle = string.Empty;
-				P2GWorkout deSerializedData = null;
-				try
-				{
-					deSerializedData = JsonSerializer.Deserialize<P2GWorkout>(data.ToString(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
-					workoutTitle = WorkoutHelper.GetUniqueTitle(deSerializedData.Workout);
+				P2GWorkout deSerializedData = await GetWorkoutDetailsAsync(recentWorkout.Id);
 
-					if (_config.Format.Json && _config.Format.SaveLocalCopy) SaveRawData(data, workoutTitle);
-
-				} catch (Exception e)
-				{
-					_failedCount++;
-					var title = "workout_failed_to_deserialize_" + workoutId;
-					_logger.Error("Failed to deserialize workout from Peloton. You can find the raw data from the workout here: @FileName", title, e);
-					SaveRawData(data, title);
-					continue;
-				}
+				if (_config.Format.Json && _config.Format.SaveLocalCopy) SaveRawData(deSerializedData.Raw, workoutTitle);
 
 				_logger.Debug("Check if workout is in ExcludeWorkoutTypes list. {@WorkoutId}", workoutId);
 				if (_config.Peloton.ExcludeWorkoutTypes.Contains(deSerializedData.WorkoutType))
@@ -180,8 +165,10 @@ namespace Peloton
 			File.WriteAllText(Path.Join(outputDir, $"{workoutTitle}.json"), data.ToString());
 		}
 
-		public Task<P2GWorkout[]> GetP2GWorkoutsAsync(ICollection<RecentWorkout> workoutIds)
+		public Task<P2GWorkout[]> GetWorkoutDetailsAsync(ICollection<RecentWorkout> workoutIds)
 		{
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetWorkoutDetailsAsync)}.List");
+
 			var tasks = new List<Task<P2GWorkout>>();
 			foreach (var recentWorkout in workoutIds)
 			{
@@ -195,6 +182,8 @@ namespace Peloton
 
 		private async Task<P2GWorkout> GetWorkoutDetailsAsync(string workoutId)
 		{
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetWorkoutDetailsAsync)}.Item");
+
 			using var workoutTimer = WorkoutDownloadDuration.NewTimer();
 
 			var workoutTask = _pelotonApi.GetWorkoutByIdAsync(workoutId);
@@ -210,6 +199,8 @@ namespace Peloton
 
 		private P2GWorkout BuildP2GWorkout(string workoutId, JObject workout, JObject workoutSamples)
 		{
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(BuildP2GWorkout)}");
+
 			dynamic data = new JObject();
 			data.Workout = workout;
 			data.WorkoutSamples = workoutSamples;
@@ -218,10 +209,8 @@ namespace Peloton
 			try
 			{
 				deSerializedData = JsonSerializer.Deserialize<P2GWorkout>(data.ToString(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+				deSerializedData.Raw = data;
 				var workoutTitle = WorkoutHelper.GetUniqueTitle(deSerializedData.Workout);
-
-				if (_config.Format.Json && _config.Format.SaveLocalCopy) SaveRawData(data, workoutTitle);
-
 			}
 			catch (Exception e)
 			{

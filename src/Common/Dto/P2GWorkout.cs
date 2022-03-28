@@ -10,6 +10,8 @@ namespace Common.Dto
 		public Workout Workout { get; set; }
 		public WorkoutSamples WorkoutSamples { get; set; }
 
+		public dynamic Raw { get; set; }
+
 		private WorkoutType GetWorkoutType()
 		{
 			if (_workoutType != WorkoutType.None) return _workoutType;

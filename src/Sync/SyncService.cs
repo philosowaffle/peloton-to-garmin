@@ -125,7 +125,7 @@ namespace Sync
 			P2GWorkout[] workouts = { };
 			try
 			{
-				workouts = await _pelotonService.GetP2GWorkoutsAsync(recentWorkouts);
+				workouts = await _pelotonService.GetWorkoutDetailsAsync(recentWorkouts);
 				response.PelotonDownloadSuccess = true;
 			}
 			catch (Exception e)
