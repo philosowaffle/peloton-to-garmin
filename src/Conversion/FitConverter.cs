@@ -27,6 +27,13 @@ namespace Conversion
 			base.Convert(FileFormat.Fit);
 		}
 
+		public override ConvertStatus Convert(P2GWorkout workout)
+		{
+			if (!_config.Format.Fit) return new ConvertStatus() { Success = true, ErrorMessage = "Fit format disabled in config."};
+
+			return base.Convert(FileFormat.Fit, workout);
+		}
+
 		protected override void Save(Tuple<string, ICollection<Mesg>> data, string path)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(Save)}")

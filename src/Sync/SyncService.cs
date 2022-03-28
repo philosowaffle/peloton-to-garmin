@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Database;
+using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Observe;
 using Conversion;
@@ -121,9 +122,10 @@ namespace Sync
 
 			var response = new SyncResult();
 			var recentWorkouts = workoutIds.Select(w => new RecentWorkout() { Id = w }).ToList();
+			P2GWorkout[] workouts = { };
 			try
 			{
-				var workouts = await _pelotonService.GetP2GWorkoutsAsync(recentWorkouts);
+				workouts = await _pelotonService.GetP2GWorkoutsAsync(recentWorkouts);
 				response.PelotonDownloadSuccess = true;
 			}
 			catch (Exception e)
@@ -137,9 +139,9 @@ namespace Sync
 
 			try
 			{
-				/// TODO: Support passing in P2GWorkout
-				foreach (var converter in _converters)
-					converter.Convert();
+				foreach (var workout in workouts)
+					foreach (var converter in _converters)
+						converter.Convert(workout);
 				response.ConversionSuccess = true;
 			}
 			catch (Exception e)

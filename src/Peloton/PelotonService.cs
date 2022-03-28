@@ -65,7 +65,7 @@ namespace Peloton
 			var completedWorkouts = recentWorkouts.Where(w => 
 			{
 				if (w.Status == "COMPLETE") return true;
-				_logger.Debug("Skipping in progress workout. {@WorkoutId} {@WorkoutStatus} {@WorkoutType}", w.Id, w.Status, w.Fitness_Discipline);
+				_logger.Debug("Skipping in progress workout. {@WorkoutId} {@WorkoutStatus} {@WorkoutType} {@WorkoutTitle}", w.Id, w.Status, w.Fitness_Discipline, w.Title);
 				return false;
 			});
 

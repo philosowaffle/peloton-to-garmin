@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Database;
+using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Observe;
 using System.Linq;
@@ -16,6 +17,13 @@ namespace Conversion
 			if (!_config.Format.Tcx) return;
 
 			base.Convert(FileFormat.Tcx);
+		}
+
+		public override ConvertStatus Convert(P2GWorkout workout)
+		{
+			if (!_config.Format.Tcx) return new ConvertStatus() { Success = true, ErrorMessage = "Tcx format disabled in config." };
+
+			return base.Convert(FileFormat.Fit, workout);
 		}
 
 		protected override void Save(XElement data, string path)

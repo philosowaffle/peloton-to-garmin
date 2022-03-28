@@ -6,6 +6,8 @@ namespace WebUI
 {
 	public interface IApiClient
 	{
+		Task<RecentWorkoutsGetResponse> PelotonWorkoutsGetAsync();
+
 		Task<Settings> SettingsGetAsync();
 		Task<Common.App> SettingsAppPostAsync(Common.App appSettings);
 		Task<Format> SettingsFormatPostAsync(Format formatSettings);
@@ -25,6 +27,12 @@ namespace WebUI
 		public ApiClient(string apiUrl)
 		{
 			_apiUrl = apiUrl;
+		}
+
+		public Task<RecentWorkoutsGetResponse> PelotonWorkoutsGetAsync()
+		{
+			return $"{_apiUrl}/api/peloton/workouts"
+					.GetJsonAsync<RecentWorkoutsGetResponse>();
 		}
 
 		public Task<Settings> SettingsGetAsync()

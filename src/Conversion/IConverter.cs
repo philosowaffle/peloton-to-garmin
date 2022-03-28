@@ -19,6 +19,7 @@ namespace Conversion
 	public interface IConverter
 	{
 		public void Convert();
+		public ConvertStatus Convert(P2GWorkout workoutData);
 	}
 
 	public abstract class Converter<T> : IConverter
@@ -70,10 +71,92 @@ namespace Conversion
 		}
 
 		public abstract void Convert();
+		public abstract ConvertStatus Convert(P2GWorkout workoutData);
 
 		protected abstract T Convert(Workout workout, WorkoutSamples workoutSamples);
 
 		protected abstract void Save(T data, string path);
+
+		protected ConvertStatus Convert(FileFormat format, P2GWorkout workoutData)
+		{
+			using var tracingConvert = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.WithWorkoutData")
+										.WithTag(TagKey.Format, format.ToString());
+			
+			var status = new ConvertStatus();
+
+			if (_config.Garmin.Upload)
+				_fileHandler.MkDirIfNotExists(_config.App.UploadDirectory);
+
+			using var tracing = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.Workout")
+										.WithWorkoutId(workoutData.Workout.Id)
+										.WithTag(TagKey.Format, format.ToString());
+
+			// call internal convert method
+			T converted = default;
+			var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout);
+			try
+			{
+				converted = Convert(workoutData.Workout, workoutData.WorkoutSamples);
+
+			}
+			catch (Exception e)
+			{
+				Log.Error(e, "Failed to convert workout data to format {@Format} {@Workout}", format, workoutTitle);
+				status.Success = false;
+				status.ErrorMessage = "Failed to convert workout data.";
+				return status;
+			}
+
+			// write to output dir
+			var path = Path.Join(_config.App.WorkingDirectory, $"{workoutTitle}.{format}");
+			try
+			{
+				Save(converted, path);
+			}
+			catch (Exception e)
+			{
+				Log.Error(e, "Failed to write {@Format} file for {@Workout}", format, workoutTitle);
+			}
+
+			// copy to local save
+			if (_config.Format.SaveLocalCopy)
+			{
+				try
+				{
+					_fileHandler.MkDirIfNotExists(_config.App.TcxDirectory);
+					_fileHandler.MkDirIfNotExists(_config.App.FitDirectory);
+					var dir = format == FileFormat.Fit ? _config.App.FitDirectory : _config.App.TcxDirectory;
+
+					var backupDest = Path.Join(dir, $"{workoutTitle}.{format}");
+					_fileHandler.Copy(path, backupDest, overwrite: true);
+					Log.Information("Backed up file {@File}", backupDest);
+				}
+				catch (Exception e)
+				{
+					Log.Error(e, "Failed to backup {@Format} file for {@Workout}", format, workoutTitle);
+				}
+			}
+
+			// copy to upload dir
+			if (_config.Garmin.Upload && _config.Garmin.FormatToUpload == format)
+			{
+				try
+				{
+					var uploadDest = Path.Join(_config.App.UploadDirectory, $"{workoutTitle}.{format}");
+					_fileHandler.Copy(path, uploadDest, overwrite: true);
+					Log.Debug("Prepped {@Format} for upload: {@Path}", format, uploadDest);
+				}
+				catch (Exception e)
+				{
+					Log.Error(e, "Failed to copy {@Format} file for {@Workout}", format, workoutTitle);
+					status.Success = false;
+					status.ErrorMessage = $"Failed to save file for {@format} and workout {workoutTitle} to Upload directory";
+					return status;
+				}
+			}
+
+			return status;
+		}
 
 		protected void Convert(FileFormat format)
 		{
@@ -129,7 +212,7 @@ namespace Conversion
 				} catch (Exception e)
 				{
 					Log.Error(e, "Failed to convert workout data to format {@Format} {@Workout} {@File}", format, workoutTitle, file);
-				}				
+				}
 
 				if (converted is null)
 				{

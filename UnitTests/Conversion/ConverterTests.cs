@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Database;
+using Common.Dto;
 using Common.Dto.Garmin;
 using Common.Dto.Peloton;
 using Conversion;
@@ -655,6 +656,11 @@ namespace UnitTests.Conversion
 			public GarminDeviceInfo GetDeviceInfo1(FitnessDiscipline sport)
 			{
 				return base.GetDeviceInfo(sport);
+			}
+
+			public override ConvertStatus Convert(P2GWorkout workoutData)
+			{
+				throw new NotImplementedException();
 			}
 		}
 	}
