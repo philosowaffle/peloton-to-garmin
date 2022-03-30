@@ -110,8 +110,8 @@ namespace UnitTests
 		{
 			private IOWrapper fileHandler = new IOWrapper();
 
-			public ConverterInstance() : base(new Settings(), null, new IOWrapper()) { }
-			public ConverterInstance(Settings settings) : base(settings, null, new IOWrapper()) { }
+			public ConverterInstance() : base(new Settings(), new IOWrapper()) { }
+			public ConverterInstance(Settings settings) : base(settings, new IOWrapper()) { }
 
 			public ICollection<Mesg> ConvertForTest(string path)
 			{

@@ -1,6 +1,4 @@
 ﻿using Common;
-using Common.Database;
-using Common.Helpers;
 using Common.Observe;
 using Prometheus;
 using Serilog;
@@ -13,7 +11,7 @@ using Metrics = Prometheus.Metrics;
 
 namespace Garmin
 {
-    public interface IGarminUploader
+	public interface IGarminUploader
 	{
 		Task UploadToGarminAsync();
 	}
@@ -32,14 +30,12 @@ namespace Garmin
 
 		private readonly Settings _config;
 		private readonly ApiClient _api;
-		private readonly IDbClient _dbClient;
 		private readonly Random _random;
 
-		public GarminUploader(Settings config, AppConfiguration appConfig, IDbClient dbClient)
+		public GarminUploader(Settings config, AppConfiguration appConfig)
 		{
 			_config = config;
 			_api = new ApiClient(config, appConfig);
-			_dbClient = dbClient;
 			_random = new Random();
 		}
 
@@ -96,29 +92,12 @@ namespace Garmin
 			{
 				try
 				{
-					var response = await _api.UploadActivity(file, _config.Format.Fit ? ".fit" : ".tcx");
-					if (!string.IsNullOrEmpty(response.DetailedImportResult.UploadId))
-						UpdateSyncItem(file);
-
+					await _api.UploadActivity(file, _config.Format.Fit ? ".fit" : ".tcx");
 					await RateLimit();
 				} catch (Exception e)
 				{
 					throw new GarminUploadException($"NativeImplV1 failed to upload workout {file}", -1, e);
 				}
-			}
-		}
-
-		private void UpdateSyncItem(string file)
-		{
-			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(UpdateSyncItem)}");
-
-			_logger.Information("Uploaded workout {@workoutName}", file);
-			var workoutId = WorkoutHelper.GetWorkoutIdFromFileName(file);
-			var syncItem = _dbClient.Get(workoutId);
-			if (syncItem is not null)
-			{
-				syncItem.UploadDate = DateTime.Now;
-				_dbClient.Upsert(syncItem);
 			}
 		}
 

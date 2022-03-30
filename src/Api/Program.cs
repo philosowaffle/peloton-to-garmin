@@ -72,7 +72,6 @@ builder.Services.AddSingleton<AppConfiguration>((serviceProvider) =>
 	return config;
 });
 
-builder.Services.AddSingleton<IDbClient, DbClient>();
 builder.Services.AddSingleton<IFileHandling, IOWrapper>();
 builder.Services.AddTransient<IPelotonApi, Peloton.ApiClient>();
 builder.Services.AddTransient<IPelotonService, PelotonService>();

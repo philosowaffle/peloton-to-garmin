@@ -9,7 +9,7 @@ namespace Conversion
 {
 	public class TcxConverter : Converter<XElement>
 	{
-		public TcxConverter(Settings settings, IDbClient dbClient, IFileHandling fileHandler) : base(settings, dbClient, fileHandler) { }
+		public TcxConverter(Settings settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
 
 		public override void Convert()
 		{

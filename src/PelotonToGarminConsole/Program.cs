@@ -97,7 +97,6 @@ static IHostBuilder CreateHostBuilder(string[] args)
 			services.AddSingleton<ISettingsDb, SettingsDb>();
 			services.AddSingleton<ISettingsService, SettingsService>();
 
-			services.AddSingleton<IDbClient, DbClient>();
 			services.AddSingleton<IFileHandling, IOWrapper>();
 			services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
 			services.AddSingleton<IPelotonService, PelotonService>();

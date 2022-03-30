@@ -17,6 +17,7 @@ namespace Common
 		bool TryDeserializeXml<T>(string file, out T result) where T : new();
 		void MoveFailedFile(string fromPath, string toPath);
 		void Copy(string from, string to, bool overwrite);
+		bool WriteToFile(string path, string content);
 		void Cleanup(string dir);
 	}
 
@@ -99,6 +100,22 @@ namespace Common
 		{
 			using var trace1 = Tracing.Trace(nameof(Copy), "io");
 			File.Copy(from, to, overwrite);
+		}
+
+		public bool WriteToFile(string path, string content)
+		{
+			using var trace1 = Tracing.Trace(nameof(WriteToFile), "io");
+			try
+			{
+				File.WriteAllText(path, content);
+				return true;
+			} 
+			catch (Exception e)
+			{
+				_logger.Error(e, "Failed to write content to file {@Path}", path);
+				_logger.Verbose("Failed content: {@Content}", content);
+				return false;
+			}
 		}
 
 		public void Cleanup(string dir)

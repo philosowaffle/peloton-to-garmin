@@ -16,8 +16,6 @@ namespace UnitTests.Common
 			config.App.Should().NotBeNull();
 			config.App.OutputDirectory.Should().Be(Path.Join(Environment.CurrentDirectory, "output"));
 			config.App.WorkingDirectory.Should().Be(Path.Join(Environment.CurrentDirectory, "working"));
-			config.App.SyncHistoryDbPath.Should().Be(Path.Join(App.DataDirectory, "syncHistory.json"));
-			config.App.EnablePolling.Should().BeTrue();
 			config.App.PollingIntervalSeconds.Should().Be(3600);
 			config.App.FitDirectory.Should().Be(Path.Join(config.App.OutputDirectory, "fit"));
 			config.App.JsonDirectory.Should().Be(Path.Join(config.App.OutputDirectory, "json"));

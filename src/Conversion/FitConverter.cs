@@ -18,7 +18,7 @@ namespace Conversion
 	{
 		private static readonly string _spaceSeparator = "_";
 		private static readonly ILogger _logger = LogContext.ForClass<FitConverter>();
-		public FitConverter(Settings settings, IDbClient dbClient, IFileHandling fileHandler) : base(settings, dbClient, fileHandler) { }
+		public FitConverter(Settings settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
 
 		public override void Convert()
 		{

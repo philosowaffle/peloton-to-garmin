@@ -33,15 +33,13 @@ namespace Peloton
 
 		private Settings _config;
 		private IPelotonApi _pelotonApi;
-		private IDbClient _dbClient;
 		private int _failedCount;
 		private IFileHandling _fileHandler;
 
-		public PelotonService(Settings config, IPelotonApi pelotonApi, IDbClient dbClient, IFileHandling fileHandler)
+		public PelotonService(Settings config, IPelotonApi pelotonApi, IFileHandling fileHandler)
 		{
 			_config = config;
 			_pelotonApi = pelotonApi;
-			_dbClient = dbClient;
 			_fileHandler = fileHandler;
 
 			_failedCount = 0;
@@ -79,13 +77,6 @@ namespace Peloton
 			foreach (var recentWorkout in completedWorkouts)
 			{
 				var workoutId = recentWorkout.Id;
-
-				SyncHistoryItem syncRecord = _dbClient.Get(recentWorkout.Id);
-				if ((syncRecord?.DownloadDate is object))
-				{
-					_logger.Debug("Workout {@WorkoutId} already downloaded from Peloton, skipping.", recentWorkout.Id);
-					continue;
-				}
 
 				using var workoutTimer = WorkoutDownloadDuration.NewTimer();
 
@@ -127,14 +118,7 @@ namespace Peloton
 				}
 
 				_logger.Debug("Write peloton workout details to file for {@WorkoutId}.", workoutId);
-				File.WriteAllText(Path.Join(workingDir, $"{workoutTitle}.json"), data.ToString());
-
-				var syncHistoryItem = new SyncHistoryItem(deSerializedData.Workout)
-				{
-					DownloadDate = DateTime.Now,
-				};
-
-				_dbClient.Upsert(syncHistoryItem);
+				_fileHandler.WriteToFile(Path.Join(workingDir, $"{workoutTitle}.json"), data.ToString());
 			}
 
 			FailedDesiralizationCount.Set(_failedCount);
