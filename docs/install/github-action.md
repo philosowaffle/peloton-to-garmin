@@ -1,7 +1,8 @@
 ---
 layout: default
-title: Using the Github Action
+title: Using Github Actions
 nav_order: 2
+parent: Install
 has_children: false
 ---
 
@@ -21,13 +22,13 @@ You can set secrets by clicking the `Settings` tab in your fork. Then, on the si
 
 From this point on you can add secrets by clicking the `New repository secret` button at the top right.
 
-| Secret Name      | Value       |
-|:-----------------|:------------------|
-| `P2G_PELOTON__EMAIL` | The email address you use to login to Peloton |
-| `P2G_PELOTON__PASSWORD` | The password that you use to login to Peloton  |
-| ` P2G_GARMIN__EMAIL` | The email address that you use to login to Garmin      |
-| `P2G_GARMIN__PASSWORD` |The password that you use to log into Garmin |
-| `DEVICE_INFO` | The contents of the deviceInfo.xml that you want to use for the sync |
+| Secret Name             | Value                                                                |
+|-------------------------|----------------------------------------------------------------------|
+| `P2G_PELOTON__EMAIL`    | The email address you use to login to Peloton                        |
+| `P2G_PELOTON__PASSWORD` | The password that you use to login to Peloton                        |
+| `P2G_GARMIN__EMAIL`     | The email address that you use to login to Garmin                    |
+| `P2G_GARMIN__PASSWORD`  |The password that you use to log into Garmin                          |
+| `DEVICE_INFO`           | The contents of the deviceInfo.xml that you want to use for the sync |
 
 ## Starting the workflow
 
@@ -35,4 +36,4 @@ Once you've configured your secrets, you can then navigate to the `Actions` tab 
 
 ## Additional Notes
 
-If you're doing more than 5 runs a day, you will need to change the default number of workouts downloaded as part of the workflow.
+If you're doing more than 5 activities a day, you will need to change the default number of workouts downloaded as part of the workflow.
