@@ -21,6 +21,7 @@ jobs:
     steps:
     - run: mkdir -p /app/output
     - name: Create device info file
+      if: ${{ secrets.DEVICE_INFO }}
       run: |
         cat <<EOT > /app/deviceInfo.xml
         ${{secrets.DEVICE_INFO}}
