@@ -72,6 +72,7 @@ jobs:
         }
         EOT
     - run: /app/PelotonToGarminConsole
+      if: ${{ !P2G_PELOTON__EMAIL }}
       working-directory: /app
       env:
         P2G_PELOTON__EMAIL: ${{ secrets.P2G_PELOTON__EMAIL }}
