@@ -28,24 +28,24 @@ namespace Common
 	/// Configuration that must be provided prior to runtime. Typically via config file, command line args, or env variables.
 	/// </summary>
 	public class AppConfiguration
-    {
+	{
 		public AppConfiguration()
-        {
+		{
 			Api = new ApiSettings();
 			Observability = new Observability();
 			Developer = new Developer();
-        }
+		}
 
 		public ApiSettings Api { get; set; }
 		public Observability Observability { get; set; }
 		public Developer Developer { get; set; }
-    }
+	}
 
 	/// <summary>
 	/// Settings that can be looked up after app start, changed on demand, and saved to the SettingsDb.
 	/// </summary>
 	public class Settings
-    {
+	{
 		public Settings()
 		{
 			App = new App();
@@ -66,7 +66,6 @@ namespace Common
 		{
 			OutputDirectory = Path.Join(Environment.CurrentDirectory, "output");
 			WorkingDirectory = Path.Join(Environment.CurrentDirectory, "working");
-			SyncHistoryDbPath = Path.Join(DataDirectory, "syncHistory.json");
 
 			EnablePolling = true;
 			PollingIntervalSeconds = 3600;
@@ -78,9 +77,7 @@ namespace Common
 		[DisplayName("Working Directory")]
 		[Description("The directory where P2G can work. When running, P2G will create and delete files and needs a dedicated directory to do that.")]
 		public string WorkingDirectory { get; set; }
-		
-		[Obsolete("Use DataDirectory as folder path.")]
-		public string SyncHistoryDbPath { get; set; }
+
 		[DisplayName("Enable Polling")]
 		[Description("Enabled if you wish P2G to run continuously and poll Peloton for new workouts.")]
 		public bool EnablePolling { get; set; }
@@ -239,8 +236,8 @@ namespace Common
 	}
 
 	public enum FileFormat
-    {
+	{
 		Fit = 0,
 		Tcx = 1
-    }
+	}
 }

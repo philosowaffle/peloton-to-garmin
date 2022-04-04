@@ -570,7 +570,7 @@ namespace UnitTests.Conversion
 
 		private class ConverterInstance : Converter<string>
 		{
-			public ConverterInstance(Settings settings, IDbClient dbClient, IFileHandling fileHandling) : base(settings, dbClient, fileHandling) { }
+			public ConverterInstance(Settings settings, IFileHandling fileHandling) : base(settings, fileHandling) { }
 
 			public override void Convert()
 			{

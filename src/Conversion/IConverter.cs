@@ -61,13 +61,11 @@ namespace Conversion
 		public static readonly float _metersPerMile = 1609.34f;
 
 		protected Settings _config;
-		protected IDbClient _dbClient;
 		protected IFileHandling _fileHandler;
 
-		public Converter(Settings config, IDbClient dbClient, IFileHandling fileHandler)
+		public Converter(Settings config, IFileHandling fileHandler)
 		{
 			_config = config;
-			_dbClient = dbClient;
 			_fileHandler = fileHandler;
 		}
 
@@ -186,20 +184,6 @@ namespace Conversion
 						continue;
 					}
 				}
-
-				// update db item with conversion date
-				SyncHistoryItem syncRecord = _dbClient.Get(workoutData.Workout.Id);
-				if (syncRecord is null)
-				{
-					syncRecord = new SyncHistoryItem(workoutData.Workout)
-					{
-						DownloadDate = System.DateTime.Now,
-					};
-				}
-
-				syncRecord.ConvertedToFit = syncRecord.ConvertedToFit || format == FileFormat.Fit;
-				syncRecord.ConvertedToTcx = syncRecord.ConvertedToTcx || format == FileFormat.Tcx;
-				_dbClient.Upsert(syncRecord);
 			}
 		}
 

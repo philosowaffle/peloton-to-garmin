@@ -120,9 +120,9 @@ namespace UnitTests.Conversion
 		{
 			private IOWrapper fileHandler = new IOWrapper();
 
-			public ConverterInstance() : base(new Settings(), null, null) { }
+			public ConverterInstance() : base(new Settings(), null) { }
 
-			public ConverterInstance(Settings settings) : base(settings, null, null) { }
+			public ConverterInstance(Settings settings) : base(settings, null) { }
 
 			public ICollection<Mesg> ConvertForTest(string path)
 			{
