@@ -28,24 +28,24 @@ namespace Common
 	/// Configuration that must be provided prior to runtime. Typically via config file, command line args, or env variables.
 	/// </summary>
 	public class AppConfiguration
-    {
+	{
 		public AppConfiguration()
-        {
+		{
 			Api = new ApiSettings();
 			Observability = new Observability();
 			Developer = new Developer();
-        }
+		}
 
 		public ApiSettings Api { get; set; }
 		public Observability Observability { get; set; }
 		public Developer Developer { get; set; }
-    }
+	}
 
 	/// <summary>
 	/// Settings that can be looked up after app start, changed on demand, and saved to the SettingsDb.
 	/// </summary>
 	public class Settings
-    {
+	{
 		public Settings()
 		{
 			App = new App();
@@ -236,8 +236,8 @@ namespace Common
 	}
 
 	public enum FileFormat
-    {
+	{
 		Fit = 0,
 		Tcx = 1
-    }
+	}
 }

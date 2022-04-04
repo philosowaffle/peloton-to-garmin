@@ -37,10 +37,10 @@ namespace UnitTests.Peloton
 				.ReturnsAsync(new RecentWorkouts() 
 				{
 					data = new List<RecentWorkout>() 
-					{ 
+					{
 						new RecentWorkout() { Status = "COMPLETE", Id = "1" },
 						new RecentWorkout() { Status = "IN PROGRESS", Id = "2" }
-					} 
+					}
 				})
 				.Verifiable();
 
