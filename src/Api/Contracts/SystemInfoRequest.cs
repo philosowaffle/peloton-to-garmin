@@ -2,6 +2,20 @@
 
 public class SystemInfoGetResponse
 {
+	public SystemInfoGetResponse()
+	{
+		RunTimeVersion = string.Empty;
+		OperatingSystem = string.Empty;
+		OperatingSystemVersion = string.Empty;
+		Version = string.Empty;
+		GitHub = string.Empty;
+		Documentation = string.Empty;
+		Forums = string.Empty;
+		Donate = string.Empty;
+		Issues = string.Empty;
+		Api = string.Empty;
+	}
+
 	public string RunTimeVersion { get; set; }
 	public string OperatingSystem { get; set; }
 	public string OperatingSystemVersion { get; set; }

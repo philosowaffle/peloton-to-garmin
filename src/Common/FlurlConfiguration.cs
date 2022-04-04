@@ -23,7 +23,7 @@ namespace Common
 			}
 		});
 
-		public static void Configure(Observability config)
+		public static void Configure(Observability config, int defaultTimeoutSeconds = 10)
 		{
 			Func<FlurlCall, Task> beforeCallAsync = (FlurlCall call) =>
 			{
@@ -71,7 +71,7 @@ namespace Common
 
 			FlurlHttp.Configure(settings =>
 			{
-				settings.Timeout = new TimeSpan(0, 0, 10);
+				settings.Timeout = new TimeSpan(0, 0, defaultTimeoutSeconds);
 				settings.BeforeCallAsync = beforeCallAsync;
 				settings.AfterCallAsync = afterCallAsync;
 				settings.OnErrorAsync = onErrorAsync;

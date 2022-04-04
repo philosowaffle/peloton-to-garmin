@@ -168,6 +168,11 @@ namespace Sync
 				response.UploadToGarminSuccess = false;
 				response.Errors.Add(new ErrorResponse() { Message = "Failed to upload to Garmin Connect. Check logs for more details." });
 				return response;
+			} finally
+			{
+				_fileHandler.Cleanup(_config.App.DownloadDirectory);
+				_fileHandler.Cleanup(_config.App.UploadDirectory);
+				_fileHandler.Cleanup(_config.App.WorkingDirectory);
 			}
 
 			response.SyncSuccess = true;

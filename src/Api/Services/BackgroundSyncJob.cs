@@ -39,6 +39,8 @@ public class BackgroundSyncJob : BackgroundService
 
 		_previousPollingState = null;
 		_syncService = syncService;
+
+		_config = new Settings();
 	}
 
 	protected override Task ExecuteAsync(CancellationToken stoppingToken)

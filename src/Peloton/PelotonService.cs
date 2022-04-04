@@ -1,5 +1,4 @@
 ﻿using Common;
-using Common.Database;
 using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Helpers;
@@ -21,7 +20,6 @@ namespace Peloton
 	{
 		Task<ICollection<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload);
 		Task<P2GWorkout[]> GetWorkoutDetailsAsync(ICollection<RecentWorkout> workoutIds);
-		Task DownloadLatestWorkoutDataAsync();
 		Task DownloadLatestWorkoutDataAsync(int numWorkoutsToDownload);
 	}
 
@@ -45,16 +43,11 @@ namespace Peloton
 			_failedCount = 0;
 		}
 
-		public Task DownloadLatestWorkoutDataAsync()
-		{
-			return DownloadLatestWorkoutDataAsync(_config.Peloton.NumWorkoutsToDownload);
-		}
-
 		public async Task DownloadLatestWorkoutDataAsync(int numWorkoutsToDownload) 
 		{
 			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(DownloadLatestWorkoutDataAsync)}");
 
-			if (numWorkoutsToDownload <= 0) return;			
+			if (numWorkoutsToDownload <= 0) return;
 
 			await _pelotonApi.InitAuthAsync();
 
@@ -76,22 +69,8 @@ namespace Peloton
 			{
 				var workoutId = recentWorkout.Id;
 
-				using var workoutTimer = WorkoutDownloadDuration.NewTimer();
-
-				var workoutTask = _pelotonApi.GetWorkoutByIdAsync(recentWorkout.Id);
-				var workoutSamplesTask = _pelotonApi.GetWorkoutSamplesByIdAsync(recentWorkout.Id);
-
-				await Task.WhenAll(workoutTask, workoutSamplesTask);
-
-				var workout = workoutTask.GetAwaiter().GetResult();
-				var workoutSamples = workoutSamplesTask.GetAwaiter().GetResult();
-
-				dynamic data = new JObject();
-				data.Workout = workout;
-				data.WorkoutSamples = workoutSamples;
-
 				var workoutTitle = string.Empty;
-				P2GWorkout deSerializedData = await GetWorkoutDetailsAsync(recentWorkout.Id);
+				P2GWorkout deSerializedData = await GetWorkoutDetailsAsync(workoutId);
 
 				if (_config.Format.Json && _config.Format.SaveLocalCopy) SaveRawData(deSerializedData.Raw, workoutTitle);
 
@@ -103,7 +82,7 @@ namespace Peloton
 				}
 
 				_logger.Debug("Write peloton workout details to file for {@WorkoutId}.", workoutId);
-				_fileHandler.WriteToFile(Path.Join(workingDir, $"{workoutTitle}.json"), data.ToString());
+				_fileHandler.WriteToFile(Path.Join(workingDir, $"{workoutTitle}.json"), deSerializedData.Raw.ToString());
 			}
 
 			FailedDesiralizationCount.Set(_failedCount);
@@ -162,12 +141,14 @@ namespace Peloton
 			_fileHandler.MkDirIfNotExists(outputDir);
 
 			_logger.Debug("Write peloton json to file for {@WorkoutId}", data.Workout.Id);
-			File.WriteAllText(Path.Join(outputDir, $"{workoutTitle}.json"), data.ToString());
+			_fileHandler.WriteToFile(Path.Join(outputDir, $"{workoutTitle}.json"), data.ToString());
 		}
 
-		public Task<P2GWorkout[]> GetWorkoutDetailsAsync(ICollection<RecentWorkout> workoutIds)
+		public async Task<P2GWorkout[]> GetWorkoutDetailsAsync(ICollection<RecentWorkout> workoutIds)
 		{
 			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetWorkoutDetailsAsync)}.List");
+
+			await _pelotonApi.InitAuthAsync();
 
 			var tasks = new List<Task<P2GWorkout>>();
 			foreach (var recentWorkout in workoutIds)
@@ -177,7 +158,7 @@ namespace Peloton
 				tasks.Add(GetWorkoutDetailsAsync(workoutId));
 			}
 
-			return Task.WhenAll(tasks);
+			return await Task.WhenAll(tasks);
 		}
 
 		private async Task<P2GWorkout> GetWorkoutDetailsAsync(string workoutId)

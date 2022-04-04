@@ -46,7 +46,7 @@ builder.Services.AddHxServices();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-FlurlConfiguration.Configure(config.Observability);
+FlurlConfiguration.Configure(config.Observability, 20);
 
 Log.Logger = new LoggerConfiguration()
 				.ReadFrom.Configuration(builder.Configuration, sectionName: $"{nameof(Observability)}:Serilog")

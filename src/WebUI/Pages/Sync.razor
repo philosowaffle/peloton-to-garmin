@@ -3,6 +3,16 @@
 
 <PageTitle>Sync</PageTitle>
 
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+	<HxAlert Color="ThemeColor.Danger"><HxIcon Icon="@BootstrapIcon.ExclamationTriangleFill" /> @ErrorMessage</HxAlert>
+}
+
+@if (!string.IsNullOrEmpty(InfoMessage))
+{
+	<HxAlert Color="ThemeColor.Secondary"><HxIcon Icon="@BootstrapIcon.InfoCircleFill" /> @InfoMessage</HxAlert>
+}
+
 <HxButton Text="Sync" OnClick="SyncAsync" Color="ThemeColor.Primary" />
 
 <HxGrid TItem="RecentWorkout" MultiSelectionEnabled="true" TableContainerCssClass="table-responsive" @bind-SelectedDataItems="selectedItems" DataProvider="LoadDataAsync" PageSize="25">
@@ -18,15 +28,69 @@
 @code {
 
 	private HashSet<RecentWorkout> selectedItems = new();
+	private string ErrorMessage;
+	private string InfoMessage;
+	private string SuccessMessage;
+
+	public Sync() : base() => ClearMessages();
 
 	private async Task<GridDataProviderResult<RecentWorkout>> LoadDataAsync(GridDataProviderRequest<RecentWorkout> request)
 	{
-		var recentWorkouts = await _apiClient.PelotonWorkoutsGetAsync();
-		return new GridDataProviderResult<RecentWorkout>() { Data = recentWorkouts.Items, TotalCount = recentWorkouts.Items.Count };
+		ClearMessages();
+
+		try 
+		{
+			var recentWorkouts = await _apiClient.PelotonWorkoutsGetAsync();
+			selectedItems.Clear();
+			return new GridDataProviderResult<RecentWorkout>() { Data = recentWorkouts.Items, TotalCount = recentWorkouts.Items.Count };
+		} catch (Exception e)
+		{
+			ErrorMessage = $"Failed to load recent Peloton workouts - {e.Message} - See logs for details.";
+			Log.Error("UI - Failed to load recent Peloton workouts.", e);
+		}
+
+		return new GridDataProviderResult<RecentWorkout>() { Data = new List<RecentWorkout>(), TotalCount = 0 };
 	}
 
-	private Task SyncAsync()
+	private async Task SyncAsync()
 	{
-		return _apiClient.SyncPostAsync(new SyncPostRequest() { WorkoutIds = selectedItems.Select(i => i.Id).ToList() });
+		ClearMessages();
+
+		try
+		{
+			var result = await _apiClient.SyncPostAsync(new SyncPostRequest() { WorkoutIds = selectedItems.Select(i => i.Id).ToList() });
+			selectedItems.Clear();
+
+			if (result.SyncSuccess)
+			{
+				SuccessMessage = "Successfully synced selected workouts.";
+			} else
+			{
+				foreach (var error in result.Errors)
+				{
+					ErrorMessage += error + "\n";
+				}
+
+				if (string.IsNullOrEmpty(ErrorMessage))
+					ErrorMessage = "An unknown error occurred.";
+			}
+
+		} catch(FlurlHttpTimeoutException te)
+		{
+			InfoMessage = $"Long running sync will continue running in the background.";
+			Log.Information("UI - Sync timeout reached.", te);
+		}
+		catch (Exception e)
+		{
+			ErrorMessage = $"Failed to sync - {e.Message} - See logs for details.";
+			Log.Error("UI - Failed to sync.", e);
+		}
+	}
+
+	private void ClearMessages()
+	{
+		ErrorMessage = string.Empty;
+		InfoMessage = string.Empty;
+		SuccessMessage = string.Empty;
 	}
 }

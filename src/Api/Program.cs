@@ -60,7 +60,7 @@ builder.Services.AddTransient<Settings>((serviceProvider) =>
 {
 	using var tracing = Tracing.Trace($"{nameof(Program)}.DI");
 	var settingsService = serviceProvider.GetService<ISettingsService>();
-	return settingsService.GetSettingsAsync().GetAwaiter().GetResult();
+	return settingsService?.GetSettingsAsync().GetAwaiter().GetResult() ?? new Settings();
 });
 
 builder.Services.AddSingleton<AppConfiguration>((serviceProvider) =>
