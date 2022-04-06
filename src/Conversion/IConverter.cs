@@ -165,7 +165,7 @@ namespace Conversion
 
 			if (!_fileHandler.DirExists(_config.App.DownloadDirectory))
 			{
-				Log.Information("No download directory found. Nothing to do. {@File}", _config.App.DownloadDirectory);
+				Log.Information("[{@Format}] No download directory found. Nothing to do. {@File}", format, _config.App.DownloadDirectory);
 				return;
 			}
 
@@ -173,9 +173,11 @@ namespace Conversion
 
 			if (files.Length == 0)
 			{
-				Log.Information("No files to convert in download directory. Nothing to do. {@File}", _config.App.DownloadDirectory);
+				Log.Information("[{@Format}] No files to convert in download directory. Nothing to do. {@File}", format, _config.App.DownloadDirectory);
 				return;
 			}
+
+			Log.Debug("[{@Format}] Files to convert: {@FileCount}", format, files.Length);
 
 			if (_config.Garmin.Upload)
 				_fileHandler.MkDirIfNotExists(_config.App.UploadDirectory);
@@ -193,7 +195,7 @@ namespace Conversion
 				}
 				catch (Exception e)
 				{
-					Log.Error(e, "Failed to load and parse workout data {@File}", file);
+					Log.Error(e, "[{@Format}] Failed to load and parse workout data {@File}", format, file);
 					_fileHandler.MoveFailedFile(file, _config.App.FailedDirectory);
 					continue;
 				}
@@ -207,11 +209,12 @@ namespace Conversion
 				var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout);
 				try
 				{
+					Log.Debug("[{@Format}] Converting workout {@Workout}", format, workoutTitle);
 					converted = Convert(workoutData.Workout, workoutData.WorkoutSamples);
 					
 				} catch (Exception e)
 				{
-					Log.Error(e, "Failed to convert workout data to format {@Format} {@Workout} {@File}", format, workoutTitle, file);
+					Log.Error(e, "[{@Format}] Failed to convert workout data {@Workout} {@File}", format, workoutTitle, file);
 				}
 
 				if (converted is null)
@@ -228,7 +231,7 @@ namespace Conversion
 				}
 				catch (Exception e)
 				{
-					Log.Error(e, "Failed to write {@Format} file for {@Workout}", format, workoutTitle);
+					Log.Error(e, "[{@Format}] Failed to write file for {@Workout}", format, workoutTitle);
 					continue;
 				}
 
@@ -243,11 +246,11 @@ namespace Conversion
 
 						var backupDest = Path.Join(dir, $"{workoutTitle}.{format}");
 						_fileHandler.Copy(path, backupDest, overwrite: true);
-						Log.Information("Backed up file {@File}", backupDest);
+						Log.Information("[{@Format}] Backed up file {@File}", format, backupDest);
 					}
 					catch (Exception e)
 					{
-						Log.Error(e, "Failed to backup {@Format} file for {@Workout}", format, workoutTitle);
+						Log.Error(e, "[{@Format}] Failed to backup file for {@Workout}", format, workoutTitle);
 						continue;
 					}
 				}
@@ -259,11 +262,11 @@ namespace Conversion
 					{
 						var uploadDest = Path.Join(_config.App.UploadDirectory, $"{workoutTitle}.{format}");
 						_fileHandler.Copy(path, uploadDest, overwrite: true);
-						Log.Debug("Prepped {@Format} for upload: {@Path}", format, uploadDest);
+						Log.Debug("[{@Format}] File copied to upload directory: {@Path}", format, uploadDest);
 					}
 					catch (Exception e)
 					{
-						Log.Error(e, "Failed to copy {@Format} file for {@Workout}", format, workoutTitle);
+						Log.Error(e, "[{@Format}] Failed to copy file for {@Workout} to upload directory", format, workoutTitle);
 						continue;
 					}
 				}

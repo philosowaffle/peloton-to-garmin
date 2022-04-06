@@ -63,7 +63,7 @@ public class BackgroundSyncJob : BackgroundService
 			{
 				Thread.Sleep(stepIntervalSeconds * 1000);
 				continue;
-			}					
+			}
 
 			await SyncAsync();
 
