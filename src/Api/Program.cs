@@ -3,6 +3,7 @@ using Common;
 using Common.Database;
 using Common.Observe;
 using Common.Service;
+using Common.Stateful;
 using Conversion;
 using Garmin;
 using OpenTelemetry.Resources;
@@ -142,7 +143,7 @@ if (config.Observability.Prometheus.Enabled)
 	app.UseHttpMetrics();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
@@ -155,8 +156,8 @@ void ConfigureTracing(IServiceCollection services, AppConfiguration config)
 {
 	services.AddOpenTelemetryTracing(
 		(builder) => builder
-			.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("p2g"))
-			.AddSource("P2G")
+			.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Statics.MetricPrefix))
+			.AddSource(Statics.MetricPrefix)
 			.SetSampler(new AlwaysOnSampler())
 			.SetErrorStatusOnException()
 			.AddAspNetCoreInstrumentation(c =>

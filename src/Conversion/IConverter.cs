@@ -1,5 +1,4 @@
 ﻿using Common;
-using Common.Database;
 using Common.Dto;
 using Common.Dto.Garmin;
 using Common.Dto.Peloton;
@@ -28,6 +27,8 @@ namespace Conversion
 		{
 			LabelNames = new string[] { Common.Observe.Metrics.Label.FileType }
 		});
+
+		private static readonly ILogger _logger = LogContext.ForClass<Converter<T>>();
 
 		private static readonly GarminDeviceInfo CyclingDevice = new GarminDeviceInfo()
 		{
@@ -101,7 +102,7 @@ namespace Conversion
 			}
 			catch (Exception e)
 			{
-				Log.Error(e, "Failed to convert workout data to format {@Format} {@Workout}", format, workoutTitle);
+				_logger.Error(e, "Failed to convert workout data to format {@Format} {@Workout}", format, workoutTitle);
 				status.Success = false;
 				status.ErrorMessage = "Failed to convert workout data.";
 				return status;
@@ -115,7 +116,7 @@ namespace Conversion
 			}
 			catch (Exception e)
 			{
-				Log.Error(e, "Failed to write {@Format} file for {@Workout}", format, workoutTitle);
+				_logger.Error(e, "Failed to write {@Format} file for {@Workout}", format, workoutTitle);
 			}
 
 			// copy to local save
@@ -129,11 +130,11 @@ namespace Conversion
 
 					var backupDest = Path.Join(dir, $"{workoutTitle}.{format}");
 					_fileHandler.Copy(path, backupDest, overwrite: true);
-					Log.Information("Backed up file {@File}", backupDest);
+					_logger.Information("Backed up file {@File}", backupDest);
 				}
 				catch (Exception e)
 				{
-					Log.Error(e, "Failed to backup {@Format} file for {@Workout}", format, workoutTitle);
+					_logger.Error(e, "Failed to backup {@Format} file for {@Workout}", format, workoutTitle);
 				}
 			}
 
@@ -144,11 +145,11 @@ namespace Conversion
 				{
 					var uploadDest = Path.Join(_config.App.UploadDirectory, $"{workoutTitle}.{format}");
 					_fileHandler.Copy(path, uploadDest, overwrite: true);
-					Log.Debug("Prepped {@Format} for upload: {@Path}", format, uploadDest);
+					_logger.Debug("Prepped {@Format} for upload: {@Path}", format, uploadDest);
 				}
 				catch (Exception e)
 				{
-					Log.Error(e, "Failed to copy {@Format} file for {@Workout}", format, workoutTitle);
+					_logger.Error(e, "Failed to copy {@Format} file for {@Workout}", format, workoutTitle);
 					status.Success = false;
 					status.ErrorMessage = $"Failed to save file for {@format} and workout {workoutTitle} to Upload directory";
 					return status;
@@ -165,7 +166,7 @@ namespace Conversion
 
 			if (!_fileHandler.DirExists(_config.App.DownloadDirectory))
 			{
-				Log.Information("[{@Format}] No download directory found. Nothing to do. {@File}", format, _config.App.DownloadDirectory);
+				_logger.Information("[{@Format}] No download directory found. Nothing to do. {@File}", format, _config.App.DownloadDirectory);
 				return;
 			}
 
@@ -173,11 +174,11 @@ namespace Conversion
 
 			if (files.Length == 0)
 			{
-				Log.Information("[{@Format}] No files to convert in download directory. Nothing to do. {@File}", format, _config.App.DownloadDirectory);
+				_logger.Information("[{@Format}] No files to convert in download directory. Nothing to do. {@File}", format, _config.App.DownloadDirectory);
 				return;
 			}
 
-			Log.Debug("[{@Format}] Files to convert: {@FileCount}", format, files.Length);
+			_logger.Debug("[{@Format}] Files to convert: {@FileCount}", format, files.Length);
 
 			if (_config.Garmin.Upload)
 				_fileHandler.MkDirIfNotExists(_config.App.UploadDirectory);
@@ -195,7 +196,7 @@ namespace Conversion
 				}
 				catch (Exception e)
 				{
-					Log.Error(e, "[{@Format}] Failed to load and parse workout data {@File}", format, file);
+					_logger.Error(e, "[{@Format}] Failed to load and parse workout data {@File}", format, file);
 					_fileHandler.MoveFailedFile(file, _config.App.FailedDirectory);
 					continue;
 				}
@@ -209,12 +210,12 @@ namespace Conversion
 				var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout);
 				try
 				{
-					Log.Debug("[{@Format}] Converting workout {@Workout}", format, workoutTitle);
+					_logger.Debug("[{@Format}] Converting workout {@Workout}", format, workoutTitle);
 					converted = Convert(workoutData.Workout, workoutData.WorkoutSamples);
 					
 				} catch (Exception e)
 				{
-					Log.Error(e, "[{@Format}] Failed to convert workout data {@Workout} {@File}", format, workoutTitle, file);
+					_logger.Error(e, "[{@Format}] Failed to convert workout data {@Workout} {@File}", format, workoutTitle, file);
 				}
 
 				if (converted is null)
@@ -231,7 +232,7 @@ namespace Conversion
 				}
 				catch (Exception e)
 				{
-					Log.Error(e, "[{@Format}] Failed to write file for {@Workout}", format, workoutTitle);
+					_logger.Error(e, "[{@Format}] Failed to write file for {@Workout}", format, workoutTitle);
 					continue;
 				}
 
@@ -246,11 +247,11 @@ namespace Conversion
 
 						var backupDest = Path.Join(dir, $"{workoutTitle}.{format}");
 						_fileHandler.Copy(path, backupDest, overwrite: true);
-						Log.Information("[{@Format}] Backed up file {@File}", format, backupDest);
+						_logger.Information("[{@Format}] Backed up file {@File}", format, backupDest);
 					}
 					catch (Exception e)
 					{
-						Log.Error(e, "[{@Format}] Failed to backup file for {@Workout}", format, workoutTitle);
+						_logger.Error(e, "[{@Format}] Failed to backup file for {@Workout}", format, workoutTitle);
 						continue;
 					}
 				}
@@ -262,11 +263,11 @@ namespace Conversion
 					{
 						var uploadDest = Path.Join(_config.App.UploadDirectory, $"{workoutTitle}.{format}");
 						_fileHandler.Copy(path, uploadDest, overwrite: true);
-						Log.Debug("[{@Format}] File copied to upload directory: {@Path}", format, uploadDest);
+						_logger.Debug("[{@Format}] File copied to upload directory: {@Path}", format, uploadDest);
 					}
 					catch (Exception e)
 					{
-						Log.Error(e, "[{@Format}] Failed to copy file for {@Workout} to upload directory", format, workoutTitle);
+						_logger.Error(e, "[{@Format}] Failed to copy file for {@Workout} to upload directory", format, workoutTitle);
 						continue;
 					}
 				}
@@ -337,14 +338,14 @@ namespace Conversion
 		{
 			if (workoutSamples?.Summaries is null)
 			{
-				Log.Verbose("No workout Summaries found.");
+				_logger.Verbose("No workout Summaries found.");
 				return null;
 			}
 
 			var summaries = workoutSamples.Summaries;
 			var distanceSummary = summaries.FirstOrDefault(s => s.Slug == "distance");
 			if (distanceSummary is null)
-				Log.Verbose("No distance slug found.");
+				_logger.Verbose("No distance slug found.");
 
 			return distanceSummary;
 		}
@@ -353,14 +354,14 @@ namespace Conversion
 		{
 			if (workoutSamples?.Summaries is null)
 			{
-				Log.Verbose("No workout Summaries found.");
+				_logger.Verbose("No workout Summaries found.");
 				return null;
 			}
 
 			var summaries = workoutSamples.Summaries;
 			var caloriesSummary = summaries.FirstOrDefault(s => s.Slug == "calories");
 			if (caloriesSummary is null)
-				Log.Verbose("No calories slug found.");
+				_logger.Verbose("No calories slug found.");
 
 			return caloriesSummary;
 		}
@@ -566,7 +567,7 @@ namespace Conversion
 		{
 			if (workoutSamples?.Metrics is null)
 			{
-				Log.Verbose("No workout Metrics found.");
+				_logger.Verbose("No workout Metrics found.");
 				return null;
 			}
 
@@ -580,7 +581,7 @@ namespace Conversion
 			}
 
 			if (metric is null)
-				Log.Verbose($"No {slug} found.");
+				_logger.Verbose($"No {slug} found.");
 
 			return metric;
 		}

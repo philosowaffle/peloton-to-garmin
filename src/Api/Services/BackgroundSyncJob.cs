@@ -15,10 +15,6 @@ namespace Api.Services;
 public class BackgroundSyncJob : BackgroundService
 {
 	private static readonly Histogram SyncHistogram = PromMetrics.CreateHistogram("p2g_sync_duration_seconds", "The histogram of sync jobs that have run.");
-	private static readonly Gauge BuildInfo = PromMetrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
-	{
-		LabelNames = new[] { Metrics.Label.Version, Metrics.Label.Os, Metrics.Label.OsVersion, Metrics.Label.DotNetRuntime }
-	});
 	private static readonly Gauge Health = PromMetrics.CreateGauge("p2g_sync_service_health", "Health status for P2G Sync Service.");
 	private static readonly Gauge NextSyncTime = PromMetrics.CreateGauge("p2g_next_sync_time", "The next time the sync will run in seconds since epoch.");
 
@@ -73,7 +69,7 @@ public class BackgroundSyncJob : BackgroundService
 			{
 				Thread.Sleep(stepIntervalSeconds * 1000);
 				if (await StateChangedAsync()) break;
-			}				
+			}
 		}
 	}
 
