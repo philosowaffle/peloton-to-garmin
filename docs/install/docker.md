@@ -54,6 +54,10 @@ services:
       - ./output:/app/output
 ```
 
+## Docker User
+
+The P2G images run the process under the user and group `p2g:p2g`.
+
 ## Prometheus
 
 If you configure P2G to server Prometheus metrics then you will also need to map the corresponding port for your docker container. By default, Prometheus metrics will be served on port `4000`. You can learn more about P2G and Prometheus in the [Observability Configuration]({{ site.baseurl }}{% link configuration/index.md %}) section.

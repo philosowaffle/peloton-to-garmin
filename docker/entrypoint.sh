@@ -2,6 +2,7 @@
 set -e
 
 chown -R p2g:p2g /app
+chmod 770 -R /app
 
 if [[ "$1" == "api" ]]; then
     exec runuser -u p2g ./Api
