@@ -8,11 +8,11 @@ namespace WebUI
 	{
 		Task<RecentWorkoutsGetResponse> PelotonWorkoutsGetAsync();
 
-		Task<Settings> SettingsGetAsync();
+		Task<SettingsGetResponse> SettingsGetAsync();
 		Task<Common.App> SettingsAppPostAsync(Common.App appSettings);
 		Task<Format> SettingsFormatPostAsync(Format formatSettings);
-		Task<Peloton> SettingsPelotonPostAsync(Peloton pelotonSettings);
-		Task<Garmin> SettingsGarminPostAsync(Garmin garminSettings);
+		Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(Peloton pelotonSettings);
+		Task<SettingsGarminGetResponse> SettingsGarminPostAsync(Garmin garminSettings);
 
 		Task<SyncGetResponse> SyncGetAsync();
 		Task<SyncPostResponse> SyncPostAsync(SyncPostRequest syncPostRequest);
@@ -35,10 +35,10 @@ namespace WebUI
 					.GetJsonAsync<RecentWorkoutsGetResponse>();
 		}
 
-		public Task<Settings> SettingsGetAsync()
+		public Task<SettingsGetResponse> SettingsGetAsync()
 		{
 			return $"{_apiUrl}/api/settings"
-					.GetJsonAsync<Settings>();
+					.GetJsonAsync<SettingsGetResponse>();
 		}
 
 		public Task<Common.App> SettingsAppPostAsync(Common.App appSettings)
@@ -55,18 +55,18 @@ namespace WebUI
 					.ReceiveJson<Format>();
 		}
 		
-		public Task<Peloton> SettingsPelotonPostAsync(Peloton pelotonSettings)
+		public Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(Peloton pelotonSettings)
 		{
 			return $"{_apiUrl}/api/settings/peloton"
 					.PostJsonAsync(pelotonSettings)
-					.ReceiveJson<Peloton>();
+					.ReceiveJson<SettingsPelotonGetResponse>();
 		}
 
-		public Task<Garmin> SettingsGarminPostAsync(Garmin garminSettings)
+		public Task<SettingsGarminGetResponse> SettingsGarminPostAsync(Garmin garminSettings)
 		{
 			return $"{_apiUrl}/api/settings/garmin"
 					.PostJsonAsync(garminSettings)
-					.ReceiveJson<Garmin>();
+					.ReceiveJson<SettingsGarminGetResponse>();
 		}
 
 		public Task<SyncGetResponse> SyncGetAsync()

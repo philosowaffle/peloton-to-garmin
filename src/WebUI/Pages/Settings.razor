@@ -8,13 +8,15 @@
 		<Content>
 			<EditForm Model="@appSettings">
 
+				<br />
 				<HxInputText @bind-Value="appSettings.OutputDirectory" Label="Output Directory" />
-
-				<HxInputSwitch Label="Poll for new workouts" @bind-Value="appSettings.EnablePolling" />
+				<br />
+				<HxInputSwitch Label="Automatic Syncing" @bind-Value="appSettings.EnablePolling" />
+				<br />
 				<HxFormState Enabled="@appSettings.EnablePolling">
 					<HxInputNumber Label="Check for new workouts every X (seconds)" TValue="int" @bind-Value="appSettings.PollingIntervalSeconds" />
 				</HxFormState>
-
+				<br />
 				<HxSubmit Color="ThemeColor.Primary" OnClick="SaveAppSettings">Save</HxSubmit>
 
 			</EditForm>
@@ -24,26 +26,27 @@
 		<Content>
 			<EditForm Model="@formatSettings">
 
+				<br />
 				<HxInputSwitch Label="Convert to FIT" @bind-Value="formatSettings.Fit" />
 				<HxInputSwitch Label="Convert to TCX" @bind-Value="formatSettings.Tcx" />
 				<HxInputSwitch Label="Convert to JSON" @bind-Value="formatSettings.Json" />
-
+				<br />
 				<HxInputText @bind-Value="formatSettings.DeviceInfoPath" Label="Path to custom deviceInfo.xml file" />
-
+				<br />
 				<HxSelect
 					Label="Cycling Lap Type"
 					Data="@lapTypes"
 					Nullable="false"
 					NullDataText="Loading info..."
 					@bind-Value="formatSettings.Cycling.PreferredLapType" />
-
+				<br />
 				<HxSelect
 					Label="Running Lap Type"
 					Data="@lapTypes"
 					Nullable="false"
 					NullDataText="Loading info..."
 					@bind-Value="formatSettings.Running.PreferredLapType" />
-
+				<br />
 				<HxSubmit Color="ThemeColor.Primary" OnClick="SaveFormatSettings">Save</HxSubmit>
 
 			</EditForm>
@@ -52,10 +55,13 @@
 	<HxTab Id="tab2" Title="Peloton">
 		<Content>
 			<EditForm Model="@pelotonSettings">
+				<br />
 				<HxInputNumber Label="Default number of workouts to download" TValue="int" @bind-Value="pelotonSettings.NumWorkoutsToDownload" />
+				<br />
 				<HxInputText @bind-Value="pelotonSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
-				<HxInputText @bind-Value="pelotonSettings.Password" Label="Password" Type="InputType.Password" />
-
+				<br />
+				<HxInputText @bind-Value="pelotonSettings.Password" Label="Password" Placeholder="@pelotonPasswordPlaceholderString" Type="InputType.Password" />
+				<br />
 				<HxSubmit Color="ThemeColor.Primary" OnClick="SavePelotonSettings">Save</HxSubmit>
 			</EditForm>
 		</Content>
@@ -63,18 +69,21 @@
 	<HxTab Id="tab3" Title="Garmin">
 		<Content>
 			<EditForm Model="@garminSettings">
+				<br />
 				<HxInputSwitch Label="Automatically upload to Garmin Connect" @bind-Value="garminSettings.Upload" />
+				<br />
 				<HxFormState Enabled="@garminSettings.Upload">
 					<HxInputText @bind-Value="garminSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
-					<HxInputText @bind-Value="garminSettings.Password" Label="Password" Type="InputType.Password" />
-
+					<br />
+					<HxInputText @bind-Value="garminSettings.Password" Label="Password" Placeholder="@garminPasswordPlaceholderString" Type="InputType.Password" />
+					<br />
 					<HxSelect
 							Label="Format to Upload"
 							Data="@formatTypes"
 							Nullable="false"
 							NullDataText="Loading info..."
 							@bind-Value="garminSettings.FormatToUpload" />
-			
+					<br />
 					<HxSelect
 							Label="Upload Strategy to user"
 							Data="@uploadStrategyTypes"
@@ -82,7 +91,7 @@
 							NullDataText="Loading info..."
 							@bind-Value="garminSettings.UploadStrategy" />
 				</HxFormState>
-
+				<br />
 				<HxSubmit Color="ThemeColor.Primary" OnClick="SaveGarminSettings">Save</HxSubmit>
 			</EditForm>
 		</Content>
@@ -97,16 +106,19 @@
 
 	private Common.App appSettings;
 	private Format formatSettings;
-	private Peloton pelotonSettings;
-	private Garmin garminSettings;
+	private SettingsPelotonGetResponse pelotonSettings;
+	private SettingsGarminGetResponse garminSettings;
+
+	private string pelotonPasswordPlaceholderString = string.Empty;
+	private string garminPasswordPlaceholderString = string.Empty;
 
 	public Settings() : base()
 	{
 		var settings = new SettingsGetResponse();
-		appSettings = settings.Settings.App;
-		formatSettings = settings.Settings.Format;
-		pelotonSettings = settings.Settings.Peloton;
-		garminSettings = settings.Settings.Garmin;
+		appSettings = settings.App;
+		formatSettings = settings.Format;
+		pelotonSettings = settings.Peloton;
+		garminSettings = settings.Garmin;
 	}
 
 	protected override Task OnInitializedAsync()
@@ -142,5 +154,8 @@
 		formatSettings = settings.Format;
 		pelotonSettings = settings.Peloton;
 		garminSettings = settings.Garmin;
+
+		pelotonPasswordPlaceholderString = pelotonSettings.IsPasswordSet ? "password is set" : "password is not set";
+		garminPasswordPlaceholderString = garminSettings.IsPasswordSet ? "password is set" : "password is not set";
 	}
 }
