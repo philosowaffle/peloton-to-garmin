@@ -51,36 +51,40 @@
 	</HxTab>
 	<HxTab Id="tab2" Title="Peloton">
 		<Content>
-			<HxInputNumber Label="Default number of workouts to download" TValue="int" @bind-Value="pelotonSettings.NumWorkoutsToDownload" />
-			<HxInputText @bind-Value="pelotonSettings.Password" Label="Password" Type="InputType.Password" />
-			<HxInputText @bind-Value="pelotonSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
+			<EditForm Model="@pelotonSettings">
+				<HxInputNumber Label="Default number of workouts to download" TValue="int" @bind-Value="pelotonSettings.NumWorkoutsToDownload" />
+				<HxInputText @bind-Value="pelotonSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
+				<HxInputText @bind-Value="pelotonSettings.Password" Label="Password" Type="InputType.Password" />
 
-			<HxSubmit Color="ThemeColor.Primary" OnClick="SavePelotonSettings">Save</HxSubmit>
-		</Content>		
+				<HxSubmit Color="ThemeColor.Primary" OnClick="SavePelotonSettings">Save</HxSubmit>
+			</EditForm>
+		</Content>
 	</HxTab>
 	<HxTab Id="tab3" Title="Garmin">
 		<Content>
-			<HxInputSwitch Label="Automatically upload to Garmin Connect" @bind-Value="garminSettings.Upload" />
-			<HxFormState Enabled="@garminSettings.Upload">
-				<HxInputText @bind-Value="garminSettings.Password" Label="Password" Type="InputType.Password" />
-				<HxInputText @bind-Value="garminSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
+			<EditForm Model="@garminSettings">
+				<HxInputSwitch Label="Automatically upload to Garmin Connect" @bind-Value="garminSettings.Upload" />
+				<HxFormState Enabled="@garminSettings.Upload">
+					<HxInputText @bind-Value="garminSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
+					<HxInputText @bind-Value="garminSettings.Password" Label="Password" Type="InputType.Password" />
 
-				<HxSelect
-						Label="Format to Upload"
-						Data="@formatTypes"
-						Nullable="false"
-						NullDataText="Loading info..."
-						@bind-Value="garminSettings.FormatToUpload" />
+					<HxSelect
+							Label="Format to Upload"
+							Data="@formatTypes"
+							Nullable="false"
+							NullDataText="Loading info..."
+							@bind-Value="garminSettings.FormatToUpload" />
 			
-				<HxSelect
-						Label="Upload Strategy to user"
-						Data="@uploadStrategyTypes"
-						Nullable="false"
-						NullDataText="Loading info..."
-						@bind-Value="garminSettings.UploadStrategy" />
-			</HxFormState>
+					<HxSelect
+							Label="Upload Strategy to user"
+							Data="@uploadStrategyTypes"
+							Nullable="false"
+							NullDataText="Loading info..."
+							@bind-Value="garminSettings.UploadStrategy" />
+				</HxFormState>
 
-			<HxSubmit Color="ThemeColor.Primary" OnClick="SaveGarminSettings">Save</HxSubmit>
+				<HxSubmit Color="ThemeColor.Primary" OnClick="SaveGarminSettings">Save</HxSubmit>
+			</EditForm>
 		</Content>
 	</HxTab>
 </HxTabPanel>
