@@ -55,7 +55,7 @@ namespace Peloton
 
 			var recentWorkouts = await GetRecentWorkoutsAsync(numWorkoutsToDownload);
 			_logger.Debug("Total workouts found: {@FoundWorkouts}", recentWorkouts.Count);
-			tracing.AddTag("workouts.found", recentWorkouts.Count);
+			tracing?.AddTag("workouts.found", recentWorkouts.Count);
 
 			var completedWorkouts = recentWorkouts.Where(w => 
 			{
@@ -64,7 +64,7 @@ namespace Peloton
 				return false;
 			});
 			_logger.Debug("Total workouts found after filtering out InProgress: {@FoundWorkouts}", completedWorkouts.Count());
-			tracing.AddTag("workouts.completed", completedWorkouts.Count());
+			tracing?.AddTag("workouts.completed", completedWorkouts.Count());
 
 			var workingDir = _config.App.DownloadDirectory;
 			_fileHandler.MkDirIfNotExists(workingDir);
