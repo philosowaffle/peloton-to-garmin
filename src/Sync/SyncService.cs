@@ -3,6 +3,7 @@ using Common.Database;
 using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Observe;
+using Common.Stateful;
 using Conversion;
 using Garmin;
 using Peloton;
@@ -24,7 +25,7 @@ namespace Sync
 	public class SyncService : ISyncService
 	{
 		private static readonly ILogger _logger = LogContext.ForClass<SyncService>();
-		private static readonly Histogram SyncHistogram = Prometheus.Metrics.CreateHistogram("p2g_sync_duration_seconds", "The histogram of sync jobs that have run.");
+		private static readonly Histogram SyncHistogram = Prometheus.Metrics.CreateHistogram($"{Statics.MetricPrefix}_sync_duration_seconds", "The histogram of sync jobs that have run.");
 
 		private readonly Settings _config;
 		private readonly IPelotonService _pelotonService;
@@ -46,7 +47,8 @@ namespace Sync
 		public async Task<SyncResult> SyncAsync(int numWorkouts)
 		{
 			using var timer = SyncHistogram.NewTimer();
-			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}");
+			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}")
+										.WithTag("numWorkouts", numWorkouts.ToString());
 
 			var response = new SyncResult();
 			var syncTime = await _db.GetSyncStatusAsync();

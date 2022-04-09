@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Observe;
+using Common.Stateful;
 using Prometheus;
 using Serilog;
 using System;
@@ -18,13 +19,13 @@ namespace Garmin
 
 	public class GarminUploader : IGarminUploader
 	{
-		private static readonly Histogram WorkoutUploadDuration = Metrics.CreateHistogram("p2g_workout_upload_duration_seconds", "Histogram of workout upload durations.", new HistogramConfiguration()
+		private static readonly Histogram WorkoutUploadDuration = Metrics.CreateHistogram($"{Statics.MetricPrefix}_workout_upload_duration_seconds", "Histogram of workout upload durations.", new HistogramConfiguration()
 		{
 			LabelNames = new[] { Common.Observe.Metrics.Label.Count }
 		});
-		private static readonly Gauge FailedUploadAttemptsGauge = Metrics.CreateGauge("p2g_failed_upload_attempts",
+		private static readonly Gauge FailedUploadAttemptsGauge = Metrics.CreateGauge($"{Statics.MetricPrefix}_failed_upload_attempts",
 			"The number of consecutive failed upload attempts. Resets to 0 on the first successful upload. This is not a count of the number of workouts that failed to upload. P2G uploads in bulk, so this is just a guage of number of failed upload attempts.");
-		private static readonly Gauge FilesToUpload = Metrics.CreateGauge("p2g_files_to_upload",
+		private static readonly Gauge FilesToUpload = Metrics.CreateGauge($"{Statics.MetricPrefix}_files_to_upload",
 			"The number of files available to be uploaded. This number sets to 0 upon successful upload.");
 		private static readonly ILogger _logger = LogContext.ForClass<GarminUploader>();
 
@@ -52,6 +53,7 @@ namespace Garmin
 			}
 
 			var files = Directory.GetFiles(_config.App.UploadDirectory);
+			tracing.AddTag("workouts.count", files.Length);
 
 			if (files.Length == 0)
 			{
@@ -78,15 +80,18 @@ namespace Garmin
 		private async Task UploadAsync(string[] files)
 		{
 			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(UploadAsync)}.UploadToGarminViaNative")
-										.WithTag(TagKey.Category, "nativeImplV1");
+										.WithTag(TagKey.Category, "nativeImplV1")
+										.AddTag("workouts.count", files.Count());
 
 			try
 			{
 				await _api.InitAuth();
 			} catch (Exception e)
 			{
+				tracing.AddTag("exception.message", e.Message);
+				tracing.AddTag("exception.stacktrace", e.StackTrace);
 				throw new GarminUploadException("Failed to authenticate with Garmin.", -2, e);
-			}			
+			}
 
 			foreach (var file in files)
 			{

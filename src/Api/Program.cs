@@ -16,6 +16,12 @@ using Serilog.Events;
 using Sync;
 
 ///////////////////////////////////////////////////////////
+/// STATICS
+///////////////////////////////////////////////////////////
+Statics.MetricPrefix = Constants.ApiName;
+Statics.TracingService = Constants.ApiName;
+
+///////////////////////////////////////////////////////////
 /// HOST
 ///////////////////////////////////////////////////////////
 var builder = WebApplication
@@ -137,7 +143,7 @@ app.Use(async (context, next) =>
 if (config.Observability.Prometheus.Enabled)
 {
 	Log.Information("Metrics Enabled");
-	Common.Observe.Metrics.EnableCollector(config.Observability.Prometheus, Constants.ApiName);
+	Common.Observe.Metrics.EnableCollector(config.Observability.Prometheus);
 
 	app.MapMetrics();
 	app.UseHttpMetrics();
@@ -156,39 +162,19 @@ void ConfigureTracing(IServiceCollection services, AppConfiguration config)
 {
 	services.AddOpenTelemetryTracing(
 		(builder) => builder
-			.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Statics.MetricPrefix))
-			.AddSource(Statics.MetricPrefix)
+			.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Statics.TracingService))
+			.AddSource(Statics.TracingService)
 			.SetSampler(new AlwaysOnSampler())
 			.SetErrorStatusOnException()
 			.AddAspNetCoreInstrumentation(c =>
 			{
 				c.RecordException = true;
-				c.Enrich = (activity, name, rawEventObject) =>
-				{
-					activity.SetTag(TagKey.App, TagValue.P2G);
-					activity.SetTag("SpanId", activity.SpanId);
-					activity.SetTag("TraceId", activity.TraceId);
-
-					if (name.Equals("OnStartActivity")
-						&& rawEventObject is HttpRequest httpRequest)
-					{
-						if (httpRequest.Headers.TryGetValue("TraceId", out var incomingTraceParent))
-							activity.SetParentId(incomingTraceParent);
-
-						if (httpRequest.Headers.TryGetValue("uber-trace-id", out incomingTraceParent))
-							activity.SetParentId(incomingTraceParent);
-					}
-				};
+				c.Enrich = Tracing.AspNetCoreEnricher;
 			})
 			.AddHttpClientInstrumentation(h =>
 			{
 				h.RecordException = true;
-				h.Enrich = (activity, name, rawEventObject) =>
-				{
-					activity.SetTag(TagKey.App, TagValue.P2G);
-					activity.SetTag("SpanId", activity.SpanId);
-					activity.SetTag("TraceId", activity.TraceId);
-				};
+				h.Enrich = Tracing.HttpEnricher;
 			})
 			.AddJaegerExporter(o =>
 			{

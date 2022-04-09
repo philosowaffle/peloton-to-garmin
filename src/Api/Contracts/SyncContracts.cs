@@ -43,7 +43,7 @@ public class SyncPostRequest
 	}
 
 	public int NumWorkouts { get; set; }
-	public ICollection<string> WorkoutIds { get; set; }
+	public ICollection<string>? WorkoutIds { get; set; }
 }
 
 public class SyncPostResponse

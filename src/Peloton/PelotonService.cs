@@ -3,6 +3,7 @@ using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Helpers;
 using Common.Observe;
+using Common.Stateful;
 using Newtonsoft.Json.Linq;
 using Prometheus;
 using Serilog;
@@ -25,8 +26,8 @@ namespace Peloton
 
 	public class PelotonService : IPelotonService
 	{
-		public static readonly Histogram WorkoutDownloadDuration = Metrics.CreateHistogram("p2g_peloton_workout_download_duration_seconds", "Histogram of the entire time to download a single workouts data.");
-		public static readonly Gauge FailedDesiralizationCount = Metrics.CreateGauge("p2g_peloton_workout_download_deserialization_failed", "Number of workouts that failed to deserialize during the last sync.");
+		public static readonly Histogram WorkoutDownloadDuration = Metrics.CreateHistogram($"{Statics.MetricPrefix}_peloton_workout_download_duration_seconds", "Histogram of the entire time to download a single workouts data.");
+		public static readonly Gauge FailedDesiralizationCount = Metrics.CreateGauge($"{Statics.MetricPrefix}_peloton_workout_download_deserialization_failed", "Number of workouts that failed to deserialize during the last sync.");
 		private static readonly ILogger _logger = LogContext.ForClass<PelotonService>();
 
 		private Settings _config;
@@ -45,7 +46,8 @@ namespace Peloton
 
 		public async Task DownloadLatestWorkoutDataAsync(int numWorkoutsToDownload) 
 		{
-			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(DownloadLatestWorkoutDataAsync)}");
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(DownloadLatestWorkoutDataAsync)}")
+										.WithTag("workouts.requested", numWorkoutsToDownload.ToString());
 
 			if (numWorkoutsToDownload <= 0) return;
 
@@ -53,6 +55,7 @@ namespace Peloton
 
 			var recentWorkouts = await GetRecentWorkoutsAsync(numWorkoutsToDownload);
 			_logger.Debug("Total workouts found: {@FoundWorkouts}", recentWorkouts.Count);
+			tracing.AddTag("workouts.found", recentWorkouts.Count);
 
 			var completedWorkouts = recentWorkouts.Where(w => 
 			{
@@ -61,6 +64,7 @@ namespace Peloton
 				return false;
 			});
 			_logger.Debug("Total workouts found after filtering out InProgress: {@FoundWorkouts}", completedWorkouts.Count());
+			tracing.AddTag("workouts.completed", completedWorkouts.Count());
 
 			var workingDir = _config.App.DownloadDirectory;
 			_fileHandler.MkDirIfNotExists(workingDir);
@@ -69,8 +73,8 @@ namespace Peloton
 			{
 				var workoutId = recentWorkout.Id;
 
-				var workoutTitle = string.Empty;
 				P2GWorkout deSerializedData = await GetWorkoutDetailsAsync(workoutId);
+				var workoutTitle = WorkoutHelper.GetUniqueTitle(deSerializedData.Workout);
 
 				if (_config.Format.Json && _config.Format.SaveLocalCopy) SaveRawData(deSerializedData.Raw, workoutTitle);
 
@@ -87,7 +91,10 @@ namespace Peloton
 
 			FailedDesiralizationCount.Set(_failedCount);
 			if (_failedCount > 0)
+			{
 				_logger.Warning("Failed to deserialize {@NumFailed} workouts. You can find the failed workouts at {@Path}", _failedCount, _config.App.JsonDirectory);
+				tracing.AddTag("workouts.failed", _failedCount);
+			}
 		}
 
 		public static void ValidateConfig(Common.Peloton config)
@@ -107,7 +114,8 @@ namespace Peloton
 
 		public async Task<ICollection<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)
 		{
-			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetRecentWorkoutsAsync)}");
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetRecentWorkoutsAsync)}")
+										.WithTag("workouts.requested", numWorkoutsToDownload.ToString());
 
 			await _pelotonApi.InitAuthAsync();
 
@@ -135,7 +143,8 @@ namespace Peloton
 
 		private void SaveRawData(dynamic data, string workoutTitle)
 		{
-			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(SaveRawData)}");
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(SaveRawData)}")
+										.WithTag("workout.title", workoutTitle);
 
 			var outputDir = _config.App.JsonDirectory;
 			_fileHandler.MkDirIfNotExists(outputDir);
@@ -163,7 +172,8 @@ namespace Peloton
 
 		private async Task<P2GWorkout> GetWorkoutDetailsAsync(string workoutId)
 		{
-			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetWorkoutDetailsAsync)}.Item");
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetWorkoutDetailsAsync)}.Item")
+										.WithWorkoutId(workoutId);
 
 			using var workoutTimer = WorkoutDownloadDuration.NewTimer();
 
@@ -180,7 +190,8 @@ namespace Peloton
 
 		private P2GWorkout BuildP2GWorkout(string workoutId, JObject workout, JObject workoutSamples)
 		{
-			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(BuildP2GWorkout)}");
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(BuildP2GWorkout)}")
+										.WithWorkoutId(workoutId);
 
 			dynamic data = new JObject();
 			data.Workout = workout;
@@ -191,13 +202,13 @@ namespace Peloton
 			{
 				deSerializedData = JsonSerializer.Deserialize<P2GWorkout>(data.ToString(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 				deSerializedData.Raw = data;
-				var workoutTitle = WorkoutHelper.GetUniqueTitle(deSerializedData.Workout);
 			}
 			catch (Exception e)
 			{
 				_failedCount++;
 				var title = "workout_failed_to_deserialize_" + workoutId;
 				_logger.Error("Failed to deserialize workout from Peloton. You can find the raw data from the workout here: @FileName", title, e);
+				tracing.AddTag("exception.message", e.Message);
 				SaveRawData(data, title);
 			}
 

@@ -35,10 +35,8 @@ namespace Common.Observe
 			}
 		}
 
-		public static IDisposable EnableCollector(Prometheus config, string metricPrefix)
+		public static IDisposable EnableCollector(Prometheus config)
 		{
-			Statics.MetricPrefix = metricPrefix;
-
 			if (config.Enabled)
 				return DotNetRuntimeStatsBuilder
 					.Customize()

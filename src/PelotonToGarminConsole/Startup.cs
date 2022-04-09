@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Observe;
+using Common.Stateful;
 using Garmin;
 using Microsoft.Extensions.Hosting;
 using Peloton;
@@ -75,8 +76,11 @@ namespace PelotonToGarminConsole
 		{
 			int exitCode = 0;
 
+			Statics.MetricPrefix = Constants.ConsoleAppName;
+			Statics.TracingService = Constants.ConsoleAppName;
+
 			using var metrics = Metrics.EnableMetricsServer(_config.Observability.Prometheus);
-			using var metricsCollector = Metrics.EnableCollector(_config.Observability.Prometheus, Constants.ConsoleAppName);
+			using var metricsCollector = Metrics.EnableCollector(_config.Observability.Prometheus);
 			using var tracing = Tracing.EnableTracing(_config.Observability.Jaeger);
 			using var tracingSource = new ActivitySource("ROOT");
 
