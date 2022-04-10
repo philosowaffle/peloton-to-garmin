@@ -4,6 +4,7 @@ using Common.Dto.Garmin;
 using Common.Dto.Peloton;
 using Common.Helpers;
 using Common.Observe;
+using Common.Stateful;
 using Dynastream.Fit;
 using Prometheus;
 using Serilog;
@@ -17,13 +18,13 @@ namespace Conversion
 {
 	public interface IConverter
 	{
-		public void Convert();
-		public ConvertStatus Convert(P2GWorkout workoutData);
+		void Convert();
+		ConvertStatus Convert(P2GWorkout workoutData);
 	}
 
 	public abstract class Converter<T> : IConverter
 	{
-		private static readonly Histogram WorkoutsConverted = Metrics.CreateHistogram("p2g_workouts_converted_duration_seconds", "The histogram of workouts converted.", new HistogramConfiguration()
+		private static readonly Histogram WorkoutsConverted = Metrics.CreateHistogram($"{Statics.MetricPrefix}_workouts_converted_duration_seconds", "The histogram of workouts converted.", new HistogramConfiguration()
 		{
 			LabelNames = new string[] { Common.Observe.Metrics.Label.FileType }
 		});
@@ -78,6 +79,8 @@ namespace Conversion
 
 		protected abstract void Save(T data, string path);
 
+		protected abstract void SaveLocalCopy(string sourcePath, string workoutTitle);
+
 		protected ConvertStatus Convert(FileFormat format, P2GWorkout workoutData)
 		{
 			using var tracingConvert = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.WithWorkoutData")
@@ -120,22 +123,13 @@ namespace Conversion
 			}
 
 			// copy to local save
-			if (_config.Format.SaveLocalCopy)
+			try
 			{
-				try
-				{
-					_fileHandler.MkDirIfNotExists(_config.App.TcxDirectory);
-					_fileHandler.MkDirIfNotExists(_config.App.FitDirectory);
-					var dir = format == FileFormat.Fit ? _config.App.FitDirectory : _config.App.TcxDirectory;
-
-					var backupDest = Path.Join(dir, $"{workoutTitle}.{format}");
-					_fileHandler.Copy(path, backupDest, overwrite: true);
-					_logger.Information("Backed up file {@File}", backupDest);
-				}
-				catch (Exception e)
-				{
-					_logger.Error(e, "Failed to backup {@Format} file for {@Workout}", format, workoutTitle);
-				}
+				SaveLocalCopy(path, workoutTitle);
+			}
+			catch (Exception e)
+			{
+				_logger.Error(e, "Failed to backup {@Format} file for {@Workout}", format, workoutTitle);
 			}
 
 			// copy to upload dir
@@ -179,6 +173,7 @@ namespace Conversion
 			}
 
 			_logger.Debug("[{@Format}] Files to convert: {@FileCount}", format, files.Length);
+			tracingConvert?.AddTag("filesToConvert", files.Length);
 
 			if (_config.Garmin.Upload)
 				_fileHandler.MkDirIfNotExists(_config.App.UploadDirectory);
@@ -186,6 +181,9 @@ namespace Conversion
 			// Foreach file in directory
 			foreach (var file in files)
 			{
+				using var tracingConvertWorkout = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.Workout")
+										.WithTag(TagKey.Format, format.ToString())
+										.AddTag("file", file);
 				using var workoutTimer = WorkoutsConverted.WithLabels(format.ToString()).NewTimer();
 
 				// load file and deserialize
@@ -198,12 +196,12 @@ namespace Conversion
 				{
 					_logger.Error(e, "[{@Format}] Failed to load and parse workout data {@File}", format, file);
 					_fileHandler.MoveFailedFile(file, _config.App.FailedDirectory);
+					tracingConvertWorkout?.AddTag("exception.message", e.Message);
+					tracingConvertWorkout?.AddTag("exception.stacktrace", e.StackTrace);
 					continue;
 				}
 
-				using var tracing = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.Workout")
-										.WithWorkoutId(workoutData.Workout.Id)
-										.WithTag(TagKey.Format, format.ToString());
+				tracingConvertWorkout?.AddTag(TagKey.WorkoutId, workoutData.Workout.Id);
 
 				// call internal convert method
 				T converted = default;
@@ -216,6 +214,8 @@ namespace Conversion
 				} catch (Exception e)
 				{
 					_logger.Error(e, "[{@Format}] Failed to convert workout data {@Workout} {@File}", format, workoutTitle, file);
+					tracingConvertWorkout?.AddTag("convert.exception.Message", e.Message);
+					tracingConvertWorkout?.AddTag("convert.exception.StackTrace", e.StackTrace);
 				}
 
 				if (converted is null)
@@ -233,27 +233,22 @@ namespace Conversion
 				catch (Exception e)
 				{
 					_logger.Error(e, "[{@Format}] Failed to write file for {@Workout}", format, workoutTitle);
+					tracingConvertWorkout?.AddTag("save.exception.Message", e.Message);
+					tracingConvertWorkout?.AddTag("save.exception.StackTrace", e.StackTrace);
 					continue;
 				}
 
 				// copy to local save
-				if (_config.Format.SaveLocalCopy)
+				try
 				{
-					try
-					{
-						_fileHandler.MkDirIfNotExists(_config.App.TcxDirectory);
-						_fileHandler.MkDirIfNotExists(_config.App.FitDirectory);
-						var dir = format == FileFormat.Fit ? _config.App.FitDirectory : _config.App.TcxDirectory;
-
-						var backupDest = Path.Join(dir, $"{workoutTitle}.{format}");
-						_fileHandler.Copy(path, backupDest, overwrite: true);
-						_logger.Information("[{@Format}] Backed up file {@File}", format, backupDest);
-					}
-					catch (Exception e)
-					{
-						_logger.Error(e, "[{@Format}] Failed to backup file for {@Workout}", format, workoutTitle);
-						continue;
-					}
+					SaveLocalCopy(path, workoutTitle);
+				}
+				catch (Exception e)
+				{
+					_logger.Error(e, "[{@Format}] Failed to backup file for {@Workout}", format, workoutTitle);
+					tracingConvertWorkout?.AddTag("saveLocalCopy.exception.Message", e.Message);
+					tracingConvertWorkout?.AddTag("saveLocalCopy.exception.StackTrace", e.StackTrace);
+					continue;
 				}
 
 				// copy to upload dir
@@ -268,6 +263,8 @@ namespace Conversion
 					catch (Exception e)
 					{
 						_logger.Error(e, "[{@Format}] Failed to copy file for {@Workout} to upload directory", format, workoutTitle);
+						tracingConvertWorkout?.AddTag("copyToUpload.exception.Message", e.Message);
+						tracingConvertWorkout?.AddTag("copyToUpload.exception.StackTrace", e.StackTrace);
 						continue;
 					}
 				}

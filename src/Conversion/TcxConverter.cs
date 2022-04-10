@@ -3,6 +3,8 @@ using Common.Database;
 using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Observe;
+using Serilog;
+using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -10,6 +12,8 @@ namespace Conversion
 {
 	public class TcxConverter : Converter<XElement>
 	{
+		private static readonly ILogger _logger = LogContext.ForClass<TcxConverter>();
+
 		public TcxConverter(Settings settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
 
 		public override void Convert()
@@ -32,6 +36,17 @@ namespace Conversion
 								.WithTag(TagKey.Format, FileFormat.Tcx.ToString());
 
 			data.Save(path);
+		}
+
+		protected override void SaveLocalCopy(string sourcePath, string workoutTitle)
+		{
+			if (!_config.Format.Tcx || !_config.Format.SaveLocalCopy) return;
+
+			_fileHandler.MkDirIfNotExists(_config.App.TcxDirectory);
+
+			var backupDest = Path.Join(_config.App.TcxDirectory, $"{workoutTitle}.tcx");
+			_fileHandler.Copy(sourcePath, backupDest, overwrite: true);
+			_logger.Information("[@Format] Backed up file {@File}", FileFormat.Fit, backupDest);
 		}
 
 		protected override XElement Convert(Workout workout, WorkoutSamples samples)

@@ -56,6 +56,17 @@ namespace Conversion
 			}
 		}
 
+		protected override void SaveLocalCopy(string sourcePath, string workoutTitle)
+		{
+			if (!_config.Format.Fit || !_config.Format.SaveLocalCopy) return;
+
+			_fileHandler.MkDirIfNotExists(_config.App.FitDirectory);
+
+			var backupDest = Path.Join(_config.App.FitDirectory, $"{workoutTitle}.fit");
+			_fileHandler.Copy(sourcePath, backupDest, overwrite: true);
+			_logger.Information("[@Format] Backed up file {@File}", FileFormat.Fit, backupDest);
+		}
+
 		protected override Tuple<string, ICollection<Mesg>> Convert(Workout workout, WorkoutSamples workoutSamples)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(Convert)}")

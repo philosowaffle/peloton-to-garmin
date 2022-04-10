@@ -662,6 +662,11 @@ namespace UnitTests.Conversion
 			{
 				throw new NotImplementedException();
 			}
+
+			protected override void SaveLocalCopy(string sourcePath, string workoutTitle)
+			{
+				throw new NotImplementedException();
+			}
 		}
 	}
 }

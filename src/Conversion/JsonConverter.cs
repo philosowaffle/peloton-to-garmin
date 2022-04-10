@@ -2,11 +2,15 @@
 using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Observe;
+using Serilog;
+using System.IO;
 
 namespace Conversion
 {
 	public class JsonConverter : Converter<dynamic>
 	{
+		private static readonly ILogger _logger = LogContext.ForClass<JsonConverter>();
+
 		public JsonConverter(Settings settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
 
 		public override void Convert()
@@ -35,6 +39,17 @@ namespace Conversion
 										.WithTag(TagKey.Format, FileFormat.Json.ToString());
 
 			_fileHandler.WriteToFile(path, data.ToString());
+		}
+
+		protected override void SaveLocalCopy(string sourcePath, string workoutTitle)
+		{
+			if (!_config.Format.Json) return;
+
+			_fileHandler.MkDirIfNotExists(_config.App.JsonDirectory);
+
+			var backupDest = Path.Join(_config.App.JsonDirectory, $"{workoutTitle}.json");
+			_fileHandler.Copy(sourcePath, backupDest, overwrite: true);
+			_logger.Information("[@Format] Backed up file {@File}", FileFormat.Fit, backupDest);
 		}
 	}
 }
