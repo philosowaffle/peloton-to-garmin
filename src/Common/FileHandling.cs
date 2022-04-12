@@ -20,7 +20,7 @@ namespace Common
 		bool WriteToFile(string path, string content);
 		void Cleanup(string dir);
 	}
-
+	
 	public class IOWrapper : IFileHandling
 	{
 		private static readonly ILogger _logger = LogContext.ForClass<IOWrapper>();
