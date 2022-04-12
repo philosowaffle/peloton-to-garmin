@@ -51,7 +51,7 @@ namespace Common
 										.WithTag("path", path);
 			var files = Directory.GetFiles(path);
 
-			trace1.AddTag("numFiles", files.Length);
+			trace1?.AddTag("numFiles", files.Length);
 
 			return files;
 		}
@@ -85,8 +85,8 @@ namespace Common
 				} catch (Exception e)
 				{
 					_logger.Error(e, "Failed to deserialize {@File} from xml to type {@Type}.", file, typeof(T));
-					trace.AddTag("exception.message", e.Message);
-					trace.AddTag("exception.stacktrace", e.StackTrace);
+					trace?.AddTag("exception.message", e.Message);
+					trace?.AddTag("exception.stacktrace", e.StackTrace);
 					return false;
 				}
 			}
@@ -108,8 +108,8 @@ namespace Common
 			catch (Exception e)
 			{
 				_logger.Error(e, "Failed to move file from {@FromPath} to {@ToPath}", fromPath, toPath);
-				trace.AddTag("exception.message", e.Message);
-				trace.AddTag("exception.stacktrace", e.StackTrace);
+				trace?.AddTag("exception.message", e.Message);
+				trace?.AddTag("exception.stacktrace", e.StackTrace);
 			}
 		}
 
@@ -135,8 +135,8 @@ namespace Common
 			{
 				_logger.Error(e, "Failed to write content to file {@Path}", path);
 				_logger.Verbose("Failed content: {@Content}", content);
-				trace.AddTag("exception.message", e.Message);
-				trace.AddTag("exception.stacktrace", e.StackTrace);
+				trace?.AddTag("exception.message", e.Message);
+				trace?.AddTag("exception.stacktrace", e.StackTrace);
 				return false;
 			}
 		}
@@ -159,8 +159,8 @@ namespace Common
 			catch (Exception e)
 			{
 				_logger.Error(e, "Failed to clean up working directory: {@Directory}", dir);
-				trace2.AddTag("exception.message", e.Message);
-				trace2.AddTag("exception.stacktrace", e.StackTrace);
+				trace2?.AddTag("exception.message", e.Message);
+				trace2?.AddTag("exception.stacktrace", e.StackTrace);
 			}
 		}
 	}
