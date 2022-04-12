@@ -18,7 +18,7 @@ RUN apt-get update \
 COPY ./python/requirements.txt ./requirements.txt
 RUN pip3 install -r requirements.txt
 
-RUN groupadd -r p2g && useradd -r -g p2g p2g
+RUN groupadd -g 1015 p2g && useradd -g p2g -u 1015 p2g
 
 WORKDIR /app
 
