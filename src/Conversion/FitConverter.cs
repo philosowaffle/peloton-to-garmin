@@ -52,7 +52,7 @@ namespace Conversion
 					encoder.Close();
 				}
 
-				_logger.Information("Encoded FIT file {@Path}", fitDest.Name);
+				_logger.Information("[{@Format}] Encoded file {@Path}", FileFormat.Fit, fitDest.Name);
 			}
 		}
 
@@ -64,7 +64,7 @@ namespace Conversion
 
 			var backupDest = Path.Join(_config.App.FitDirectory, $"{workoutTitle}.fit");
 			_fileHandler.Copy(sourcePath, backupDest, overwrite: true);
-			_logger.Information("[@Format] Backed up file {@File}", FileFormat.Fit, backupDest);
+			_logger.Information("[{@Format}] Backed up file {@File}", FileFormat.Fit, backupDest);
 		}
 
 		protected override Tuple<string, ICollection<Mesg>> Convert(Workout workout, WorkoutSamples workoutSamples)

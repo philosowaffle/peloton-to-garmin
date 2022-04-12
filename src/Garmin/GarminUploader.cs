@@ -53,7 +53,7 @@ namespace Garmin
 			}
 
 			var files = Directory.GetFiles(_config.App.UploadDirectory);
-			tracing.AddTag("workouts.count", files.Length);
+			tracing?.AddTag("workouts.count", files.Length);
 
 			if (files.Length == 0)
 			{
@@ -79,7 +79,7 @@ namespace Garmin
 
 		private async Task UploadAsync(string[] files)
 		{
-			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(UploadAsync)}.UploadToGarminViaNative")
+			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(UploadAsync)}.UploadToGarminViaNative")?
 										.WithTag(TagKey.Category, "nativeImplV1")
 										.AddTag("workouts.count", files.Count());
 
@@ -88,8 +88,8 @@ namespace Garmin
 				await _api.InitAuth();
 			} catch (Exception e)
 			{
-				tracing.AddTag("exception.message", e.Message);
-				tracing.AddTag("exception.stacktrace", e.StackTrace);
+				tracing?.AddTag("exception.message", e.Message);
+				tracing?.AddTag("exception.stacktrace", e.StackTrace);
 				throw new GarminUploadException("Failed to authenticate with Garmin.", -2, e);
 			}
 
@@ -97,10 +97,13 @@ namespace Garmin
 			{
 				try
 				{
+					_logger.Information("Uploading to Garmin: {@file}", file);
 					await _api.UploadActivity(file, _config.Format.Fit ? ".fit" : ".tcx");
 					await RateLimit();
 				} catch (Exception e)
 				{
+					tracing?.AddTag("exception.message", e.Message);
+					tracing?.AddTag("exception.stacktrace", e.StackTrace);
 					throw new GarminUploadException($"NativeImplV1 failed to upload workout {file}", -1, e);
 				}
 			}
@@ -112,6 +115,7 @@ namespace Garmin
 
 			var waitDuration = _random.Next(1000, 5000);
 			_logger.Information($"Rate limiting, upload will continue after {waitDuration / 1000} seconds...");
+			tracing?.AddTag("rate.limit.sec", waitDuration);
 			await Task.Delay(waitDuration);
 		}
 

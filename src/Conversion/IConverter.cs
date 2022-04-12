@@ -83,7 +83,7 @@ namespace Conversion
 
 		protected ConvertStatus Convert(FileFormat format, P2GWorkout workoutData)
 		{
-			using var tracingConvert = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.WithWorkoutData")
+			using var tracingConvert = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.WithWorkoutData")?
 										.WithTag(TagKey.Format, format.ToString());
 			
 			var status = new ConvertStatus();
@@ -91,7 +91,7 @@ namespace Conversion
 			if (_config.Garmin.Upload)
 				_fileHandler.MkDirIfNotExists(_config.App.UploadDirectory);
 
-			using var tracing = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.Workout")
+			using var tracing = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.Workout")?
 										.WithWorkoutId(workoutData.Workout.Id)
 										.WithTag(TagKey.Format, format.ToString());
 
@@ -155,7 +155,7 @@ namespace Conversion
 
 		protected void Convert(FileFormat format)
 		{
-			using var tracingConvert = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}")
+			using var tracingConvert = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}")?
 										.WithTag(TagKey.Format, format.ToString());
 
 			if (!_fileHandler.DirExists(_config.App.DownloadDirectory))
@@ -181,7 +181,7 @@ namespace Conversion
 			// Foreach file in directory
 			foreach (var file in files)
 			{
-				using var tracingConvertWorkout = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.Workout")
+				using var tracingConvertWorkout = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.Workout")?
 										.WithTag(TagKey.Format, format.ToString())
 										.AddTag("file", file);
 				using var workoutTimer = WorkoutsConverted.WithLabels(format.ToString()).NewTimer();

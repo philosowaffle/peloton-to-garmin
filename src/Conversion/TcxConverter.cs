@@ -1,5 +1,4 @@
 ﻿using Common;
-using Common.Database;
 using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Observe;
@@ -46,7 +45,7 @@ namespace Conversion
 
 			var backupDest = Path.Join(_config.App.TcxDirectory, $"{workoutTitle}.tcx");
 			_fileHandler.Copy(sourcePath, backupDest, overwrite: true);
-			_logger.Information("[@Format] Backed up file {@File}", FileFormat.Fit, backupDest);
+			_logger.Information("[{@Format}] Backed up file {@File}", FileFormat.Tcx, backupDest);
 		}
 
 		protected override XElement Convert(Workout workout, WorkoutSamples samples)
