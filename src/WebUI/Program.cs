@@ -8,6 +8,13 @@ using Prometheus;
 using Common.Observe;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Resources;
+using Common.Stateful;
+
+///////////////////////////////////////////////////////////
+/// STATICS
+///////////////////////////////////////////////////////////
+Statics.MetricPrefix = Constants.WebUIName;
+Statics.TracingService = Constants.WebUIName;
 
 ///////////////////////////////////////////////////////////
 /// HOST
@@ -46,7 +53,7 @@ builder.Services.AddHxServices();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-FlurlConfiguration.Configure(config.Observability);
+FlurlConfiguration.Configure(config.Observability, 20);
 
 Log.Logger = new LoggerConfiguration()
 				.ReadFrom.Configuration(builder.Configuration, sectionName: $"{nameof(Observability)}:Serilog")
@@ -61,7 +68,7 @@ var os = Environment.OSVersion.Platform.ToString();
 var osVersion = Environment.OSVersion.VersionString;
 var version = Constants.AppVersion;
 
-Prometheus.Metrics.CreateGauge($"{Constants.WebUIName}_build_info", "Build info for the running instance.", new GaugeConfiguration()
+Prometheus.Metrics.CreateGauge($"{Statics.MetricPrefix}_build_info", "Build info for the running instance.", new GaugeConfiguration()
 {
 	LabelNames = new[] { Common.Observe.Metrics.Label.Version, Common.Observe.Metrics.Label.Os, Common.Observe.Metrics.Label.OsVersion, Common.Observe.Metrics.Label.DotNetRuntime }
 }).WithLabels(version, os, osVersion, runtimeVersion)
@@ -89,7 +96,7 @@ app.Use(async (context, next) =>
 if (config.Observability.Prometheus.Enabled)
 {
 	Log.Information("Metrics Enabled");
-	Common.Observe.Metrics.EnableCollector(config.Observability.Prometheus, Constants.WebUIName);
+	Common.Observe.Metrics.EnableCollector(config.Observability.Prometheus);
 
 	app.MapMetrics();
 	app.UseHttpMetrics();
@@ -121,39 +128,19 @@ void ConfigureTracing(IServiceCollection services, AppConfiguration config)
 {
 	services.AddOpenTelemetryTracing(
 		(builder) => builder
-			.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Constants.WebUIName))
-			.AddSource(Constants.WebUIName)
+			.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Statics.TracingService))
+			.AddSource(Statics.TracingService)
 			.SetSampler(new AlwaysOnSampler())
 			.SetErrorStatusOnException()
 			.AddAspNetCoreInstrumentation(c =>
 			{
 				c.RecordException = true;
-				c.Enrich = (activity, name, rawEventObject) =>
-				{
-					activity.SetTag(TagKey.App, TagValue.P2G);
-					activity.SetTag("SpanId", activity.SpanId);
-					activity.SetTag("TraceId", activity.TraceId);
-
-					if (name.Equals("OnStartActivity")
-						&& rawEventObject is HttpRequest httpRequest)
-					{
-						if (httpRequest.Headers.TryGetValue("TraceId", out var incomingTraceParent))
-							activity.SetParentId(incomingTraceParent);
-
-						if (httpRequest.Headers.TryGetValue("uber-trace-id", out incomingTraceParent))
-							activity.SetParentId(incomingTraceParent);
-					}
-				};
+				c.Enrich = Tracing.AspNetCoreEnricher;
 			})
 			.AddHttpClientInstrumentation(h =>
 			{
 				h.RecordException = true;
-				h.Enrich = (activity, name, rawEventObject) =>
-				{
-					activity.SetTag(TagKey.App, TagValue.P2G);
-					activity.SetTag("SpanId", activity.SpanId);
-					activity.SetTag("TraceId", activity.TraceId);
-				};
+				h.Enrich = Tracing.HttpEnricher;
 			})
 			.AddJaegerExporter(o =>
 			{

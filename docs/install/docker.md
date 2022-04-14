@@ -37,9 +37,10 @@ services:
       - TZ=America/Chicago
     volumes:
       - ./configuration.local.json:/app/configuration.local.json
+      - ./data:/app/data
 ```
 
-The generated `tcx`, `fit`, `json`, and log files can be found in `app/output` which can be mounted as seen below.
+The generated `tcx`, `fit`, `json`, and log files can be found in `app/output`.  which can be mounted as seen below.
 
 ```yaml
 version: "3.9"
@@ -51,8 +52,16 @@ services:
       - TZ=America/Chicago
     volumes:
       - ./configuration.local.json:/app/configuration.local.json
+      - ./data:/app/data
       - ./output:/app/output
 ```
+
+## Docker User
+
+The P2G images run the process under the user and group `p2g:p2g` with uid and gid `1015:1015`.  To access files created by `p2g`:
+
+1. Create a group on the local machine `p2g` with group id `1015`
+1. Add your user on the local machine to the `p2g` group
 
 ## Prometheus
 

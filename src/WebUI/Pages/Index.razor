@@ -1,5 +1,4 @@
 ﻿@page "/"
-@using Serilog
 @inject IApiClient _apiClient
 
 <PageTitle>Home</PageTitle>
@@ -9,10 +8,10 @@
 <p>This is a work in progress and not guaranteed to fully work yet. Breaking changes will happen. Feel free to check it out.</p>
 
 <div class="row">
-	<div class="col-sm-2">
-        <div class="card @syncStatusBorderClass mb-3">
+	<div class="col-sm-4">
+        <div class="card @syncStatusBorderClass mb-3" style="border-width: thick">
             <div class="card-body @syncStatusTextClass">
-                <h5 class="card-title">Automatic Syncing <i class="fa-solid fa-circle" style="@syncStatusBadgeClass"></i></h5>
+                <h5 class="card-title">Automatic Syncing</h5>
                 <p class="font-weight-bold">@syncStatus.AutoSyncHealthString</p>
                 @if (syncStatus.SyncStatus != Common.Database.Status.NotRunning)
                 {
@@ -60,21 +59,20 @@ else
 
 	private SyncPostResponse? syncResponse;
 	private SyncGetResponse syncStatus;
-	private Common.Settings settings;
+	private SettingsGetResponse settings;
 	private bool syncRunning;
 
 	private string ErrorMessage;
 
 	private string syncStatusBorderClass = "border-light";
 	private string syncStatusTextClass = "";
-	private string syncStatusBadgeClass = "color:gray";
 
 	public Index() : base()
 	{
 		syncStatus = new SyncGetResponse();
 		syncResponse = null;
 
-		settings = new Common.Settings();
+		settings = new SettingsGetResponse();
 		syncRunning = false;
 
 		ErrorMessage = string.Empty;
@@ -104,21 +102,17 @@ else
 		{
 			case Common.Database.Status.Running:
 				syncStatusBorderClass = "border-success";
-				syncStatusBadgeClass = "color:green";
 				break;
 			case Common.Database.Status.NotRunning:
 				syncStatusBorderClass = "border-secondary";
 				syncStatusTextClass = "text-secondary";
-				syncStatusBadgeClass = "color:gray";
 				break;
 			case Common.Database.Status.Dead:
 				syncStatusBorderClass = "border-danger";
 				syncStatusTextClass = "text-danger";
-				syncStatusBadgeClass = "color:red";
 				break;
 			case Common.Database.Status.UnHealthy:
 				syncStatusBorderClass = "border-warning";
-				syncStatusBadgeClass = "color:yellow";
 				break;
 		}
 	}

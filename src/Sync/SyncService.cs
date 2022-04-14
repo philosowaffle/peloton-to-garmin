@@ -1,7 +1,9 @@
 ﻿using Common;
 using Common.Database;
+using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Observe;
+using Common.Stateful;
 using Conversion;
 using Garmin;
 using Peloton;
@@ -23,7 +25,7 @@ namespace Sync
 	public class SyncService : ISyncService
 	{
 		private static readonly ILogger _logger = LogContext.ForClass<SyncService>();
-		private static readonly Histogram SyncHistogram = Prometheus.Metrics.CreateHistogram("p2g_sync_duration_seconds", "The histogram of sync jobs that have run.");
+		private static readonly Histogram SyncHistogram = Prometheus.Metrics.CreateHistogram($"{Statics.MetricPrefix}_sync_duration_seconds", "The histogram of sync jobs that have run.");
 
 		private readonly Settings _config;
 		private readonly IPelotonService _pelotonService;
@@ -45,7 +47,8 @@ namespace Sync
 		public async Task<SyncResult> SyncAsync(int numWorkouts)
 		{
 			using var timer = SyncHistogram.NewTimer();
-			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}");
+			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}")
+										.WithTag("numWorkouts", numWorkouts.ToString());
 
 			var response = new SyncResult();
 			var syncTime = await _db.GetSyncStatusAsync();
@@ -121,9 +124,10 @@ namespace Sync
 
 			var response = new SyncResult();
 			var recentWorkouts = workoutIds.Select(w => new RecentWorkout() { Id = w }).ToList();
+			P2GWorkout[] workouts = { };
 			try
 			{
-				var workouts = await _pelotonService.GetP2GWorkoutsAsync(recentWorkouts);
+				workouts = await _pelotonService.GetWorkoutDetailsAsync(recentWorkouts);
 				response.PelotonDownloadSuccess = true;
 			}
 			catch (Exception e)
@@ -137,9 +141,9 @@ namespace Sync
 
 			try
 			{
-				/// TODO: Support passing in P2GWorkout
-				foreach (var converter in _converters)
-					converter.Convert();
+				foreach (var workout in workouts)
+					foreach (var converter in _converters)
+						converter.Convert(workout);
 				response.ConversionSuccess = true;
 			}
 			catch (Exception e)
@@ -166,6 +170,11 @@ namespace Sync
 				response.UploadToGarminSuccess = false;
 				response.Errors.Add(new ErrorResponse() { Message = "Failed to upload to Garmin Connect. Check logs for more details." });
 				return response;
+			} finally
+			{
+				_fileHandler.Cleanup(_config.App.DownloadDirectory);
+				_fileHandler.Cleanup(_config.App.UploadDirectory);
+				_fileHandler.Cleanup(_config.App.WorkingDirectory);
 			}
 
 			response.SyncSuccess = true;

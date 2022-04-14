@@ -23,7 +23,7 @@ namespace Api.Controllers
 
 			var recentWorkouts = await _pelotonService.GetRecentWorkoutsAsync(25);
 
-			return new RecentWorkoutsGetResponse() { Items = recentWorkouts };
+			return new RecentWorkoutsGetResponse() { Items = recentWorkouts.OrderByDescending(i => i.Created_At).ToList() };
 
 		}
 	}

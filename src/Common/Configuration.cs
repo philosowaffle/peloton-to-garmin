@@ -238,6 +238,7 @@ namespace Common
 	public enum FileFormat
 	{
 		Fit = 0,
-		Tcx = 1
+		Tcx = 1,
+		Json = 2
 	}
 }

@@ -1,6 +1,5 @@
 ﻿
 using Common;
-using Common.Helpers;
 
 namespace WebUI.Domain;
 
@@ -8,65 +7,24 @@ public class SettingsGetResponse
 {
 	public SettingsGetResponse()
 	{
-		App = new AppConfiguration();
-		Settings = new Settings();
-		Copy = new Copy();
+		App = new Common.App();
+		Format = new Format();
+		Peloton = new SettingsPelotonGetResponse();
+		Garmin = new SettingsGarminGetResponse();
 	}
 
-	public AppConfiguration App { get; set; }
-	public Settings Settings { get; set; }
-	public Copy Copy { get; set; }
+	public Common.App App { get; set; }
+	public Format Format { get; set; }
+	public SettingsPelotonGetResponse Peloton { get; set; }
+	public SettingsGarminGetResponse Garmin { get; set; }
 }
 
-public class Copy
+public class SettingsGarminGetResponse : Common.Garmin
 {
-	public Copy()
-	{
-		Settings = new SettingsCopy();
-	}
-
-	public SettingsCopy Settings { get; set; }
+	public bool IsPasswordSet { get; set; }
 }
 
-public class SettingsCopy
+public class SettingsPelotonGetResponse : Common.Peloton
 {
-	public SettingsCopy()
-	{
-		AppOutputDirectory = typeof(App).GetFieldDescription("OutputDirectory");
-		AppWorkingDirectory = typeof(App).GetFieldDescription("WorkingDirectory");
-		AppEnablePolling = typeof(App).GetFieldDescription("EnablePolling");
-		AppPollingIntervalSeconds = typeof(App).GetFieldDescription("PollingIntervalSeconds");
-
-		FormatFit = typeof(Format).GetFieldDescription("Fit");
-		FormatJson = typeof(Format).GetFieldDescription("Json");
-		FormatTcx = typeof(Format).GetFieldDescription("Tcx");
-		FormatSaveLocalCopy = typeof(Format).GetFieldDescription("SaveLocalCopy");
-		FormatIncludeTimeInHRZones = typeof(Format).GetFieldDescription("IncludeTimeInHRZones");
-		FormatIncludeTimeInPowerZones = typeof(Format).GetFieldDescription("IncludeTimeInPowerZones");
-		FormatDeviceInfoPath = typeof(Format).GetFieldDescription("DeviceInfoPath");
-
-		FormatRunningPreferredLapType = typeof(Running).GetFieldDescription("PreferredLapType");
-		FormatCyclingPreferredLapType = typeof(Cycling).GetFieldDescription("PreferredLapType");
-
-		PelotonExcludeWorkoutTypes = typeof(Common.Peloton).GetFieldDescription("ExcludeWorkoutTypes");
-	}
-
-	public string AppOutputDirectory { get; set; }
-	public string AppWorkingDirectory { get; set; }
-	public string AppEnablePolling { get; set; }
-	public string AppPollingIntervalSeconds { get; set; }
-
-	public string FormatFit { get; set; }
-	public string FormatJson { get; set; }
-	public string FormatTcx { get; set; }
-	public string FormatSaveLocalCopy { get; set; }
-	public string FormatIncludeTimeInHRZones { get; set; }
-	public string FormatIncludeTimeInPowerZones { get; set; }
-	public string FormatDeviceInfoPath { get; set; }
-
-	public string FormatRunningPreferredLapType { get; set; }
-	public string FormatCyclingPreferredLapType { get; set; }
-
-	public string PelotonExcludeWorkoutTypes { get; set; }
-
+	public bool IsPasswordSet { get; set; }
 }

@@ -37,7 +37,13 @@ public class SyncGetResponse
 
 public class SyncPostRequest
 {
+	public SyncPostRequest()
+	{
+		WorkoutIds = new List<string>();
+	}
+
 	public int NumWorkouts { get; set; }
+	public ICollection<string>? WorkoutIds { get; set; }
 }
 
 public class SyncPostResponse

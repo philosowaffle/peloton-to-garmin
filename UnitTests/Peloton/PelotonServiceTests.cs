@@ -120,7 +120,7 @@ namespace UnitTests.Peloton
 		public async Task GetRecentWorkoutsAsync_FetchesXNumberOfWorkoutsAcrossPages()
 		{
 			var autoMocker = new AutoMocker();
-			var pelotonService = autoMocker.CreateInstance<InternalPelotonService>();
+			var pelotonService = autoMocker.CreateInstance<PelotonService>();
 
 			var pelotonApi = autoMocker.GetMock<IPelotonApi>();
 			pelotonApi.Setup(x => x.GetWorkoutsAsync(2, 0)) // First call for data
@@ -138,7 +138,7 @@ namespace UnitTests.Peloton
 		public async Task GetRecentWorkoutsAsync_StopsCallingPelotonWhenNoMoreWorkouts()
 		{
 			var autoMocker = new AutoMocker();
-			var pelotonService = autoMocker.CreateInstance<InternalPelotonService>();
+			var pelotonService = autoMocker.CreateInstance<PelotonService>();
 
 			var pelotonApi = autoMocker.GetMock<IPelotonApi>();
 			pelotonApi.Setup(x => x.GetWorkoutsAsync(20, 0)) // First call for data

@@ -18,6 +18,11 @@ namespace Sync
 
 	public class ErrorResponse
 	{
+		public ErrorResponse()
+		{
+			Message = string.Empty;
+		}
+
 		public string Message { get; set; }
 	}
 }

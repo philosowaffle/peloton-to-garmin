@@ -29,7 +29,7 @@ services:
     environment:
       - TZ=America/Chicago
     volumes:
-      - ./configuration.local.json:/app/configuration.local.json # see sample below
+      - ./configuration.local.json:/app/api.local.json # see sample below
       - ./data:/app/data # recommended for saving settings across restarts
       - ./output:/app/output # optional, if you want access to the generated workout and log files
   
@@ -41,14 +41,54 @@ services:
     environment:
       - TZ=America/Chicago
     volumes:
-      - ./configuration.local.json:/app/configuration.local.json # see sample below
+      - ./configuration.local.json:/app/webui.local.json # see sample below
 ```
 
-### Sample configuration.local.json
+With the above docker configuration you can launch the containers and visit `http://localhost:8002` to reach the `p2g` web UI.
+
+### Sample api.local.json
+
+The Api can be configured with its own configuration if desired, otherwise it is fine for it to share the webui config file.
+
+```json
+{
+  "Observability": {
+
+    "Prometheus": {
+      "Enabled": false,
+      "Port": 4000
+    },
+
+    "Jaeger": {
+      "Enabled": false,
+      "AgentHost": "localhost",
+      "AgentPort": 6831
+    },
+
+    "Serilog": {
+      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File" ],
+      "MinimumLevel": "Information",
+      "WriteTo": [
+        { "Name": "Console" },
+        {
+          "Name": "File",
+          "Args": {
+            "path": "./output/log.txt",
+            "rollingInterval": "Day",
+            "retainedFileCountLimit": 7
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+### Sample webui.local.json
 
 In the Web UI application, all common settings are configured via the UI. Your previous settings will not be carried forward, you will need to re-configure P2G using the Settings page on the UI.
 
-The only exception to this is the Observability configuration section, which is still configred via the file.
+The only exception to this is the Observability configuration section and a new `Api` section, which is still configred via the file.
 
 ```json
 {

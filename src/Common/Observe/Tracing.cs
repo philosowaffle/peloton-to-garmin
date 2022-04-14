@@ -1,10 +1,12 @@
 ﻿using Common.Stateful;
+using Microsoft.AspNetCore.Http;
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
 using System;
 using System.Diagnostics;
+using System.Net.Http;
 
 namespace Common.Observe
 {
@@ -36,18 +38,17 @@ namespace Common.Observe
 			if (config.Enabled)
 			{
 				tracing = Sdk.CreateTracerProviderBuilder()
-							.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Statics.MetricPrefix))
+							.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Statics.TracingService))
 							.AddHttpClientInstrumentation(config =>
 							{
 								config.RecordException = true;
 								config.Enrich = (activity, name, rawEventObject) =>
 								{
-									activity.SetTag(TagKey.App, TagValue.P2G);
 									activity.SetTag("SpanId", activity.SpanId);
 									activity.SetTag("TraceId", activity.TraceId);
 								};
 							})
-							.AddSource(Statics.MetricPrefix)
+							.AddSource(Statics.TracingService)
 							.AddJaegerExporter(o =>
 							{
 								o.AgentHost = config.AgentHost;
@@ -65,11 +66,10 @@ namespace Common.Observe
 		{
 			var activity = Activity.Current?.Source.StartActivity(name)
 				??
-				new ActivitySource(Statics.MetricPrefix)?.StartActivity(name);
+				new ActivitySource(Statics.TracingService)?.StartActivity(name);
 
 			activity?
 				.SetTag(TagKey.Category, category)
-				.SetTag(TagKey.App, TagValue.P2G)
 				.SetTag("SpanId", activity.SpanId)
 				.SetTag("TraceId", activity.TraceId);
 
@@ -106,6 +106,50 @@ namespace Common.Observe
 			{
 				Log.Error("Agent Port must be set: {@ConfigSection}.{@ConfigProperty}.", nameof(config), nameof(config.Jaeger.AgentPort));
 				throw new ArgumentException("Agent Port must be a valid port.", nameof(config.Jaeger.AgentPort));
+			}
+		}
+
+		public static void HttpEnricher(Activity activity, string name, object rawEventObject)
+		{
+			if (name.Equals("OnStartActivity"))
+			{
+				if (rawEventObject is HttpRequestMessage request)
+				{
+					activity.DisplayName = $"{request.Method} {request.RequestUri.AbsolutePath}";
+					activity.SetTag("http.path", request.RequestUri.AbsolutePath);
+					activity.SetTag("http.query", request.RequestUri.Query);
+					activity.SetTag("http.body", request.Content?.ReadAsStringAsync().GetAwaiter().GetResult() ?? "no_content");
+				}
+			}
+			else if (name.Equals("OnStopActivity"))
+			{
+				if (rawEventObject is HttpResponseMessage response)
+				{
+					activity.SetTag("http.response.body", response.Content?.ReadAsStringAsync().GetAwaiter().GetResult() ?? "no_content");
+				}
+			}
+			else if (name.Equals("OnException"))
+			{
+				if (rawEventObject is Exception exception)
+				{
+					activity.SetTag("stackTrace", exception.StackTrace);
+				}
+			}
+		}
+
+		public static void AspNetCoreEnricher(Activity activity, string name, object rawEventObject)
+		{
+			if (name.Equals("OnStartActivity")
+				&& rawEventObject is HttpRequest httpRequest)
+			{
+				if (httpRequest.Headers.TryGetValue("TraceId", out var incomingTraceParent))
+					activity.SetParentId(incomingTraceParent);
+
+				if (httpRequest.Headers.TryGetValue("uber-trace-id", out incomingTraceParent))
+					activity.SetParentId(incomingTraceParent);
+
+				activity.SetTag("http.path", httpRequest.Path);
+				activity.SetTag("http.query", httpRequest.QueryString);
 			}
 		}
 	}

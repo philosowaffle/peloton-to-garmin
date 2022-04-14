@@ -24,6 +24,12 @@ public class SyncController : Controller
 		_db = db;
 	}
 
+	/// <summary>
+	/// Syncs a given set of workouts from Peloton to Garmin.
+	/// </summary>
+	/// <returns>SyncPostResponse</returns>
+	/// <response code="204">Returns the sync status information.</response>
+	/// <response code="422">If the request fields are invalid.</response>
 	[HttpPost]
 	[Route("/api/sync")]
 	[ProducesResponseType(typeof(SyncPostResponse), 204)]
@@ -31,10 +37,14 @@ public class SyncController : Controller
 	{
 		using var tracing = Tracing.Trace($"{nameof(SyncController)}.{nameof(SyncAsync)}");
 
-		if (request.NumWorkouts <= 0)
-			throw new Exception(); // TODO: throw correct http error
+		if (request.NumWorkouts <= 0 && !request.WorkoutIds.Any())
+			throw new HttpRequestException("Either NumWorkouts or WorkoutIds must be set", null, System.Net.HttpStatusCode.UnprocessableEntity);
 
-		var syncResult = await _syncService.SyncAsync(request.NumWorkouts);
+		SyncResult syncResult = new();
+		if (request.NumWorkouts > 0)
+			syncResult = await _syncService.SyncAsync(request.NumWorkouts);
+		else
+			syncResult = await _syncService.SyncAsync(request.WorkoutIds);
 
 		return new SyncPostResponse()
 		{

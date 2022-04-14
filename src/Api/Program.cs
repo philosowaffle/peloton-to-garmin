@@ -3,6 +3,7 @@ using Common;
 using Common.Database;
 using Common.Observe;
 using Common.Service;
+using Common.Stateful;
 using Conversion;
 using Garmin;
 using OpenTelemetry.Resources;
@@ -13,6 +14,12 @@ using Serilog;
 using Serilog.Enrichers.Span;
 using Serilog.Events;
 using Sync;
+
+///////////////////////////////////////////////////////////
+/// STATICS
+///////////////////////////////////////////////////////////
+Statics.MetricPrefix = Constants.ApiName;
+Statics.TracingService = Constants.ApiName;
 
 ///////////////////////////////////////////////////////////
 /// HOST
@@ -60,7 +67,7 @@ builder.Services.AddTransient<Settings>((serviceProvider) =>
 {
 	using var tracing = Tracing.Trace($"{nameof(Program)}.DI");
 	var settingsService = serviceProvider.GetService<ISettingsService>();
-	return settingsService.GetSettingsAsync().GetAwaiter().GetResult();
+	return settingsService?.GetSettingsAsync().GetAwaiter().GetResult() ?? new Settings();
 });
 
 builder.Services.AddSingleton<AppConfiguration>((serviceProvider) =>
@@ -136,13 +143,13 @@ app.Use(async (context, next) =>
 if (config.Observability.Prometheus.Enabled)
 {
 	Log.Information("Metrics Enabled");
-	Common.Observe.Metrics.EnableCollector(config.Observability.Prometheus, Constants.ApiName);
+	Common.Observe.Metrics.EnableCollector(config.Observability.Prometheus);
 
 	app.MapMetrics();
 	app.UseHttpMetrics();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
@@ -155,39 +162,19 @@ void ConfigureTracing(IServiceCollection services, AppConfiguration config)
 {
 	services.AddOpenTelemetryTracing(
 		(builder) => builder
-			.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("p2g"))
-			.AddSource("P2G")
+			.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Statics.TracingService))
+			.AddSource(Statics.TracingService)
 			.SetSampler(new AlwaysOnSampler())
 			.SetErrorStatusOnException()
 			.AddAspNetCoreInstrumentation(c =>
 			{
 				c.RecordException = true;
-				c.Enrich = (activity, name, rawEventObject) =>
-				{
-					activity.SetTag(TagKey.App, TagValue.P2G);
-					activity.SetTag("SpanId", activity.SpanId);
-					activity.SetTag("TraceId", activity.TraceId);
-
-					if (name.Equals("OnStartActivity")
-						&& rawEventObject is HttpRequest httpRequest)
-					{
-						if (httpRequest.Headers.TryGetValue("TraceId", out var incomingTraceParent))
-							activity.SetParentId(incomingTraceParent);
-
-						if (httpRequest.Headers.TryGetValue("uber-trace-id", out incomingTraceParent))
-							activity.SetParentId(incomingTraceParent);
-					}
-				};
+				c.Enrich = Tracing.AspNetCoreEnricher;
 			})
 			.AddHttpClientInstrumentation(h =>
 			{
 				h.RecordException = true;
-				h.Enrich = (activity, name, rawEventObject) =>
-				{
-					activity.SetTag(TagKey.App, TagValue.P2G);
-					activity.SetTag("SpanId", activity.SpanId);
-					activity.SetTag("TraceId", activity.TraceId);
-				};
+				h.Enrich = Tracing.HttpEnricher;
 			})
 			.AddJaegerExporter(o =>
 			{
