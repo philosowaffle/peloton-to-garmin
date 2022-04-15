@@ -4,10 +4,11 @@ using Common.Dto.Peloton;
 using Common.Observe;
 using Serilog;
 using System.IO;
+using System.Text.Json;
 
 namespace Conversion
 {
-	public class JsonConverter : Converter<dynamic>
+	public class JsonConverter : Converter<P2GWorkout>
 	{
 		private static readonly ILogger _logger = LogContext.ForClass<JsonConverter>();
 
@@ -27,18 +28,19 @@ namespace Conversion
 			return base.Convert(FileFormat.Json, workoutData);
 		}
 
-		protected override dynamic Convert(Workout workout, WorkoutSamples workoutSamples)
+		protected override P2GWorkout Convert(Workout workout, WorkoutSamples workoutSamples)
 		{
-			dynamic result = new { workout = workout, workoutSamples = workoutSamples };
+			var result = new P2GWorkout() { Workout = workout, WorkoutSamples = workoutSamples };
 			return result;
 		}
 
-		protected override void Save(dynamic data, string path)
+		protected override void Save(P2GWorkout data, string path)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(Save)}")
 										.WithTag(TagKey.Format, FileFormat.Json.ToString());
 
-			_fileHandler.WriteToFile(path, data.ToString());
+			var serializedData = JsonSerializer.Serialize(data, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, WriteIndented = true });
+			_fileHandler.WriteToFile(path, serializedData.ToString());
 		}
 
 		protected override void SaveLocalCopy(string sourcePath, string workoutTitle)

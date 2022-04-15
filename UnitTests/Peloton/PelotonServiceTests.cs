@@ -14,73 +14,62 @@ namespace UnitTests.Peloton
 	public class PelotonServiceTests
 	{
 		[Test]
-		public async Task DownloadLatestWorkoutDataAsync_DoesNothing_WhenNoCount([Values(-1,0)]int numWorkoutsToDownload)
+		public async Task GetRecentWorkoutsAsync_DoesNothing_WhenNoCount([Values(-1,0)]int numWorkoutsToDownload)
 		{
 			var autoMocker = new AutoMocker();
 			var pelotonService = autoMocker.CreateInstance<PelotonService>();
 			var pelotonApi = autoMocker.GetMock<IPelotonApi>();
 
-			await pelotonService.DownloadLatestWorkoutDataAsync(numWorkoutsToDownload);
+			await pelotonService.GetRecentWorkoutsAsync(numWorkoutsToDownload);
 
 			pelotonApi.Verify(x => x.InitAuthAsync(It.IsAny<string>()), Times.Never);
 		}
 
+		// TODO: migrate to SyncServiceTests
+		//[Test]
+		//public async Task DownloadLatestWorkoutDataAsync_Should_FilterInProgress()
+		//{
+		//	// SETUP
+		//	var autoMocker = new AutoMocker();
+		//	var pelotonService = autoMocker.CreateInstance<PelotonService>();
+		//	var pelotonApi = autoMocker.GetMock<IPelotonApi>();
+
+		//	pelotonApi.Setup(x => x.GetWorkoutsAsync(It.IsAny<int>(), It.IsAny<int>()))
+		//		.ReturnsAsync(new RecentWorkouts() 
+		//		{
+		//			data = new List<RecentWorkout>() 
+		//			{
+		//				new RecentWorkout() { Status = "COMPLETE", Id = "1" },
+		//				new RecentWorkout() { Status = "IN PROGRESS", Id = "2" }
+		//			}
+		//		})
+		//		.Verifiable();
+
+		//	pelotonApi.Setup(x => x.GetWorkoutByIdAsync("1"))
+		//			.ReturnsAsync(new JObject())
+		//			.Verifiable();
+
+		//	pelotonApi.Setup(x => x.GetWorkoutSamplesByIdAsync("1"))
+		//			.ReturnsAsync(new JObject())
+		//			.Verifiable();
+
+		//	// ACT
+		//	await pelotonService.DownloadLatestWorkoutDataAsync(2);
+
+		//	// ASSERT
+		//	Mock.Verify();
+		//	pelotonApi.Verify(x => x.GetWorkoutsAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+		//	pelotonApi.Verify(x => x.GetWorkoutByIdAsync(It.IsAny<string>()), Times.Once);
+		//	pelotonApi.Verify(x => x.GetWorkoutSamplesByIdAsync(It.IsAny<string>()), Times.Once);
+		//}
+
 		[Test]
-		public async Task DownloadLatestWorkoutDataAsync_Should_FilterInProgress()
+		public async Task GetWorkoutDetailsAsync_Should_EnrichAllWorkouts()
 		{
 			// SETUP
 			var autoMocker = new AutoMocker();
 			var pelotonService = autoMocker.CreateInstance<PelotonService>();
 			var pelotonApi = autoMocker.GetMock<IPelotonApi>();
-
-			pelotonApi.Setup(x => x.GetWorkoutsAsync(It.IsAny<int>(), It.IsAny<int>()))
-				.ReturnsAsync(new RecentWorkouts() 
-				{
-					data = new List<RecentWorkout>() 
-					{
-						new RecentWorkout() { Status = "COMPLETE", Id = "1" },
-						new RecentWorkout() { Status = "IN PROGRESS", Id = "2" }
-					}
-				})
-				.Verifiable();
-
-			pelotonApi.Setup(x => x.GetWorkoutByIdAsync("1"))
-					.ReturnsAsync(new JObject())
-					.Verifiable();
-
-			pelotonApi.Setup(x => x.GetWorkoutSamplesByIdAsync("1"))
-					.ReturnsAsync(new JObject())
-					.Verifiable();
-
-			// ACT
-			await pelotonService.DownloadLatestWorkoutDataAsync(2);
-
-			// ASSERT
-			Mock.Verify();
-			pelotonApi.Verify(x => x.GetWorkoutsAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
-			pelotonApi.Verify(x => x.GetWorkoutByIdAsync(It.IsAny<string>()), Times.Once);
-			pelotonApi.Verify(x => x.GetWorkoutSamplesByIdAsync(It.IsAny<string>()), Times.Once);
-		}
-
-		[Test]
-		public async Task DownloadLatestWorkoutDataAsync_Should_EnrichAllWorkouts()
-		{
-			// SETUP
-			var autoMocker = new AutoMocker();
-			var pelotonService = autoMocker.CreateInstance<PelotonService>();
-			var pelotonApi = autoMocker.GetMock<IPelotonApi>();
-
-			pelotonApi.Setup(x => x.GetWorkoutsAsync(It.IsAny<int>(), It.IsAny<int>()))
-				.ReturnsAsync(new RecentWorkouts()
-				{
-					data = new List<RecentWorkout>()
-					{
-						new RecentWorkout() { Status = "COMPLETE", Id = "1" },
-						new RecentWorkout() { Status = "COMPLETE", Id = "2" },
-						new RecentWorkout() { Status = "COMPLETE", Id = "3" },
-					}
-				})
-				.Verifiable();
 
 			pelotonApi.Setup(x => x.GetWorkoutByIdAsync("1"))
 					.ReturnsAsync(new JObject())
@@ -107,11 +96,15 @@ namespace UnitTests.Peloton
 					.Verifiable();
 
 			// ACT
-			await pelotonService.DownloadLatestWorkoutDataAsync(3);
+			await pelotonService.GetWorkoutDetailsAsync(new List<RecentWorkout>()
+					{
+						new RecentWorkout() { Status = "COMPLETE", Id = "1" },
+						new RecentWorkout() { Status = "COMPLETE", Id = "2" },
+						new RecentWorkout() { Status = "COMPLETE", Id = "3" },
+					});
 
 			// ASSERT
 			Mock.Verify();
-			pelotonApi.Verify(x => x.GetWorkoutsAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
 			pelotonApi.Verify(x => x.GetWorkoutByIdAsync(It.IsAny<string>()), Times.Exactly(3));
 			pelotonApi.Verify(x => x.GetWorkoutSamplesByIdAsync(It.IsAny<string>()), Times.Exactly(3));
 		}

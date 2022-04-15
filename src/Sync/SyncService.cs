@@ -19,7 +19,7 @@ namespace Sync
 	public interface ISyncService
 	{
 		Task<SyncResult> SyncAsync(int numWorkouts);
-		Task<SyncResult> SyncAsync(ICollection<string> workoutIds);
+		Task<SyncResult> SyncAsync(ICollection<string> workoutIds, ICollection<WorkoutType>? exclude = null);
 	}
 
 	public class SyncService : ISyncService
@@ -50,74 +50,54 @@ namespace Sync
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}")
 										.WithTag("numWorkouts", numWorkouts.ToString());
 
+			ICollection<RecentWorkout> recentWorkouts;
 			var response = new SyncResult();
 			var syncTime = await _db.GetSyncStatusAsync();
 			syncTime.LastSyncTime = DateTime.Now;
 
 			try
 			{
-				await _pelotonService.DownloadLatestWorkoutDataAsync(numWorkouts);
-				response.PelotonDownloadSuccess = true;
-
+				recentWorkouts = await _pelotonService.GetRecentWorkoutsAsync(numWorkouts);
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				_logger.Error(e, "Failed to download workouts from Peleoton.");
+				_logger.Error(ex, "Failed to fetch recent workouts from Peleoton.");
+				activity?.AddTag("exception.message", ex.Message);
+				activity?.AddTag("exception.stacktrace", ex.StackTrace);
+				
 				await _db.UpsertSyncStatusAsync(syncTime);
 				response.SyncSuccess = false;
 				response.PelotonDownloadSuccess = false;
-				response.Errors.Add(new ErrorResponse() { Message = "Failed to download workouts from Peloton. Check logs for more details." });
+				response.Errors.Add(new ErrorResponse() { Message = "Failed to fetch recent workouts from Peloton. Check logs for more details." });
 				return response;
 			}
 
-			try
-			{
-				foreach (var converter in _converters)
-					converter.Convert();
-				response.ConversionSuccess = true;
+			var completedWorkouts = recentWorkouts
+									.Where(w =>
+									{
+										var shouldKeep = w.Status == "COMPLETE";
+										if (shouldKeep) return true;
 
-				_fileHandler.Cleanup(_config.App.DownloadDirectory);
-			}
-			catch (Exception e)
-			{
-				_logger.Error(e, "Failed to convert workouts to FIT format.");
-				await _db.UpsertSyncStatusAsync(syncTime);
+										_logger.Debug("Skipping in progress workout. {@WorkoutId} {@WorkoutStatus} {@WorkoutType} {@WorkoutTitle}", w.Id, w.Status, w.Fitness_Discipline, w.Title);
+										return false;
+									})
+									.Select(r => r.Id)
+									.ToList();
 
-				response.SyncSuccess = false;
-				response.ConversionSuccess = false;
-				response.Errors.Add(new ErrorResponse() { Message = "Failed to convert workouts to FIT format. Check logs for more details." });
-				return response;
-			}
+			_logger.Debug("Total workouts found after filtering out InProgress: {@FoundWorkouts}", completedWorkouts.Count());
+			activity?.AddTag("workouts.completed", completedWorkouts.Count());
 
-			try
-			{
-				await _garminUploader.UploadToGarminAsync();
-				response.UploadToGarminSuccess = true;
-				
-				_fileHandler.Cleanup(_config.App.UploadDirectory);
-				_fileHandler.Cleanup(_config.App.WorkingDirectory);
-			}
-			catch (Exception e)
-			{
-				_logger.Error(e, "GUpload returned an error code. Failed to upload workouts.");
-				_logger.Warning("GUpload failed to upload files. You can find the converted files at {@Path} \n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", _config.App.OutputDirectory);
+			var result = await SyncAsync(completedWorkouts, _config.Peloton.ExcludeWorkoutTypes);
 
-				await _db.UpsertSyncStatusAsync(syncTime);
+			if (result.SyncSuccess)
+				syncTime.LastSuccessfulSyncTime = DateTime.Now;
 
-				response.SyncSuccess = false;
-				response.UploadToGarminSuccess = false;
-				response.Errors.Add(new ErrorResponse() { Message = "Failed to upload to Garmin Connect. Check logs for more details." });
-				return response;
-			}
-
-			syncTime.LastSuccessfulSyncTime = DateTime.Now;
 			await _db.UpsertSyncStatusAsync(syncTime);
 
-			response.SyncSuccess = true;
 			return response;
 		}
 
-		public async Task<SyncResult> SyncAsync(ICollection<string> workoutIds)
+		public async Task<SyncResult> SyncAsync(ICollection<string> workoutIds, ICollection<WorkoutType>? exclude = null)
 		{
 			using var timer = SyncHistogram.NewTimer();
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.ByWorkoutIds");
@@ -139,9 +119,25 @@ namespace Sync
 				return response;
 			}
 
+			var filteredWorkouts = workouts.Where(w => 
+								{
+									if (exclude is null || exclude.Count == 0) return true;
+
+									if (exclude.Contains(w.WorkoutType))
+									{
+										_logger.Debug("Skipping excluded workout type. {@WorkoutId} {@WorkoutType}", w.Workout.Id, w.WorkoutType);
+										return false;
+									}
+
+									return true;
+								});
+
+			activity?.AddTag("workouts.filtered", filteredWorkouts.Count());
+			_logger.Debug("Number of workouts to convert after filtering InProgress: {@NumWorkouts}", filteredWorkouts.Count());
+
 			try
 			{
-				foreach (var workout in workouts)
+				foreach (var workout in filteredWorkouts)
 					foreach (var converter in _converters)
 						converter.Convert(workout);
 				response.ConversionSuccess = true;

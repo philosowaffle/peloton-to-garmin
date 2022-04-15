@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Database;
+using Common.Dto.Peloton;
 using Conversion;
 using FluentAssertions;
 using Garmin;
@@ -9,6 +10,7 @@ using NUnit.Framework;
 using Peloton;
 using Sync;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace UnitTests.Sync
@@ -29,7 +31,7 @@ namespace UnitTests.Sync
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.DownloadLatestWorkoutDataAsync(0)).Throws(new Exception());
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).Throws(new Exception());
 
 			// ACT
 			var response = await service.SyncAsync(0);
@@ -39,7 +41,7 @@ namespace UnitTests.Sync
 			response.PelotonDownloadSuccess.Should().BeFalse();
 			response.Errors.Should().NotBeNullOrEmpty();
 
-			peloton.Verify(x => x.DownloadLatestWorkoutDataAsync(0), Times.Once);
+			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Once);
 			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
 		}
 
@@ -57,7 +59,7 @@ namespace UnitTests.Sync
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.DownloadLatestWorkoutDataAsync(0)).Returns(Task.CompletedTask);
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<RecentWorkout>());
 			converter.Setup(x => x.Convert()).Throws(new Exception());
 
 			// ACT
@@ -69,7 +71,7 @@ namespace UnitTests.Sync
 			response.ConversionSuccess.Should().BeFalse();
 			response.Errors.Should().NotBeNullOrEmpty();
 
-			peloton.Verify(x => x.DownloadLatestWorkoutDataAsync(0), Times.Once);
+			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Once);
 			converter.Verify(x => x.Convert(), Times.Once);
 			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
 		}
@@ -89,7 +91,7 @@ namespace UnitTests.Sync
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.DownloadLatestWorkoutDataAsync(0)).Returns(Task.CompletedTask);
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<RecentWorkout>());
 			garmin.Setup(x => x.UploadToGarminAsync()).Throws(new Exception());
 
 			// ACT
@@ -102,7 +104,7 @@ namespace UnitTests.Sync
 			response.UploadToGarminSuccess.Should().BeFalse();
 			response.Errors.Should().NotBeNullOrEmpty();
 
-			peloton.Verify(x => x.DownloadLatestWorkoutDataAsync(0), Times.Once);
+			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Once);
 			converter.Verify(x => x.Convert(), Times.Once);
 			garmin.Verify(x => x.UploadToGarminAsync(), Times.Once);
 			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
@@ -124,7 +126,7 @@ namespace UnitTests.Sync
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.DownloadLatestWorkoutDataAsync(0)).Returns(Task.CompletedTask);
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<RecentWorkout>());
 
 			// ACT
 			var response = await service.SyncAsync(0);
@@ -136,7 +138,7 @@ namespace UnitTests.Sync
 			response.UploadToGarminSuccess.Should().BeTrue();
 			response.Errors.Should().BeNullOrEmpty();
 
-			peloton.Verify(x => x.DownloadLatestWorkoutDataAsync(0), Times.Once);
+			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Once);
 			converter.Verify(x => x.Convert(), Times.Once);
 			garmin.Verify(x => x.UploadToGarminAsync(), Times.Once);
 			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);

@@ -89,6 +89,7 @@ builder.Services.AddTransient<ISyncService, SyncService>();
 
 builder.Services.AddTransient<IConverter, FitConverter>();
 builder.Services.AddTransient<IConverter, TcxConverter>();
+builder.Services.AddTransient<IConverter, JsonConverter>();
 
 FlurlConfiguration.Configure(config.Observability);
 
