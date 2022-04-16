@@ -50,8 +50,7 @@ namespace Sync
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}")
 										.WithTag("numWorkouts", numWorkouts.ToString());
 
-			ICollection<RecentWorkout> recentWorkouts;
-			var response = new SyncResult();
+			ICollection<RecentWorkout> recentWorkouts;			
 			var syncTime = await _db.GetSyncStatusAsync();
 			syncTime.LastSyncTime = DateTime.Now;
 
@@ -66,6 +65,7 @@ namespace Sync
 				activity?.AddTag("exception.stacktrace", ex.StackTrace);
 				
 				await _db.UpsertSyncStatusAsync(syncTime);
+				var response = new SyncResult();
 				response.SyncSuccess = false;
 				response.PelotonDownloadSuccess = false;
 				response.Errors.Add(new ErrorResponse() { Message = "Failed to fetch recent workouts from Peloton. Check logs for more details." });
@@ -94,7 +94,7 @@ namespace Sync
 
 			await _db.UpsertSyncStatusAsync(syncTime);
 
-			return response;
+			return result;
 		}
 
 		public async Task<SyncResult> SyncAsync(ICollection<string> workoutIds, ICollection<WorkoutType>? exclude = null)
