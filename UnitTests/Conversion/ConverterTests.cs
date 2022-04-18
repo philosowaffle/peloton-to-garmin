@@ -1,12 +1,10 @@
 ﻿using Common;
-using Common.Database;
 using Common.Dto;
 using Common.Dto.Garmin;
 using Common.Dto.Peloton;
 using Conversion;
 using Dynastream.Fit;
 using FluentAssertions;
-using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
 using System;
@@ -572,11 +570,6 @@ namespace UnitTests.Conversion
 		private class ConverterInstance : Converter<string>
 		{
 			public ConverterInstance(Settings settings, IFileHandling fileHandling) : base(settings, fileHandling) { }
-
-			public override void Convert()
-			{
-				throw new NotImplementedException();
-			}
 
 			protected override string Convert(Workout workout, WorkoutSamples workoutSamples)
 			{

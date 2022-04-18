@@ -107,6 +107,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
 
 			services.AddSingleton<IConverter, FitConverter>();
 			services.AddSingleton<IConverter, TcxConverter>();
+			services.AddSingleton<IConverter, JsonConverter>();
 
 			services.AddHostedService<Startup>();
 		});

@@ -1,5 +1,4 @@
 ﻿using Common;
-using Common.Database;
 using Common.Dto;
 using Common.Dto.Garmin;
 using Common.Dto.Peloton;
@@ -19,13 +18,6 @@ namespace Conversion
 		private static readonly string _spaceSeparator = "_";
 		private static readonly ILogger _logger = LogContext.ForClass<FitConverter>();
 		public FitConverter(Settings settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
-
-		public override void Convert()
-		{
-			if (!_config.Format.Fit) return;
-
-			base.Convert(FileFormat.Fit);
-		}
 
 		public override ConvertStatus Convert(P2GWorkout workout)
 		{

@@ -18,7 +18,6 @@ namespace Conversion
 {
 	public interface IConverter
 	{
-		void Convert();
 		ConvertStatus Convert(P2GWorkout workoutData);
 	}
 
@@ -72,7 +71,6 @@ namespace Conversion
 			_fileHandler = fileHandler;
 		}
 
-		public abstract void Convert();
 		public abstract ConvertStatus Convert(P2GWorkout workoutData);
 
 		protected abstract T Convert(Workout workout, WorkoutSamples workoutSamples);
@@ -116,9 +114,12 @@ namespace Conversion
 			try
 			{
 				Save(converted, path);
+				status.Success = true;
 			}
 			catch (Exception e)
 			{
+				status.Success = false;
+				status.ErrorMessage = "Failed to save converted workout for upload.";
 				_logger.Error(e, "Failed to write {@Format} file for {@Workout}", format, workoutTitle);
 			}
 
@@ -133,7 +134,7 @@ namespace Conversion
 			}
 
 			// copy to upload dir
-			if (_config.Garmin.Upload && _config.Garmin.FormatToUpload == format)
+			if (status.Success && _config.Garmin.Upload && _config.Garmin.FormatToUpload == format)
 			{
 				try
 				{
@@ -151,124 +152,6 @@ namespace Conversion
 			}
 
 			return status;
-		}
-
-		protected void Convert(FileFormat format)
-		{
-			using var tracingConvert = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}")?
-										.WithTag(TagKey.Format, format.ToString());
-
-			if (!_fileHandler.DirExists(_config.App.DownloadDirectory))
-			{
-				_logger.Information("[{@Format}] No download directory found. Nothing to do. {@File}", format, _config.App.DownloadDirectory);
-				return;
-			}
-
-			var files = _fileHandler.GetFiles(_config.App.DownloadDirectory);
-
-			if (files.Length == 0)
-			{
-				_logger.Information("[{@Format}] No files to convert in download directory. Nothing to do. {@File}", format, _config.App.DownloadDirectory);
-				return;
-			}
-
-			_logger.Debug("[{@Format}] Files to convert: {@FileCount}", format, files.Length);
-			tracingConvert?.AddTag("filesToConvert", files.Length);
-
-			if (_config.Garmin.Upload)
-				_fileHandler.MkDirIfNotExists(_config.App.UploadDirectory);
-
-			// Foreach file in directory
-			foreach (var file in files)
-			{
-				using var tracingConvertWorkout = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.Workout")?
-										.WithTag(TagKey.Format, format.ToString())
-										.AddTag("file", file);
-				using var workoutTimer = WorkoutsConverted.WithLabels(format.ToString()).NewTimer();
-
-				// load file and deserialize
-				P2GWorkout workoutData = null;
-				try
-				{
-					workoutData = _fileHandler.DeserializeJson<P2GWorkout>(file);
-				}
-				catch (Exception e)
-				{
-					_logger.Error(e, "[{@Format}] Failed to load and parse workout data {@File}", format, file);
-					_fileHandler.MoveFailedFile(file, _config.App.FailedDirectory);
-					tracingConvertWorkout?.AddTag("exception.message", e.Message);
-					tracingConvertWorkout?.AddTag("exception.stacktrace", e.StackTrace);
-					continue;
-				}
-
-				tracingConvertWorkout?.AddTag(TagKey.WorkoutId, workoutData.Workout.Id);
-
-				// call internal convert method
-				T converted = default;
-				var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout);
-				try
-				{
-					_logger.Debug("[{@Format}] Converting workout {@Workout}", format, workoutTitle);
-					converted = Convert(workoutData.Workout, workoutData.WorkoutSamples);
-					
-				} catch (Exception e)
-				{
-					_logger.Error(e, "[{@Format}] Failed to convert workout data {@Workout} {@File}", format, workoutTitle, file);
-					tracingConvertWorkout?.AddTag("convert.exception.Message", e.Message);
-					tracingConvertWorkout?.AddTag("convert.exception.StackTrace", e.StackTrace);
-				}
-
-				if (converted is null)
-				{
-					_fileHandler.MoveFailedFile(file, _config.App.FailedDirectory);
-					continue;
-				}
-
-				// write to output dir
-				var path = Path.Join(_config.App.WorkingDirectory, $"{workoutTitle}.{format}");
-				try
-				{
-					Save(converted, path);
-				}
-				catch (Exception e)
-				{
-					_logger.Error(e, "[{@Format}] Failed to write file for {@Workout}", format, workoutTitle);
-					tracingConvertWorkout?.AddTag("save.exception.Message", e.Message);
-					tracingConvertWorkout?.AddTag("save.exception.StackTrace", e.StackTrace);
-					continue;
-				}
-
-				// copy to local save
-				try
-				{
-					SaveLocalCopy(path, workoutTitle);
-				}
-				catch (Exception e)
-				{
-					_logger.Error(e, "[{@Format}] Failed to backup file for {@Workout}", format, workoutTitle);
-					tracingConvertWorkout?.AddTag("saveLocalCopy.exception.Message", e.Message);
-					tracingConvertWorkout?.AddTag("saveLocalCopy.exception.StackTrace", e.StackTrace);
-					continue;
-				}
-
-				// copy to upload dir
-				if (_config.Garmin.Upload && _config.Garmin.FormatToUpload == format)
-				{
-					try
-					{
-						var uploadDest = Path.Join(_config.App.UploadDirectory, $"{workoutTitle}.{format}");
-						_fileHandler.Copy(path, uploadDest, overwrite: true);
-						_logger.Debug("[{@Format}] File copied to upload directory: {@Path}", format, uploadDest);
-					}
-					catch (Exception e)
-					{
-						_logger.Error(e, "[{@Format}] Failed to copy file for {@Workout} to upload directory", format, workoutTitle);
-						tracingConvertWorkout?.AddTag("copyToUpload.exception.Message", e.Message);
-						tracingConvertWorkout?.AddTag("copyToUpload.exception.StackTrace", e.StackTrace);
-						continue;
-					}
-				}
-			}
 		}
 
 		protected System.DateTime GetStartTimeUtc(Workout workout)
