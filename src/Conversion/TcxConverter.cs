@@ -15,13 +15,6 @@ namespace Conversion
 
 		public TcxConverter(Settings settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
 
-		public override void Convert()
-		{
-			if (!_config.Format.Tcx) return;
-
-			base.Convert(FileFormat.Tcx);
-		}
-
 		public override ConvertStatus Convert(P2GWorkout workout)
 		{
 			if (!_config.Format.Tcx) return new ConvertStatus() { Success = true, ErrorMessage = "Tcx format disabled in config." };

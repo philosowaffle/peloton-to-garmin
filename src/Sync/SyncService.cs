@@ -50,7 +50,7 @@ namespace Sync
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}")
 										.WithTag("numWorkouts", numWorkouts.ToString());
 
-			ICollection<RecentWorkout> recentWorkouts;			
+			ICollection<RecentWorkout> recentWorkouts;
 			var syncTime = await _db.GetSyncStatusAsync();
 			syncTime.LastSyncTime = DateTime.Now;
 
@@ -137,9 +137,14 @@ namespace Sync
 
 			try
 			{
-				foreach (var workout in filteredWorkouts)
-					foreach (var converter in _converters)
+				Parallel.ForEach(filteredWorkouts, (workout) => 
+				{
+					Parallel.ForEach(_converters, (converter) =>
+					{
 						converter.Convert(workout);
+					});
+				});
+
 				response.ConversionSuccess = true;
 			}
 			catch (Exception e)

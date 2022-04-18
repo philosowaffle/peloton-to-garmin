@@ -14,13 +14,6 @@ namespace Conversion
 
 		public JsonConverter(Settings settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
 
-		public override void Convert()
-		{
-			if (!_config.Format.Json) return;
-
-			base.Convert(FileFormat.Json);
-		}
-
 		public override ConvertStatus Convert(P2GWorkout workoutData)
 		{
 			if (!_config.Format.Json) return new ConvertStatus() { Success = true, ErrorMessage = "Json format disabled in config." };
@@ -46,6 +39,9 @@ namespace Conversion
 		protected override void SaveLocalCopy(string sourcePath, string workoutTitle)
 		{
 			if (!_config.Format.Json) return;
+
+			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(Save)}")
+										.WithTag(TagKey.Format, FileFormat.Json.ToString());
 
 			_fileHandler.MkDirIfNotExists(_config.App.JsonDirectory);
 
