@@ -86,9 +86,6 @@ namespace Conversion
 			
 			var status = new ConvertStatus();
 
-			if (_config.Garmin.Upload)
-				_fileHandler.MkDirIfNotExists(_config.App.UploadDirectory);
-
 			using var tracing = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.Workout")?
 										.WithWorkoutId(workoutData.Workout.Id)
 										.WithTag(TagKey.Format, format.ToString());
@@ -113,6 +110,7 @@ namespace Conversion
 			var path = Path.Join(_config.App.WorkingDirectory, $"{workoutTitle}.{format}");
 			try
 			{
+				_fileHandler.MkDirIfNotExists(_config.App.WorkingDirectory);
 				Save(converted, path);
 				status.Success = true;
 			}
@@ -139,6 +137,7 @@ namespace Conversion
 				try
 				{
 					var uploadDest = Path.Join(_config.App.UploadDirectory, $"{workoutTitle}.{format}");
+					_fileHandler.MkDirIfNotExists(_config.App.UploadDirectory);
 					_fileHandler.Copy(path, uploadDest, overwrite: true);
 					_logger.Debug("Prepped {@Format} for upload: {@Path}", format, uploadDest);
 				}
