@@ -9,8 +9,8 @@ nav_order: 0
 
 The recommended and easiest way to get started is with Docker. To learn more about Docker head on over to their [website](https://www.docker.com/).
 
-```bash
-docker run philosowaffle/peloton-to-garmin:stable -v ./configuration.local.json:/app/configuration.local.json -v ./output:/app/output
+```
+docker run  -v /full/path/to/configuration.local.json:/app/configuration.local.json -v /full/path/to/output:/app/output philosowaffle/peloton-to-garmin:stable
 ```
 
 ## Docker Tags
