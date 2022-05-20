@@ -81,14 +81,11 @@ namespace Conversion
 
 		protected ConvertStatus Convert(FileFormat format, P2GWorkout workoutData)
 		{
-			using var tracingConvert = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.WithWorkoutData")?
-										.WithTag(TagKey.Format, format.ToString());
-			
-			var status = new ConvertStatus();
-
 			using var tracing = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.Workout")?
 										.WithWorkoutId(workoutData.Workout.Id)
 										.WithTag(TagKey.Format, format.ToString());
+
+			var status = new ConvertStatus();
 
 			// call internal convert method
 			T converted = default;
@@ -96,13 +93,16 @@ namespace Conversion
 			try
 			{
 				converted = Convert(workoutData.Workout, workoutData.WorkoutSamples);
-
 			}
 			catch (Exception e)
 			{
 				_logger.Error(e, "Failed to convert workout data to format {@Format} {@Workout}", format, workoutTitle);
 				status.Success = false;
 				status.ErrorMessage = "Failed to convert workout data.";
+				tracing?.AddTag("excetpion.message", e.Message);
+				tracing?.AddTag("exception.stacktrace", e.StackTrace);
+				tracing?.AddTag("convert.success", false);
+				tracing?.AddTag("convert.errormessage", status.ErrorMessage);
 				return status;
 			}
 
@@ -119,6 +119,11 @@ namespace Conversion
 				status.Success = false;
 				status.ErrorMessage = "Failed to save converted workout for upload.";
 				_logger.Error(e, "Failed to write {@Format} file for {@Workout}", format, workoutTitle);
+				tracing?.AddTag("excetpion.message", e.Message);
+				tracing?.AddTag("exception.stacktrace", e.StackTrace);
+				tracing?.AddTag("convert.success", false);
+				tracing?.AddTag("convert.errormessage", status.ErrorMessage);
+				return status;
 			}
 
 			// copy to local save
@@ -132,7 +137,7 @@ namespace Conversion
 			}
 
 			// copy to upload dir
-			if (status.Success && _config.Garmin.Upload && _config.Garmin.FormatToUpload == format)
+			if (_config.Garmin.Upload && _config.Garmin.FormatToUpload == format)
 			{
 				try
 				{
@@ -146,6 +151,10 @@ namespace Conversion
 					_logger.Error(e, "Failed to copy {@Format} file for {@Workout}", format, workoutTitle);
 					status.Success = false;
 					status.ErrorMessage = $"Failed to save file for {@format} and workout {workoutTitle} to Upload directory";
+					tracing?.AddTag("excetpion.message", e.Message);
+					tracing?.AddTag("exception.stacktrace", e.StackTrace);
+					tracing?.AddTag("convert.success", false);
+					tracing?.AddTag("convert.errormessage", status.ErrorMessage);
 					return status;
 				}
 			}

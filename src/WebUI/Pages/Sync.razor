@@ -18,7 +18,7 @@
 <HxGrid TItem="RecentWorkout" MultiSelectionEnabled="true" TableContainerCssClass="table-responsive" @bind-SelectedDataItems="selectedItems" DataProvider="LoadDataAsync" PageSize="25">
 	<Columns>
 		<HxGridColumn TItem="RecentWorkout" HeaderText="Date" ItemTextSelector="@(item => DateTimeOffset.FromUnixTimeSeconds(item.Created_At).LocalDateTime.ToString())" SortString="@nameof(RecentWorkout.Created_At)" IsDefaultSortColumn="true" />
-		<HxGridColumn TItem="RecentWorkout" HeaderText="Title" ItemTextSelector="@(item => item.Title ?? item.Name)" SortString="@nameof(RecentWorkout.Title)" />
+		<HxGridColumn TItem="RecentWorkout" HeaderText="Title" ItemTextSelector="@(item => item.Ride.Title ?? item.Name)" SortString="@nameof(Ride.Title)" />
 		<HxGridColumn TItem="RecentWorkout" HeaderText="Status" ItemTextSelector="@(item => item.Status)" SortString="@nameof(RecentWorkout.Status)" />
 	</Columns>
 </HxGrid>

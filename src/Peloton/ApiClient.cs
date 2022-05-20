@@ -89,6 +89,7 @@ namespace Peloton
 				limit = numWorkouts,
 				sort_by = "-created",
 				page = page,
+				joins= "ride"
 			})
 			.ConfigureRequest((c) => 
 			{

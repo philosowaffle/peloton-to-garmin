@@ -23,8 +23,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var configProvider = builder.Configuration.AddJsonFile(Path.Join(Environment.CurrentDirectory, "configuration.local.json"), optional: true, reloadOnChange: true)
 				.AddEnvironmentVariables(prefix: "P2G_")
-				.AddCommandLine(args)
-				.Build();
+				.AddCommandLine(args);
 
 var apiSettings = new ApiSettings();
 builder.Configuration.GetSection("Api").Bind(apiSettings);
@@ -53,15 +52,13 @@ builder.Services.AddHxServices();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-FlurlConfiguration.Configure(config.Observability, 20);
+FlurlConfiguration.Configure(config.Observability, 30);
+Tracing.EnableTracing(builder.Services, config.Observability.Jaeger);
 
 Log.Logger = new LoggerConfiguration()
 				.ReadFrom.Configuration(builder.Configuration, sectionName: $"{nameof(Observability)}:Serilog")
 				.Enrich.FromLogContext()
 				.CreateLogger();
-
-if (config.Observability.Jaeger.Enabled)
-	ConfigureTracing(builder.Services, config);
 
 var runtimeVersion = Environment.Version.ToString();
 var os = Environment.OSVersion.Platform.ToString();
@@ -87,10 +84,9 @@ var app = builder.Build();
 if (Log.IsEnabled(LogEventLevel.Verbose))
 	app.UseSerilogRequestLogging();
 
-app.Use(async (context, next) =>
+app.Use((context, next) =>
 {
-	using var tracing = Tracing.Trace($"{nameof(Program)}.Entrypoint");
-	await next.Invoke();
+	return next.Invoke();
 });
 
 if (config.Observability.Prometheus.Enabled)
@@ -120,32 +116,3 @@ app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
 await app.RunAsync();
-
-///////////////////////////////////////////////////////////
-/// METHODS
-///////////////////////////////////////////////////////////
-void ConfigureTracing(IServiceCollection services, AppConfiguration config)
-{
-	services.AddOpenTelemetryTracing(
-		(builder) => builder
-			.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Statics.TracingService))
-			.AddSource(Statics.TracingService)
-			.SetSampler(new AlwaysOnSampler())
-			.SetErrorStatusOnException()
-			.AddAspNetCoreInstrumentation(c =>
-			{
-				c.RecordException = true;
-				c.Enrich = Tracing.AspNetCoreEnricher;
-			})
-			.AddHttpClientInstrumentation(h =>
-			{
-				h.RecordException = true;
-				h.Enrich = Tracing.HttpEnricher;
-			})
-			.AddJaegerExporter(o =>
-			{
-				o.AgentHost = config.Observability.Jaeger.AgentHost;
-				o.AgentPort = config.Observability.Jaeger.AgentPort.GetValueOrDefault();
-			})
-		);
-}

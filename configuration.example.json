@@ -17,15 +17,15 @@
   },
 
   "Peloton": {
-    "Email": "peloton@gmail.com",
-    "Password": "peloton",
+    "Email": "",
+    "Password": "",
     "NumWorkoutsToDownload": 1,
-    "ExcludeWorkoutTypes": [ "meditation" ]
+    "ExcludeWorkoutTypes": [ ]
   },
 
   "Garmin": {
-    "Email": "garmin@gmail.com",
-    "Password": "garmin",
+    "Email": "",
+    "Password": "",
     "Upload": false,
     "FormatToUpload": "fit",
     "UploadStrategy": 2

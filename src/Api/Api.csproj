@@ -14,6 +14,8 @@
 	<RepositoryType>git</RepositoryType>
 	<SignAssembly>false</SignAssembly>
 	<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<NoWarn>$(NoWarn);1591</NoWarn>
 	<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 	<ServerGarbageCollection>false</ServerGarbageCollection>
 	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -24,19 +26,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="1.1.0" />
-    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc9" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc9" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc9" />
     <PackageReference Include="prometheus-net" Version="6.0.0" />
     <PackageReference Include="prometheus-net.DotNetRuntime" Version="4.2.3" />
     <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
-    <PackageReference Include="Serilog.Enrichers.Span" Version="2.2.0" />
+    <PackageReference Include="Serilog.Enrichers.Span" Version="2.3.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="Serilog.Sinks.Grafana.Loki" Version="7.1.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="Serilog.Sinks.Grafana.Loki" Version="7.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -653,12 +653,12 @@ namespace UnitTests.Conversion
 
 			public override ConvertStatus Convert(P2GWorkout workoutData)
 			{
-				throw new NotImplementedException();
+				return base.Convert(FileFormat.Fit, workoutData);
 			}
 
 			protected override void SaveLocalCopy(string sourcePath, string workoutTitle)
 			{
-				throw new NotImplementedException();
+				return;
 			}
 		}
 	}

@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
 
 [ApiController]
+[Route("api/settings")]
+[Produces("application/json")]
+[Consumes("application/json")]
 public class SettingsController : Controller
 {
 	private readonly ISettingsService _settingsService;
@@ -18,8 +21,12 @@ public class SettingsController : Controller
 		_appConfiguration = appConfiguration;
 	}
 
+	/// <summary>
+	/// Get the current settings.
+	/// </summary>
+	/// <response code="200">Returns the settings</response>
 	[HttpGet]
-	[Route("/api/settings")]
+	[ProducesResponseType(StatusCodes.Status200OK)]
 	public async Task<SettingsGetResponse> Get()
 	{
 		using var tracing = Tracing.Trace($"{nameof(SettingsController)}.{nameof(Get)}");
@@ -33,8 +40,12 @@ public class SettingsController : Controller
 		return settingsResponse;
 	}
 
+	/// <summary>
+	/// Create or update all settings.
+	/// </summary>
+	/// <response code="200">Returns the settings</response>
 	[HttpPost]
-	[Route("/api/settings")]
+	[ProducesResponseType(StatusCodes.Status200OK)]
 	public async Task<SettingsGetResponse> Post([FromBody]Settings updatedSettings)
 	{
 		using var tracing = Tracing.Trace($"{nameof(SettingsController)}.{nameof(Post)}");
@@ -52,6 +63,10 @@ public class SettingsController : Controller
 		return settingsResponse;
 	}
 
+	/// <summary>
+	/// Update App settings.
+	/// </summary>
+	/// <response code="200">Returns the app settings</response>
 	[HttpPost]
 	[Route("/api/settings/app")]
 	public async Task<App> AppPost([FromBody] App updatedAppSettings)
@@ -69,6 +84,10 @@ public class SettingsController : Controller
 		return updatedSettings.App;
 	}
 
+	/// <summary>
+	/// Update Format settings.
+	/// </summary>
+	/// <response code="200">Returns the format settings</response>
 	[HttpPost]
 	[Route("/api/settings/format")]
 	public async Task<Format> FormatPost([FromBody] Format updatedFormatSettings)
@@ -86,6 +105,10 @@ public class SettingsController : Controller
 		return updatedSettings.Format;
 	}
 
+	/// <summary>
+	/// Update Peloton settings.
+	/// </summary>
+	/// <response code="200">Returns the Peloton settings</response>
 	[HttpPost]
 	[Route("/api/settings/peloton")]
 	public async Task<SettingsPelotonGetResponse> PelotonPost([FromBody] Common.Peloton updatedPelotonSettings)
@@ -106,6 +129,10 @@ public class SettingsController : Controller
 		return settingsResponse.Peloton;
 	}
 
+	/// <summary>
+	/// Update Garmin settings.
+	/// </summary>
+	/// <response code="200">Returns the Garmin settings</response>
 	[HttpPost]
 	[Route("/api/settings/garmin")]
 	public async Task<SettingsGarminGetResponse> GarminPost([FromBody] Common.Garmin updatedGarminSettings)

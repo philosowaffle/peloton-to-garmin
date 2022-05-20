@@ -17,6 +17,7 @@ namespace Common.Dto.Peloton
 		public long Created_At { get; set; }
 		[JsonConverter(typeof(JsonStringEnumConverter))]
 		public FitnessDiscipline Fitness_Discipline { get; set; }
+		public Ride Ride { get; set; }
 	}
 
 	public class Workout

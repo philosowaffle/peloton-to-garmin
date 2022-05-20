@@ -9,6 +9,9 @@ using ILogger = Serilog.ILogger;
 namespace Api.Controllers;
 
 [ApiController]
+[Route("api/sync")]
+[Produces("application/json")]
+[Consumes("application/json")]
 public class SyncController : Controller
 {
 	private static readonly ILogger _logger = LogContext.ForClass<SyncController>();
@@ -27,11 +30,9 @@ public class SyncController : Controller
 	/// <summary>
 	/// Syncs a given set of workouts from Peloton to Garmin.
 	/// </summary>
-	/// <returns>SyncPostResponse</returns>
 	/// <response code="204">Returns the sync status information.</response>
 	/// <response code="422">If the request fields are invalid.</response>
 	[HttpPost]
-	[Route("/api/sync")]
 	[ProducesResponseType(typeof(SyncPostResponse), 204)]
 	public async Task<SyncPostResponse> SyncAsync([FromBody] SyncPostRequest request)
 	{
@@ -57,8 +58,11 @@ public class SyncController : Controller
 		};
 	}
 
+	/// <summary>
+	/// Fetches the current Sync status.
+	/// </summary>
+	/// <response code="200">Returns the sync status information.</response>
 	[HttpGet]
-	[Route("/api/sync")]
 	[ProducesResponseType(typeof(SyncGetResponse), 200)]
 	public async Task<SyncGetResponse> GetAsync()
 	{

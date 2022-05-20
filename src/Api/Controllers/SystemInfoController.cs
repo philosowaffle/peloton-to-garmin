@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebApp.Controllers
 {
 	[ApiController]
+	[Route("api/systeminfo")]
+	[Produces("application/json")]
+	[Consumes("application/json")]
 	public class SystemInfoController : Controller
 	{
 		private readonly AppConfiguration _appConfiguration;
@@ -21,8 +24,6 @@ namespace WebApp.Controllers
 		/// <returns>SystemInfoGetResponse</returns>
 		/// <response code="200">Returns the system information</response>
 		[HttpGet]
-		[Route("/api/systeminfo")]
-		[Produces("application/json")]
 		public SystemInfoGetResponse Get()
 		{
 			using var tracing = Tracing.Trace($"{nameof(SystemInfoController)}.{nameof(Get)}");
