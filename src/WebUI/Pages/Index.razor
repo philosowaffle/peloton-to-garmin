@@ -5,8 +5,6 @@
 
 <h1>Welcome to the Peloton to Garmin UI!</h1>
 
-<p>This is a work in progress and not guaranteed to fully work yet. Breaking changes will happen. Feel free to check it out.</p>
-
 <div class="row">
 	<div class="col-sm-4">
         <div class="card @syncStatusBorderClass mb-3" style="border-width: thick">
@@ -125,7 +123,11 @@ else
 			syncResponse = null;
 			syncResponse = await _apiClient.SyncPostAsync(new SyncPostRequest() { NumWorkouts = settings.Peloton.NumWorkoutsToDownload });
 			ErrorMessage = string.Empty;
-		} 
+		}
+		catch (FlurlHttpTimeoutException te){
+			ErrorMessage = $"Long running sync will continue running in the background.";
+			Log.Information("UI - Sync timeout reached.", te);
+		}
 		catch(Exception e)
 		{
 			ErrorMessage = "Failed to sync. See logs for details.";
