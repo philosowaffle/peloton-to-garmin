@@ -5,30 +5,8 @@ on:
     branches: [ master ]
 
 jobs:
-  build-console-dotnet5:
 
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        dotnet: [ '5.0', '5.0.201' ]
-        os: [ubuntu-latest, windows-latest, macos-latest]
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core SDK ${{ matrix.dotnet }}
-      uses: actions/setup-dotnet@v1.7.2
-      with:
-        dotnet-version: ${{ matrix.dotnet }}
-    - name: Clean
-      run: dotnet clean ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --configuration Debug && dotnet nuget locals all --clear
-    
-    - name: Restore
-      run: dotnet restore ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj
-
-    - name: Build
-      run: dotnet build ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --no-restore --configuration Debug
-
-  build-and-test-dotnet6:
+  build-and-test:
 
     runs-on: ${{ matrix.os }}
     strategy:
