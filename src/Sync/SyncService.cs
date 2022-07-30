@@ -104,6 +104,17 @@ namespace Sync
 
 			var response = new SyncResult();
 			var recentWorkouts = workoutIds.Select(w => new RecentWorkout() { Id = w }).ToList();
+
+			UserData userData = null;
+			try
+			{
+				userData = await _pelotonService.GetUserDataAsync();
+
+			} catch (Exception e)
+			{
+				_logger.Error(e, "Failed to fetch UserDate from Peloton. FTP info may be missing.");
+			}
+
 			P2GWorkout[] workouts = { };
 			try
 			{
@@ -112,7 +123,7 @@ namespace Sync
 			}
 			catch (Exception e)
 			{
-				_logger.Error(e, "Failed to download workouts from Peleoton.");
+				_logger.Error(e, "Failed to download workouts from Peloton.");
 				response.SyncSuccess = false;
 				response.PelotonDownloadSuccess = false;
 				response.Errors.Add(new ErrorResponse() { Message = "Failed to download workouts from Peloton. Check logs for more details." });
