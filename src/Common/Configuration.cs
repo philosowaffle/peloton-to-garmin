@@ -87,13 +87,13 @@ namespace Common
 		public bool? PythonAndGUploadInstalled { get; set; }
 		public bool CloseWindowOnFinish { get; set; }
 
-		public static string DataDirectory = Path.Join(Environment.CurrentDirectory, "data");
-		public string FitDirectory => Path.Join(OutputDirectory, "fit");
-		public string JsonDirectory => Path.Join(OutputDirectory, "json");
-		public string TcxDirectory => Path.Join(OutputDirectory, "tcx");
-		public string FailedDirectory => Path.Join(OutputDirectory, "failed");
-		public string DownloadDirectory => Path.Join(WorkingDirectory, "downloaded");
-		public string UploadDirectory => Path.Join(WorkingDirectory, "upload");
+		public static string DataDirectory = Path.GetFullPath(Path.Join(Environment.CurrentDirectory, "data"));
+		public string FitDirectory => Path.GetFullPath(Path.Join(OutputDirectory, "fit"));
+		public string JsonDirectory => Path.GetFullPath(Path.Join(OutputDirectory, "json"));
+		public string TcxDirectory => Path.GetFullPath(Path.Join(OutputDirectory, "tcx"));
+		public string FailedDirectory => Path.GetFullPath(Path.Join(OutputDirectory, "failed"));
+		public string DownloadDirectory => Path.GetFullPath(Path.Join(WorkingDirectory, "downloaded"));
+		public string UploadDirectory => Path.GetFullPath(Path.Join(WorkingDirectory, "upload"));
 
 	}
 
