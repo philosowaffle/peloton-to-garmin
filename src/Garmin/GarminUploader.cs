@@ -69,10 +69,12 @@ namespace Garmin
 				case UploadStrategy.PythonAndGuploadInstalledLocally:
 				case UploadStrategy.WindowsExeBundledPython:
 					UploadViaPython(files);
+					_logger.Information("Upload complete.");
 					return;
 				case UploadStrategy.NativeImplV1:
 				default:
 					await UploadAsync(files);
+					_logger.Information("Upload complete.");
 					return;
 			}
 		}
