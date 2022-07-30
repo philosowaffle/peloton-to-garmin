@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Dynastream.Fit.Portable">
+      <HintPath>..\..\Dynastream.Fit.Portable.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
