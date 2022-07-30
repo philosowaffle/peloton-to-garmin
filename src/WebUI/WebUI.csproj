@@ -15,12 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Flurl" Version="3.0.5" />
-    <PackageReference Include="Flurl.Http" Version="3.2.3" />
-    <PackageReference Include="Havit.Blazor.Components.Web.Bootstrap" Version="2.5.1" />
+    <PackageReference Include="Flurl" Version="3.0.6" />
+    <PackageReference Include="Flurl.Http" Version="3.2.4" />
+    <PackageReference Include="Havit.Blazor.Components.Web.Bootstrap" Version="2.8.0" />
 	<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
 	<PackageReference Include="prometheus-net" Version="6.0.0" />
-	<PackageReference Include="prometheus-net.DotNetRuntime" Version="4.2.3" />
+	<PackageReference Include="prometheus-net.DotNetRuntime" Version="4.2.4" />
 	<PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
 	<PackageReference Include="Serilog.Enrichers.Span" Version="2.3.0" />
 	<PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />

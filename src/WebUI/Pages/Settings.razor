@@ -2,6 +2,9 @@
 @inject IApiClient _apiClient
 
 <PageTitle>Settings</PageTitle>
+<h1>Settings</h1>
+<a href="@configDocumentation">Documentation</a>
+<br /><br />
 
 <HxTabPanel InitialActiveTabId="tab0">
 	<HxTab Id="tab0" Title="App">
@@ -9,13 +12,21 @@
 			<EditForm Model="@appSettings">
 
 				<br />
-				<HxInputText @bind-Value="appSettings.OutputDirectory" Label="Output Directory" />
-				<br />
 				<HxInputSwitch Label="Automatic Syncing" @bind-Value="appSettings.EnablePolling" />
 				<br />
 				<HxFormState Enabled="@appSettings.EnablePolling">
 					<HxInputNumber Label="Check for new workouts every X (seconds)" TValue="int" @bind-Value="appSettings.PollingIntervalSeconds" />
 				</HxFormState>
+				<br />
+				<HxAccordion CssClass="accordion-flush">
+					<HxAccordionItem>
+						<HeaderTemplate>Advanced</HeaderTemplate>
+						<BodyTemplate>
+							<br />
+							<HxInputText @bind-Value="appSettings.OutputDirectory" Label="Output Directory" />
+						</BodyTemplate>
+					</HxAccordionItem>
+				</HxAccordion>
 				<br />
 				<HxSubmit Color="ThemeColor.Primary" OnClick="SaveAppSettings">Save</HxSubmit>
 
@@ -31,8 +42,6 @@
 				<HxInputSwitch Label="Convert to TCX" @bind-Value="formatSettings.Tcx" />
 				<HxInputSwitch Label="Convert to JSON" @bind-Value="formatSettings.Json" />
 				<br />
-				<HxInputText @bind-Value="formatSettings.DeviceInfoPath" Label="Path to custom deviceInfo.xml file" />
-				<br />
 				<HxSelect
 					Label="Cycling Lap Type"
 					Data="@lapTypes"
@@ -46,6 +55,18 @@
 					Nullable="false"
 					NullDataText="Loading info..."
 					@bind-Value="formatSettings.Running.PreferredLapType" />
+				<br />
+				<br />
+				<HxAccordion CssClass="accordion-flush">
+					<HxAccordionItem>
+						<HeaderTemplate>Advanced</HeaderTemplate>
+						<BodyTemplate>
+							<HxInputText Label="Path to custom deviceInfo.xml file" @bind-Value="formatSettings.DeviceInfoPath" /><br />
+							<HxInputSwitch Label="Include Time In HR Zones" @bind-Value="formatSettings.IncludeTimeInHRZones" />
+							<HxInputSwitch Label="Include Time in Power Zones" @bind-Value="formatSettings.IncludeTimeInPowerZones" />
+						</BodyTemplate>
+					</HxAccordionItem>
+				</HxAccordion>
 				<br />
 				<HxSubmit Color="ThemeColor.Primary" OnClick="SaveFormatSettings">Save</HxSubmit>
 
@@ -62,6 +83,15 @@
 				<br />
 				<HxInputText @bind-Value="pelotonSettings.Password" Label="Password" Placeholder="@pelotonPasswordPlaceholderString" Type="InputType.Password" />
 				<br />
+				<HxMultiSelect 
+				   Label="Excluded Workout Types"
+				   Data="@workoutTypes"
+				   @bind-Value="@selectedWorkoutTypes"
+				   EmptyText="- none -"
+				   TextSelector="(v) => v.ToString()"
+				   GenerateChip=true
+				   NullDataText="Loading workout types..." />
+				<br />
 				<HxSubmit Color="ThemeColor.Primary" OnClick="SavePelotonSettings">Save</HxSubmit>
 			</EditForm>
 		</Content>
@@ -77,19 +107,28 @@
 					<br />
 					<HxInputText @bind-Value="garminSettings.Password" Label="Password" Placeholder="@garminPasswordPlaceholderString" Type="InputType.Password" />
 					<br />
-					<HxSelect
-							Label="Format to Upload"
-							Data="@formatTypes"
-							Nullable="false"
-							NullDataText="Loading info..."
-							@bind-Value="garminSettings.FormatToUpload" />
+					<HxAccordion CssClass="accordion-flush">
+						<HxAccordionItem>
+							<HeaderTemplate>Advanced</HeaderTemplate>
+							<BodyTemplate>
+								<br />
+								<HxSelect
+										Label="Format to Upload"
+										Data="@formatTypes"
+										Nullable="false"
+										NullDataText="Loading info..."
+										@bind-Value="garminSettings.FormatToUpload" />
+								<br />
+								<HxSelect
+										Label="Upload Strategy to use"
+										Data="@uploadStrategyTypes"
+										Nullable="false"
+										NullDataText="Loading info..."
+										@bind-Value="garminSettings.UploadStrategy" />
+							</BodyTemplate>
+						</HxAccordionItem>
+					</HxAccordion>
 					<br />
-					<HxSelect
-							Label="Upload Strategy to user"
-							Data="@uploadStrategyTypes"
-							Nullable="false"
-							NullDataText="Loading info..."
-							@bind-Value="garminSettings.UploadStrategy" />
 				</HxFormState>
 				<br />
 				<HxSubmit Color="ThemeColor.Primary" OnClick="SaveGarminSettings">Save</HxSubmit>
@@ -103,14 +142,18 @@
 	private static ICollection<PreferredLapType> lapTypes = Enum.GetValues(typeof(PreferredLapType)).Cast<PreferredLapType>().ToList();
 	private static ICollection<FileFormat> formatTypes = Enum.GetValues(typeof(FileFormat)).Cast<FileFormat>().ToList();
 	private static ICollection<UploadStrategy> uploadStrategyTypes = Enum.GetValues(typeof(UploadStrategy)).Cast<UploadStrategy>().ToList();
+	private static ICollection<WorkoutType> workoutTypes = Enum.GetValues(typeof(WorkoutType)).Cast<WorkoutType>().ToList();
 
 	private Common.App appSettings;
 	private Format formatSettings;
 	private SettingsPelotonGetResponse pelotonSettings;
 	private SettingsGarminGetResponse garminSettings;
+	private string configDocumentation;
 
 	private string pelotonPasswordPlaceholderString = string.Empty;
 	private string garminPasswordPlaceholderString = string.Empty;
+
+	private List<WorkoutType> selectedWorkoutTypes = new List<WorkoutType>();
 
 	public Settings() : base()
 	{
@@ -138,6 +181,7 @@
 
 	protected async Task SavePelotonSettings() 
 	{
+		pelotonSettings.ExcludeWorkoutTypes = selectedWorkoutTypes;
 		pelotonSettings = await _apiClient.SettingsPelotonPostAsync(pelotonSettings);
 	}
 
@@ -148,7 +192,15 @@
 
 	private async Task LoadDataAsync()
 	{
-		var settings = await _apiClient.SettingsGetAsync();
+		var settingsTask = _apiClient.SettingsGetAsync();
+		var systemInfoTask = _apiClient.SystemInfoGetAsync();
+
+		await Task.WhenAll(settingsTask, systemInfoTask);
+
+		var settings = await settingsTask;
+		var systemInfo = await systemInfoTask;
+
+		configDocumentation = systemInfo.Documentation + "/configuration/json.html#format-config";
 
 		appSettings = settings.App;
 		formatSettings = settings.Format;
@@ -157,5 +209,7 @@
 
 		pelotonPasswordPlaceholderString = pelotonSettings.IsPasswordSet ? "password is set" : "password is not set";
 		garminPasswordPlaceholderString = garminSettings.IsPasswordSet ? "password is set" : "password is not set";
+
+		selectedWorkoutTypes = pelotonSettings.ExcludeWorkoutTypes.ToList();
 	}
 }
