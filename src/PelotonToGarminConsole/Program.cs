@@ -54,15 +54,29 @@ static IHostBuilder CreateHostBuilder(string[] args)
 
 				ConfigurationSetup.LoadConfigValues(provider, config);
 
-				Metrics.ValidateConfig(config.Observability);
-				Tracing.ValidateConfig(config.Observability);
+				try
+				{
+					Metrics.ValidateConfig(config.Observability);
+					Tracing.ValidateConfig(config.Observability);
+				} catch (Exception e)
+				{
+					Log.Error(e, "Configuration invalid");
+				}
 
 				ChangeToken.OnChange(() => provider.GetReloadToken(), () =>
 				{
 					Log.Information("Config change detected, reloading config values.");
 					ConfigurationSetup.LoadConfigValues(provider, config);
-					Metrics.ValidateConfig(config.Observability);
-					Tracing.ValidateConfig(config.Observability);
+					try
+					{
+						Metrics.ValidateConfig(config.Observability);
+						Tracing.ValidateConfig(config.Observability);
+					}
+					catch (Exception e)
+					{
+						Log.Error(e, "Configuration invalid");
+					}
+
 					Log.Information("Config reloaded.");
 				});
 
@@ -77,16 +91,30 @@ static IHostBuilder CreateHostBuilder(string[] args)
 
 				ConfigurationSetup.LoadConfigValues(provider, config);
 
-				PelotonService.ValidateConfig(config.Peloton);
-				GarminUploader.ValidateConfig(config);
+				try
+				{
+					PelotonService.ValidateConfig(config.Peloton);
+					GarminUploader.ValidateConfig(config);
+				}
+				catch (Exception e)
+				{
+					Log.Error(e, "Configuration invalid");
+				}
 
 				ChangeToken.OnChange(() => provider.GetReloadToken(), () =>
 				{
 					Log.Information("Config change detected, reloading config values.");
 					ConfigurationSetup.LoadConfigValues(provider, config);
 
-					PelotonService.ValidateConfig(config.Peloton);
-					GarminUploader.ValidateConfig(config);
+					try
+					{
+						PelotonService.ValidateConfig(config.Peloton);
+						GarminUploader.ValidateConfig(config);
+					}
+					catch (Exception e)
+					{
+						Log.Error(e, "Configuration invalid");
+					}
 
 					Log.Information("Config reloaded.");
 				});
