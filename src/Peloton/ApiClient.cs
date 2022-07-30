@@ -16,6 +16,7 @@ namespace Peloton
 		Task<RecentWorkouts> GetWorkoutsAsync(int numWorkouts, int page);
 		Task<JObject> GetWorkoutByIdAsync(string id);
 		Task<JObject> GetWorkoutSamplesByIdAsync(string id);
+		Task<UserData> GetUserDataAsync();
 	}
 
 	public class ApiClient : IPelotonApi
@@ -117,6 +118,13 @@ namespace Peloton
 				};
 			})
 			.GetJsonAsync<RecentWorkouts>();
+		}
+
+		public Task<UserData> GetUserDataAsync()
+		{
+			return $"{BaseUrl}/me"
+			.WithCookie("peloton_session_id", SessionId)
+			.GetJsonAsync<UserData>();
 		}
 
 		public Task<JObject> GetWorkoutByIdAsync(string id)

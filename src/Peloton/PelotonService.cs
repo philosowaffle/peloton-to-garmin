@@ -20,6 +20,7 @@ namespace Peloton
 	{
 		Task<ICollection<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload);
 		Task<P2GWorkout[]> GetWorkoutDetailsAsync(ICollection<RecentWorkout> workoutIds);
+		Task<UserData> GetUserDataAsync();
 	}
 
 	public class PelotonService : IPelotonService
@@ -55,6 +56,15 @@ namespace Peloton
 				_logger.Error("Peloton Password required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Peloton), nameof(config.Password));
 				throw new ArgumentException("Peloton Password must be set.", nameof(config.Password));
 			}
+		}
+
+		public async Task<UserData> GetUserDataAsync()
+		{
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetUserDataAsync)}");
+
+			await _pelotonApi.InitAuthAsync();
+
+			return await _pelotonApi.GetUserDataAsync();
 		}
 
 		public async Task<ICollection<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)

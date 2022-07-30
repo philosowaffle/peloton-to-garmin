@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Dto;
+using Common.Dto.Peloton;
 using Common.Helpers;
 using Conversion;
 using Dynastream.Fit;
@@ -116,7 +117,7 @@ namespace UnitTests
 			public ICollection<Mesg> ConvertForTest(string path)
 			{
 				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
-				var converted = this.Convert(workoutData.Workout, workoutData.WorkoutSamples);
+				var converted = this.Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData);
 
 				return converted.Item2;
 			}
@@ -124,7 +125,7 @@ namespace UnitTests
 			public Tuple<string, ICollection<Mesg>> Convert(string path)
 			{
 				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
-				var converted = this.Convert(workoutData.Workout, workoutData.WorkoutSamples);
+				var converted = this.Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData);
 
 				return converted;
 			}

@@ -19,7 +19,7 @@ namespace Conversion
 		{
 			if (!_config.Format.Tcx) return new ConvertStatus() { Success = true, ErrorMessage = "Tcx format disabled in config." };
 
-			return base.Convert(FileFormat.Fit, workout);
+			return base.ConvertForFormat(FileFormat.Fit, workout);
 		}
 
 		protected override void Save(XElement data, string path)
@@ -41,7 +41,7 @@ namespace Conversion
 			_logger.Information("[{@Format}] Backed up file {@File}", FileFormat.Tcx, backupDest);
 		}
 
-		protected override XElement Convert(Workout workout, WorkoutSamples samples)
+		protected override XElement Convert(Workout workout, WorkoutSamples samples, UserData userDat)
 		{
 			using var tracing = Tracing.Trace($"{nameof(TcxConverter)}.{nameof(Convert)}")
 								.WithTag(TagKey.Format, FileFormat.Tcx.ToString())

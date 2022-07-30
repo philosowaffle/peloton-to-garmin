@@ -23,7 +23,7 @@ namespace Conversion
 		{
 			if (!_config.Format.Fit) return new ConvertStatus() { Success = true, ErrorMessage = "Fit format disabled in config."};
 
-			return base.Convert(FileFormat.Fit, workout);
+			return base.ConvertForFormat(FileFormat.Fit, workout);
 		}
 
 		protected override void Save(Tuple<string, ICollection<Mesg>> data, string path)
@@ -59,7 +59,7 @@ namespace Conversion
 			_logger.Information("[{@Format}] Backed up file {@File}", FileFormat.Fit, backupDest);
 		}
 
-		protected override Tuple<string, ICollection<Mesg>> Convert(Workout workout, WorkoutSamples workoutSamples)
+		protected override Tuple<string, ICollection<Mesg>> Convert(Workout workout, WorkoutSamples workoutSamples, UserData userData)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(Convert)}")
 										.WithTag(TagKey.Format, FileFormat.Fit.ToString())
@@ -110,7 +110,7 @@ namespace Conversion
 			messages.Add(sportMesg);
 
 			var zoneTargetMesg = new ZonesTargetMesg();
-			zoneTargetMesg.SetFunctionalThresholdPower((ushort)workout.Ftp_Info.Ftp);
+			zoneTargetMesg.SetFunctionalThresholdPower(GetCyclingFtp(workout, userData));
 			zoneTargetMesg.SetPwrCalcType(PwrZoneCalc.PercentFtp);
 			var maxHr = GetUserMaxHeartRate(workoutSamples);
 			if (maxHr is object)
@@ -167,7 +167,7 @@ namespace Conversion
 			foreach (var lap in laps)
 				messages.Add(lap);
 
-			messages.Add(GetSessionMesg(workout, workoutSamples, startTime, endTime, (ushort)laps.Count));
+			messages.Add(GetSessionMesg(workout, workoutSamples, userData, startTime, endTime, (ushort)laps.Count));
 
 			var activityMesg = new ActivityMesg();
 			activityMesg.SetTimestamp(endTime);
@@ -322,7 +322,7 @@ namespace Conversion
 			}
 		}
 
-		private SessionMesg GetSessionMesg(Workout workout, WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime, Dynastream.Fit.DateTime endTime, ushort numLaps)
+		private SessionMesg GetSessionMesg(Workout workout, WorkoutSamples workoutSamples, UserData userData, Dynastream.Fit.DateTime startTime, Dynastream.Fit.DateTime endTime, ushort numLaps)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetSessionMesg)}")
 										.WithTag(TagKey.Format, FileFormat.Fit.ToString())
@@ -344,7 +344,7 @@ namespace Conversion
 
 			sessionMesg.SetFirstLapIndex(0);
 			sessionMesg.SetNumLaps(numLaps);
-			sessionMesg.SetThresholdPower((ushort)workout.Ftp_Info.Ftp);
+			sessionMesg.SetThresholdPower(GetCyclingFtp(workout, userData));
 			sessionMesg.SetEvent(Event.Lap);
 			sessionMesg.SetEventType(EventType.Stop);
 			sessionMesg.SetSport(GetGarminSport(workout));

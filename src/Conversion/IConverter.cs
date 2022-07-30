@@ -73,13 +73,13 @@ namespace Conversion
 
 		public abstract ConvertStatus Convert(P2GWorkout workoutData);
 
-		protected abstract T Convert(Workout workout, WorkoutSamples workoutSamples);
+		protected abstract T Convert(Workout workout, WorkoutSamples workoutSamples, UserData userData);
 
 		protected abstract void Save(T data, string path);
 
 		protected abstract void SaveLocalCopy(string sourcePath, string workoutTitle);
 
-		protected ConvertStatus Convert(FileFormat format, P2GWorkout workoutData)
+		protected ConvertStatus ConvertForFormat(FileFormat format, P2GWorkout workoutData)
 		{
 			using var tracing = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.Workout")?
 										.WithWorkoutId(workoutData.Workout.Id)
@@ -92,7 +92,7 @@ namespace Conversion
 			var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout);
 			try
 			{
-				converted = Convert(workoutData.Workout, workoutData.WorkoutSamples);
+				converted = Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData);
 			}
 			catch (Exception e)
 			{
@@ -505,6 +505,19 @@ namespace Conversion
 					Log.Verbose("Found unkown distance unit {@Unit}", unit);
 					return DistanceUnit.Unknown;
 			}
+		}
+
+		protected ushort? GetCyclingFtp(Workout workout, UserData userData)
+		{
+			ushort? ftp = null;
+			if (workout?.Ftp_Info is object && workout.Ftp_Info.Ftp > 0)
+				ftp = (ushort?)workout.Ftp_Info.Ftp;
+			if (ftp is null || ftp == 0)
+				ftp = (ushort?)userData?.Cycling_Ftp;
+			if (ftp is null || ftp == 0)
+				ftp = (ushort?)userData?.Estimated_Cycling_Ftp;
+
+			return ftp;
 		}
 	}
 }
