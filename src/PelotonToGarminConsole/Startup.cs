@@ -101,6 +101,7 @@ namespace PelotonToGarminConsole
 						var syncResult = await _syncService.SyncAsync(_settings.Peloton.NumWorkoutsToDownload);
 						Health.Set(syncResult.SyncSuccess ? HealthStatus.Healthy : HealthStatus.UnHealthy);
 
+						Log.Information("Done");
 						Log.Information("Sleeping for {@Seconds} seconds...", _settings.App.PollingIntervalSeconds);
 
 						var now = DateTime.UtcNow;
