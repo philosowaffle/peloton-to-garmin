@@ -112,7 +112,7 @@ namespace Sync
 
 			} catch (Exception e)
 			{
-				_logger.Error(e, "Failed to fetch UserDate from Peloton. FTP info may be missing.");
+				_logger.Error(e, "Failed to fetch UserData from Peloton. FTP info may be missing for certain non-class workout types (Just Ride).");
 			}
 
 			P2GWorkout[] workouts = { };
@@ -152,6 +152,7 @@ namespace Sync
 				{
 					Parallel.ForEach(_converters, (converter) =>
 					{
+						workout.UserData = userData;
 						converter.Convert(workout);
 					});
 				});

@@ -567,11 +567,33 @@ namespace UnitTests.Conversion
 			deviceInfo.Version.BuildMinor.Should().Be(0);
 		}
 
+		[TestCase(-1, (uint)0, (uint)0, (ushort)0)]
+		[TestCase(0, (uint)0, (uint)0, (ushort)0)]
+		[TestCase(1, (uint)0, (uint)0, (ushort)1)]
+		[TestCase(0, (uint)1, (uint)0, (ushort)1)]
+		[TestCase(0, (uint)0, (uint)1, (ushort)1)]
+		[TestCase(3, (uint)2, (uint)1, (ushort)3)]
+		[TestCase(0, (uint)2, (uint)1, (ushort)2)]
+		public void GetCyclingFtp_Should_PickCorrectValue(int workoutFtp, uint cyclingFtp, uint estimatedFtp, ushort? expectedFtp)
+		{
+			// SETUP
+			var mocker = new AutoMocker();
+			var converter = mocker.CreateInstance<ConverterInstance>();
+			var workout = new Workout() { Ftp_Info = new FTPInfo() { Ftp = workoutFtp } };
+			var userData = new UserData() { Cycling_Ftp = cyclingFtp, Estimated_Cycling_Ftp = estimatedFtp };
+
+			// ACT
+			var ftp = converter.GetCyclingFtp1(workout, userData);
+
+			// ASSERT
+			ftp.Should().Be(expectedFtp);
+		}
+
 		private class ConverterInstance : Converter<string>
 		{
 			public ConverterInstance(Settings settings, IFileHandling fileHandling) : base(settings, fileHandling) { }
 
-			protected override string Convert(Workout workout, WorkoutSamples workoutSamples)
+			protected override string Convert(Workout workout, WorkoutSamples workoutSamples, UserData userData)
 			{
 				throw new NotImplementedException();
 			}
@@ -653,12 +675,17 @@ namespace UnitTests.Conversion
 
 			public override ConvertStatus Convert(P2GWorkout workoutData)
 			{
-				return base.Convert(FileFormat.Fit, workoutData);
+				return base.ConvertForFormat(FileFormat.Fit, workoutData);
 			}
 
 			protected override void SaveLocalCopy(string sourcePath, string workoutTitle)
 			{
 				return;
+			}
+
+			public ushort? GetCyclingFtp1(Workout workout, UserData userData)
+			{
+				return base.GetCyclingFtp(workout, userData);
 			}
 		}
 	}

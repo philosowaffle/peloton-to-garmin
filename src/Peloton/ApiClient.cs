@@ -133,7 +133,7 @@ namespace Peloton
 				.WithCookie("peloton_session_id", SessionId)
 				.SetQueryParams(new
 				{
-					joins = "ride,ride.instructor,me"
+					joins = "ride,ride.instructor"
 				})
 				.ConfigureRequest((c) =>
 				{

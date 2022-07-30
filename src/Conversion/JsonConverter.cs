@@ -18,12 +18,12 @@ namespace Conversion
 		{
 			if (!_config.Format.Json) return new ConvertStatus() { Success = true, ErrorMessage = "Json format disabled in config." };
 
-			return base.Convert(FileFormat.Json, workoutData);
+			return base.ConvertForFormat(FileFormat.Json, workoutData);
 		}
 
-		protected override P2GWorkout Convert(Workout workout, WorkoutSamples workoutSamples)
+		protected override P2GWorkout Convert(Workout workout, WorkoutSamples workoutSamples, UserData userData)
 		{
-			var result = new P2GWorkout() { Workout = workout, WorkoutSamples = workoutSamples };
+			var result = new P2GWorkout() { UserData = userData, Workout = workout, WorkoutSamples = workoutSamples };
 			return result;
 		}
 

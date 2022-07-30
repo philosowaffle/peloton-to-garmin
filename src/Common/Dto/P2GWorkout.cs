@@ -7,6 +7,7 @@ namespace Common.Dto
 		private WorkoutType _workoutType;
 		public WorkoutType WorkoutType => GetWorkoutType();
 
+		public UserData UserData { get; set; }
 		public Workout Workout { get; set; }
 		public WorkoutSamples WorkoutSamples { get; set; }
 
