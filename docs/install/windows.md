@@ -2,7 +2,7 @@
 layout: default
 title: Windows
 parent: Install
-nav_order: 1
+nav_order: 3
 ---
 
 # Windows

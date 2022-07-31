@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Using Github Actions
-nav_order: 2
+nav_order: 4
 parent: Install
 has_children: false
 ---
