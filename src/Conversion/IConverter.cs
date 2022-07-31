@@ -193,7 +193,6 @@ namespace Conversion
 				case DistanceUnit.Feet:
 					return (float)value * 0.3048f;
 				default:
-					Log.Verbose("Found unkown distance unit {@Unit}", unit);
 					return (float)value;
 			}
 		}
@@ -498,11 +497,12 @@ namespace Conversion
 				case "km":
 					return DistanceUnit.Kilometers;
 				case "mi":
+				case "mph":
 					return DistanceUnit.Miles;
 				case "ft":
 					return DistanceUnit.Feet;
 				default:
-					Log.Verbose("Found unkown distance unit {@Unit}", unit);
+					Log.Error("Found unknown distance unit {@Unit}", unit);
 					return DistanceUnit.Unknown;
 			}
 		}
