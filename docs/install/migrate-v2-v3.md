@@ -15,7 +15,7 @@ No changes are needed.
 
 ## Docker
 
-No changes are needed
+No changes are needed, though you may wish to switch over to the [Web UI image tags]({{ site.baseurl }}{% link install/docker-webui.md %}).
 
 ## Source
 

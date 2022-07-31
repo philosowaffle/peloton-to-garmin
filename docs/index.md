@@ -9,8 +9,8 @@ nav_order: 0
 Sync workouts from Peloton to Garmin.
 
 * Fetch latest workouts from Peloton
-* Convert Peloton workout to a variety of formats
-* Upload TCX or FIT workout to Garmin
+* Convert Peloton workouts to a variety of formats
+* Automatically upload workouts to Garmin Connect
 * Backup your downloaded data and converted files
 * Earn Badges and credit for Garmin Challenges
 * Update VO2 Max [1]({{ site.baseurl }}{% link configuration/providing-device-info.md %}) and Training Stress Scores

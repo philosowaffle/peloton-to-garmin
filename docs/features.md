@@ -55,3 +55,6 @@ Convert, Backup, and Sync.
 ### Laps
 
 ![Laps](https://github.com/philosowaffle/peloton-to-garmin/raw/master/images/example_laps.png?raw=true "Laps")
+
+### Web UI
+![Web UI Demo](https://github.com/philosowaffle/peloton-to-garmin/raw/master/images/p2g_webui_demo.gif?raw=true "Web UI Demo")

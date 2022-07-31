@@ -14,9 +14,11 @@ With version 3, P2G now ships with an optional User Interface. Some key features
 1. Sync service can still run in the background, syncing periodically
 1. OpenApi for custom scripts and workflows
 
+![Web UI Demo](https://github.com/philosowaffle/peloton-to-garmin/raw/master/images/p2g_webui_demo.gif?raw=true "Web UI Demo")
+
 ## docker-compose
 
-With the below docker configuration you can launch the containers and visit `http://localhost:8002` to reach the `p2g` web UI.
+With the below docker configuration you can launch the containers and visit `http://localhost:8002` to reach the `p2g` web UI.  A sample `docker-compose.yaml` and config files can also be found [`in the project repo`](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/). 
 
 ```yaml
 version: "3.9"
@@ -25,12 +27,10 @@ services:
   p2g-api:
     container_name: p2g-api
     image: philosowaffle/peloton-to-garmin:api-stable
-    ports:
-      - 8001:80
     environment:
       - TZ=America/Chicago
     volumes:
-      - ./api.local.json:/app/configuration.local.json # see sample below
+      - ./api.local.json:/app/configuration.local.json
       - ./data:/app/data # recommended for saving settings across restarts
       - ./output:/app/output # optional, if you want access to the generated workout and log files
   
@@ -42,93 +42,46 @@ services:
     environment:
       - TZ=America/Chicago
     volumes:
-      - ./webui.local.json:/app/configuration.local.json # see sample below
+      - ./webui.local.json:/app/configuration.local.json
+    depends_on:
+      - p2g-api
 ```
 
 ## Configuration
 
 If you are migrating to the Web UI for the first time you will need to reconfigure most of your settings using the user interface.  The only settings that are carried over and still configured via the configuration file are the ones related to `Observability` and `Api`.
 
-You can find examples of how the new configuration file should look below.
+You can find examples of these config files [in the project repo](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/).
 
-### Sample webui.local.json
+## Open Api
 
-```json
-{
-  "Api": {
-    "HostUrl": "http://p2g-api"
-  },
+To access the Open API spec  for P2G you will need to expose the below port on the Api docker container.  The open API spec will be available at `http://localhost:8001/swagger`.
 
-  "Observability": {
+```yaml
+version: "3.9"
 
-    "Prometheus": {
-      "Enabled": false,
-      "Port": 4000
-    },
-
-    "Jaeger": {
-      "Enabled": false,
-      "AgentHost": "localhost",
-      "AgentPort": 6831
-    },
-
-    "Serilog": {
-      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File" ],
-      "MinimumLevel": "Information",
-      "WriteTo": [
-        { "Name": "Console" },
-        {
-          "Name": "File",
-          "Args": {
-            "path": "./output/log.txt",
-            "rollingInterval": "Day",
-            "retainedFileCountLimit": 7
-          }
-        }
-      ]
-    }
-  }
-}
+services:
+  p2g-api:
+    container_name: p2g-api
+    image: philosowaffle/peloton-to-garmin:api-stable
+    environment:
+      - TZ=America/Chicago
+    ports:
+      - 8001:80
+    volumes:
+      - ./api.local.json:/app/configuration.local.json
+      - ./data:/app/data
+      - ./output:/app/output
+  
+  p2g-webui:
+    container_name: p2g-webui
+    image: philosowaffle/peloton-to-garmin:webui-stable
+    ports:
+      - 8002:80
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - ./webui.local.json:/app/configuration.local.json
+    depends_on:
+      - p2g-api
 ```
-
-### Sample api.local.json
-
-The Api can be configured with its own configuration if desired, otherwise it is fine for it to share the webui config file.
-
-```json
-{
-  "Observability": {
-
-    "Prometheus": {
-      "Enabled": false,
-      "Port": 4000
-    },
-
-    "Jaeger": {
-      "Enabled": false,
-      "AgentHost": "localhost",
-      "AgentPort": 6831
-    },
-
-    "Serilog": {
-      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File" ],
-      "MinimumLevel": "Information",
-      "WriteTo": [
-        { "Name": "Console" },
-        {
-          "Name": "File",
-          "Args": {
-            "path": "./output/log.txt",
-            "rollingInterval": "Day",
-            "retainedFileCountLimit": 7
-          }
-        }
-      ]
-    }
-  }
-}
-```
-
-### OpenApi
-
-The web version also exposes an API that can be interacted with. You can find documentation for the api at `http://192.18.1.94:8001/swagger`.

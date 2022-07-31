@@ -7,6 +7,8 @@ nav_order: 2
 
 # Docker Headless
 
+This the original flavor of P2G. It runs without any user interface and relies on configuration from `configuration.local.json` file.
+
 ```
 docker run  -v /full/path/to/configuration.local.json:/app/configuration.local.json -v /full/path/to/output:/app/output philosowaffle/peloton-to-garmin:stable
 ```
@@ -45,13 +47,6 @@ services:
       - ./data:/app/data
       - ./output:/app/output
 ```
-
-## Docker User
-
-The P2G images run the process under the user and group `p2g:p2g` with uid and gid `1015:1015`.  To access files created by `p2g`:
-
-1. Create a group on the local machine `p2g` with group id `1015`
-1. Add your user on the local machine to the `p2g` group
 
 ## Prometheus
 
