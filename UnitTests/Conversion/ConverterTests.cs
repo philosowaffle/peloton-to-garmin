@@ -137,7 +137,7 @@ namespace UnitTests.Conversion
 		}
 
 		[Test]
-		public void ConvertToMetersPerSecondTest_Is_Converted_To_MetersPerSecond([Values("mi", "ft", "km")] string unit)
+		public void ConvertToMetersPerSecondTest_Is_Converted_To_MetersPerSecond([Values("mi", "mph", "ft", "km")] string unit)
 		{
 			var value = 145;
 			var workoutSample = new WorkoutSamples();
@@ -170,7 +170,7 @@ namespace UnitTests.Conversion
 		}
 
 		[Test]
-		public void GetMaxSpeedMetersPerSecond_MaxSpeed_Is_Converted([Values("mi", "ft", "km")] string unit)
+		public void GetMaxSpeedMetersPerSecond_MaxSpeed_Is_Converted([Values("mi", "mph", "ft", "km")] string unit)
 		{
 			var speed = 15.2;
 			var workoutSample = new WorkoutSamples();
@@ -205,7 +205,7 @@ namespace UnitTests.Conversion
 		}
 
 		[Test]
-		public void GetAvgSpeedMetersPerSecond_MaxSpeed_Is_Converted([Values("mi", "ft", "km")] string unit)
+		public void GetAvgSpeedMetersPerSecond_MaxSpeed_Is_Converted([Values("mi", "mph", "ft", "km")] string unit)
 		{
 			var speed = 15.2;
 			var workoutSample = new WorkoutSamples();
