@@ -6,7 +6,7 @@ nav_order: 1
 
 # Features
 
-Convert workout data from Peloton into a format that can be uploaded to Garmin.
+Convert, Backup, and Sync.
 
 ## Feature List
 
@@ -32,7 +32,7 @@ Convert workout data from Peloton into a format that can be uploaded to Garmin.
 ## Typical Usage
 
 1. Do a Peloton Workout!
-    1. If you use your Garmin device to send HR data to the Peloton then at the end of your workout **do not save the workout on your watch, discard it.**
+    1. If you use your Garmin device to send HR data to the Peloton Bike or Tread then at the end of your workout **do not save the workout on your watch, discard it.**
 1. Sync your workout with P2G
     1. You can go to your computer and manually run P2G to sync recent workouts
     1. **OR** You can configure P2G to run in the background on your computer, syncing workouts every hour
@@ -55,3 +55,6 @@ Convert workout data from Peloton into a format that can be uploaded to Garmin.
 ### Laps
 
 ![Laps](https://github.com/philosowaffle/peloton-to-garmin/raw/master/images/example_laps.png?raw=true "Laps")
+
+### Web UI
+![Web UI Demo](https://github.com/philosowaffle/peloton-to-garmin/raw/master/images/p2g_webui_demo.gif?raw=true "Web UI Demo")

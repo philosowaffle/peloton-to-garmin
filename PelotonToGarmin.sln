@@ -27,11 +27,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{614A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{A7F642D9-7954-4547-84DB-67A04AE1043D}"
 	ProjectSection(SolutionItems) = preProject
+		docker\webui\api.local.json = docker\webui\api.local.json
+		docker\docker-compose-ui.yaml = docker\docker-compose-ui.yaml
 		docker\docker-compose.yaml = docker\docker-compose.yaml
 		docker\Dockerfile.api = docker\Dockerfile.api
 		docker\Dockerfile.console = docker\Dockerfile.console
 		docker\Dockerfile.webui = docker\Dockerfile.webui
 		docker\entrypoint.sh = docker\entrypoint.sh
+		docker\webui\webui.local.json = docker\webui\webui.local.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{BDCDD5AE-C9E5-4D0C-B666-6F11B334EC78}"

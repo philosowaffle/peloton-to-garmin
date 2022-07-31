@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  p2g-api:
+    container_name: p2g-api
+    image: philosowaffle/peloton-to-garmin:api-stable
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - ./api.local.json:/app/configuration.local.json
+      - ./data:/app/data # recommended for saving settings across restarts
+      - ./output:/app/output # optional, if you want access to the generated workout and log files
+  
+  p2g-webui:
+    container_name: p2g-webui
+    image: philosowaffle/peloton-to-garmin:webui-stable
+    ports:
+      - 8002:80
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - ./webui.local.json:/app/configuration.local.json
+    depends_on:
+      - p2g-api
