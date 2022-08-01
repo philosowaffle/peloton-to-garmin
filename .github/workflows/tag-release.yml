@@ -273,3 +273,5 @@ jobs:
         artifacts: "${{ github.workspace }}/dist/${{ matrix.os }}_${{ github.event.inputs.version }}.zip"
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: v${{ github.event.inputs.version }}
+        allowUpdates: true
+        replacesArtifacts: true
