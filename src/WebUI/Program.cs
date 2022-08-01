@@ -71,9 +71,9 @@ Prometheus.Metrics.CreateGauge($"{Statics.MetricPrefix}_build_info", "Build info
 }).WithLabels(version, os, osVersion, runtimeVersion)
 .Set(1);
 
-Log.Debug("P2G WebUI Version: {@Version}", version);
-Log.Debug("Operating System: {@Os}", osVersion);
-Log.Debug("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
+Log.Information("P2G WebUI Version: {@Version}", version);
+Log.Information("Operating System: {@Os}", osVersion);
+Log.Information("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
 
 ///////////////////////////////////////////////////////////
 /// APP

@@ -44,9 +44,9 @@ namespace PelotonToGarminConsole
 			var version = Constants.AppVersion;
 
 			BuildInfo.WithLabels(version, os, osVersion, runtimeVersion).Set(1);
-			_logger.Debug("App Version: {@Version}", version);
-			_logger.Debug("Operating System: {@Os}", osVersion);
-			_logger.Debug("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
+			_logger.Information("App Version: {@Version}", version);
+			_logger.Information("Operating System: {@Os}", osVersion);
+			_logger.Information("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
 		}
 
 		protected override Task ExecuteAsync(CancellationToken cancelToken)

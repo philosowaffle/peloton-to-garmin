@@ -110,9 +110,9 @@ Prometheus.Metrics.CreateGauge("p2g_build_info", "Build info for the running ins
 }).WithLabels(version, os, osVersion, runtimeVersion)
 .Set(1);
 
-Log.Debug("Api Version: {@Version}", version);
-Log.Debug("Operating System: {@Os}", osVersion);
-Log.Debug("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
+Log.Information("Api Version: {@Version}", version);
+Log.Information("Operating System: {@Os}", osVersion);
+Log.Information("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
 
 ///////////////////////////////////////////////////////////
 /// APP
