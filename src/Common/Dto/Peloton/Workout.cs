@@ -60,6 +60,10 @@ namespace Common.Dto.Peloton
 
 	public class FTPInfo
 	{
+		/// <summary>
+		/// This is not truly the users FTP. This the max 20min avg output.
+		/// You must calculate 95% of this to get the real FTP.
+		/// </summary>
 		public int Ftp { get; set; }
 	}
 

@@ -517,7 +517,7 @@ namespace Conversion
 			if (ftp is null || ftp == 0)
 				ftp = (ushort?)userData?.Estimated_Cycling_Ftp;
 
-			return ftp;
+			return (ushort)Math.Round(ftp.GetValueOrDefault() * .95);
 		}
 	}
 }

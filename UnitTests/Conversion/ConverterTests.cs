@@ -569,11 +569,11 @@ namespace UnitTests.Conversion
 
 		[TestCase(-1, (uint)0, (uint)0, (ushort)0)]
 		[TestCase(0, (uint)0, (uint)0, (ushort)0)]
-		[TestCase(1, (uint)0, (uint)0, (ushort)1)]
-		[TestCase(0, (uint)1, (uint)0, (ushort)1)]
-		[TestCase(0, (uint)0, (uint)1, (ushort)1)]
-		[TestCase(3, (uint)2, (uint)1, (ushort)3)]
-		[TestCase(0, (uint)2, (uint)1, (ushort)2)]
+		[TestCase(100, (uint)0, (uint)0, (ushort)95)]
+		[TestCase(0, (uint)100, (uint)0, (ushort)95)]
+		[TestCase(0, (uint)0, (uint)100, (ushort)95)]
+		[TestCase(100, (uint)200, (uint)300, (ushort)95)]
+		[TestCase(0, (uint)100, (uint)200, (ushort)95)]
 		public void GetCyclingFtp_Should_PickCorrectValue(int workoutFtp, uint cyclingFtp, uint estimatedFtp, ushort? expectedFtp)
 		{
 			// SETUP
