@@ -66,7 +66,8 @@ namespace Common.Dto.Peloton
 		///  - This is not truly the users FTP. This the max 20min avg output.
 		/// </summary>
 		public ushort Ftp { get; set; }
-		public CyclingFtpSource Ftp_Source { get; set; }
+		[JsonConverter(typeof(JsonStringEnumConverter))]
+		public CyclingFtpSource? Ftp_Source { get; set; }
 		public string Ftp_Workout_Id { get; set; }
 	}
 

@@ -105,7 +105,7 @@ namespace Sync
 			var response = new SyncResult();
 			var recentWorkouts = workoutIds.Select(w => new RecentWorkout() { Id = w }).ToList();
 
-			UserData userData = null;
+			UserData? userData = null;
 			try
 			{
 				userData = await _pelotonService.GetUserDataAsync();

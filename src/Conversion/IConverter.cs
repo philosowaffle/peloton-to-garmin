@@ -520,16 +520,16 @@ namespace Conversion
 			
 			if (ftp is null || ftp <= 0)
 			{
-				if (userData.Cycling_Ftp_Source == CyclingFtpSource.Ftp_Manual_Source)
+				if (userData?.Cycling_Ftp_Source == CyclingFtpSource.Ftp_Manual_Source)
 					ftp = (ushort)Math.Round(userData.Cycling_Ftp * .95);
 
-				if (userData.Cycling_Ftp_Source == CyclingFtpSource.Ftp_Workout_Source)
+				if (userData?.Cycling_Ftp_Source == CyclingFtpSource.Ftp_Workout_Source)
 					ftp = userData.Cycling_Workout_Ftp;
 			}
 
 			if (ftp is null || ftp <= 0)
 			{
-				ftp = userData.Estimated_Cycling_Ftp;
+				ftp = userData?.Estimated_Cycling_Ftp;
 			}
 
 			return ftp;

@@ -40,17 +40,29 @@ namespace Common.Observe
 			if (config.Enabled)
 			{
 				tracing = Sdk.CreateTracerProviderBuilder()
-							.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Statics.TracingService))
-							.AddHttpClientInstrumentation(config =>
+							.SetResourceBuilder(ResourceBuilder.CreateDefault()
+							.AddService(Statics.TracingService)
+							.AddAttributes(new List<KeyValuePair<string, object>>()
 							{
-								config.RecordException = true;
-								config.Enrich = (activity, name, rawEventObject) =>
-								{
-									activity.SetTag("SpanId", activity.SpanId);
-									activity.SetTag("TraceId", activity.TraceId);
-								};
+								new KeyValuePair<string, object>("host.machineName", Environment.MachineName),
+								new KeyValuePair<string, object>("host.os", Environment.OSVersion.VersionString),
+								new KeyValuePair<string, object>("dotnet.version", Environment.Version.ToString()),
+								new KeyValuePair<string, object>("app.version", Constants.AppVersion),
 							})
+							)
 							.AddSource(Statics.TracingService)
+							.SetSampler(new AlwaysOnSampler())
+							.SetErrorStatusOnException()
+							.AddAspNetCoreInstrumentation(c =>
+							{
+								c.RecordException = true;
+								c.Enrich = AspNetCoreEnricher;
+							})
+							.AddHttpClientInstrumentation(h =>
+							{
+								h.RecordException = true;
+								h.Enrich = HttpEnricher;
+							})
 							.AddJaegerExporter(o =>
 							{
 								o.AgentHost = config.AgentHost;
