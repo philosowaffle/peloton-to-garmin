@@ -567,20 +567,34 @@ namespace UnitTests.Conversion
 			deviceInfo.Version.BuildMinor.Should().Be(0);
 		}
 
-		[TestCase(-1, (uint)0, (uint)0, (ushort)0)]
-		[TestCase(0, (uint)0, (uint)0, (ushort)0)]
-		[TestCase(1, (uint)0, (uint)0, (ushort)1)]
-		[TestCase(0, (uint)1, (uint)0, (ushort)1)]
-		[TestCase(0, (uint)0, (uint)1, (ushort)1)]
-		[TestCase(3, (uint)2, (uint)1, (ushort)3)]
-		[TestCase(0, (uint)2, (uint)1, (ushort)2)]
-		public void GetCyclingFtp_Should_PickCorrectValue(int workoutFtp, uint cyclingFtp, uint estimatedFtp, ushort? expectedFtp)
+		// Workout Object
+		// manual source
+		// workout source
+		// UserData Obect
+		// manual source
+		// workout source
+		class CyclingFtpScenarios
+		{
+			public static object[] Cases = 
+			{
+				new object[] { null, null, null },
+				new object[] { new Workout(), new UserData(), (ushort)0 },
+				new object[] { new Workout() {  Ftp_Info = new FTPInfo() { Ftp = 0} }, new UserData(), (ushort)0 },
+				new object[] { new Workout() {  Ftp_Info = new FTPInfo() { Ftp = 100} }, new UserData(), (ushort)100 },
+				new object[] { new Workout() {  Ftp_Info = new FTPInfo() { Ftp = 100, Ftp_Source = CyclingFtpSource.Ftp_Manual_Source} }, new UserData(), (ushort)95 },
+				new object[] { null, new UserData() { Cycling_Ftp = 1, Cycling_Workout_Ftp = 2, Estimated_Cycling_Ftp = 100}, (ushort)100 },
+				new object[] { null, new UserData() { Cycling_Ftp_Source = CyclingFtpSource.Ftp_Manual_Source, Cycling_Ftp = 100, Cycling_Workout_Ftp = 2, Estimated_Cycling_Ftp = 3}, (ushort)95 },
+				new object[] { null, new UserData() { Cycling_Ftp_Source = CyclingFtpSource.Ftp_Workout_Source, Cycling_Ftp = 1, Cycling_Workout_Ftp = 100, Estimated_Cycling_Ftp = 3}, (ushort)100 },
+				new object[] { null, new UserData() { Cycling_Ftp_Source = CyclingFtpSource.Ftp_Workout_Source, Cycling_Ftp = 1, Cycling_Workout_Ftp = 0, Estimated_Cycling_Ftp = 100}, (ushort)100 },
+				new object[] { null, new UserData() { Cycling_Ftp_Source = CyclingFtpSource.Ftp_Manual_Source, Cycling_Ftp = 0, Cycling_Workout_Ftp = 0, Estimated_Cycling_Ftp = 100}, (ushort)100 },
+			};
+		}
+		[TestCaseSource(typeof(CyclingFtpScenarios), nameof(CyclingFtpScenarios.Cases))]
+		public void GetCyclingFtp_Should_PickCorrectValue(Workout workout, UserData userData, ushort? expectedFtp)
 		{
 			// SETUP
 			var mocker = new AutoMocker();
 			var converter = mocker.CreateInstance<ConverterInstance>();
-			var workout = new Workout() { Ftp_Info = new FTPInfo() { Ftp = workoutFtp } };
-			var userData = new UserData() { Cycling_Ftp = cyclingFtp, Estimated_Cycling_Ftp = estimatedFtp };
 
 			// ACT
 			var ftp = converter.GetCyclingFtp1(workout, userData);

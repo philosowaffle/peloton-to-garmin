@@ -511,11 +511,26 @@ namespace Conversion
 		{
 			ushort? ftp = null;
 			if (workout?.Ftp_Info is object && workout.Ftp_Info.Ftp > 0)
-				ftp = (ushort?)workout.Ftp_Info.Ftp;
-			if (ftp is null || ftp == 0)
-				ftp = (ushort?)userData?.Cycling_Ftp;
-			if (ftp is null || ftp == 0)
-				ftp = (ushort?)userData?.Estimated_Cycling_Ftp;
+			{
+				ftp = workout.Ftp_Info.Ftp;
+
+				if (workout.Ftp_Info.Ftp_Source == CyclingFtpSource.Ftp_Manual_Source)
+					ftp = (ushort)Math.Round(ftp.GetValueOrDefault() * .95);
+			} 
+			
+			if (ftp is null || ftp <= 0)
+			{
+				if (userData?.Cycling_Ftp_Source == CyclingFtpSource.Ftp_Manual_Source)
+					ftp = (ushort)Math.Round(userData.Cycling_Ftp * .95);
+
+				if (userData?.Cycling_Ftp_Source == CyclingFtpSource.Ftp_Workout_Source)
+					ftp = userData.Cycling_Workout_Ftp;
+			}
+
+			if (ftp is null || ftp <= 0)
+			{
+				ftp = userData?.Estimated_Cycling_Ftp;
+			}
 
 			return ftp;
 		}
