@@ -36,8 +36,6 @@ namespace PelotonToGarminConsole
 			_settings = settings;
 			_syncService = syncService;
 
-			FlurlConfiguration.Configure(_config.Observability);
-
 			var runtimeVersion = Environment.Version.ToString();
 			var os = Environment.OSVersion.Platform.ToString();
 			var osVersion = Environment.OSVersion.VersionString;
