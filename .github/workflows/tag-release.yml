@@ -275,3 +275,4 @@ jobs:
         tag: v${{ github.event.inputs.version }}
         allowUpdates: true
         replacesArtifacts: true
+        bodyFile:  ${{ github.workspace }}/ReleaseNotes.md
