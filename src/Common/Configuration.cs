@@ -69,8 +69,8 @@ namespace Common
 			OutputDirectory = Path.Join(Environment.CurrentDirectory, "output");
 			WorkingDirectory = Path.Join(Environment.CurrentDirectory, "working");
 
-			EnablePolling = true;
-			PollingIntervalSeconds = 3600;
+			EnablePolling = false;
+			PollingIntervalSeconds = 86400; // 1 day
 		}
 
 		[DisplayName("Output Directory")]
@@ -86,6 +86,7 @@ namespace Common
 		[DisplayName("Polling Interval in Seconds")]
 		[Description("The polling interval in seconds determines how frequently P2G should check for new workouts. Be warned, that setting this to a frequency of hourly or less may get you flagged by Peloton as a bad actor and they may reset your password.")]
 		public int PollingIntervalSeconds { get; set; }
+		[Obsolete]
 		public bool? PythonAndGUploadInstalled { get; set; }
 		public bool CloseWindowOnFinish { get; set; }
 

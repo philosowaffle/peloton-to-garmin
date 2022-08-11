@@ -56,6 +56,7 @@ namespace Sync
 
 			try
 			{
+				PelotonService.ValidateConfig(_config.Peloton);
 				recentWorkouts = await _pelotonService.GetRecentWorkoutsAsync(numWorkouts);
 			}
 			catch (Exception ex)
@@ -171,6 +172,7 @@ namespace Sync
 
 			try
 			{
+				GarminUploader.ValidateConfig(_config);
 				await _garminUploader.UploadToGarminAsync();
 				response.UploadToGarminSuccess = true;
 			}
