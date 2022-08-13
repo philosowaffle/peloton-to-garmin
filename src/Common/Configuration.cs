@@ -172,6 +172,11 @@ namespace Common
 
 	public class Garmin
 	{
+		public Garmin()
+		{
+			UploadStrategy = UploadStrategy.NativeImplV1;
+		}
+
 		public string Email { get; set; }
 		public string Password { get; set; }
 		public bool Upload { get; set; }

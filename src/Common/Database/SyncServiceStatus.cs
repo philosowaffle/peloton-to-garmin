@@ -8,6 +8,7 @@ namespace Common.Database
 		public DateTime? NextSyncTime { get; set; }
 		public DateTime? LastSuccessfulSyncTime { get; set; }
 		public Status SyncStatus { get; set; }
+		public string LastErrorMessage { get; set; }
 	}
 
 	public enum Status

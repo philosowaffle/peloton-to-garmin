@@ -4,6 +4,7 @@ using Common.Database;
 using Common.Observe;
 using Microsoft.AspNetCore.Mvc;
 using Sync;
+using static Prometheus.DotNetRuntime.EventListening.Parsers.ExceptionEventParser.Events;
 using ILogger = Serilog.ILogger;
 
 namespace Api.Controllers;
@@ -34,13 +35,13 @@ public class SyncController : Controller
 	/// <response code="422">If the request fields are invalid.</response>
 	[HttpPost]
 	[ProducesResponseType(typeof(SyncPostResponse), 204)]
-	public async Task<SyncPostResponse> SyncAsync([FromBody] SyncPostRequest request)
+	public async Task<ActionResult<SyncPostResponse>> SyncAsync([FromBody] SyncPostRequest request)
 	{
 		using var tracing = Tracing.Trace($"{nameof(SyncController)}.{nameof(SyncAsync)}");
 
 		if (request is null ||
 			(request.NumWorkouts <= 0 && (!request.WorkoutIds?.Any() ?? true)))
-			throw new HttpRequestException("Either NumWorkouts or WorkoutIds must be set", null, System.Net.HttpStatusCode.UnprocessableEntity);
+			return BadRequest("Either NumWorkouts or WorkoutIds must be set");
 
 		SyncResult syncResult = new();
 		if (request.NumWorkouts > 0)
@@ -48,7 +49,7 @@ public class SyncController : Controller
 		else
 			syncResult = await _syncService.SyncAsync(request.WorkoutIds, exclude: null);
 
-		return new SyncPostResponse()
+		var response = new SyncPostResponse()
 		{
 			SyncSuccess = syncResult.SyncSuccess,
 			PelotonDownloadSuccess = syncResult.PelotonDownloadSuccess,
@@ -56,6 +57,8 @@ public class SyncController : Controller
 			UploadToGarminSuccess = syncResult.UploadToGarminSuccess,
 			Errors = syncResult.Errors.Select(e => new Contracts.ErrorResponse(e)).ToList()
 		};
+
+		return Ok(response);
 	}
 
 	/// <summary>
