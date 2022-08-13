@@ -6,8 +6,6 @@ using Serilog.Enrichers.Span;
 using Serilog.Events;
 using Prometheus;
 using Common.Observe;
-using OpenTelemetry.Trace;
-using OpenTelemetry.Resources;
 using Common.Stateful;
 
 ///////////////////////////////////////////////////////////
@@ -25,13 +23,13 @@ var configProvider = builder.Configuration.AddJsonFile(Path.Join(Environment.Cur
 				.AddEnvironmentVariables(prefix: "P2G_")
 				.AddCommandLine(args);
 
-var apiSettings = new ApiSettings();
-builder.Configuration.GetSection("Api").Bind(apiSettings);
-
 var config = new AppConfiguration();
 builder.Configuration.GetSection("Api").Bind(config.Api);
+builder.Configuration.GetSection("WebUI").Bind(config.WebUI);
 builder.Configuration.GetSection(nameof(Observability)).Bind(config.Observability);
 builder.Configuration.GetSection(nameof(Developer)).Bind(config.Developer);
+
+builder.WebHost.UseUrls(config.WebUI.HostUrl);
 
 builder.Host.UseSerilog((ctx, logConfig) =>
 {
@@ -45,7 +43,7 @@ builder.Host.UseSerilog((ctx, logConfig) =>
 /// SERVICES
 ///////////////////////////////////////////////////////////
 
-builder.Services.AddScoped<IApiClient>(sp => new ApiClient(apiSettings.HostUrl));
+builder.Services.AddScoped<IApiClient>(sp => new ApiClient(config.Api.HostUrl));
 builder.Services.AddHxServices();
 
 // Add services to the container.

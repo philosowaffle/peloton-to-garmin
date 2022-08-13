@@ -20,7 +20,8 @@ The config file is organized into the below sections.
 
 | Section      | Platforms | Description       |
 |:-------------|:----------|:------------------|
-| [Api Config](#api-config) | Web UI | This section provides global settings for the P2G Web UI. |
+| [Api Config](#api-config) | Web UI | This section provides global settings for the P2G Api. |
+| [WebUI Config](#webui-config) | Web UI | This section provides global settings for the P2G Web UI. |
 | [App Config](#app-config) | Headless | This section provides global settings for the P2G application. |
 | [Format Config](#format-config) | Headless | This section provides settings related to conversions and what formats should be created/saved.  |
 | [Peloton Config](#peloton-config) | Headless | This section provides settings related to fetching workouts from Peloton.      |
@@ -29,7 +30,7 @@ The config file is organized into the below sections.
 
 ## Api Config
 
-This section provides global settings for the P2G Web UI. It is only valid when deploying the Web UI.
+If you aren't running the Web UI version of P2G you can ignore this section.  This section lives in `webui.local.json`.
 
 ```json
  "Api": {
@@ -39,8 +40,37 @@ This section provides global settings for the P2G Web UI. It is only valid when 
 
 | Field      | Required | Default | UI Setting Location | Description |
 |:-----------|:---------|:--------|:--------------------|:------------|
-| HostUrl | yes | `null` | none | Where downloaded and converted files should be saved to. |
+| HostUrl | yes | `null` | none | The host and port for the Web UI to communicate with the Api. |
 
+### Advanced usage
+
+Typically this section is only needed in the `webui.local.json` so that the Web UI knows where to find the running Api.  However, if you have a unique setup and need to modify the Host and Port the Api binds to, then you can also provide this config section in the `api.local.json`.  The value you set in `api.local.json` for `HostUrl` should always match the value in `webui.local.json`.
+
+```json
+ "Api": {
+      "HostUrl": "http://localhost:8080"
+    }
+```
+
+| Field      | Required | Default | UI Setting Location | Description |
+|:-----------|:---------|:--------|:--------------------|:------------|
+| HostUrl | no | `http://localhost:80` | none | The host and port the Api should bind to and listen on. |
+
+## WebUI Config
+
+If you aren't running the Web UI version of P2G you can ignore this section.
+
+Most users should not need to add this section to their config. However, if you have a unique setup and need to modify the Host and Port the WebUI binds to, then you can provide this config section in the `webui.local.json`.
+
+```json
+ "WebUI": {
+      "HostUrl": "http://localhost:8080"
+    }
+```
+
+| Field      | Required | Default | UI Setting Location | Description |
+|:-----------|:---------|:--------|:--------------------|:------------|
+| HostUrl | no | `http://localhost:80` | none | The host and port the WebUI should bind to and listen on. |
 
 ## App Config
 
@@ -169,18 +199,18 @@ Example use cases:
 The available values are:
 
 ```json
-		Cycling
-		BikeBootcamp
-		TreadmillRunning
-		OutdoorRunning
-		TreadmillWalking
-		OutdoorWalking
-		Cardio
-		Circuit
-		Strength
-		Stretching
-		Yoga
-		Meditation
+  Cycling
+  BikeBootcamp
+  TreadmillRunning
+  OutdoorRunning
+  TreadmillWalking
+  OutdoorWalking
+  Cardio
+  Circuit
+  Strength
+  Stretching
+  Yoga
+  Meditation
 ```
 
 ## Garmin Config
