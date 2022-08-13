@@ -32,11 +32,13 @@ namespace Common
 		public AppConfiguration()
 		{
 			Api = new ApiSettings();
+			WebUI = new WebUISettings();
 			Observability = new Observability();
 			Developer = new Developer();
 		}
 
 		public ApiSettings Api { get; set; }
+		public WebUISettings WebUI { get; set; }
 		public Observability Observability { get; set; }
 		public Developer Developer { get; set; }
 	}
@@ -192,7 +194,7 @@ namespace Common
 	{
 		public WebUISettings()
 		{
-			HostUrl = "http://localhost:8020";
+			HostUrl = "http://localhost";
 		}
 
 		public string HostUrl { get; set; }

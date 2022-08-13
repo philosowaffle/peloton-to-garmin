@@ -7,9 +7,11 @@ has_children: true
 
 # Configuration
 
-P2G supports configuration via [command line arguments]({{ site.baseurl }}{% link configuration/command-line.md %}), [environment variables]({{ site.baseurl }}{% link configuration/environment-variables.md %}), and [json config file]({{ site.baseurl }}{% link configuration/json.md %}). By default, P2G looks for a file named `configuration.local.json` in the same directory where it is run.  This is the preferred way to provide configuration details to P2G.
+P2G supports configuration via [command line arguments]({{ site.baseurl }}{% link configuration/command-line.md %}), [environment variables]({{ site.baseurl }}{% link configuration/environment-variables.md %}), [json config file]({{ site.baseurl }}{% link configuration/json.md %}), and via the user interface. By default, P2G looks for a file named `configuration.local.json` in the same directory where it is run.
 
 ## Quick Start
+
+Note: If you're running the new web user interface then your sample config can be found [here](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/)).
 
 1. Copy the example below into your `configuration.local.json`
 1. In the `Peloton` section set your peloton email and password
