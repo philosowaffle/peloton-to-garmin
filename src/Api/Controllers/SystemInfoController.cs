@@ -24,17 +24,13 @@ namespace WebApp.Controllers
 		/// <returns>SystemInfoGetResponse</returns>
 		/// <response code="200">Returns the system information</response>
 		[HttpGet]
-		public SystemInfoGetResponse Get()
+		public ActionResult<SystemInfoGetResponse> Get()
 		{
-			using var tracing = Tracing.Trace($"{nameof(SystemInfoController)}.{nameof(Get)}");
-
-			return GetData();
+			return Ok(GetData());
 		}
 
 		private SystemInfoGetResponse GetData()
 		{
-			using var tracing = Tracing.Trace($"{nameof(SystemInfoController)}.{nameof(GetData)}");
-
 			return new SystemInfoGetResponse()
 			{
 				OperatingSystem = Environment.OSVersion.Platform.ToString(),
