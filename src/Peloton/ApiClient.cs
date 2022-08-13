@@ -51,6 +51,12 @@ namespace Peloton
 			if (!string.IsNullOrEmpty(UserId) && !string.IsNullOrEmpty(SessionId))
 				return;
 
+			if (string.IsNullOrEmpty(_userEmail))
+				throw new ArgumentException("Peloton email is not set and is required.");
+
+			if (string.IsNullOrEmpty(_userPassword))
+				throw new ArgumentException("Peloton password is not set and is required.");
+
 			try
 			{
 				var response = await $"{AuthBaseUrl}"

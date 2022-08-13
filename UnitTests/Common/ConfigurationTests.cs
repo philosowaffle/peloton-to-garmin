@@ -14,9 +14,10 @@ namespace UnitTests.Common
 			var config = new Settings();
 
 			config.App.Should().NotBeNull();
+			config.App.EnablePolling.Should().BeFalse();
 			config.App.OutputDirectory.Should().Be(Path.Join(Environment.CurrentDirectory, "output"));
 			config.App.WorkingDirectory.Should().Be(Path.Join(Environment.CurrentDirectory, "working"));
-			config.App.PollingIntervalSeconds.Should().Be(3600);
+			config.App.PollingIntervalSeconds.Should().Be(86400);
 			config.App.FitDirectory.Should().Be(Path.Join(config.App.OutputDirectory, "fit"));
 			config.App.JsonDirectory.Should().Be(Path.Join(config.App.OutputDirectory, "json"));
 			config.App.TcxDirectory.Should().Be(Path.Join(config.App.OutputDirectory, "tcx"));
@@ -35,6 +36,12 @@ namespace UnitTests.Common
 			config.Format.Json.Should().BeFalse();
 			config.Format.Tcx.Should().BeFalse();
 			config.Format.SaveLocalCopy.Should().BeFalse();
+			config.Format.IncludeTimeInHRZones.Should().BeFalse();
+			config.Format.IncludeTimeInPowerZones.Should().BeFalse();
+			config.Format.DeviceInfoPath.Should().BeNullOrEmpty();
+
+			config.Format.Cycling.PreferredLapType.Should().Be(PreferredLapType.Default);
+			config.Format.Running.PreferredLapType.Should().Be(PreferredLapType.Default);
 		}
 
 		[Test]
@@ -58,6 +65,8 @@ namespace UnitTests.Common
 			config.Garmin.Email.Should().BeNull();
 			config.Garmin.Password.Should().BeNull();
 			config.Garmin.FormatToUpload.Should().Be(FileFormat.Fit);
+			config.Garmin.Upload.Should().BeFalse();
+			config.Garmin.UploadStrategy.Should().Be(UploadStrategy.NativeImplV1);
 		}
 
 		[Test]

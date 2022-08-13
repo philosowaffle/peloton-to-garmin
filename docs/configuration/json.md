@@ -44,7 +44,7 @@ If you aren't running the Web UI version of P2G you can ignore this section.  Th
 
 ### Advanced usage
 
-Typically this section is only needed in the `webui.local.json` so that the Web UI knows where to find the running Api.  However, if you have a unique setup and need to modify the Host and Port the Api binds to, then you can also provide this config section in the `api.local.json`.  The value you set in `api.local.json` for `HostUrl` should always match the value in `webui.local.json`.
+Typically this section is only needed in the `webui.local.json` so that the Web UI knows where to find the running Api.  However, if you have a unique setup and need to modify the Host and Port the Api binds to, then you can also provide this config section in the `api.local.json`.
 
 ```json
  "Api": {
