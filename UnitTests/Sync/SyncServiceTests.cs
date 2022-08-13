@@ -18,15 +18,6 @@ namespace UnitTests.Sync
 {
 	public class SyncServiceTests
 	{
-		private void ConfigureValidSettings(Settings settings)
-		{
-			settings.Peloton.Email = "someEmail";
-			settings.Peloton.Password = "somePassword";
-
-			settings.Garmin.Upload = true;
-			settings.Garmin.Email = "someEmail";
-			settings.Garmin.Password = "somePassword";
-		}
 
 		[Test]
 		public async Task SyncAsync_When_PelotonStep_Fails_Should_ReturnCorrectResponse()
@@ -38,7 +29,6 @@ namespace UnitTests.Sync
 			var peloton = mocker.GetMock<IPelotonService>();
 			var db = mocker.GetMock<ISyncStatusDb>();
 			var settings = mocker.GetMock<Settings>();
-			ConfigureValidSettings(settings.Object);
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
@@ -68,7 +58,6 @@ namespace UnitTests.Sync
 			var db = mocker.GetMock<ISyncStatusDb>();
 			var converter = mocker.GetMock<IConverter>();
 			var settings = mocker.GetMock<Settings>();
-			ConfigureValidSettings(settings.Object);
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
@@ -102,7 +91,6 @@ namespace UnitTests.Sync
 			var converter = mocker.GetMock<IConverter>();
 			var garmin = mocker.GetMock<IGarminUploader>();
 			var settings = mocker.GetMock<Settings>();
-			ConfigureValidSettings(settings.Object);
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
@@ -139,7 +127,6 @@ namespace UnitTests.Sync
 			var garmin = mocker.GetMock<IGarminUploader>();
 			var fileHandler = mocker.GetMock<IFileHandling>();
 			var settings = mocker.GetMock<Settings>();
-			ConfigureValidSettings(settings.Object);
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
@@ -176,7 +163,6 @@ namespace UnitTests.Sync
 			var garmin = mocker.GetMock<IGarminUploader>();
 			var fileHandler = mocker.GetMock<IFileHandling>();
 			var settings = mocker.GetMock<Settings>();
-			ConfigureValidSettings(settings.Object);
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
@@ -203,74 +189,6 @@ namespace UnitTests.Sync
 			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Once);
 			converter.Verify(x => x.Convert(It.IsAny<P2GWorkout>()), Times.Once);
 			garmin.Verify(x => x.UploadToGarminAsync(), Times.Once);
-			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
-			fileHandler.Verify(x => x.Cleanup(It.IsAny<string>()), Times.Exactly(3));
-		}
-
-		[Test]
-		public async Task SyncAsync_When_PelotonCredsMissing_Fails_Should_ReturnCorrectResponse([Values(null, "")]string email, [Values(null, "")] string password)
-		{
-			// SETUP
-			var mocker = new AutoMocker();
-
-			var service = mocker.CreateInstance<SyncService>();
-			var peloton = mocker.GetMock<IPelotonService>();
-			var db = mocker.GetMock<ISyncStatusDb>();
-			var settings = mocker.GetMock<Settings>();
-			settings.Object.Peloton.Email = email;
-			settings.Object.Peloton.Password = password;
-
-			var syncStatus = new SyncServiceStatus();
-			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-
-			// ACT
-			var response = await service.SyncAsync(0);
-
-			// ASSERT
-			response.SyncSuccess.Should().BeFalse();
-			response.PelotonDownloadSuccess.Should().BeFalse();
-			response.Errors.Should().NotBeNullOrEmpty();
-
-			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Never);
-			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
-		}
-
-		[Test]
-		public async Task SyncAsync_When_GarminCredsMissing_Fails_Should_ReturnCorrectResponse([Values(null, "")] string email, [Values(null, "")] string password)
-		{
-			// SETUP
-			var mocker = new AutoMocker();
-
-			var service = mocker.CreateInstance<SyncService>();
-			var peloton = mocker.GetMock<IPelotonService>();
-			var db = mocker.GetMock<ISyncStatusDb>();
-			var converter = mocker.GetMock<IConverter>();
-			var garmin = mocker.GetMock<IGarminUploader>();
-			var fileHandler = mocker.GetMock<IFileHandling>();
-			var settings = mocker.GetMock<Settings>();
-			settings.Object.Peloton.Email = "someEmail";
-			settings.Object.Peloton.Password = "somePassword";
-			settings.Object.Garmin.Upload = true;
-			settings.Object.Garmin.Email = email;
-			settings.Object.Garmin.Password = password;
-
-			var syncStatus = new SyncServiceStatus();
-			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<RecentWorkout>() { new RecentWorkout() { Status = "COMPLETE", Id = "1" } });
-			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<RecentWorkout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
-
-			// ACT
-			var response = await service.SyncAsync(0);
-
-			// ASSERT
-			response.SyncSuccess.Should().BeFalse();
-			response.PelotonDownloadSuccess.Should().BeTrue();
-			response.UploadToGarminSuccess.Should().BeFalse();
-			response.Errors.Should().NotBeNullOrEmpty();
-
-			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Once);
-			converter.Verify(x => x.Convert(It.IsAny<P2GWorkout>()), Times.Once);
-			garmin.Verify(x => x.UploadToGarminAsync(), Times.Never);
 			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
 			fileHandler.Verify(x => x.Cleanup(It.IsAny<string>()), Times.Exactly(3));
 		}

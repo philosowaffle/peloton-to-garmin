@@ -1,11 +1,8 @@
 ﻿using Api.Contracts;
 using Common;
 using Common.Database;
-using Common.Observe;
 using Microsoft.AspNetCore.Mvc;
 using Sync;
-using static Prometheus.DotNetRuntime.EventListening.Parsers.ExceptionEventParser.Events;
-using ILogger = Serilog.ILogger;
 
 namespace Api.Controllers;
 
@@ -15,8 +12,6 @@ namespace Api.Controllers;
 [Consumes("application/json")]
 public class SyncController : Controller
 {
-	private static readonly ILogger _logger = LogContext.ForClass<SyncController>();
-
 	private readonly Settings _config;
 	private readonly ISyncService _syncService;
 	private readonly ISyncStatusDb _db;
@@ -31,14 +26,15 @@ public class SyncController : Controller
 	/// <summary>
 	/// Syncs a given set of workouts from Peloton to Garmin.
 	/// </summary>
-	/// <response code="204">Returns the sync status information.</response>
-	/// <response code="422">If the request fields are invalid.</response>
+	/// <response code="204">The sync was successful. Returns the sync status information.</response>
+	/// <response code="200">This request completed, but the Sync may not have been successful. Returns the sync status information.</response>
+	/// <response code="400">If the request fields are invalid.</response>
 	[HttpPost]
 	[ProducesResponseType(typeof(SyncPostResponse), 204)]
+	[ProducesResponseType(typeof(SyncPostResponse), 200)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	public async Task<ActionResult<SyncPostResponse>> SyncAsync([FromBody] SyncPostRequest request)
 	{
-		using var tracing = Tracing.Trace($"{nameof(SyncController)}.{nameof(SyncAsync)}");
-
 		if (request is null ||
 			(request.NumWorkouts <= 0 && (!request.WorkoutIds?.Any() ?? true)))
 			return BadRequest("Either NumWorkouts or WorkoutIds must be set");
@@ -58,7 +54,10 @@ public class SyncController : Controller
 			Errors = syncResult.Errors.Select(e => new Contracts.ErrorResponse(e)).ToList()
 		};
 
-		return Ok(response);
+		if (!response.SyncSuccess)
+			return Ok(response);
+
+		return Created("/sync", response);
 	}
 
 	/// <summary>
@@ -67,10 +66,8 @@ public class SyncController : Controller
 	/// <response code="200">Returns the sync status information.</response>
 	[HttpGet]
 	[ProducesResponseType(typeof(SyncGetResponse), 200)]
-	public async Task<SyncGetResponse> GetAsync()
+	public async Task<ActionResult<SyncGetResponse>> GetAsync()
 	{
-		using var tracing = Tracing.Trace($"{nameof(SyncController)}.{nameof(GetAsync)}");
-
 		var syncTime = await _db.GetSyncStatusAsync();
 
 		var response = new SyncGetResponse()
@@ -82,6 +79,6 @@ public class SyncController : Controller
 			NextSyncTime = syncTime.NextSyncTime
 		};
 
-		return response;
+		return Ok(response);
 	}
 }

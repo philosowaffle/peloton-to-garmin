@@ -1,6 +1,5 @@
 ﻿using Api.Contracts;
 using Common;
-using Common.Observe;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers

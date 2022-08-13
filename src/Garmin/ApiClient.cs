@@ -44,6 +44,8 @@ namespace Garmin
 		/// </summary>
 		public async Task InitAuth()
 		{
+			GarminUploader.ValidateConfig(_config);
+
 			object queryParams = new
 			{
 				clientId = "GarminConnect",

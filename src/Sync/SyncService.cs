@@ -56,7 +56,6 @@ namespace Sync
 
 			try
 			{
-				PelotonService.ValidateConfig(_config.Peloton);
 				recentWorkouts = await _pelotonService.GetRecentWorkoutsAsync(numWorkouts);
 			}
 			catch (ArgumentException ae)
@@ -132,9 +131,21 @@ namespace Sync
 			UserData? userData = null;
 			try
 			{
-				PelotonService.ValidateConfig(_config.Peloton);
 				userData = await _pelotonService.GetUserDataAsync();
 
+			}
+			catch (ArgumentException ae)
+			{
+				var errorMessage = $"Failed to fetch recent workouts from Peleoton: {ae.Message}";
+
+				_logger.Error(ae, errorMessage);
+				activity?.AddTag("exception.message", ae.Message);
+				activity?.AddTag("exception.stacktrace", ae.StackTrace);
+
+				response.SyncSuccess = false;
+				response.PelotonDownloadSuccess = false;
+				response.Errors.Add(new ErrorResponse() { Message = $"{errorMessage}" });
+				return response;
 			}
 			catch (Exception e)
 			{
@@ -197,7 +208,6 @@ namespace Sync
 
 			try
 			{
-				GarminUploader.ValidateConfig(_config);
 				await _garminUploader.UploadToGarminAsync();
 				response.UploadToGarminSuccess = true;
 			}
