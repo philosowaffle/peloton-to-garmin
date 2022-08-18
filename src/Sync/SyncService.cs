@@ -169,6 +169,8 @@ namespace Sync
 
 			var filteredWorkouts = workouts.Where(w => 
 								{
+									if (w is null) return false;
+
 									if (exclude is null || exclude.Count == 0) return true;
 
 									if (exclude.Contains(w.WorkoutType))
