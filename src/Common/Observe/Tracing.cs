@@ -56,10 +56,12 @@ namespace Common.Observe
 							.AddAspNetCoreInstrumentation(c =>
 							{
 								c.RecordException = true;
+								c.RecordException = true;
 								c.Enrich = AspNetCoreEnricher;
 							})
 							.AddHttpClientInstrumentation(h =>
 							{
+								h.RecordException = true;
 								h.RecordException = true;
 								h.Enrich = HttpEnricher;
 							})

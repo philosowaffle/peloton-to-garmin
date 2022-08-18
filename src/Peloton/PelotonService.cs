@@ -125,7 +125,7 @@ namespace Peloton
 				tasks.Add(GetWorkoutDetailsAsync(workoutId));
 			}
 
-			return await Task.WhenAll(tasks);
+			return (await Task.WhenAll(tasks)).Where(t => t is object).ToArray();
 		}
 
 		private async Task<P2GWorkout> GetWorkoutDetailsAsync(string workoutId)
@@ -164,10 +164,11 @@ namespace Peloton
 			catch (Exception e)
 			{
 				_failedCount++;
+
 				var title = "workout_failed_to_deserialize_" + workoutId;
-				_logger.Error("Failed to deserialize workout from Peloton. You can find the raw data from the workout here: @FileName", title, e);
-				tracing.AddTag("exception.message", e.Message);
 				SaveRawData(data, title);
+
+				_logger.Error("Failed to deserialize workout from Peloton. You can find the raw data from the workout here: {@FileName}", title, e);
 			}
 
 			return deSerializedData;
