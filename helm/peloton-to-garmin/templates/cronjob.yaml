@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: peloton-garmin-sync
+spec:
+  schedule: {{ .Values.config.schedule | quote }}
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: peloton-garmin-sync
+          labels:
+            sidecar.istio.io/inject: "false"
+        spec:
+          containers:
+            - name: peloton-to-garmin
+              image: {{ .Values.config.image | default "philosowaffle/peloton-to-garmin:stable" }}
+              volumeMounts:
+                - name: configmap
+                  mountPath: "/app/configuration.local.json"
+                  subPath: "configuration.local.json"
+          volumes:
+            - name: configmap
+              configMap:
+                name: peloton-garmin-configmap
+          restartPolicy: OnFailure

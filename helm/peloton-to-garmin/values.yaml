@@ -1,0 +1,29 @@
+app:
+  outputDirectory: "./output"
+  workingDirectory: "./working"
+  syncHistoryDbPath: "./output/syncHistory.json"
+  enablePolling: true
+  pollingIntervalSeconds: 86400
+  closeWindowOnFinish: false
+format:
+  fit: true
+  json: false
+  tcx: false
+  saveLocalCopy: true
+  includeTimeInHRZones: false
+  includeTimeInPowerZones: false
+  deviceInfoPath: "./deviceInfo.xml"
+peloton:
+  email:
+  password:
+  numWorkoutsToDownload: 1
+  excludeWorkoutTypes: []
+garmin:
+  email:
+  password:
+  upload: false
+  formatToUpload: "fit"
+  uploadStrategy: 2
+config:
+  # Run every 6 hours
+  schedule: "0 */6 * * *"
