@@ -64,7 +64,7 @@ namespace UnitTests
 		//[Test]
 		//public async Task DeSerialize()
 		//{
-		//	var file = Path.Join(DataDirectory, "test.json");
+		//	var file = Path.Join(DataDirectory, "file.json");
 		//	var _fileHandler = new IOWrapper();
 		//	var workout = _fileHandler.DeserializeJson<P2GWorkout>(file);
 		//}

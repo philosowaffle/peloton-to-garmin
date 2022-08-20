@@ -35,5 +35,6 @@ public enum CyclingFtpSource
 {
 	Unknown = 0,
 	Ftp_Workout_Source = 1,
-	Ftp_Manual_Source = 2
+	Ftp_Manual_Source = 2,
+	Ftp_Estimated_Source = 3
 }

@@ -230,7 +230,7 @@
     "total_leaderboard_users": 57337,
     "ftp_info": {
       "ftp": 154,
-      "ftp_source": "ftp_manual_source",
+      "ftp_source": "ftp_estimated_source",
       "ftp_workout_id": null
     },
     "device_type_display_name": "Bike"
