@@ -7,9 +7,9 @@ nav_order: 2
 
 # Kubernetes
 
-It is also possible to run P2G in Kubernets via Helm. By default P2G is conmfigured with the default values from the configuration.local.json file.
+It is also possible to run P2G in Kubernets via [Helm](https://helm.sh/). By default P2G is conmfigured with the default values from the [configuration.local.json file](helm/peloton-to-garmin/values.yaml).
 
-In addition it is installed as a Kubernetes Cronjob so it will run automatically on the scheduled interval (i.e. by default every 6 hours)
+In addition it is installed as a [Kubernetes Cronjob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/) so it will run automatically on the scheduled interval (i.e. by default every 6 hours)
 
 To provide your own values create an overrides_value.yaml file and provide it when installing the chart.
 
