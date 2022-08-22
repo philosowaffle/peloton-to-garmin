@@ -36,3 +36,28 @@ The P2G images run the process under the user and group `p2g:p2g` with uid and g
 
 1. Create a group on the local machine `p2g` with group id `1015`
 1. Add your user on the local machine to the `p2g` group
+
+## Docker Builds
+
+The image for each flavor can be built by providing its target as an argument to the Docker build command
+
+### Console
+
+```
+DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile . --build-arg VERSION=<version number> -t peloton-garmin --target final_console
+
+```
+
+### API
+
+```
+DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile . --build-arg VERSION=<version number>  -t peloton-garmin --target final_api
+
+```
+
+### Web
+
+```
+DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile . --build-arg VERSION=<version number>  -t peloton-garmin --target final_web
+
+```
