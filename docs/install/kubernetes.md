@@ -34,5 +34,5 @@ config:
 And installed with:
 ```
 cd ./helm
-helm install ./peloton-to-garmin --values override.values.yaml --generate-name
+helm install peloton-to-garmin ./peloton-to-garmin --values override.values.yaml
 ```
