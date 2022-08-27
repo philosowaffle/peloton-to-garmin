@@ -192,6 +192,7 @@ namespace Conversion
 					return (float)value * _metersPerMile;
 				case DistanceUnit.Feet:
 					return (float)value * 0.3048f;
+				case DistanceUnit.Meters:
 				default:
 					return (float)value;
 			}
@@ -495,7 +496,10 @@ namespace Conversion
 			switch (unit?.ToLower())
 			{
 				case "km":
+				case "kph":
 					return DistanceUnit.Kilometers;
+				case "m":
+					return DistanceUnit.Meters;
 				case "mi":
 				case "mph":
 					return DistanceUnit.Miles;

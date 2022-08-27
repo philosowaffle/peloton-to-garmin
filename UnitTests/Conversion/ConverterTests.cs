@@ -54,7 +54,7 @@ namespace UnitTests.Conversion
 		}
 
 		[Test]
-		public void ConvertDistanceToMetersTest([Values("km","mi","ft", "KM","unknown")]string unit)
+		public void ConvertDistanceToMetersTest([Values("km","mi","ft", "KM", "m","unknown")]string unit)
 		{
 			var autoMocker = new AutoMocker();
 			var converter = autoMocker.CreateInstance<ConverterInstance>();
@@ -72,6 +72,7 @@ namespace UnitTests.Conversion
 				case "ft":
 					converted.Should().Be((float)value * 0.3048f);
 					break;
+				case "m":
 				default:
 					converted.Should().Be((float)value);
 					break;
@@ -105,7 +106,7 @@ namespace UnitTests.Conversion
 		}
 
 		[Test]
-		public void GetTotalDistanceTest_Distance_Is_Converted_To_Meters([Values("mi", "ft", "km")] string unit)
+		public void GetTotalDistanceTest_Distance_Is_Converted_To_Meters([Values("mi", "ft", "km", "m")] string unit)
 		{
 			var distance = 145;
 			var workoutSample = new WorkoutSamples();
@@ -137,7 +138,7 @@ namespace UnitTests.Conversion
 		}
 
 		[Test]
-		public void ConvertToMetersPerSecondTest_Is_Converted_To_MetersPerSecond([Values("mi", "mph", "ft", "km")] string unit)
+		public void ConvertToMetersPerSecondTest_Is_Converted_To_MetersPerSecond([Values("mi", "mph", "ft", "km", "m", "kph")] string unit)
 		{
 			var value = 145;
 			var workoutSample = new WorkoutSamples();
@@ -170,7 +171,7 @@ namespace UnitTests.Conversion
 		}
 
 		[Test]
-		public void GetMaxSpeedMetersPerSecond_MaxSpeed_Is_Converted([Values("mi", "mph", "ft", "km")] string unit)
+		public void GetMaxSpeedMetersPerSecond_MaxSpeed_Is_Converted([Values("mi", "mph", "ft", "km", "kph", "m")] string unit)
 		{
 			var speed = 15.2;
 			var workoutSample = new WorkoutSamples();
@@ -205,7 +206,7 @@ namespace UnitTests.Conversion
 		}
 
 		[Test]
-		public void GetAvgSpeedMetersPerSecond_MaxSpeed_Is_Converted([Values("mi", "mph", "ft", "km")] string unit)
+		public void GetAvgSpeedMetersPerSecond_MaxSpeed_Is_Converted([Values("mi", "mph", "ft", "km", "kph", "m")] string unit)
 		{
 			var speed = 15.2;
 			var workoutSample = new WorkoutSamples();
