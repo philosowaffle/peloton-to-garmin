@@ -27,7 +27,6 @@ namespace Peloton
 
 		private readonly string _userEmail;
 		private readonly string _userPassword;
-		private readonly bool _observabilityEnabled;
 
 		private string UserId;
 		private string SessionId;
@@ -36,14 +35,12 @@ namespace Peloton
 		{
 			_userEmail = config.Peloton.Email;
 			_userPassword = config.Peloton.Password;
-			_observabilityEnabled = appConfig.Observability.Prometheus.Enabled;
 		}
 
-		public ApiClient(string email, string password, bool observabilityEnabled)
+		public ApiClient(string email, string password)
 		{
 			_userEmail = email;
 			_userPassword = password;
-			_observabilityEnabled = observabilityEnabled;
 		}
 
 		public async Task InitAuthAsync(string overrideUserAgent = null)
@@ -90,31 +87,7 @@ namespace Peloton
 				page = page,
 				joins= "ride"
 			})
-			.ConfigureRequest((c) => 
-			{
-				c.AfterCallAsync = async (FlurlCall call) => 
-				{
-					_logger.Verbose("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}", 
-								call.HttpResponseMessage?.StatusCode, 
-								call.HttpRequestMessage?.Method, 
-								call.HttpRequestMessage?.RequestUri, 
-								call.HttpResponseMessage.Headers.ToString(), 
-								await call.HttpResponseMessage?.Content.ReadAsStringAsync());
-
-					if (_observabilityEnabled)
-					{
-						FlurlConfiguration.HttpRequestHistogram
-						.WithLabels(
-							call.HttpRequestMessage.Method.ToString(),
-							call.HttpRequestMessage.RequestUri.Host,
-							"/user/{userid}/workouts",
-							"?limit={limit}&sort_by={sortby}",
-							((int)call.HttpResponseMessage.StatusCode).ToString(),
-							call.HttpResponseMessage.ReasonPhrase
-						).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
-					}
-				};
-			})
+			.StripSensitiveDataFromLogging(_userEmail, _userPassword)
 			.GetJsonAsync<RecentWorkouts>();
 		}
 
@@ -134,31 +107,7 @@ namespace Peloton
 				{
 					joins = "ride,ride.instructor"
 				})
-				.ConfigureRequest((c) =>
-				{
-					c.AfterCallAsync = async (FlurlCall call) =>
-					{
-						_logger.Verbose("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
-								call.HttpResponseMessage?.StatusCode,
-								call.HttpRequestMessage?.Method,
-								call.HttpRequestMessage?.RequestUri,
-								call.HttpResponseMessage.Headers.ToString(),
-								await call.HttpResponseMessage?.Content.ReadAsStringAsync());
-
-						if (_observabilityEnabled)
-						{
-							FlurlConfiguration.HttpRequestHistogram
-							.WithLabels(
-								call.HttpRequestMessage.Method.ToString(),
-								call.HttpRequestMessage.RequestUri.Host,
-								"/workout/{workoutid}",
-								"?joins={joins}",
-								((int)call.HttpResponseMessage.StatusCode).ToString(),
-								call.HttpResponseMessage.ReasonPhrase
-							).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
-						}
-					};
-				})
+				.StripSensitiveDataFromLogging(_userEmail, _userPassword)
 				.GetJsonAsync<JObject>();
 		}
 
@@ -170,31 +119,7 @@ namespace Peloton
 				{
 					every_n=1
 				})
-				.ConfigureRequest((c) =>
-				{
-					c.AfterCallAsync = async (FlurlCall call) =>
-					{
-						_logger.Verbose("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
-								call.HttpResponseMessage?.StatusCode,
-								call.HttpRequestMessage?.Method,
-								call.HttpRequestMessage?.RequestUri,
-								call.HttpResponseMessage.Headers.ToString(),
-								await call.HttpResponseMessage?.Content.ReadAsStringAsync());
-
-						if (_observabilityEnabled)
-						{
-							FlurlConfiguration.HttpRequestHistogram
-							.WithLabels(
-								call.HttpRequestMessage.Method.ToString(),
-								call.HttpRequestMessage.RequestUri.Host,
-								"/workout/{workoutid}/performance_graph",
-								"?every_n={everyn}&joins=effort_zones",
-								((int)call.HttpResponseMessage.StatusCode).ToString(),
-								call.HttpResponseMessage.ReasonPhrase
-							).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
-						}
-					};
-				})
+				.StripSensitiveDataFromLogging(_userEmail, _userPassword)
 				.GetJsonAsync<JObject>();
 		}
 	}
