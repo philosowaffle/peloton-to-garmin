@@ -68,7 +68,13 @@ Note: If you're running the new web user interface then your sample config can b
 
     "Serilog": {
       "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File" ],
-      "MinimumLevel": "Information",
+      "MinimumLevel": {
+        "Default": "Information",
+        "Override": {
+          "Microsoft": "Error",
+          "System": "Error"
+        }
+      },
       "WriteTo": [
         { "Name": "Console" },
         {

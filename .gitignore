@@ -122,3 +122,5 @@ configuration.local.json
 /src/WebApp/data
 /.vs/ProjectSettings.json
 .vs/
+/src/Api/data
+/.vscode/settings.json

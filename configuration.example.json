@@ -46,7 +46,13 @@
 
     "Serilog": {
       "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File" ],
-      "MinimumLevel": "Information",
+      "MinimumLevel": {
+        "Default": "Information",
+        "Override": {
+          "Microsoft": "Error",
+          "System": "Error"
+        }
+      },
       "WriteTo": [
         { "Name": "Console" },
         {
