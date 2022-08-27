@@ -62,15 +62,7 @@ namespace Peloton
 				var response = await $"{AuthBaseUrl}"
 				.WithHeader("Accept-Language", "en-US")
 				.WithHeader("User-Agent", overrideUserAgent ?? "PostmanRuntime/7.26.10")
-				.ConfigureRequest((c) =>
-				{
-					c.BeforeCallAsync = null;
-					c.BeforeCallAsync = (FlurlCall call) =>
-					{
-						_logger.Verbose("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}", call.HttpRequestMessage.Method, call.HttpRequestMessage.RequestUri, call.HttpRequestMessage.Headers.ToString(),"userAuthParams");
-						return Task.CompletedTask;
-					};
-				})
+				.StripSensitiveDataFromLogging(_userEmail, _userPassword)
 				.PostJsonAsync(new AuthRequest()
 				{
 					username_or_email = _userEmail,
@@ -130,6 +122,7 @@ namespace Peloton
 		{
 			return $"{BaseUrl}/me"
 			.WithCookie("peloton_session_id", SessionId)
+			.StripSensitiveDataFromLogging(_userEmail, _userPassword)
 			.GetJsonAsync<UserData>();
 		}
 
