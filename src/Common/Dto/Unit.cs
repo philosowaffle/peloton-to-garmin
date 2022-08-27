@@ -6,5 +6,6 @@
 		Kilometers = 1,
 		Miles = 2,
 		Feet = 3,
+		Meters = 4,
 	}
 }
