@@ -15,10 +15,16 @@
         "AgentHost": "localhost",
         "AgentPort": 6831
       },
-  
+
       "Serilog": {
         "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File" ],
-        "MinimumLevel": "Information",
+        "MinimumLevel": {
+          "Default": "Information",
+          "Override": {
+            "Microsoft": "Error",
+            "System": "Error"
+          }
+        },
         "WriteTo": [
           { "Name": "Console" },
           {

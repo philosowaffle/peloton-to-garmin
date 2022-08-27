@@ -338,8 +338,14 @@ If you are using Docker, ensure you have exposed the port from your container.
 
 ```json
 "Serilog": {
-      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File", "Serilog.Sinks.Elasticsearch", "Serilog.Sinks.Grafana.Loki" ],
-      "MinimumLevel": "Debug",
+      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File", "Serilog.Sinks.Grafana.Loki" ],
+      "MinimumLevel": {
+        "Default": "Information",
+        "Override": {
+          "Microsoft": "Error",
+          "System": "Error"
+        }
+      },
       "WriteTo": [
         { "Name": "Console" },
         {
@@ -348,13 +354,6 @@ If you are using Docker, ensure you have exposed the port from your container.
             "path": "./output/log.txt",
             "rollingInterval": "Day",
             "retainedFileCountLimit": 7
-          }
-        },
-        {
-          "Name": "Elasticsearch",
-          "Args": {
-            "nodeUris": "http://192.168.1.95:9200",
-            "indexFormat": "p2g-logs-{0:yyyy.MM.dd}"
           }
         },
         {
