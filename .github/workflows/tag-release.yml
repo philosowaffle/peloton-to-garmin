@@ -55,7 +55,7 @@ jobs:
           push: true
           file: ./docker/Dockerfile.console
           tags: philosowaffle/peloton-to-garmin:stable,philosowaffle/peloton-to-garmin:v${{ github.event.inputs.version }}
-          platforms: linux/arm64,linux/amd64
+          platforms: linux/arm64,linux/arm32,linux/amd64
           build-args: VERSION=${{ env.BUILD_VERSION }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
@@ -116,7 +116,7 @@ jobs:
           push: true
           file: ./docker/Dockerfile.api
           tags: philosowaffle/peloton-to-garmin:api-stable,philosowaffle/peloton-to-garmin:api-v${{ github.event.inputs.version }}
-          platforms: linux/arm64,linux/amd64
+          platforms: linux/arm64,linux/arm32,linux/amd64
           build-args: VERSION=${{ env.BUILD_VERSION }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
@@ -177,7 +177,7 @@ jobs:
           push: true
           file: ./docker/Dockerfile.webui
           tags: philosowaffle/peloton-to-garmin:webui-stable,philosowaffle/peloton-to-garmin:webui-v${{ github.event.inputs.version }}
-          platforms: linux/arm64,linux/amd64
+          platforms: linux/arm64,linux/arm32,linux/amd64
           build-args: VERSION=${{ env.BUILD_VERSION }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new

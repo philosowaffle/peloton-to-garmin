@@ -6,6 +6,7 @@
 - [#335] P2G can now check if a new version is available and let you know
 - [#289] Add paging support to Sync UI page
 	- API and WebUI must be updated together to atleast 3.1.0
+- [#310] Add Arm32 docker containers
 
 ## Fixes
 
