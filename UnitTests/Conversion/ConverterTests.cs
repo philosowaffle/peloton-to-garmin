@@ -35,6 +35,53 @@ namespace UnitTests.Conversion
 		}
 
 		[Test]
+		public void GetEndTimeTest()
+		{
+			var epoch = new System.DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+			var nowCst = System.DateTime.Now;
+			TimeSpan diff = nowCst.ToUniversalTime() - epoch;
+			var seconds = (long)Math.Floor(diff.TotalSeconds);
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var workoutSamples = new WorkoutSamples();
+			var wokout = new Workout()
+			{
+				End_Time = seconds
+			};
+
+			var endTime = converter.GetEndTimeUtc1(wokout, workoutSamples);
+			endTime.Should().BeCloseTo(nowCst.ToUniversalTime(), new TimeSpan(0, 0, 59));
+		}
+
+		[Test]
+		public void GetEndTime_FallsbackToDuration_Test()
+		{
+			var epoch = new System.DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+			var nowCst = System.DateTime.Now;
+			TimeSpan diff = nowCst.ToUniversalTime() - epoch;
+			var seconds = (long)Math.Floor(diff.TotalSeconds);
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var wokout = new Workout()
+			{
+				Start_Time = seconds,
+				End_Time = null
+			};
+
+			var workoutSamples = new WorkoutSamples()
+			{
+				Duration = 500
+			};
+
+			var endTime = converter.GetEndTimeUtc1(wokout, workoutSamples);
+			endTime.Should().BeCloseTo(nowCst.ToUniversalTime().AddSeconds(500), new TimeSpan(0, 0, 59));
+		}
+
+		[Test]
 		public void GetTimeStampTest([Values(0,10)] long offset)
 		{
 			var now = System.DateTime.Parse("2021-04-01 03:14:12");
@@ -621,6 +668,11 @@ namespace UnitTests.Conversion
 			public System.DateTime GetStartTime1(Workout workout)
 			{
 				return this.GetStartTimeUtc(workout);
+			}
+
+			public System.DateTime GetEndTimeUtc1(Workout workout, WorkoutSamples workoutSamples)
+			{
+				return this.GetEndTimeUtc(workout, workoutSamples);
 			}
 
 			public string GetTimeStamp1(System.DateTime startTime, long offset)

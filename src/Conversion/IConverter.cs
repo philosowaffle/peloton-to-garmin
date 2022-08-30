@@ -169,9 +169,9 @@ namespace Conversion
 			return dateTime.UtcDateTime;
 		}
 
-		protected System.DateTime GetEndTimeUtc(Workout workout)
+		protected System.DateTime GetEndTimeUtc(Workout workout, WorkoutSamples workoutSamples)
 		{
-			var endTimeSeconds = workout.End_Time;
+			var endTimeSeconds = workout.End_Time ?? workoutSamples.Duration + workout.Start_Time;
 			var dateTime = DateTimeOffset.FromUnixTimeSeconds(endTimeSeconds);
 			return dateTime.UtcDateTime;
 		}

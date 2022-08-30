@@ -24,7 +24,7 @@ namespace Common.Dto.Peloton
 	{
 		public long Created_At { get; set; }
 		public string Device_Type { get; set; }
-		public long End_Time { get; set; }
+		public long? End_Time { get; set; }
 		[JsonConverter(typeof(JsonStringEnumConverter))]
 		public FitnessDiscipline Fitness_Discipline { get; set; }
 		public bool Has_Pedaling_Metrics { get; set; }
