@@ -69,7 +69,7 @@ namespace Conversion
 			var messages = new List<Mesg>();
 
 			var startTime = GetStartTimeUtc(workout);
-			var endTime = GetEndTimeUtc(workout);
+			var endTime = GetEndTimeUtc(workout, workoutSamples);
 			var title = WorkoutHelper.GetTitle(workout);
 			var sport = GetGarminSport(workout);
 			var subSport = GetGarminSubSport(workout);
@@ -177,7 +177,7 @@ namespace Conversion
 			activityMesg.SetEvent(Event.Activity);
 			activityMesg.SetEventType(EventType.Stop);
 
-			var timezoneOffset = (int)TimeZoneInfo.Local.GetUtcOffset(base.GetEndTimeUtc(workout)).TotalSeconds;
+			var timezoneOffset = (int)TimeZoneInfo.Local.GetUtcOffset(base.GetEndTimeUtc(workout, workoutSamples)).TotalSeconds;
 			var timeStamp = (uint)((int)endTime.GetTimeStamp() + timezoneOffset);
 			activityMesg.SetLocalTimestamp(timeStamp);
 
@@ -192,9 +192,9 @@ namespace Conversion
 			return new Dynastream.Fit.DateTime(dtDateTime);
 		}
 
-		private new Dynastream.Fit.DateTime GetEndTimeUtc(Workout workout)
+		private new Dynastream.Fit.DateTime GetEndTimeUtc(Workout workout, WorkoutSamples workoutSamples)
 		{
-			var dtDateTime = base.GetEndTimeUtc(workout);
+			var dtDateTime = base.GetEndTimeUtc(workout, workoutSamples);
 			return new Dynastream.Fit.DateTime(dtDateTime);
 		}
 
