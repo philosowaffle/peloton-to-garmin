@@ -15,7 +15,7 @@ namespace Common.Dto.Peloton
 		public double Difficulty_Rating_Avg { get; set; }
 		public int Difficulty_Rating_Count { get; set; }
 		// difficutly level
-		public int Duration { get; set; }
+		public int? Duration { get; set; }
 		public ICollection<string> Equipment_Ids { get; set; }
 		// equip tags
 		// extra images

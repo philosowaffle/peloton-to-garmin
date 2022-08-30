@@ -1,3 +1,6 @@
+## Features
+
+- [#320] Add support for Distance based cycling workouts
 
 ## Fixes
 
