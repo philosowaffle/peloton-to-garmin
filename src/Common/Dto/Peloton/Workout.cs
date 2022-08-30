@@ -52,7 +52,7 @@ namespace Common.Dto.Peloton
 		public FTPInfo Ftp_Info { get; set; }
 		public string Device_Type_Display_Name { get; set; }
 		public Ride Ride { get; set; }
-		public bool Is_Skup_Intro_Available { get; set; }
+		public bool Is_Skip_Intro_Available { get; set; }
 		// total hr zones durations
 		// average effort score
 

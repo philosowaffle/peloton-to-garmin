@@ -131,7 +131,7 @@ namespace Conversion
 
 			var lap = new XElement(ns1+"Lap");
 			lap.SetAttributeValue("StartTime", GetTimeStamp(startTime));
-			lap.Add(new XElement(ns1+"TotalTimeSeconds", workout.Ride.Duration));
+			lap.Add(new XElement(ns1+"TotalTimeSeconds", samples.Duration));
 			lap.Add(new XElement(ns1+"Intensity", "Active"));
 			lap.Add(new XElement(ns1+"Triggermethod", "Manual"));
 			lap.Add(new XElement(ns1+"DistanceMeters", GetTotalDistance(samples)));

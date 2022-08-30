@@ -21,6 +21,7 @@ namespace UnitTests.Conversion
 		[TestCase("meditation_workout", PreferredLapType.Default)]
 		[TestCase("walking_workout_01", PreferredLapType.Default)]
 		[TestCase("running_workout_no_metrics", PreferredLapType.Default)]
+		[TestCase("ride_based_on_distance", PreferredLapType.Default)]
 
 		[TestCase("cycling_workout", PreferredLapType.Distance)]
 		[TestCase("cycling_just_ride", PreferredLapType.Distance)]
@@ -28,6 +29,7 @@ namespace UnitTests.Conversion
 		[TestCase("meditation_workout", PreferredLapType.Distance)]
 		[TestCase("walking_workout_01", PreferredLapType.Distance)]
 		[TestCase("running_workout_no_metrics", PreferredLapType.Distance)]
+		[TestCase("ride_based_on_distance", PreferredLapType.Distance)]
 
 		[TestCase("cycling_workout", PreferredLapType.Class_Segments)]
 		[TestCase("cycling_just_ride", PreferredLapType.Class_Segments)]
@@ -35,6 +37,7 @@ namespace UnitTests.Conversion
 		[TestCase("meditation_workout", PreferredLapType.Class_Segments)]
 		[TestCase("walking_workout_01", PreferredLapType.Class_Segments)]
 		[TestCase("running_workout_no_metrics", PreferredLapType.Class_Segments)]
+		[TestCase("ride_based_on_distance", PreferredLapType.Class_Segments)]
 
 		[TestCase("cycling_workout", PreferredLapType.Class_Targets)]
 		[TestCase("cycling_just_ride", PreferredLapType.Class_Targets)]
@@ -42,6 +45,7 @@ namespace UnitTests.Conversion
 		[TestCase("meditation_workout", PreferredLapType.Class_Targets)]
 		[TestCase("walking_workout_01", PreferredLapType.Class_Targets)]
 		[TestCase("running_workout_no_metrics", PreferredLapType.Class_Targets)]
+		[TestCase("ride_based_on_distance", PreferredLapType.Class_Targets)]
 		public void Fit_Converter_Creates_Valid_Fit(string filename, PreferredLapType lapType)
 		{
 			var workoutPath = Path.Join(DataDirectory, $"{filename}.json");

@@ -91,6 +91,24 @@ namespace Peloton
 			.GetJsonAsync<RecentWorkouts>();
 		}
 
+		/// <summary>
+		/// For ad hoc testing.
+		/// </summary>
+		public Task<JObject> GetWorkoutsAsync(string userId, int numWorkouts, int page)
+		{
+			return $"{BaseUrl}/user/{userId}/workouts"
+			.WithCookie("peloton_session_id", SessionId)
+			.SetQueryParams(new
+			{
+				limit = numWorkouts,
+				sort_by = "-created",
+				page = page,
+				joins = "ride"
+			})
+			.StripSensitiveDataFromLogging(_userEmail, _userPassword)
+			.GetJsonAsync<JObject>();
+		}
+
 		public Task<UserData> GetUserDataAsync()
 		{
 			return $"{BaseUrl}/me"
