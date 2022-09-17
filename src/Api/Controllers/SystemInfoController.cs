@@ -1,5 +1,5 @@
-﻿using Api.Contracts;
-using Common;
+﻿using Common;
+using Common.Dto.Api;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers

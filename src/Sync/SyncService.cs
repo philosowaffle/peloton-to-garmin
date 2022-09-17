@@ -132,24 +132,10 @@ namespace Sync
 			try
 			{
 				userData = await _pelotonService.GetUserDataAsync();
-
-			}
-			catch (ArgumentException ae)
-			{
-				var errorMessage = $"Failed to fetch recent workouts from Peleoton: {ae.Message}";
-
-				_logger.Error(ae, errorMessage);
-				activity?.AddTag("exception.message", ae.Message);
-				activity?.AddTag("exception.stacktrace", ae.StackTrace);
-
-				response.SyncSuccess = false;
-				response.PelotonDownloadSuccess = false;
-				response.Errors.Add(new ErrorResponse() { Message = $"{errorMessage}" });
-				return response;
 			}
 			catch (Exception e)
 			{
-				_logger.Error(e, "Failed to fetch UserData from Peloton. FTP info may be missing for certain non-class workout types (Just Ride).");
+				_logger.Warning(e, $"Failed to fetch user data from Peloton: {e.Message}, FTP info may be missing for certain non-class workout types (Just Ride).");
 			}
 
 			P2GWorkout[] workouts = { };
@@ -160,10 +146,10 @@ namespace Sync
 			}
 			catch (Exception e)
 			{
-				_logger.Error(e, "Failed to download workouts from Peloton.");
+				_logger.Error(e, $"Failed to download workouts from Peloton.");
 				response.SyncSuccess = false;
 				response.PelotonDownloadSuccess = false;
-				response.Errors.Add(new ErrorResponse() { Message = "Failed to download workouts from Peloton. Check logs for more details." });
+				response.Errors.Add(new ErrorResponse() { Message = $"Failed to download workouts from Peloton. {e.Message} - Check logs for more details." });
 				return response;
 			}
 
@@ -200,11 +186,11 @@ namespace Sync
 			}
 			catch (Exception e)
 			{
-				_logger.Error(e, "Failed to convert workouts to FIT format.");
+				_logger.Error(e, $"Failed to convert workouts. {e.Message}");
 
 				response.SyncSuccess = false;
 				response.ConversionSuccess = false;
-				response.Errors.Add(new ErrorResponse() { Message = "Failed to convert workouts to FIT format. Check logs for more details." });
+				response.Errors.Add(new ErrorResponse() { Message = $"Failed to convert workouts. {e.Message} Check logs for more details." });
 				return response;
 			}
 
@@ -213,26 +199,13 @@ namespace Sync
 				await _garminUploader.UploadToGarminAsync();
 				response.UploadToGarminSuccess = true;
 			}
-			catch (ArgumentException ae)
-			{
-				var errorMessage = $"Failed to upload to Garmin Connect: {ae.Message}";
-
-				_logger.Error(ae, errorMessage);
-				activity?.AddTag("exception.message", ae.Message);
-				activity?.AddTag("exception.stacktrace", ae.StackTrace);
-
-				response.SyncSuccess = false;
-				response.UploadToGarminSuccess = false;
-				response.Errors.Add(new ErrorResponse() { Message = $"{errorMessage}" });
-				return response;
-			}
 			catch (Exception e)
 			{
 				_logger.Error(e, "Failed to upload workouts to Garmin Connect. You can find the converted files at {@Path} \\n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", _config.App.OutputDirectory);
 
 				response.SyncSuccess = false;
 				response.UploadToGarminSuccess = false;
-				response.Errors.Add(new ErrorResponse() { Message = "Failed to upload workouts to Garmin Connect. Check logs for more details." });
+				response.Errors.Add(new ErrorResponse() { Message = $"Failed to upload workouts to Garmin Connect. {e.Message}" });
 				return response;
 			} finally
 			{

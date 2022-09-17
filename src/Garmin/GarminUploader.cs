@@ -90,9 +90,7 @@ namespace Garmin
 				await _api.InitAuth();
 			} catch (Exception e)
 			{
-				tracing?.AddTag("exception.message", e.Message);
-				tracing?.AddTag("exception.stacktrace", e.StackTrace);
-				throw new GarminUploadException("Failed to authenticate with Garmin.", -2, e);
+				throw new GarminUploadException($"Failed to authenticate with Garmin. {e.Message}", -2, e);
 			}
 
 			foreach (var file in files)
@@ -104,9 +102,7 @@ namespace Garmin
 					await RateLimit();
 				} catch (Exception e)
 				{
-					tracing?.AddTag("exception.message", e.Message);
-					tracing?.AddTag("exception.stacktrace", e.StackTrace);
-					throw new GarminUploadException($"NativeImplV1 failed to upload workout {file}", -1, e);
+					throw new GarminUploadException($"NativeImplV1 failed to upload workout {file}, {e.Message}", -1, e);
 				}
 			}
 		}

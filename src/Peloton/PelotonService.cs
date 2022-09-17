@@ -18,7 +18,19 @@ namespace Peloton
 {
 	public interface IPelotonService
 	{
+		/// <summary>
+		/// Fetches N number of recent workouts.
+		/// </summary>
+		/// <param name="numWorkoutsToDownload"></param>
+		/// <returns></returns>
 		Task<ICollection<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload);
+		/// <summary>
+		/// Fetches workouts by Page.
+		/// </summary>
+		/// <param name="pageSize"></param>
+		/// <param name="pageIndex"></param>
+		/// <returns></returns>
+		Task<RecentWorkouts> GetPelotonWorkoutsAsync(int pageSize, int pageIndex);
 		Task<P2GWorkout[]> GetWorkoutDetailsAsync(ICollection<RecentWorkout> workoutIds);
 		Task<UserData> GetUserDataAsync();
 	}
@@ -67,6 +79,26 @@ namespace Peloton
 			return await _pelotonApi.GetUserDataAsync();
 		}
 
+		public async Task<RecentWorkouts> GetPelotonWorkoutsAsync(int pageSize, int pageIndex)
+		{
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetRecentWorkoutsAsync)}")
+										.WithTag("workouts.pageSize", pageSize.ToString())
+										.WithTag("workouts.pageIndex", pageIndex.ToString());
+
+			var recentWorkouts = new RecentWorkouts();
+
+			if (pageSize <= 0 || pageIndex < 0) return recentWorkouts;
+
+			await _pelotonApi.InitAuthAsync();
+			recentWorkouts = await _pelotonApi.GetWorkoutsAsync(pageSize, pageIndex);
+
+			_logger.Debug("Total workouts found: {@FoundWorkouts}", recentWorkouts.Count);
+			tracing?.AddTag("workouts.found", recentWorkouts.Count);
+			tracing?.AddTag("workouts.total", recentWorkouts.Total);
+
+			return recentWorkouts;
+		}
+
 		public async Task<ICollection<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)
 		{
 			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetRecentWorkoutsAsync)}")
@@ -98,13 +130,6 @@ namespace Peloton
 
 			_logger.Debug("Total workouts found: {@FoundWorkouts}", recentWorkouts.Count);
 			tracing?.AddTag("workouts.found", recentWorkouts.Count);
-			tracing?.AddTag("workouts.failedDeserialize", _failedCount);
-
-			FailedDesiralizationCount.Set(_failedCount);
-			if (_failedCount > 0)
-			{
-				_logger.Warning("Failed to deserialize {@NumFailed} workouts. You can find the failed workouts at {@Path}", _failedCount, _config.App.JsonDirectory);
-			}
 
 			return recentWorkouts;
 		}

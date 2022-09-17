@@ -1,6 +1,6 @@
-﻿using Api.Contracts;
-using Common;
+﻿using Common;
 using Common.Database;
+using Common.Dto.Api;
 using Microsoft.AspNetCore.Mvc;
 using Sync;
 
@@ -51,7 +51,7 @@ public class SyncController : Controller
 			PelotonDownloadSuccess = syncResult.PelotonDownloadSuccess,
 			ConverToFitSuccess = syncResult.ConversionSuccess,
 			UploadToGarminSuccess = syncResult.UploadToGarminSuccess,
-			Errors = syncResult.Errors.Select(e => new Contracts.ErrorResponse(e)).ToList()
+			Errors = syncResult.Errors.Select(e => new Common.Dto.Api.ErrorResponse() { Message = e.Message }).ToList()
 		};
 
 		if (!response.SyncSuccess)

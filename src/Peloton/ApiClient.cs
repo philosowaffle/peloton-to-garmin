@@ -13,7 +13,7 @@ namespace Peloton
 	public interface IPelotonApi
 	{
 		Task InitAuthAsync(string overrideUserAgent = null);
-		Task<RecentWorkouts> GetWorkoutsAsync(int numWorkouts, int page);
+		Task<RecentWorkouts> GetWorkoutsAsync(int pageSize, int page);
 		Task<JObject> GetWorkoutByIdAsync(string id);
 		Task<JObject> GetWorkoutSamplesByIdAsync(string id);
 		Task<UserData> GetUserDataAsync();
@@ -69,20 +69,20 @@ namespace Peloton
 
 				UserId = response.user_id;
 				SessionId = response.session_id;
-			} catch(Exception e)
+			} catch (Exception e)
 			{
-				_logger.Fatal(e, "Failed to authenticate with Peloton. Email: {@Email}", _userEmail);
+				_logger.Fatal(e, $"Failed to authenticate with Peloton.");
 				throw new PelotonAuthenticationError("Failed to authenticate with Peloton", e);
 			}
 		}
 
-		public Task<RecentWorkouts> GetWorkoutsAsync(int numWorkouts, int page)
+		public Task<RecentWorkouts> GetWorkoutsAsync(int pageSize, int page)
 		{
 			return $"{BaseUrl}/user/{UserId}/workouts"
 			.WithCookie("peloton_session_id", SessionId)
 			.SetQueryParams(new
 			{
-				limit = numWorkouts,
+				limit = pageSize,
 				sort_by = "-created",
 				page = page,
 				joins= "ride"

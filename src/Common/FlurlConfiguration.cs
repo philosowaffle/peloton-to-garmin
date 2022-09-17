@@ -152,8 +152,8 @@ namespace Common
 					call.HttpRequestMessage.RequestUri.Host,
 					path ?? string.Empty,
 					query ?? string.Empty,
-					((int)call.HttpResponseMessage.StatusCode).ToString(),
-					call.HttpResponseMessage.ReasonPhrase
+					((int)call.HttpResponseMessage?.StatusCode).ToString(),
+					call.HttpResponseMessage?.ReasonPhrase
 				).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
 			}
 		}

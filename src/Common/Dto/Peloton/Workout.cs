@@ -5,6 +5,11 @@ namespace Common.Dto.Peloton
 {
 	public class RecentWorkouts
 	{
+		public int Limit { get; set; }
+		public int Page { get; set; }
+		public int Total { get; set; }
+		public int Count { get; set; }
+		public int Page_Count { get; set; }
 		public ICollection<RecentWorkout> data { get; set; }
 	}
 
