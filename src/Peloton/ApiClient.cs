@@ -72,7 +72,7 @@ namespace Peloton
 			} catch (Exception e)
 			{
 				_logger.Fatal(e, $"Failed to authenticate with Peloton.");
-				throw new PelotonAuthenticationError("Failed to authenticate with Peloton", e);
+				throw new PelotonAuthenticationError("Failed to authenticate with Peloton. Please confirm your Peloton Email and Password are correct.", e);
 			}
 		}
 

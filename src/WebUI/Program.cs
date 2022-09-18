@@ -45,6 +45,7 @@ builder.Host.UseSerilog((ctx, logConfig) =>
 
 builder.Services.AddScoped<IApiClient>(sp => new ApiClient(config.Api.HostUrl));
 builder.Services.AddHxServices();
+builder.Services.AddHxMessenger();
 
 // Add services to the container.
 builder.Services.AddRazorPages();

@@ -1,17 +1,9 @@
 ﻿@page "/sync"
+@implements IDisposable
 @inject IApiClient _apiClient;
+@inject IHxMessengerService _toaster;
 
 <PageTitle>Sync</PageTitle>
-
-@if (!string.IsNullOrEmpty(ErrorMessage))
-{
-	<HxAlert Color="ThemeColor.Danger"><HxIcon Icon="@BootstrapIcon.ExclamationTriangleFill" /> @ErrorMessage</HxAlert>
-}
-
-@if (!string.IsNullOrEmpty(InfoMessage))
-{
-	<HxAlert Color="ThemeColor.Secondary"><HxIcon Icon="@BootstrapIcon.InfoCircleFill" /> @InfoMessage</HxAlert>
-}
 
 <HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@selectedItems.Any()">
 	Sync <span class="badge bg-secondary">@selectedItems.Count()</span>
@@ -33,24 +25,27 @@
 
 	private HashSet<RecentWorkout> selectedItems = new();
 	private static int PageSize = 25;
-	private string ErrorMessage = string.Empty;
-	private string InfoMessage = string.Empty;
-	private string SuccessMessage = string.Empty;
 
-	public Sync() : base() => ClearMessages();
+	public Sync() : base() => _toaster?.Clear();
+	public void Dispose() => _toaster.Clear();
 
 	private async Task<GridDataProviderResult<RecentWorkout>> LoadDataAsync(GridDataProviderRequest<RecentWorkout> request)
 	{
-		ClearMessages();
+		_toaster.Clear();
 
 		try 
 		{
 			var pageIndex = request.StartIndex / PageSize;
 			var recentWorkouts = await _apiClient.PelotonWorkoutsGetAsync(new PelotonWorkoutsGetRequest() { PageSize = PageSize, PageIndex = pageIndex});
 			return new GridDataProviderResult<RecentWorkout>() { Data = recentWorkouts.Items, TotalCount = recentWorkouts.TotalItems };
+		} catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+			Log.Error("UI - Failed to load Peloton workouts.", e);
 		} catch (Exception e)
 		{
-			ErrorMessage = $"Failed to load Peloton workouts - {e.Message} - See logs for details.";
+			_toaster.AddError($"Failed to load Peloton workouts - {e.Message} - See logs for details.");
 			Log.Error("UI - Failed to load Peloton workouts.", e);
 		}
 
@@ -59,7 +54,7 @@
 
 	private async Task SyncAsync()
 	{
-		ClearMessages();
+		_toaster.Clear();
 
 		try
 		{
@@ -68,34 +63,31 @@
 
 			if (result.SyncSuccess)
 			{
-				SuccessMessage = "Successfully synced selected workouts.";
+				_toaster.AddInformation("Successfully synced selected workouts.");
 			} else
 			{
-				foreach (var error in result.Errors)
-				{
-					ErrorMessage += error.Message + "\n";
-				}
+				if (result.Errors is null || !result.Errors.Any())
+					_toaster.AddError("An unknown error occurred. Please check logs for more details.");
 
-				if (string.IsNullOrEmpty(ErrorMessage))
-					ErrorMessage = "An unknown error occurred. Please check logs for more details.";
+				foreach (var error in result?.Errors)
+					_toaster.AddError(error.Message);
 			}
 
 		} catch(FlurlHttpTimeoutException te)
 		{
-			InfoMessage = $"Long running sync will continue running in the background.";
+			_toaster.AddInformation("Long running sync will continue running in the background.");
 			Log.Information("UI - Sync timeout reached.", te);
+		} 
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+			Log.Error("UI - Failed to load Peloton workouts.", e);
 		}
 		catch (Exception e)
 		{
-			ErrorMessage = $"Failed to sync - {e.Message} - See logs for details.";
+			_toaster.AddError($"Failed to sync - {e.Message} - See logs for details.");
 			Log.Error("UI - Failed to sync.", e);
 		}
-	}
-
-	private void ClearMessages()
-	{
-		ErrorMessage = string.Empty;
-		InfoMessage = string.Empty;
-		SuccessMessage = string.Empty;
 	}
 }
