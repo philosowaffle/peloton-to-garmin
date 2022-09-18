@@ -53,6 +53,11 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\lib\" />
+	<Content Remove="appsettings.json;appsettings.Development.json"/>
+	<None Include="appsettings.json;appsettings.Development.json">
+		<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		<CopyToPublishDirectory>Never</CopyToPublishDirectory>
+	</None>
   </ItemGroup>
 
 </Project>
