@@ -15,7 +15,7 @@
 	<SignAssembly>false</SignAssembly>
 	<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<NoWarn>$(NoWarn);1591</NoWarn>
+	<NoWarn>$(NoWarn);1591,1587</NoWarn>
 	<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 	<ServerGarbageCollection>false</ServerGarbageCollection>
 	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
