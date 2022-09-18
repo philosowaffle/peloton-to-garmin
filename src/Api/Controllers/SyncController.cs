@@ -51,7 +51,7 @@ public class SyncController : Controller
 			PelotonDownloadSuccess = syncResult.PelotonDownloadSuccess,
 			ConverToFitSuccess = syncResult.ConversionSuccess,
 			UploadToGarminSuccess = syncResult.UploadToGarminSuccess,
-			Errors = syncResult.Errors.Select(e => new Common.Dto.Api.ErrorResponse() { Message = e.Message }).ToList()
+			Errors = syncResult.Errors.Select(e => new Common.Dto.Api.ErrorResponse(e.Message)).ToList()
 		};
 
 		if (!response.SyncSuccess)

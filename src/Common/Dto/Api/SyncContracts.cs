@@ -4,11 +4,6 @@ using System.Collections.Generic;
 
 namespace Common.Dto.Api;
 
-public class ErrorResponse
-{
-	public string Message { get; set; }
-}
-
 public class SyncGetResponse
 {
 	public bool SyncEnabled { get; set; }
