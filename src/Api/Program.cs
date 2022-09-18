@@ -56,8 +56,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
 	c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo() { Title = "P2G API", Version = "v1" });
-	var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-	c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+	var executingAssembly = Assembly.GetExecutingAssembly();
+	var referencedAssemblies = executingAssembly.GetReferencedAssemblies();
+	var docPaths = referencedAssemblies
+					.Union(new AssemblyName[] { executingAssembly.GetName() })
+					.Select(a => Path.Combine(AppContext.BaseDirectory, $"{a.Name}.xml"))
+					.Where(f => File.Exists(f)).ToArray();
+	foreach (var docPath in docPaths)
+		c.IncludeXmlComments(docPath);
 });
 
 builder.Services.AddSingleton<ISettingsDb, SettingsDb>();

@@ -34,8 +34,14 @@ public class SyncPostRequest
 		WorkoutIds = new List<string>();
 	}
 
+	/// <summary>
+	/// Mutually exclusive with WorkoutIds.
+	/// </summary>
 	public int NumWorkouts { get; set; }
-	public ICollection<string>? WorkoutIds { get; set; }
+	/// <summary>
+	/// Mutually exclusive with NumWorkouts.
+	/// </summary>
+	public ICollection<string> WorkoutIds { get; set; }
 }
 
 public class SyncPostResponse

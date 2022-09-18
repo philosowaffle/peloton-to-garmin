@@ -24,6 +24,7 @@ namespace Api.Controllers
 		/// </summary>
 		/// <response code="200">Returns the list of recent peloton workouts.</response>
 		/// <response code="400">Invalid request values.</response>
+		/// <response code="500">Unhandled exception.</response>
 		[HttpGet]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]

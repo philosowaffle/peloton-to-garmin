@@ -3,6 +3,7 @@ using Common.Database;
 using Common.Dto.Api;
 using Microsoft.AspNetCore.Mvc;
 using Sync;
+using ErrorResponse = Common.Dto.Api.ErrorResponse;
 
 namespace Api.Controllers;
 
@@ -26,24 +27,36 @@ public class SyncController : Controller
 	/// <summary>
 	/// Syncs a given set of workouts from Peloton to Garmin.
 	/// </summary>
-	/// <response code="204">The sync was successful. Returns the sync status information.</response>
+	/// <response code="201">The sync was successful. Returns the sync status information.</response>
 	/// <response code="200">This request completed, but the Sync may not have been successful. Returns the sync status information.</response>
 	/// <response code="400">If the request fields are invalid.</response>
+	/// <response code="500">Unhandled exception.</response>
 	[HttpPost]
-	[ProducesResponseType(typeof(SyncPostResponse), 204)]
-	[ProducesResponseType(typeof(SyncPostResponse), 200)]
-	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(typeof(SyncPostResponse), StatusCodes.Status201Created)]
+	[ProducesResponseType(typeof(SyncPostResponse), StatusCodes.Status200OK)]
+	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<SyncPostResponse>> SyncAsync([FromBody] SyncPostRequest request)
 	{
 		if (request is null ||
-			(request.NumWorkouts <= 0 && (!request.WorkoutIds?.Any() ?? true)))
-			return BadRequest("Either NumWorkouts or WorkoutIds must be set");
+			(request.NumWorkouts <= 0 && (request.WorkoutIds is null || !request.WorkoutIds.Any())))
+			return BadRequest(new ErrorResponse("Either NumWorkouts or WorkoutIds must be set."));
+
+		if (request.NumWorkouts > 0 && (request.WorkoutIds is not null && request.WorkoutIds.Any()))
+			return BadRequest(new ErrorResponse("NumWorkouts and WorkoutIds cannot both be set."));
 
 		SyncResult syncResult = new();
-		if (request.NumWorkouts > 0)
-			syncResult = await _syncService.SyncAsync(request.NumWorkouts);
-		else
-			syncResult = await _syncService.SyncAsync(request.WorkoutIds, exclude: null);
+		try
+		{
+			if (request.NumWorkouts > 0)
+				syncResult = await _syncService.SyncAsync(request.NumWorkouts);
+			else if (request.WorkoutIds is not null)
+				syncResult = await _syncService.SyncAsync(request.WorkoutIds, exclude: null);
+		}
+		catch (Exception e)
+		{
+			return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));
+		}
 
 		var response = new SyncPostResponse()
 		{
@@ -51,7 +64,7 @@ public class SyncController : Controller
 			PelotonDownloadSuccess = syncResult.PelotonDownloadSuccess,
 			ConverToFitSuccess = syncResult.ConversionSuccess,
 			UploadToGarminSuccess = syncResult.UploadToGarminSuccess,
-			Errors = syncResult.Errors.Select(e => new Common.Dto.Api.ErrorResponse(e.Message)).ToList()
+			Errors = syncResult.Errors.Select(e => new ErrorResponse(e.Message)).ToList()
 		};
 
 		if (!response.SyncSuccess)
@@ -64,6 +77,7 @@ public class SyncController : Controller
 	/// Fetches the current Sync status.
 	/// </summary>
 	/// <response code="200">Returns the sync status information.</response>
+	/// <response code="500">Unhandled exception.</response>
 	[HttpGet]
 	[ProducesResponseType(typeof(SyncGetResponse), 200)]
 	public async Task<ActionResult<SyncGetResponse>> GetAsync()
@@ -79,6 +93,6 @@ public class SyncController : Controller
 			NextSyncTime = syncTime.NextSyncTime
 		};
 
-		return Ok(response);
+		return response;
 	}
 }

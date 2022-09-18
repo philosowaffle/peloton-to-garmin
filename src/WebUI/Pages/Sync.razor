@@ -67,9 +67,12 @@
 			} else
 			{
 				if (result.Errors is null || !result.Errors.Any())
+				{
 					_toaster.AddError("An unknown error occurred. Please check logs for more details.");
+					return;
+				}
 
-				foreach (var error in result?.Errors)
+				foreach (var error in result.Errors)
 					_toaster.AddError(error.Message);
 			}
 
