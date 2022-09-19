@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using Peloton.Dto;
 using Serilog;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Peloton
@@ -69,10 +70,16 @@ namespace Peloton
 
 				UserId = response.user_id;
 				SessionId = response.session_id;
-			} catch (Exception e)
+			}
+			catch (FlurlHttpException fe) when (fe.StatusCode == (int)HttpStatusCode.Unauthorized)
+			{
+				_logger.Error(fe, $"Failed to authenticate with Peloton.");
+				throw new PelotonAuthenticationError("Failed to authenticate with Peloton. Please confirm your Peloton Email and Password are correct.", fe);
+			}
+			catch (Exception e)
 			{
 				_logger.Fatal(e, $"Failed to authenticate with Peloton.");
-				throw new PelotonAuthenticationError("Failed to authenticate with Peloton. Please confirm your Peloton Email and Password are correct.", e);
+				throw e;
 			}
 		}
 

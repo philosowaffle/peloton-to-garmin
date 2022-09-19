@@ -81,7 +81,7 @@ namespace Peloton
 
 		public async Task<RecentWorkouts> GetPelotonWorkoutsAsync(int pageSize, int pageIndex)
 		{
-			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetRecentWorkoutsAsync)}")
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetPelotonWorkoutsAsync)}")
 										.WithTag("workouts.pageSize", pageSize.ToString())
 										.WithTag("workouts.pageIndex", pageIndex.ToString());
 
