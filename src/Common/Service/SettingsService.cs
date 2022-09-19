@@ -8,7 +8,7 @@ namespace Common.Service;
 public interface ISettingsService
 {
 	Task<Settings> GetSettingsAsync();
-	Task UpdateSettings(Settings settings);
+	Task UpdateSettingsAsync(Settings settings);
 }
 
 public class SettingsService : ISettingsService
@@ -29,9 +29,9 @@ public class SettingsService : ISettingsService
 		return _db.GetSettingsAsync();
 	}
 
-	public async Task UpdateSettings(Settings updatedSettings)
+	public async Task UpdateSettingsAsync(Settings updatedSettings)
 	{
-		using var tracing = Tracing.Trace($"{nameof(SettingsService)}.{nameof(UpdateSettings)}");
+		using var tracing = Tracing.Trace($"{nameof(SettingsService)}.{nameof(UpdateSettingsAsync)}");
 
 		var originalSettings = await _db.GetSettingsAsync();
 
