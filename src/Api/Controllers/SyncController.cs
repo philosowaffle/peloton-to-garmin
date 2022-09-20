@@ -1,6 +1,6 @@
-﻿using Common;
-using Common.Database;
+﻿using Common.Database;
 using Common.Dto.Api;
+using Common.Service;
 using Microsoft.AspNetCore.Mvc;
 using Sync;
 using ErrorResponse = Common.Dto.Api.ErrorResponse;
@@ -13,13 +13,13 @@ namespace Api.Controllers;
 [Consumes("application/json")]
 public class SyncController : Controller
 {
-	private readonly Settings _config;
+	private readonly ISettingsService _settingsService;
 	private readonly ISyncService _syncService;
 	private readonly ISyncStatusDb _db;
 
-	public SyncController(Settings appConfiguration, ISyncService syncService, ISyncStatusDb db)
+	public SyncController(ISettingsService settingsService, ISyncService syncService, ISyncStatusDb db)
 	{
-		_config = appConfiguration;
+		_settingsService = settingsService;
 		_syncService = syncService;
 		_db = db;
 	}
@@ -82,11 +82,17 @@ public class SyncController : Controller
 	[ProducesResponseType(typeof(SyncGetResponse), 200)]
 	public async Task<ActionResult<SyncGetResponse>> GetAsync()
 	{
-		var syncTime = await _db.GetSyncStatusAsync();
+		var syncTimeTask = _db.GetSyncStatusAsync();
+		var settingsTask = _settingsService.GetSettingsAsync();
+
+		await Task.WhenAll(syncTimeTask, settingsTask);
+
+		var syncTime = await syncTimeTask;
+		var settings = await settingsTask;
 
 		var response = new SyncGetResponse()
 		{
-			SyncEnabled = _config.App.EnablePolling,
+			SyncEnabled = settings.App.EnablePolling,
 			SyncStatus = syncTime.SyncStatus,
 			LastSuccessfulSyncTime = syncTime.LastSuccessfulSyncTime,
 			LastSyncTime = syncTime.LastSyncTime,

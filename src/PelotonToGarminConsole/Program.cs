@@ -15,6 +15,7 @@ using Serilog;
 using Serilog.Enrichers.Span;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.Caching.Memory;
 
 Console.WriteLine("Welcome! P2G is starting up...");
 
@@ -102,6 +103,9 @@ static IHostBuilder CreateHostBuilder(string[] args)
 
 				return config;
 			});
+
+			// CACHE
+			services.AddSingleton<IMemoryCache, MemoryCache>();
 
 			services.AddSingleton<ISettingsDb, SettingsDb>();
 			services.AddSingleton<ISettingsService, SettingsService>();

@@ -6,6 +6,7 @@ using Common.Service;
 using Common.Stateful;
 using Conversion;
 using Garmin;
+using Microsoft.Extensions.Caching.Memory;
 using Peloton;
 using Prometheus;
 using Serilog;
@@ -66,16 +67,18 @@ builder.Services.AddSwaggerGen(c =>
 		c.IncludeXmlComments(docPath);
 });
 
+// CACHE
+builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
+
+// SETTINGS
 builder.Services.AddSingleton<ISettingsDb, SettingsDb>();
 builder.Services.AddSingleton<ISettingsService, SettingsService>();
-
 builder.Services.AddTransient<Settings>((serviceProvider) =>
 {
 	using var tracing = Tracing.Trace($"{nameof(Program)}.DI");
 	var settingsService = serviceProvider.GetService<ISettingsService>();
 	return settingsService?.GetSettingsAsync().GetAwaiter().GetResult() ?? new Settings();
 });
-
 builder.Services.AddSingleton<AppConfiguration>((serviceProvider) =>
 {
 	var config = new AppConfiguration();
@@ -86,8 +89,8 @@ builder.Services.AddSingleton<AppConfiguration>((serviceProvider) =>
 });
 
 builder.Services.AddSingleton<IFileHandling, IOWrapper>();
-builder.Services.AddTransient<IPelotonApi, Peloton.ApiClient>();
-builder.Services.AddTransient<IPelotonService, PelotonService>();
+builder.Services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
+builder.Services.AddSingleton<IPelotonService, PelotonService>();
 builder.Services.AddTransient<IGarminUploader, GarminUploader>();
 
 builder.Services.AddSingleton<ISyncStatusDb, SyncStatusDb>();

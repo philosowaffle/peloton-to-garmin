@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Dto.Peloton;
+using Common.Service;
 using FluentAssertions;
 using Moq;
 using Moq.AutoMock;
@@ -22,7 +23,7 @@ namespace UnitTests.Peloton
 
 			await pelotonService.GetRecentWorkoutsAsync(numWorkoutsToDownload);
 
-			pelotonApi.Verify(x => x.InitAuthAsync(It.IsAny<string>()), Times.Never);
+			pelotonApi.Verify(x => x.GetWorkoutsAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
 		}
 
 		[Test]
@@ -112,7 +113,7 @@ namespace UnitTests.Peloton
 
 	public class InternalPelotonService : PelotonService
 	{
-		public InternalPelotonService(Settings config, IPelotonApi pelotonApi, IFileHandling fileHandler) : base(config, pelotonApi, fileHandler)
+		public InternalPelotonService(ISettingsService settingsService, IPelotonApi pelotonApi, IFileHandling fileHandler) : base(settingsService, pelotonApi, fileHandler)
 		{
 		}
 

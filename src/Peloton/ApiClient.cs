@@ -1,6 +1,8 @@
 ﻿using Common;
 using Common.Dto.Peloton;
 using Common.Observe;
+using Common.Service;
+using Common.Stateful;
 using Flurl.Http;
 using Newtonsoft.Json.Linq;
 using Peloton.Dto;
@@ -13,7 +15,6 @@ namespace Peloton
 {
 	public interface IPelotonApi
 	{
-		Task InitAuthAsync(string overrideUserAgent = null);
 		Task<RecentWorkouts> GetWorkoutsAsync(int pageSize, int page);
 		Task<JObject> GetWorkoutByIdAsync(string id);
 		Task<JObject> GetWorkoutSamplesByIdAsync(string id);
@@ -26,67 +27,70 @@ namespace Peloton
 		private static readonly string BaseUrl = "https://api.onepeloton.com/api";
 		private static readonly string AuthBaseUrl = "https://api.onepeloton.com/auth/login";
 
-		private readonly string _userEmail;
-		private readonly string _userPassword;
+		private readonly ISettingsService _settingsService;
 
-		private string UserId;
-		private string SessionId;
-
-		public ApiClient(Settings config, AppConfiguration appConfig)
+		public ApiClient(ISettingsService settingsService)
 		{
-			_userEmail = config.Peloton.Email;
-			_userPassword = config.Peloton.Password;
+			_settingsService = settingsService;
 		}
 
-		public ApiClient(string email, string password)
+		public async Task<PelotonApiAuthentication> GetAuthAsync(string overrideUserAgent = null)
 		{
-			_userEmail = email;
-			_userPassword = password;
-		}
+			var settings = await _settingsService.GetSettingsAsync();
 
-		public async Task InitAuthAsync(string overrideUserAgent = null)
-		{
-			if (!string.IsNullOrEmpty(UserId) && !string.IsNullOrEmpty(SessionId))
-				return;
-
-			if (string.IsNullOrEmpty(_userEmail))
+			if (string.IsNullOrEmpty(settings.Peloton.Email))
 				throw new ArgumentException("Peloton email is not set and is required.");
 
-			if (string.IsNullOrEmpty(_userPassword))
+			if (string.IsNullOrEmpty(settings.Peloton.Password))
 				throw new ArgumentException("Peloton password is not set and is required.");
+
+			var auth = _settingsService.GetPelotonApiAuthentication(settings.Peloton.Email);
+			if (auth is null) auth = new ();
+
+			auth.Email = settings.Peloton.Email;
+			auth.Password = settings.Peloton.Password;
+
+			if (!string.IsNullOrEmpty(auth.UserId) && !string.IsNullOrEmpty(auth.SessionId))
+				return auth;
 
 			try
 			{
 				var response = await $"{AuthBaseUrl}"
 				.WithHeader("Accept-Language", "en-US")
 				.WithHeader("User-Agent", overrideUserAgent ?? "PostmanRuntime/7.26.10")
-				.StripSensitiveDataFromLogging(_userEmail, _userPassword)
+				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 				.PostJsonAsync(new AuthRequest()
 				{
-					username_or_email = _userEmail,
-					password = _userPassword
+					username_or_email = auth.Email,
+					password = auth.Password
 				})
 				.ReceiveJson<AuthResponse>();
 
-				UserId = response.user_id;
-				SessionId = response.session_id;
+				auth.UserId = response.user_id;
+				auth.SessionId = response.session_id;
+
+				_settingsService.SetPelotonApiAuthentication(auth);
+				return auth;
 			}
 			catch (FlurlHttpException fe) when (fe.StatusCode == (int)HttpStatusCode.Unauthorized)
 			{
 				_logger.Error(fe, $"Failed to authenticate with Peloton.");
+				_settingsService.ClearPelotonApiAuthentication(auth.Email);
 				throw new PelotonAuthenticationError("Failed to authenticate with Peloton. Please confirm your Peloton Email and Password are correct.", fe);
 			}
 			catch (Exception e)
 			{
 				_logger.Fatal(e, $"Failed to authenticate with Peloton.");
-				throw e;
+				_settingsService.ClearPelotonApiAuthentication(auth.Email);
+				throw;
 			}
 		}
 
-		public Task<RecentWorkouts> GetWorkoutsAsync(int pageSize, int page)
+		public async Task<RecentWorkouts> GetWorkoutsAsync(int pageSize, int page)
 		{
-			return $"{BaseUrl}/user/{UserId}/workouts"
-			.WithCookie("peloton_session_id", SessionId)
+			var auth = await GetAuthAsync();
+			return await $"{BaseUrl}/user/{auth.UserId}/workouts"
+			.WithCookie("peloton_session_id", auth.SessionId)
 			.SetQueryParams(new
 			{
 				limit = pageSize,
@@ -94,17 +98,18 @@ namespace Peloton
 				page = page,
 				joins= "ride"
 			})
-			.StripSensitiveDataFromLogging(_userEmail, _userPassword)
+			.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 			.GetJsonAsync<RecentWorkouts>();
 		}
 
 		/// <summary>
 		/// For ad hoc testing.
 		/// </summary>
-		public Task<JObject> GetWorkoutsAsync(string userId, int numWorkouts, int page)
+		public async Task<JObject> GetWorkoutsAsync(string userId, int numWorkouts, int page)
 		{
-			return $"{BaseUrl}/user/{userId}/workouts"
-			.WithCookie("peloton_session_id", SessionId)
+			var auth = await GetAuthAsync();
+			return await $"{BaseUrl}/user/{userId}/workouts"
+			.WithCookie("peloton_session_id", auth.SessionId)
 			.SetQueryParams(new
 			{
 				limit = numWorkouts,
@@ -112,39 +117,42 @@ namespace Peloton
 				page = page,
 				joins = "ride"
 			})
-			.StripSensitiveDataFromLogging(_userEmail, _userPassword)
+			.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 			.GetJsonAsync<JObject>();
 		}
 
-		public Task<UserData> GetUserDataAsync()
+		public async Task<UserData> GetUserDataAsync()
 		{
-			return $"{BaseUrl}/me"
-			.WithCookie("peloton_session_id", SessionId)
-			.StripSensitiveDataFromLogging(_userEmail, _userPassword)
+			var auth = await GetAuthAsync();
+			return await $"{BaseUrl}/me"
+			.WithCookie("peloton_session_id", auth.SessionId)
+			.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 			.GetJsonAsync<UserData>();
 		}
 
-		public Task<JObject> GetWorkoutByIdAsync(string id)
+		public async Task<JObject> GetWorkoutByIdAsync(string id)
 		{
-			return $"{BaseUrl}/workout/{id}"
-				.WithCookie("peloton_session_id", SessionId)
+			var auth = await GetAuthAsync();
+			return await $"{BaseUrl}/workout/{id}"
+				.WithCookie("peloton_session_id", auth.SessionId)
 				.SetQueryParams(new
 				{
 					joins = "ride,ride.instructor"
 				})
-				.StripSensitiveDataFromLogging(_userEmail, _userPassword)
+				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 				.GetJsonAsync<JObject>();
 		}
 
-		public Task<JObject> GetWorkoutSamplesByIdAsync(string id)
+		public async Task<JObject> GetWorkoutSamplesByIdAsync(string id)
 		{
-			return $"{BaseUrl}/workout/{id}/performance_graph"
-				.WithCookie("peloton_session_id", SessionId)
+			var auth = await GetAuthAsync();
+			return await $"{BaseUrl}/workout/{id}/performance_graph"
+				.WithCookie("peloton_session_id", auth.SessionId)
 				.SetQueryParams(new
 				{
 					every_n=1
 				})
-				.StripSensitiveDataFromLogging(_userEmail, _userPassword)
+				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 				.GetJsonAsync<JObject>();
 		}
 	}
