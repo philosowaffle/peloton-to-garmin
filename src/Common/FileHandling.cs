@@ -169,7 +169,7 @@ namespace Common
 			}
 			catch (Exception e)
 			{
-				_logger.Error(e, "Failed to clean up working directory: {@Directory}", dir);
+				_logger.Error(e, "Failed to clean up directory: {@Directory}", dir);
 				trace2?.AddTag("exception.message", e.Message);
 				trace2?.AddTag("exception.stacktrace", e.StackTrace);
 			}
