@@ -76,21 +76,32 @@ namespace Common
 			if (!File.Exists(file)) return false;
 
 			XmlSerializer serializer = new XmlSerializer(typeof(T), new XmlRootAttribute("Creator"));
-			using (Stream stream = new FileStream(file, FileMode.Open))
+			try
 			{
-				try
+				using (Stream stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
-					result = (T)serializer.Deserialize(stream);
-					return true;
-				} catch (Exception e)
-				{
-					_logger.Error(e, "Failed to deserialize {@File} from xml to type {@Type}.", file, typeof(T));
-					trace?.AddTag("exception.message", e.Message);
-					trace?.AddTag("exception.stacktrace", e.StackTrace);
-					return false;
+					try
+					{
+						result = (T)serializer.Deserialize(stream);
+						return true;
+					}
+					catch (Exception e)
+					{
+						_logger.Error(e, "Failed to deserialize {@File} from xml to type {@Type}.", file, typeof(T));
+						trace?.AddTag("exception.message", e.Message);
+						trace?.AddTag("exception.stacktrace", e.StackTrace);
+						return false;
+					}
 				}
-			}
 		}
+			catch (Exception e)
+			{
+				_logger.Error(e, "Failed to read {@file}.", file);
+				trace?.AddTag("exception.message", e.Message);
+				trace?.AddTag("exception.stacktrace", e.StackTrace);
+				return false;
+			}
+}
 
 		public void MoveFailedFile(string fromPath, string toPath)
 		{
