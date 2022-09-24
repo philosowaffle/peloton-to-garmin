@@ -21,7 +21,7 @@ namespace Conversion
 
 		public override ConvertStatus Convert(P2GWorkout workout)
 		{
-			if (!_config.Format.Fit) return new ConvertStatus() { Success = true, ErrorMessage = "Fit format disabled in config."};
+			if (!_config.Format.Fit) return new ConvertStatus() { Result = ConversionResult.Skipped};
 
 			return base.ConvertForFormat(FileFormat.Fit, workout);
 		}

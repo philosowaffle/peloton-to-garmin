@@ -97,8 +97,8 @@ namespace Conversion
 			catch (Exception e)
 			{
 				_logger.Error(e, "Failed to convert workout data to format {@Format} {@Workout}", format, workoutTitle);
-				status.Success = false;
-				status.ErrorMessage = "Failed to convert workout data.";
+				status.Result = ConversionResult.Failed;
+				status.ErrorMessage = $"Unknown error while trying to convert workout data for {workoutTitle} - {e.Message}";
 				tracing?.AddTag("excetpion.message", e.Message);
 				tracing?.AddTag("exception.stacktrace", e.StackTrace);
 				tracing?.AddTag("convert.success", false);
@@ -112,12 +112,12 @@ namespace Conversion
 			{
 				_fileHandler.MkDirIfNotExists(_config.App.WorkingDirectory);
 				Save(converted, path);
-				status.Success = true;
+				status.Result = ConversionResult.Success;
 			}
 			catch (Exception e)
 			{
-				status.Success = false;
-				status.ErrorMessage = "Failed to save converted workout for upload.";
+				status.Result = ConversionResult.Failed;
+				status.ErrorMessage = $"Failed to save converted workout {workoutTitle} for upload. - {e.Message}";
 				_logger.Error(e, "Failed to write {@Format} file for {@Workout}", format, workoutTitle);
 				tracing?.AddTag("excetpion.message", e.Message);
 				tracing?.AddTag("exception.stacktrace", e.StackTrace);
@@ -149,8 +149,8 @@ namespace Conversion
 				catch (Exception e)
 				{
 					_logger.Error(e, "Failed to copy {@Format} file for {@Workout}", format, workoutTitle);
-					status.Success = false;
-					status.ErrorMessage = $"Failed to save file for {@format} and workout {workoutTitle} to Upload directory";
+					status.Result = ConversionResult.Failed;
+					status.ErrorMessage = $"Failed to save file for {@format} and workout {workoutTitle} to Upload directory - {e.Message}";
 					tracing?.AddTag("excetpion.message", e.Message);
 					tracing?.AddTag("exception.stacktrace", e.StackTrace);
 					tracing?.AddTag("convert.success", false);

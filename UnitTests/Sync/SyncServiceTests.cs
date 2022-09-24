@@ -2,6 +2,7 @@
 using Common.Database;
 using Common.Dto;
 using Common.Dto.Peloton;
+using Common.Service;
 using Conversion;
 using FluentAssertions;
 using Garmin;
@@ -28,7 +29,10 @@ namespace UnitTests.Sync
 			var service = mocker.CreateInstance<SyncService>();
 			var peloton = mocker.GetMock<IPelotonService>();
 			var db = mocker.GetMock<ISyncStatusDb>();
-			var settings = mocker.GetMock<Settings>();
+			var settingsService = mocker.GetMock<ISettingsService>();
+			var settings = new Settings();
+			settings.Format.Fit = true;
+			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
@@ -57,7 +61,10 @@ namespace UnitTests.Sync
 			var peloton = mocker.GetMock<IPelotonService>();
 			var db = mocker.GetMock<ISyncStatusDb>();
 			var converter = mocker.GetMock<IConverter>();
-			var settings = mocker.GetMock<Settings>();
+			var settingsService = mocker.GetMock<ISettingsService>();
+			var settings = new Settings();
+			settings.Format.Fit = true;
+			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
@@ -90,7 +97,13 @@ namespace UnitTests.Sync
 			var db = mocker.GetMock<ISyncStatusDb>();
 			var converter = mocker.GetMock<IConverter>();
 			var garmin = mocker.GetMock<IGarminUploader>();
-			var settings = mocker.GetMock<Settings>();
+			var settingsService = mocker.GetMock<ISettingsService>();
+
+			var settings = new Settings();
+			settings.Format.Fit = true;
+			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
+
+			converter.Setup(c => c.Convert(It.IsAny<P2GWorkout>())).Returns(new ConvertStatus() { Result = ConversionResult.Success });
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
@@ -126,7 +139,13 @@ namespace UnitTests.Sync
 			var converter = mocker.GetMock<IConverter>();
 			var garmin = mocker.GetMock<IGarminUploader>();
 			var fileHandler = mocker.GetMock<IFileHandling>();
-			var settings = mocker.GetMock<Settings>();
+			var settingsService = mocker.GetMock<ISettingsService>();
+
+			var settings = new Settings();
+			settings.Format.Fit = true;
+			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
+
+			converter.Setup(c => c.Convert(It.IsAny<P2GWorkout>())).Returns(new ConvertStatus() { Result = ConversionResult.Success });
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
@@ -162,7 +181,13 @@ namespace UnitTests.Sync
 			var converter = mocker.GetMock<IConverter>();
 			var garmin = mocker.GetMock<IGarminUploader>();
 			var fileHandler = mocker.GetMock<IFileHandling>();
-			var settings = mocker.GetMock<Settings>();
+			var settingsService = mocker.GetMock<ISettingsService>();
+
+			var settings = new Settings();
+			settings.Format.Fit = true;
+			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
+
+			converter.Setup(c => c.Convert(It.IsAny<P2GWorkout>())).Returns(new ConvertStatus() { Result = ConversionResult.Success });
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
