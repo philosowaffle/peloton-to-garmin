@@ -41,14 +41,20 @@ RUN echo $TARGETPLATFORM \
 	&& echo $VERSION
 ENV VERSION=${VERSION}
 
+RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; \
+		then export RUNTIME=linux-arm64; \
+	elif [[ "$TARGETPLATFORM" = "linux/arm32" ]] ;
+		then export RUNTIME=linux-arm32; \
+	else \
+		export RUNTIME=linux-x64; \
+	fi
+
+RUN echo $RUNTIME
+
 ###################
 # BUILD API
 ###################
-RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
-		dotnet publish /build/src/Api/Api.csproj -c Release -r linux-arm64 -o /build/published --version-suffix $VERSION --self-contained ; \
-	else \
-		dotnet publish /build/src/Api/Api.csproj -c Release -r linux-x64 -o /build/published --version-suffix $VERSION --self-contained ; \
-	fi
+RUN dotnet publish /build/src/Api/Api.csproj -c Release -r $RUNTIME -o /build/published --version-suffix $VERSION --self-contained
 
 ###################
 # FINAL
