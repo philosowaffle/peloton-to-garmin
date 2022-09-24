@@ -136,7 +136,7 @@ jobs:
         push: true
         file: ./docker/Dockerfile.console
         tags: philosowaffle/peloton-to-garmin:pr-validator-console-A
-        platforms: linux/arm32
+        platforms: linux/arm/v7
         build-args: VERSION=${{ env.BUILD_VERSION }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
@@ -197,7 +197,7 @@ jobs:
         push: true
         file: ./docker/Dockerfile.api
         tags: philosowaffle/peloton-to-garmin:pr-validator-api-A
-        platforms: linux/arm32
+        platforms: linux/arm/v7
         build-args: VERSION=${{ env.BUILD_VERSION }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
@@ -258,7 +258,7 @@ jobs:
         push: true
         file: ./docker/Dockerfile.webui
         tags: philosowaffle/peloton-to-garmin:pr-validator-webui-A
-        platforms: linux/arm32
+        platforms: linux/arm/v7
         build-args: VERSION=${{ env.BUILD_VERSION }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new

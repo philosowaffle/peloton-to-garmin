@@ -57,7 +57,7 @@ jobs:
           push: true
           file: ./docker/Dockerfile.console
           tags: ${{ secrets.DOCKER_USERNAME }}/peloton-to-garmin:latest
-          platforms: linux/arm64,linux/arm32,linux/amd64
+          platforms: linux/arm64,linux/arm/v7,linux/amd64
           build-args: VERSION=${{ env.BUILD_VERSION }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
@@ -118,7 +118,7 @@ jobs:
           push: true
           file: ./docker/Dockerfile.api
           tags: ${{ secrets.DOCKER_USERNAME }}/peloton-to-garmin:api-latest
-          platforms: linux/arm64,linux/arm32,linux/amd64
+          platforms: linux/arm64,linux/arm/v7,linux/amd64
           build-args: VERSION=${{ env.BUILD_VERSION }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
@@ -179,7 +179,7 @@ jobs:
           push: true
           file: ./docker/Dockerfile.webui
           tags: ${{ secrets.DOCKER_USERNAME }}/peloton-to-garmin:webui-latest
-          platforms: linux/arm64,linux/arm32,linux/amd64
+          platforms: linux/arm64,linux/arm/v7,linux/amd64
           build-args: VERSION=${{ env.BUILD_VERSION }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
