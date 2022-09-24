@@ -52,7 +52,10 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
 FlurlConfiguration.Configure(config.Observability, 30);
-Tracing.EnableTracing(builder.Services, config.Observability.Jaeger);
+
+// Blazor seems to have single trace context and continues to append traces
+// for the lifetime of that session
+//Tracing.EnableTracing(builder.Services, config.Observability.Jaeger);
 
 Log.Logger = new LoggerConfiguration()
 				.ReadFrom.Configuration(builder.Configuration, sectionName: $"{nameof(Observability)}:Serilog")

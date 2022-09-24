@@ -6,14 +6,7 @@
     "Observability": {
   
       "Prometheus": {
-        "Enabled": false,
-        "Port": 4000
-      },
-  
-      "Jaeger": {
-        "Enabled": false,
-        "AgentHost": "localhost",
-        "AgentPort": 6831
+        "Enabled": false
       },
 
       "Serilog": {

@@ -2,8 +2,7 @@
     "Observability": {
   
       "Prometheus": {
-        "Enabled": false,
-        "Port": 4000
+        "Enabled": false
       },
   
       "Jaeger": {

@@ -303,7 +303,7 @@ The Observability config section contains three main sub-sections:
 | Field      | Required | Default | Description |
 |:-----------|:---------|:--------|:------------|
 | Enabled | no | `false` | Whether or not to expose metrics. Metrics will be available at `http://localhost:{port}/metrics` |
-| Port | no | `false` | The port the metrics endpoint should be served on. |
+| Port | no | `80` | The port the metrics endpoint should be served on. Only valid for Console mode, not Api/WebUI |
 
 If you are using Docker, ensure you have exposed the port from your container.
 
