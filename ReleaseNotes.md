@@ -6,7 +6,6 @@
 ## Fixes
 
 - [#331] Fixed - System.IO.IOException: The process cannot access the file 'deviceInfo.xml' because it is being used by another process.
-- [#289] Fixed - WebUI - About Page and SyncController could have incorrect API swagger route
 - [#289] Fixed - Better logs and messaging when no convert Formats are configured in Settings
 
 ## Changes
