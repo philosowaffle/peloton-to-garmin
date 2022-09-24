@@ -1,5 +1,7 @@
 ﻿@page "/"
+@implements IDisposable
 @inject IApiClient _apiClient
+@inject IHxMessengerService _toaster;
 
 <PageTitle>Home</PageTitle>
 
@@ -47,11 +49,6 @@ else
 	<button class="btn btn-primary" @onclick="SyncAsync">Sync Now</button>
 }
 
-@if (!string.IsNullOrEmpty(ErrorMessage))
-{
-	<p>@ErrorMessage</p>
-}
-
 
 @code {
 
@@ -74,15 +71,25 @@ else
 		syncRunning = false;
 
 		ErrorMessage = string.Empty;
+
+		_toaster?.Clear();
 	}
+
+	public void Dispose() => _toaster.Clear();
 
 	protected override async Task OnInitializedAsync()
 	{
-		var getSettingsTask = _apiClient.SettingsGetAsync();
+		try
+		{
+			var getSettingsTask = _apiClient.SettingsGetAsync();
+			await Task.WhenAll(getSettingsTask, LoadSyncStatusAsync());
 
-		await Task.WhenAll(getSettingsTask, LoadSyncStatusAsync());
-
-		settings = await getSettingsTask;
+			settings = await getSettingsTask;
+		} catch (Exception e)
+		{
+			Log.Error("UI - Failed to fetch data for home page.", e);
+			_toaster.AddError($"Failed to fetch data from P2G Api - {e.Message} - See logs for details.");
+		}
 	}
 
 	private async Task LoadSyncStatusAsync()
@@ -93,7 +100,8 @@ else
 		} 
 		catch (Exception e)
 		{
-			Log.Error("Failed to fetch Sync status.", e);
+			Log.Error("UI - Failed to fetch Sync status.", e);
+			_toaster.AddError($"Failed to fetch Sync status - {e.Message} - See logs for details.");
 		}
 
 		switch (syncStatus.SyncStatus)
@@ -125,13 +133,13 @@ else
 			ErrorMessage = string.Empty;
 		}
 		catch (FlurlHttpTimeoutException te){
-			ErrorMessage = $"Long running sync will continue running in the background.";
+			_toaster.AddInformation("Long running sync will continue running in the background.");
 			Log.Information("UI - Sync timeout reached.", te);
 		}
 		catch(Exception e)
 		{
-			ErrorMessage = "Failed to sync. See logs for details.";
-			Log.Error("Failed to sync from ui.", e);
+			_toaster.AddError($"Failed to sync - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to sync.", e);
 		}
 		finally
 		{

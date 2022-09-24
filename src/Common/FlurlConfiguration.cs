@@ -148,12 +148,12 @@ namespace Common
 			{
 				HttpRequestHistogram
 				.WithLabels(
-					call.HttpRequestMessage.Method.ToString(),
-					call.HttpRequestMessage.RequestUri.Host,
+					call.HttpRequestMessage.Method.ToString() ?? string.Empty,
+					call.HttpRequestMessage.RequestUri?.Host ?? string.Empty,
 					path ?? string.Empty,
 					query ?? string.Empty,
-					((int)call.HttpResponseMessage?.StatusCode).ToString(),
-					call.HttpResponseMessage?.ReasonPhrase
+					((int?)call.HttpResponseMessage?.StatusCode)?.ToString() ?? string.Empty,
+					call.HttpResponseMessage?.ReasonPhrase ?? string.Empty
 				).Observe(call.Duration.GetValueOrDefault().TotalSeconds);
 			}
 		}
