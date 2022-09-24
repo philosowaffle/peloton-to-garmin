@@ -24,15 +24,15 @@ namespace Peloton
 		/// </summary>
 		/// <param name="numWorkoutsToDownload"></param>
 		/// <returns></returns>
-		Task<ICollection<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload);
+		Task<ICollection<Workout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload);
 		/// <summary>
 		/// Fetches workouts by Page.
 		/// </summary>
 		/// <param name="pageSize"></param>
 		/// <param name="pageIndex"></param>
 		/// <returns></returns>
-		Task<RecentWorkouts> GetPelotonWorkoutsAsync(int pageSize, int pageIndex);
-		Task<P2GWorkout[]> GetWorkoutDetailsAsync(ICollection<RecentWorkout> workoutIds);
+		Task<PagedPelotonResponse<Workout>> GetPelotonWorkoutsAsync(int pageSize, int pageIndex);
+		Task<P2GWorkout[]> GetWorkoutDetailsAsync(ICollection<Workout> workoutIds);
 		Task<UserData> GetUserDataAsync();
 	}
 
@@ -79,13 +79,13 @@ namespace Peloton
 			return await _pelotonApi.GetUserDataAsync();
 		}
 
-		public async Task<RecentWorkouts> GetPelotonWorkoutsAsync(int pageSize, int pageIndex)
+		public async Task<PagedPelotonResponse<Workout>> GetPelotonWorkoutsAsync(int pageSize, int pageIndex)
 		{
 			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetPelotonWorkoutsAsync)}")
 										.WithTag("workouts.pageSize", pageSize.ToString())
 										.WithTag("workouts.pageIndex", pageIndex.ToString());
 
-			var recentWorkouts = new RecentWorkouts();
+			var recentWorkouts = new PagedPelotonResponse<Workout>();
 
 			if (pageSize <= 0 || pageIndex < 0) return recentWorkouts;
 
@@ -98,12 +98,12 @@ namespace Peloton
 			return recentWorkouts;
 		}
 
-		public async Task<ICollection<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)
+		public async Task<ICollection<Workout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)
 		{
 			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetRecentWorkoutsAsync)}")
 										.WithTag("workouts.requested", numWorkoutsToDownload.ToString());
 
-			List<RecentWorkout> recentWorkouts = new List<RecentWorkout>();
+			List<Workout> recentWorkouts = new List<Workout>();
 
 			if (numWorkoutsToDownload <= 0) return recentWorkouts;
 			
@@ -131,7 +131,7 @@ namespace Peloton
 			return recentWorkouts;
 		}
 
-		public async Task<P2GWorkout[]> GetWorkoutDetailsAsync(ICollection<RecentWorkout> workoutIds)
+		public async Task<P2GWorkout[]> GetWorkoutDetailsAsync(ICollection<Workout> workoutIds)
 		{
 			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetWorkoutDetailsAsync)}.List");
 

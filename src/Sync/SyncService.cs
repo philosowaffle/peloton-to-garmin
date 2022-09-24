@@ -7,7 +7,6 @@ using Common.Stateful;
 using Conversion;
 using Garmin;
 using Peloton;
-using Peloton.Dto;
 using Prometheus;
 using Serilog;
 using System;
@@ -51,7 +50,7 @@ namespace Sync
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}")
 										.WithTag("numWorkouts", numWorkouts.ToString());
 
-			ICollection<RecentWorkout> recentWorkouts;
+			ICollection<Workout> recentWorkouts;
 			var syncTime = await _db.GetSyncStatusAsync();
 			syncTime.LastSyncTime = DateTime.Now;
 
@@ -59,10 +58,13 @@ namespace Sync
 			{
 				recentWorkouts = await _pelotonService.GetRecentWorkoutsAsync(numWorkouts);
 			}
-			catch (Exception e)
+			catch (ArgumentException ae)
 			{
-				var errorMessage = $"Failed to fetch recent workouts from Peloton: {e.Message}";
-				_logger.Error(e, errorMessage);
+				var errorMessage = $"Failed to fetch recent workouts from Peleoton: {ae.Message}";
+
+				_logger.Error(ae, errorMessage);
+				activity?.AddTag("exception.message", ae.Message);
+				activity?.AddTag("exception.stacktrace", ae.StackTrace);
 
 				syncTime.SyncStatus = Status.UnHealthy;
 				syncTime.LastErrorMessage = errorMessage;
@@ -72,6 +74,24 @@ namespace Sync
 				response.SyncSuccess = false;
 				response.PelotonDownloadSuccess = false;
 				response.Errors.Add(new ErrorResponse() { Message = $"{errorMessage}" });
+				return response;
+			}
+			catch (Exception ex)
+			{
+				var errorMessage = "Failed to fetch recent workouts from Peleoton.";
+
+				_logger.Error(ex, errorMessage);
+				activity?.AddTag("exception.message", ex.Message);
+				activity?.AddTag("exception.stacktrace", ex.StackTrace);
+
+				syncTime.SyncStatus = Status.UnHealthy;
+				syncTime.LastErrorMessage = errorMessage;
+				await _db.UpsertSyncStatusAsync(syncTime);
+
+				var response = new SyncResult();
+				response.SyncSuccess = false;
+				response.PelotonDownloadSuccess = false;
+				response.Errors.Add(new ErrorResponse() { Message = $"{errorMessage} Check logs for more details." });
 				return response;
 			}
 
@@ -85,7 +105,6 @@ namespace Sync
 										return false;
 									})
 									.Select(r => r.Id)
-									.Distinct()
 									.ToList();
 
 			_logger.Debug("Total workouts found after filtering out InProgress: {@FoundWorkouts}", completedWorkouts.Count());
@@ -106,18 +125,8 @@ namespace Sync
 			using var timer = SyncHistogram.NewTimer();
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.ByWorkoutIds");
 
-			if (workoutIds is null)
-				throw new ArgumentNullException("workoutIds");
-
 			var response = new SyncResult();
-			var recentWorkouts = workoutIds.Distinct().Select(w => new RecentWorkout() { Id = w }).ToList();
-
-			if (!workoutIds.Any())
-			{
-				response.SyncSuccess = true;
-				response.Errors.Add(new ErrorResponse() { Message = "No workoutIds provided to sync." });
-				return response;
-			}
+			var recentWorkouts = workoutIds.Select(w => new Workout() { Id = w }).ToList();
 
 			UserData? userData = null;
 			try

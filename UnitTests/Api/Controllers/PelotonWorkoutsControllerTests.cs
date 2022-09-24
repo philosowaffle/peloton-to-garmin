@@ -57,20 +57,20 @@ namespace UnitTests.Api.Controllers
 			var controller = autoMocker.CreateInstance<PelotonWorkoutsController>();
 			var service = autoMocker.GetMock<IPelotonService>();
 
-			var results = new RecentWorkouts()
+			var results = new PagedPelotonResponse<Workout>()
 			{
 				Page = 0,
 				Limit = 5,
 				Count = 5,
 				Page_Count = 3,
 				Total = 15,
-				data = new List<RecentWorkout>()
+				data = new List<Workout>()
 				{
-					new RecentWorkout() { Created_At = DateTime.Now.AddMinutes(-15).Ticks },
-					new RecentWorkout() { Created_At = DateTime.Now.AddMinutes(-3).Ticks },
-					new RecentWorkout() { Created_At = DateTime.Now.AddMinutes(-1).Ticks },
-					new RecentWorkout() { Created_At = DateTime.Now.AddMinutes(-25).Ticks },
-					new RecentWorkout() { Created_At = DateTime.Now.AddMinutes(-8).Ticks },
+					new Workout() { Created_At = DateTime.Now.AddMinutes(-15).Ticks },
+					new Workout() { Created_At = DateTime.Now.AddMinutes(-3).Ticks },
+					new Workout() { Created_At = DateTime.Now.AddMinutes(-1).Ticks },
+					new Workout() { Created_At = DateTime.Now.AddMinutes(-25).Ticks },
+					new Workout() { Created_At = DateTime.Now.AddMinutes(-8).Ticks },
 				}
 			};
 
@@ -96,20 +96,20 @@ namespace UnitTests.Api.Controllers
 			var controller = autoMocker.CreateInstance<PelotonWorkoutsController>();
 			var service = autoMocker.GetMock<IPelotonService>();
 
-			var results = new RecentWorkouts()
+			var results = new PagedPelotonResponse<Workout>()
 			{
 				Page = 0,
 				Limit = 5,
 				Count = 5,
 				Page_Count = 3,
 				Total = 15,
-				data = new List<RecentWorkout>()
+				data = new List<Workout>()
 				{
-					new RecentWorkout() { Created_At = DateTime.Now.AddMinutes(-15).Ticks },
-					new RecentWorkout() { Created_At = DateTime.Now.AddMinutes(-3).Ticks },
-					new RecentWorkout() { Created_At = DateTime.Now.AddMinutes(-1).Ticks },
-					new RecentWorkout() { Created_At = DateTime.Now.AddMinutes(-25).Ticks },
-					new RecentWorkout() { Created_At = DateTime.Now.AddMinutes(-8).Ticks },
+					new Workout() { Created_At = DateTime.Now.AddMinutes(-15).Ticks },
+					new Workout() { Created_At = DateTime.Now.AddMinutes(-3).Ticks },
+					new Workout() { Created_At = DateTime.Now.AddMinutes(-1).Ticks },
+					new Workout() { Created_At = DateTime.Now.AddMinutes(-25).Ticks },
+					new Workout() { Created_At = DateTime.Now.AddMinutes(-8).Ticks },
 				}
 			};
 

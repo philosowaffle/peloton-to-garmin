@@ -9,12 +9,12 @@ namespace Common.Dto.Api
 		public int PageIndex { get; set; }
 	}
 
-	public class PelotonWorkoutsGetResponse : PagingResponseBase<RecentWorkout>
+	public class PelotonWorkoutsGetResponse : PagingResponseBase<Workout>
 	{
 		public PelotonWorkoutsGetResponse()
 		{
-			Items = new List<RecentWorkout>();
+			Items = new List<Workout>();
 		}
-		public override ICollection<RecentWorkout> Items { get; set; }
+		public override ICollection<Workout> Items { get; set; }
 	}
 }

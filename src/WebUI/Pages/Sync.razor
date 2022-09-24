@@ -9,11 +9,11 @@
 	Sync <span class="badge bg-secondary">@selectedItems.Count()</span>
 </HxButton>
 
-<HxGrid TItem="RecentWorkout" MultiSelectionEnabled="true" Responsive="true" DataProvider="LoadDataAsync" @bind-SelectedDataItems="selectedItems" PageSize="PageSize" SelectionEnabled="false">
+<HxGrid TItem="Workout" MultiSelectionEnabled="true" Responsive="true" DataProvider="LoadDataAsync" @bind-SelectedDataItems="selectedItems" PageSize="PageSize" SelectionEnabled="false">
 	<Columns>
-		<HxGridColumn TItem="RecentWorkout" HeaderText="Date" ItemTextSelector="@(item => DateTimeOffset.FromUnixTimeSeconds(item.Created_At).LocalDateTime.ToString())" />
-		<HxGridColumn TItem="RecentWorkout" HeaderText="Title" ItemTextSelector="@(item => item.Ride.Title ?? item.Name)" />
-		<HxGridColumn TItem="RecentWorkout" HeaderText="Status" ItemTextSelector="@(item => item.Status)" />
+		<HxGridColumn TItem="Workout" HeaderText="Date" ItemTextSelector="@(item => DateTimeOffset.FromUnixTimeSeconds(item.Created_At).LocalDateTime.ToString())" />
+		<HxGridColumn TItem="Workout" HeaderText="Title" ItemTextSelector="@(item => item.Ride.Title ?? item.Name)" />
+		<HxGridColumn TItem="Workout" HeaderText="Status" ItemTextSelector="@(item => item.Status)" />
 	</Columns>
 </HxGrid>
 
@@ -23,13 +23,13 @@
 
 @code {
 
-	private HashSet<RecentWorkout> selectedItems = new();
+	private HashSet<Workout> selectedItems = new();
 	private static int PageSize = 25;
 
 	public Sync() : base() => _toaster?.Clear();
 	public void Dispose() => _toaster.Clear();
 
-	private async Task<GridDataProviderResult<RecentWorkout>> LoadDataAsync(GridDataProviderRequest<RecentWorkout> request)
+	private async Task<GridDataProviderResult<Workout>> LoadDataAsync(GridDataProviderRequest<Workout> request)
 	{
 		_toaster.Clear();
 
@@ -37,7 +37,7 @@
 		{
 			var pageIndex = request.StartIndex / PageSize;
 			var recentWorkouts = await _apiClient.PelotonWorkoutsGetAsync(new PelotonWorkoutsGetRequest() { PageSize = PageSize, PageIndex = pageIndex});
-			return new GridDataProviderResult<RecentWorkout>() { Data = recentWorkouts.Items, TotalCount = recentWorkouts.TotalItems };
+			return new GridDataProviderResult<Workout>() { Data = recentWorkouts.Items, TotalCount = recentWorkouts.TotalItems };
 		} catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
 		{
 			var error = await e.GetResponseJsonAsync<ErrorResponse>();
@@ -49,7 +49,7 @@
 			Log.Error("UI - Failed to load Peloton workouts.", e);
 		}
 
-		return new GridDataProviderResult<RecentWorkout>() { Data = new List<RecentWorkout>(), TotalCount = 0 };
+		return new GridDataProviderResult<Workout>() { Data = new List<Workout>(), TotalCount = 0 };
 	}
 
 	private async Task SyncAsync()

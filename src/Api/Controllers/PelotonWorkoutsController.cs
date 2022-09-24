@@ -36,7 +36,7 @@ namespace Api.Controllers
 			if (request.PageIndex < 0)
 				return BadRequest(new ErrorResponse("PageIndex must be greater than or equal to 0."));
 
-			RecentWorkouts? recentWorkouts = null;
+			PagedPelotonResponse<Workout>? recentWorkouts = null;
 
 			try
 			{

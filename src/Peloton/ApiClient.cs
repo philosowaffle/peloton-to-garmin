@@ -15,7 +15,7 @@ namespace Peloton
 {
 	public interface IPelotonApi
 	{
-		Task<RecentWorkouts> GetWorkoutsAsync(int pageSize, int page);
+		Task<PagedPelotonResponse<Workout>> GetWorkoutsAsync(int pageSize, int page);
 		Task<JObject> GetWorkoutByIdAsync(string id);
 		Task<JObject> GetWorkoutSamplesByIdAsync(string id);
 		Task<UserData> GetUserDataAsync();
@@ -86,7 +86,7 @@ namespace Peloton
 			}
 		}
 
-		public async Task<RecentWorkouts> GetWorkoutsAsync(int pageSize, int page)
+		public async Task<PagedPelotonResponse<Workout>> GetWorkoutsAsync(int pageSize, int page)
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/user/{auth.UserId}/workouts"
@@ -99,7 +99,7 @@ namespace Peloton
 				joins= "ride"
 			})
 			.StripSensitiveDataFromLogging(auth.Email, auth.Password)
-			.GetJsonAsync<RecentWorkouts>();
+			.GetJsonAsync<PagedPelotonResponse<Workout>>();
 		}
 
 		/// <summary>
