@@ -131,7 +131,7 @@ jobs:
 
     - name: Build & Push to DockerHub
       id: docker_build
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v3
       with:
         push: true
         file: ./docker/Dockerfile.console
@@ -192,7 +192,7 @@ jobs:
 
     - name: Build & Push to DockerHub
       id: docker_build
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v3
       with:
         push: true
         file: ./docker/Dockerfile.api
@@ -253,7 +253,7 @@ jobs:
 
     - name: Build & Push to DockerHub
       id: docker_build
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v3
       with:
         push: true
         file: ./docker/Dockerfile.webui
