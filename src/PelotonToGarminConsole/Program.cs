@@ -99,7 +99,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
 				ChangeToken.OnChange(() => provider.GetReloadToken(), () =>
 				{
 					Log.Information("Config change detected, reloading config values.");
-					ConfigurationSetup.LoadConfigValues(provider, config);
+					config = settingsService.GetSettingsAsync().Result;
 
 					try
 					{
