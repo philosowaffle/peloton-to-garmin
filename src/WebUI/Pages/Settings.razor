@@ -12,7 +12,7 @@
 			<EditForm Model="@appSettings">
 
 				<br />
-				<HxInputSwitch Label="Automatic Syncing" @bind-Value="appSettings.EnablePolling" />
+				<HxSwitch Label="Automatic Syncing" @bind-Value="appSettings.EnablePolling" />
 				<br />
 				<HxFormState Enabled="@appSettings.EnablePolling">
 					<HxInputNumber Label="Check for new workouts every X (seconds)" TValue="int" @bind-Value="appSettings.PollingIntervalSeconds" />
@@ -38,9 +38,9 @@
 			<EditForm Model="@formatSettings">
 
 				<br />
-				<HxInputSwitch Label="Convert to FIT" @bind-Value="formatSettings.Fit" />
-				<HxInputSwitch Label="Convert to TCX" @bind-Value="formatSettings.Tcx" />
-				<HxInputSwitch Label="Convert to JSON" @bind-Value="formatSettings.Json" />
+				<HxSwitch Label="Convert to FIT" @bind-Value="formatSettings.Fit" />
+				<HxSwitch Label="Convert to TCX" @bind-Value="formatSettings.Tcx" />
+				<HxSwitch Label="Convert to JSON" @bind-Value="formatSettings.Json" />
 				<br />
 				<HxSelect
 					Label="Cycling Lap Type"
@@ -62,9 +62,9 @@
 						<HeaderTemplate>Advanced</HeaderTemplate>
 						<BodyTemplate>
 							<HxInputText Label="Path to custom deviceInfo.xml file" @bind-Value="formatSettings.DeviceInfoPath" /><br />
-							<HxInputSwitch Label="Include Time In HR Zones" @bind-Value="formatSettings.IncludeTimeInHRZones" />
-							<HxInputSwitch Label="Include Time in Power Zones" @bind-Value="formatSettings.IncludeTimeInPowerZones" />
-							<HxInputSwitch Label="Save a local copy of FIT and TCX files to output dir" @bind-Value="formatSettings.SaveLocalCopy" />
+							<HxSwitch Label="Include Time In HR Zones" @bind-Value="formatSettings.IncludeTimeInHRZones" />
+							<HxSwitch Label="Include Time in Power Zones" @bind-Value="formatSettings.IncludeTimeInPowerZones" />
+							<HxSwitch Label="Save a local copy of FIT and TCX files to output dir" @bind-Value="formatSettings.SaveLocalCopy" />
 						</BodyTemplate>
 					</HxAccordionItem>
 				</HxAccordion>
@@ -101,7 +101,7 @@
 		<Content>
 			<EditForm Model="@garminSettings">
 				<br />
-				<HxInputSwitch Label="Automatically upload to Garmin Connect" @bind-Value="garminSettings.Upload" />
+				<HxSwitch Label="Automatically upload to Garmin Connect" @bind-Value="garminSettings.Upload" />
 				<br />
 				<HxFormState Enabled="@garminSettings.Upload">
 					<HxInputText @bind-Value="garminSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
@@ -163,6 +163,7 @@
 		formatSettings = settings.Format;
 		pelotonSettings = settings.Peloton;
 		garminSettings = settings.Garmin;
+		configDocumentation = string.Empty;
 	}
 
 	protected override Task OnInitializedAsync()

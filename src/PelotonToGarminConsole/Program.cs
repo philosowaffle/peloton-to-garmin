@@ -15,6 +15,7 @@ using Serilog;
 using Serilog.Enrichers.Span;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.Caching.Memory;
 
 Console.WriteLine("Welcome! P2G is starting up...");
 
@@ -74,18 +75,31 @@ static IHostBuilder CreateHostBuilder(string[] args)
 				return config;
 			});
 
-			services.AddSingleton<Settings>((serviceProvider) => 
+			// CACHE
+			services.AddSingleton<IMemoryCache, MemoryCache>();
+
+			// SETTINGS
+			services.AddSingleton<ISettingsDb, SettingsDb>();
+			services.AddSingleton<ISettingsService>((serviceProvider) =>
+			{
+				var configurationLoader = serviceProvider.GetService<IConfiguration>();
+				var settingService = new SettingsService(serviceProvider.GetService<ISettingsDb>(), serviceProvider.GetService<IMemoryCache>());
+				return new FileBasedSettingsService(configurationLoader, settingService);
+			});
+			services.AddSingleton<Settings>((serviceProvider) =>
 			{
 				var config = new Settings();
 				var provider = serviceProvider.GetService<IConfiguration>();
+				var settingsService = serviceProvider.GetService<ISettingsService>();
 				if (provider is null) return config;
+				if (settingsService is null) return config;
 
-				ConfigurationSetup.LoadConfigValues(provider, config);
+				config = settingsService.GetSettingsAsync().Result;
 
 				ChangeToken.OnChange(() => provider.GetReloadToken(), () =>
 				{
 					Log.Information("Config change detected, reloading config values.");
-					ConfigurationSetup.LoadConfigValues(provider, config);
+					config = settingsService.GetSettingsAsync().Result;
 
 					try
 					{
@@ -103,21 +117,24 @@ static IHostBuilder CreateHostBuilder(string[] args)
 				return config;
 			});
 
-			services.AddSingleton<ISettingsDb, SettingsDb>();
-			services.AddSingleton<ISettingsService, SettingsService>();
-
+			// IO
 			services.AddSingleton<IFileHandling, IOWrapper>();
+
+			// PELOTON
 			services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
 			services.AddSingleton<IPelotonService, PelotonService>();
+
+			// GARMIN
 			services.AddSingleton<IGarminUploader, GarminUploader>();
 
+			// SYNC
 			services.AddSingleton<ISyncStatusDb, SyncStatusDb>();
 			services.AddSingleton<ISyncService, SyncService>();
 
+			// CONVERT
 			services.AddSingleton<IConverter, FitConverter>();
 			services.AddSingleton<IConverter, TcxConverter>();
 			services.AddSingleton<IConverter, JsonConverter>();
-
 
 			var config = new AppConfiguration();
 			ConfigurationSetup.LoadConfigValues(hostContext.Configuration, config);

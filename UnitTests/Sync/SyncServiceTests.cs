@@ -2,6 +2,7 @@
 using Common.Database;
 using Common.Dto;
 using Common.Dto.Peloton;
+using Common.Service;
 using Conversion;
 using FluentAssertions;
 using Garmin;
@@ -28,7 +29,10 @@ namespace UnitTests.Sync
 			var service = mocker.CreateInstance<SyncService>();
 			var peloton = mocker.GetMock<IPelotonService>();
 			var db = mocker.GetMock<ISyncStatusDb>();
-			var settings = mocker.GetMock<Settings>();
+			var settingsService = mocker.GetMock<ISettingsService>();
+			var settings = new Settings();
+			settings.Format.Fit = true;
+			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
@@ -57,12 +61,15 @@ namespace UnitTests.Sync
 			var peloton = mocker.GetMock<IPelotonService>();
 			var db = mocker.GetMock<ISyncStatusDb>();
 			var converter = mocker.GetMock<IConverter>();
-			var settings = mocker.GetMock<Settings>();
+			var settingsService = mocker.GetMock<ISettingsService>();
+			var settings = new Settings();
+			settings.Format.Fit = true;
+			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<RecentWorkout>() { new RecentWorkout() { Status = "COMPLETE", Id = "1" } });
-			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<RecentWorkout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } });
+			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<Workout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
 			converter.Setup(x => x.Convert(It.IsAny<P2GWorkout>())).Throws(new Exception());
 
 			// ACT
@@ -90,12 +97,18 @@ namespace UnitTests.Sync
 			var db = mocker.GetMock<ISyncStatusDb>();
 			var converter = mocker.GetMock<IConverter>();
 			var garmin = mocker.GetMock<IGarminUploader>();
-			var settings = mocker.GetMock<Settings>();
+			var settingsService = mocker.GetMock<ISettingsService>();
+
+			var settings = new Settings();
+			settings.Format.Fit = true;
+			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
+
+			converter.Setup(c => c.Convert(It.IsAny<P2GWorkout>())).Returns(new ConvertStatus() { Result = ConversionResult.Success });
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<RecentWorkout>() { new RecentWorkout() { Status = "COMPLETE", Id = "1" } });
-			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<RecentWorkout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } });
+			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<Workout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
 			garmin.Setup(x => x.UploadToGarminAsync()).Throws(new Exception());
 
 			// ACT
@@ -126,12 +139,18 @@ namespace UnitTests.Sync
 			var converter = mocker.GetMock<IConverter>();
 			var garmin = mocker.GetMock<IGarminUploader>();
 			var fileHandler = mocker.GetMock<IFileHandling>();
-			var settings = mocker.GetMock<Settings>();
+			var settingsService = mocker.GetMock<ISettingsService>();
+
+			var settings = new Settings();
+			settings.Format.Fit = true;
+			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
+
+			converter.Setup(c => c.Convert(It.IsAny<P2GWorkout>())).Returns(new ConvertStatus() { Result = ConversionResult.Success });
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<RecentWorkout>() { new RecentWorkout() { Status = "COMPLETE", Id = "1" } });
-			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<RecentWorkout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } });
+			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<Workout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
 
 			// ACT
 			var response = await service.SyncAsync(0);
@@ -162,17 +181,23 @@ namespace UnitTests.Sync
 			var converter = mocker.GetMock<IConverter>();
 			var garmin = mocker.GetMock<IGarminUploader>();
 			var fileHandler = mocker.GetMock<IFileHandling>();
-			var settings = mocker.GetMock<Settings>();
+			var settingsService = mocker.GetMock<ISettingsService>();
+
+			var settings = new Settings();
+			settings.Format.Fit = true;
+			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
+
+			converter.Setup(c => c.Convert(It.IsAny<P2GWorkout>())).Returns(new ConvertStatus() { Result = ConversionResult.Success });
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<RecentWorkout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
+			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<Workout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
 
 			peloton.Setup(x => x.GetRecentWorkoutsAsync(It.IsAny<int>()))
-				.ReturnsAsync(new List<RecentWorkout>()
+				.ReturnsAsync(new List<Workout>()
 					{
-						new RecentWorkout() { Status = "COMPLETE", Id = "1" },
-						new RecentWorkout() { Status = "IN PROGRESS", Id = "2" }
+						new Workout() { Status = "COMPLETE", Id = "1" },
+						new Workout() { Status = "IN PROGRESS", Id = "2" }
 					})
 				.Verifiable();
 

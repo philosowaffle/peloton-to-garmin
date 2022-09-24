@@ -4,6 +4,23 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+	<RuntimeIdentifiers>win10-x64;osx-x64;linux-x64</RuntimeIdentifiers>
+	<PackageProjectUrl>https://github.com/philosowaffle/peloton-to-garmin</PackageProjectUrl>
+	<RepositoryUrl>https://github.com/philosowaffle/peloton-to-garmin</RepositoryUrl>
+	<Authors>Bailey Belvis</Authors>
+	<ApplicationIcon>../../images/logo/256x256.ico</ApplicationIcon>
+	<PackageIcon>../../images/logo/256x256.png</PackageIcon>
+	<RepositoryType>git</RepositoryType>
+	<SignAssembly>false</SignAssembly>
+	<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	<NoWarn>$(NoWarn);1591,1587</NoWarn>
+	<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+	<ServerGarbageCollection>false</ServerGarbageCollection>
+	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	<DockerfileContext>.</DockerfileContext>
+	<DockerfileFile>../../docker/Dockerfile.webui</DockerfileFile>
+	<DockerfileRunArguments>-v $(pwd)/configuration.local.json:/app/configuration.local.json:ro</DockerfileRunArguments>
+	<UserSecretsId>94e9df33-6fd6-4f04-9eb2-9a0b820668e2</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,7 +47,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Api\Api.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+	<Content Remove="appsettings.json;appsettings.Development.json"/>
+	<None Include="appsettings.json;appsettings.Development.json">
+		<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		<CopyToPublishDirectory>Never</CopyToPublishDirectory>
+	</None>
   </ItemGroup>
 
 </Project>

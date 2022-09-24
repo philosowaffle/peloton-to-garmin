@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-	  <PackageId>PelotonToGarmin.Api</PackageId>
+	<PackageId>PelotonToGarmin.Api</PackageId>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 	<RuntimeIdentifiers>win10-x64;osx-x64;linux-x64</RuntimeIdentifiers>
@@ -15,12 +15,12 @@
 	<SignAssembly>false</SignAssembly>
 	<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<NoWarn>$(NoWarn);1591</NoWarn>
+	<NoWarn>$(NoWarn);1591,1587</NoWarn>
 	<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 	<ServerGarbageCollection>false</ServerGarbageCollection>
 	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-	<DockerfileContext>..\..</DockerfileContext>
-	<DockerfileFile>../../Dockerfile</DockerfileFile>
+	<DockerfileContext>.</DockerfileContext>
+	<DockerfileFile>../../docker/Dockerfile.api</DockerfileFile>
 	<DockerfileRunArguments>-v $(pwd)/configuration.local.json:/app/configuration.local.json:ro</DockerfileRunArguments>
 	<UserSecretsId>94e9df33-6fd6-4f04-9eb2-9a0b820668e2</UserSecretsId>
   </PropertyGroup>
@@ -48,6 +48,11 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+	<Content Remove="appsettings.json;appsettings.Development.json"/>
+	<None Include="appsettings.json;appsettings.Development.json">
+		<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		<CopyToPublishDirectory>Never</CopyToPublishDirectory>
+	</None>
   </ItemGroup>
 
 </Project>

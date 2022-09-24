@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Dto.Peloton;
+using Common.Service;
 using FluentAssertions;
 using Moq;
 using Moq.AutoMock;
@@ -22,7 +23,7 @@ namespace UnitTests.Peloton
 
 			await pelotonService.GetRecentWorkoutsAsync(numWorkoutsToDownload);
 
-			pelotonApi.Verify(x => x.InitAuthAsync(It.IsAny<string>()), Times.Never);
+			pelotonApi.Verify(x => x.GetWorkoutsAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
 		}
 
 		[Test]
@@ -58,11 +59,11 @@ namespace UnitTests.Peloton
 					.Verifiable();
 
 			// ACT
-			await pelotonService.GetWorkoutDetailsAsync(new List<RecentWorkout>()
+			await pelotonService.GetWorkoutDetailsAsync(new List<Workout>()
 					{
-						new RecentWorkout() { Status = "COMPLETE", Id = "1" },
-						new RecentWorkout() { Status = "COMPLETE", Id = "2" },
-						new RecentWorkout() { Status = "COMPLETE", Id = "3" },
+						new Workout() { Status = "COMPLETE", Id = "1" },
+						new Workout() { Status = "COMPLETE", Id = "2" },
+						new Workout() { Status = "COMPLETE", Id = "3" },
 					});
 
 			// ASSERT
@@ -79,9 +80,9 @@ namespace UnitTests.Peloton
 
 			var pelotonApi = autoMocker.GetMock<IPelotonApi>();
 			pelotonApi.Setup(x => x.GetWorkoutsAsync(2, 0)) // First call for data
-				.ReturnsAsync(new RecentWorkouts() { data = new List<RecentWorkout>() { new RecentWorkout() } });
+				.ReturnsAsync(new PagedPelotonResponse<Workout>() { data = new List<Workout>() { new Workout() } });
 			pelotonApi.Setup(x => x.GetWorkoutsAsync(1, 1)) // Second call for data
-				.ReturnsAsync(new RecentWorkouts() { data = new List<RecentWorkout>() { new RecentWorkout() } });
+				.ReturnsAsync(new PagedPelotonResponse<Workout>() { data = new List<Workout>() { new Workout() } });
 
 			var workouts = await pelotonService.GetRecentWorkoutsAsync(2);
 			workouts.Count.Should().Be(2);
@@ -97,11 +98,11 @@ namespace UnitTests.Peloton
 
 			var pelotonApi = autoMocker.GetMock<IPelotonApi>();
 			pelotonApi.Setup(x => x.GetWorkoutsAsync(20, 0)) // First call for data
-				.ReturnsAsync(new RecentWorkouts() { data = new List<RecentWorkout>() { new RecentWorkout() } });
+				.ReturnsAsync(new PagedPelotonResponse<Workout>() { data = new List<Workout>() { new Workout() } });
 			pelotonApi.Setup(x => x.GetWorkoutsAsync(19, 1)) // Second call for data
-				.ReturnsAsync(new RecentWorkouts() { data = new List<RecentWorkout>() { new RecentWorkout() } });
+				.ReturnsAsync(new PagedPelotonResponse<Workout>() { data = new List<Workout>() { new Workout() } });
 			pelotonApi.Setup(x => x.GetWorkoutsAsync(18, 2)) // Third call for data
-				.ReturnsAsync(new RecentWorkouts() { data = new List<RecentWorkout>() });
+				.ReturnsAsync(new PagedPelotonResponse<Workout>() { data = new List<Workout>() });
 
 			var workouts = await pelotonService.GetRecentWorkoutsAsync(20);
 			workouts.Count.Should().Be(2);
@@ -112,11 +113,11 @@ namespace UnitTests.Peloton
 
 	public class InternalPelotonService : PelotonService
 	{
-		public InternalPelotonService(Settings config, IPelotonApi pelotonApi, IFileHandling fileHandler) : base(config, pelotonApi, fileHandler)
+		public InternalPelotonService(ISettingsService settingsService, IPelotonApi pelotonApi, IFileHandling fileHandler) : base(settingsService, pelotonApi, fileHandler)
 		{
 		}
 
-		public new Task<ICollection<RecentWorkout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)
+		public new Task<ICollection<Workout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)
 		{
 			return base.GetRecentWorkoutsAsync(numWorkoutsToDownload);
 		}

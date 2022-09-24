@@ -24,6 +24,9 @@ WORKDIR /build
 
 SHELL ["/bin/bash", "-c"]
 
+RUN dotnet tool install -g Microsoft.Web.LibraryManager.Cli \
+	&& /root/.dotnet/tools/libman --version
+
 ARG TARGETPLATFORM
 ARG VERSION
 
@@ -34,10 +37,15 @@ ENV VERSION=${VERSION}
 ###################
 # BUILD WebUI
 ###################
+
+WORKDIR /build/src/WebUI
+RUN /root/.dotnet/tools/libman restore
+
+WORKDIR /build
 RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
-		dotnet publish /build/src/WebUI/WebUI.csproj -c Release -r linux-arm64 -o /build/published --version-suffix $VERSION ; \
+		dotnet publish /build/src/WebUI/WebUI.csproj -c Release -r linux-arm64 -o /build/published --version-suffix $VERSION --self-contained ; \
 	else \
-		dotnet publish /build/src/WebUI/WebUI.csproj -c Release -r linux-x64 -o /build/published --version-suffix $VERSION ; \
+		dotnet publish /build/src/WebUI/WebUI.csproj -c Release -r linux-x64 -o /build/published --version-suffix $VERSION --self-contained ; \
 	fi
 
 ###################

@@ -45,9 +45,9 @@ ENV VERSION=${VERSION}
 # BUILD API
 ###################
 RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
-		dotnet publish /build/src/Api/Api.csproj -c Release -r linux-arm64 -o /build/published --version-suffix $VERSION ; \
+		dotnet publish /build/src/Api/Api.csproj -c Release -r linux-arm64 -o /build/published --version-suffix $VERSION --self-contained ; \
 	else \
-		dotnet publish /build/src/Api/Api.csproj -c Release -r linux-x64 -o /build/published --version-suffix $VERSION ; \
+		dotnet publish /build/src/Api/Api.csproj -c Release -r linux-x64 -o /build/published --version-suffix $VERSION --self-contained ; \
 	fi
 
 ###################

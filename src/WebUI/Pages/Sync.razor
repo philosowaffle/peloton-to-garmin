@@ -1,60 +1,60 @@
 ﻿@page "/sync"
+@implements IDisposable
 @inject IApiClient _apiClient;
+@inject IHxMessengerService _toaster;
 
 <PageTitle>Sync</PageTitle>
 
-@if (!string.IsNullOrEmpty(ErrorMessage))
-{
-	<HxAlert Color="ThemeColor.Danger"><HxIcon Icon="@BootstrapIcon.ExclamationTriangleFill" /> @ErrorMessage</HxAlert>
-}
+<HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@selectedItems.Any()">
+	Sync <span class="badge bg-secondary">@selectedItems.Count()</span>
+</HxButton>
 
-@if (!string.IsNullOrEmpty(InfoMessage))
-{
-	<HxAlert Color="ThemeColor.Secondary"><HxIcon Icon="@BootstrapIcon.InfoCircleFill" /> @InfoMessage</HxAlert>
-}
-
-<HxButton Text="Sync" OnClick="SyncAsync" Color="ThemeColor.Primary" />
-
-<HxGrid TItem="RecentWorkout" MultiSelectionEnabled="true" TableContainerCssClass="table-responsive" @bind-SelectedDataItems="selectedItems" DataProvider="LoadDataAsync" PageSize="25">
+<HxGrid TItem="Workout" MultiSelectionEnabled="true" Responsive="true" DataProvider="LoadDataAsync" @bind-SelectedDataItems="selectedItems" PageSize="PageSize" SelectionEnabled="false">
 	<Columns>
-		<HxGridColumn TItem="RecentWorkout" HeaderText="Date" ItemTextSelector="@(item => DateTimeOffset.FromUnixTimeSeconds(item.Created_At).LocalDateTime.ToString())" SortString="@nameof(RecentWorkout.Created_At)" IsDefaultSortColumn="true" />
-		<HxGridColumn TItem="RecentWorkout" HeaderText="Title" ItemTextSelector="@(item => item.Ride.Title ?? item.Name)" SortString="@nameof(Ride.Title)" />
-		<HxGridColumn TItem="RecentWorkout" HeaderText="Status" ItemTextSelector="@(item => item.Status)" SortString="@nameof(RecentWorkout.Status)" />
+		<HxGridColumn TItem="Workout" HeaderText="Date" ItemTextSelector="@(item => DateTimeOffset.FromUnixTimeSeconds(item.Created_At).LocalDateTime.ToString())" />
+		<HxGridColumn TItem="Workout" HeaderText="Title" ItemTextSelector="@(item => item.Ride.Title ?? item.Name)" />
+		<HxGridColumn TItem="Workout" HeaderText="Status" ItemTextSelector="@(item => item.Status)" />
 	</Columns>
 </HxGrid>
 
-<HxButton Text="Sync" OnClick="SyncAsync" Color="ThemeColor.Primary" />
+<HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@selectedItems.Any()">
+	Sync <span class="badge bg-secondary">@selectedItems.Count()</span>
+</HxButton>
 
 @code {
 
-	private HashSet<RecentWorkout> selectedItems = new();
-	private string ErrorMessage;
-	private string InfoMessage;
-	private string SuccessMessage;
+	private HashSet<Workout> selectedItems = new();
+	private static int PageSize = 25;
 
-	public Sync() : base() => ClearMessages();
+	public Sync() : base() => _toaster?.Clear();
+	public void Dispose() => _toaster.Clear();
 
-	private async Task<GridDataProviderResult<RecentWorkout>> LoadDataAsync(GridDataProviderRequest<RecentWorkout> request)
+	private async Task<GridDataProviderResult<Workout>> LoadDataAsync(GridDataProviderRequest<Workout> request)
 	{
-		ClearMessages();
+		_toaster.Clear();
 
 		try 
 		{
-			var recentWorkouts = await _apiClient.PelotonWorkoutsGetAsync();
-			selectedItems.Clear();
-			return new GridDataProviderResult<RecentWorkout>() { Data = recentWorkouts.Items, TotalCount = recentWorkouts.Items.Count };
+			var pageIndex = request.StartIndex / PageSize;
+			var recentWorkouts = await _apiClient.PelotonWorkoutsGetAsync(new PelotonWorkoutsGetRequest() { PageSize = PageSize, PageIndex = pageIndex});
+			return new GridDataProviderResult<Workout>() { Data = recentWorkouts.Items, TotalCount = recentWorkouts.TotalItems };
+		} catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+			Log.Error("UI - Failed to load Peloton workouts.", e);
 		} catch (Exception e)
 		{
-			ErrorMessage = $"Failed to load recent Peloton workouts - {e.Message} - See logs for details.";
-			Log.Error("UI - Failed to load recent Peloton workouts.", e);
+			_toaster.AddError($"Failed to load Peloton workouts - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to load Peloton workouts.", e);
 		}
 
-		return new GridDataProviderResult<RecentWorkout>() { Data = new List<RecentWorkout>(), TotalCount = 0 };
+		return new GridDataProviderResult<Workout>() { Data = new List<Workout>(), TotalCount = 0 };
 	}
 
 	private async Task SyncAsync()
 	{
-		ClearMessages();
+		_toaster.Clear();
 
 		try
 		{
@@ -63,34 +63,34 @@
 
 			if (result.SyncSuccess)
 			{
-				SuccessMessage = "Successfully synced selected workouts.";
+				_toaster.AddInformation("Successfully synced selected workouts.");
 			} else
 			{
-				foreach (var error in result.Errors)
+				if (result.Errors is null || !result.Errors.Any())
 				{
-					ErrorMessage += error + "\n";
+					_toaster.AddError("An unknown error occurred. Please check logs for more details.");
+					return;
 				}
 
-				if (string.IsNullOrEmpty(ErrorMessage))
-					ErrorMessage = "An unknown error occurred.";
+				foreach (var error in result.Errors)
+					_toaster.AddError(error.Message);
 			}
 
 		} catch(FlurlHttpTimeoutException te)
 		{
-			InfoMessage = $"Long running sync will continue running in the background.";
+			_toaster.AddInformation("Long running sync will continue running in the background.");
 			Log.Information("UI - Sync timeout reached.", te);
+		} 
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+			Log.Error("UI - Failed to load Peloton workouts.", e);
 		}
 		catch (Exception e)
 		{
-			ErrorMessage = $"Failed to sync - {e.Message} - See logs for details.";
+			_toaster.AddError($"Failed to sync - {e.Message} - See logs for details.");
 			Log.Error("UI - Failed to sync.", e);
 		}
-	}
-
-	private void ClearMessages()
-	{
-		ErrorMessage = string.Empty;
-		InfoMessage = string.Empty;
-		SuccessMessage = string.Empty;
 	}
 }

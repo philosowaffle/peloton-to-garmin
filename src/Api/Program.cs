@@ -6,6 +6,7 @@ using Common.Service;
 using Common.Stateful;
 using Conversion;
 using Garmin;
+using Microsoft.Extensions.Caching.Memory;
 using Peloton;
 using Prometheus;
 using Serilog;
@@ -56,20 +57,28 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
 	c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo() { Title = "P2G API", Version = "v1" });
-	var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-	c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+	var executingAssembly = Assembly.GetExecutingAssembly();
+	var referencedAssemblies = executingAssembly.GetReferencedAssemblies();
+	var docPaths = referencedAssemblies
+					.Union(new AssemblyName[] { executingAssembly.GetName() })
+					.Select(a => Path.Combine(AppContext.BaseDirectory, $"{a.Name}.xml"))
+					.Where(f => File.Exists(f)).ToArray();
+	foreach (var docPath in docPaths)
+		c.IncludeXmlComments(docPath);
 });
 
+// CACHE
+builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
+
+// SETTINGS
 builder.Services.AddSingleton<ISettingsDb, SettingsDb>();
 builder.Services.AddSingleton<ISettingsService, SettingsService>();
-
 builder.Services.AddTransient<Settings>((serviceProvider) =>
 {
 	using var tracing = Tracing.Trace($"{nameof(Program)}.DI");
 	var settingsService = serviceProvider.GetService<ISettingsService>();
 	return settingsService?.GetSettingsAsync().GetAwaiter().GetResult() ?? new Settings();
 });
-
 builder.Services.AddSingleton<AppConfiguration>((serviceProvider) =>
 {
 	var config = new AppConfiguration();
@@ -80,8 +89,8 @@ builder.Services.AddSingleton<AppConfiguration>((serviceProvider) =>
 });
 
 builder.Services.AddSingleton<IFileHandling, IOWrapper>();
-builder.Services.AddTransient<IPelotonApi, Peloton.ApiClient>();
-builder.Services.AddTransient<IPelotonService, PelotonService>();
+builder.Services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
+builder.Services.AddSingleton<IPelotonService, PelotonService>();
 builder.Services.AddTransient<IGarminUploader, GarminUploader>();
 
 builder.Services.AddSingleton<ISyncStatusDb, SyncStatusDb>();

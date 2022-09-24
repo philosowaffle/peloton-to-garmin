@@ -16,7 +16,7 @@ namespace Conversion
 
 		public override ConvertStatus Convert(P2GWorkout workoutData)
 		{
-			if (!_config.Format.Json) return new ConvertStatus() { Success = true, ErrorMessage = "Json format disabled in config." };
+			if (!_config.Format.Json) return new ConvertStatus() { Result = ConversionResult.Skipped };
 
 			return base.ConvertForFormat(FileFormat.Json, workoutData);
 		}

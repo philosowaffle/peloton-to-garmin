@@ -1,5 +1,5 @@
-﻿using Api.Contracts;
-using Common;
+﻿using Common;
+using Common.Dto.Api;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers
@@ -44,7 +44,7 @@ namespace WebApp.Controllers
 				Forums = "https://github.com/philosowaffle/peloton-to-garmin/discussions",
 				Donate = "https://www.buymeacoffee.com/philosowaffle",
 				Issues = "https://github.com/philosowaffle/peloton-to-garmin/issues",
-				Api = $"{_appConfiguration.Api.HostUrl}/swagger"
+				Api = $"{this.Request.Scheme}://{this.Request.Host}/swagger"
 			};
 		}
 	}
