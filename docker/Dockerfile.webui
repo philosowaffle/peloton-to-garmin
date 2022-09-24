@@ -26,7 +26,7 @@ SHELL ["/bin/bash", "-c"]
 
 RUN dotnet tool install -g Microsoft.Web.LibraryManager.Cli \
 	&& export PATH="$PATH:/root/.dotnet/tools" \
-	&& libman --version
+	&& /root/.dotnet/tools/libman --version
 
 ARG TARGETPLATFORM
 ARG VERSION
@@ -40,7 +40,7 @@ ENV VERSION=${VERSION}
 ###################
 
 WORKDIR /build/src/WebUI
-RUN libman restore
+RUN /root/.dotnet/tools/libman restore
 
 WORKDIR /build
 RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
