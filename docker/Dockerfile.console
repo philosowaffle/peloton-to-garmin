@@ -44,7 +44,7 @@ ENV VERSION=${VERSION}
 RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; \
 		then export RUNTIME=linux-arm64; \
 	elif [[ "$TARGETPLATFORM" = "linux/arm/v7" ]] ; \
-		then export RUNTIME=linux-arm32; \
+		then export RUNTIME=linux-arm; \
 	else \
 		export RUNTIME=linux-x64; \
 	fi
