@@ -57,8 +57,6 @@ else
 	private SettingsGetResponse settings;
 	private bool syncRunning;
 
-	private string ErrorMessage;
-
 	private string syncStatusBorderClass = "border-light";
 	private string syncStatusTextClass = "";
 
@@ -69,8 +67,6 @@ else
 
 		settings = new SettingsGetResponse();
 		syncRunning = false;
-
-		ErrorMessage = string.Empty;
 
 		_toaster?.Clear();
 	}
@@ -130,7 +126,6 @@ else
 			syncRunning = true;
 			syncResponse = null;
 			syncResponse = await _apiClient.SyncPostAsync(new SyncPostRequest() { NumWorkouts = settings.Peloton.NumWorkoutsToDownload });
-			ErrorMessage = string.Empty;
 		}
 		catch (FlurlHttpTimeoutException te){
 			_toaster.AddInformation("Long running sync will continue running in the background.");

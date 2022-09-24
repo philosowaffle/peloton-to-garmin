@@ -44,7 +44,7 @@ namespace WebApp.Controllers
 				Forums = "https://github.com/philosowaffle/peloton-to-garmin/discussions",
 				Donate = "https://www.buymeacoffee.com/philosowaffle",
 				Issues = "https://github.com/philosowaffle/peloton-to-garmin/issues",
-				Api = $"{_appConfiguration.Api.HostUrl}/swagger"
+				Api = $"{this.Request.Scheme}://{this.Request.Host}/swagger"
 			};
 		}
 	}
