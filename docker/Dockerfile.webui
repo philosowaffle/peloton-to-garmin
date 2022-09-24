@@ -25,7 +25,6 @@ WORKDIR /build
 SHELL ["/bin/bash", "-c"]
 
 RUN dotnet tool install -g Microsoft.Web.LibraryManager.Cli \
-	&& export PATH="$PATH:/root/.dotnet/tools" \
 	&& /root/.dotnet/tools/libman --version
 
 ARG TARGETPLATFORM

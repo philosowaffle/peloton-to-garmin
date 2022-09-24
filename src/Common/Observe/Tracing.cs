@@ -69,6 +69,7 @@ namespace Common.Observe
 							{
 								o.AgentHost = config.AgentHost;
 								o.AgentPort = config.AgentPort.GetValueOrDefault();
+								o.Protocol = OpenTelemetry.Exporter.JaegerExportProtocol.UdpCompactThrift;
 							})
 							.Build();
 
@@ -111,6 +112,7 @@ namespace Common.Observe
 						{
 							o.AgentHost = config.AgentHost;
 							o.AgentPort = config.AgentPort.GetValueOrDefault();
+							o.Protocol = OpenTelemetry.Exporter.JaegerExportProtocol.UdpCompactThrift;
 						})
 					);
 
