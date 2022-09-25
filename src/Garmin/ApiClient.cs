@@ -56,10 +56,12 @@ namespace Garmin
 
 			if (auth is object 
 				&& auth.Email == settings.Garmin.Email 
-				&& auth.Password == settings.Garmin.Password)
+				&& auth.Password == settings.Garmin.Password
+				&& auth.CookieJar is object)
 				return auth;
 
 			GarminUploader.ValidateConfig(settings);
+			auth = new();
 			auth.Email = settings.Garmin.Email;
 			auth.Password = settings.Garmin.Password;
 			CookieJar jar = null;

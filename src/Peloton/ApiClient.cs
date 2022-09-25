@@ -45,8 +45,14 @@ namespace Peloton
 				throw new ArgumentException("Peloton password is not set and is required.");
 
 			var auth = _settingsService.GetPelotonApiAuthentication(settings.Peloton.Email);
-			if (auth is null) auth = new ();
+			if (auth is object
+				&& auth.Email == settings.Peloton.Email
+				&& auth.Password == settings.Peloton.Password
+				&& !string.IsNullOrEmpty(auth.UserId)
+				&& !string.IsNullOrEmpty(auth.SessionId))
+				return auth;
 
+			auth = new();
 			auth.Email = settings.Peloton.Email;
 			auth.Password = settings.Peloton.Password;
 
