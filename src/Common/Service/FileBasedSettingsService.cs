@@ -1,4 +1,5 @@
-﻿using Common.Observe;
+﻿using Common.Dto.Garmin;
+using Common.Observe;
 using Common.Stateful;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -80,6 +81,13 @@ namespace Common.Service
 			using var tracing = Tracing.Trace($"{nameof(FileBasedSettingsService)}.{nameof(GetAppConfigurationAsync)}");
 
 			return _next.GetAppConfigurationAsync();
+		}
+
+		public Task<GarminDeviceInfo> GetCustomDeviceInfoAsync(string garminEmail)
+		{
+			using var tracing = Tracing.Trace($"{nameof(FileBasedSettingsService)}.{nameof(GetCustomDeviceInfoAsync)}");
+
+			return _next.GetCustomDeviceInfoAsync(garminEmail);
 		}
 	}
 }

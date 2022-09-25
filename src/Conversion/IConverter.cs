@@ -75,13 +75,13 @@ namespace Conversion
 
 		public abstract Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData);
 
-		protected abstract T Convert(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings);
+		protected abstract Task<T> ConvertAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings);
 
 		protected abstract void Save(T data, string path);
 
 		protected abstract void SaveLocalCopy(string sourcePath, string workoutTitle, Settings settings);
 
-		protected ConvertStatus ConvertForFormat(FileFormat format, P2GWorkout workoutData, Settings settings)
+		protected async Task<ConvertStatus> ConvertForFormatAsync(FileFormat format, P2GWorkout workoutData, Settings settings)
 		{
 			using var tracing = Tracing.Trace($"{nameof(IConverter)}.{nameof(ConvertAsync)}.Workout")?
 										.WithWorkoutId(workoutData.Workout.Id)
@@ -94,7 +94,7 @@ namespace Conversion
 			var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout);
 			try
 			{
-				converted = Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
+				converted = await ConvertAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
 			}
 			catch (Exception e)
 			{
@@ -476,16 +476,11 @@ namespace Conversion
 			return metric;
 		}
 
-		protected GarminDeviceInfo GetDeviceInfo(FitnessDiscipline sport, Settings settings)
+		protected async Task<GarminDeviceInfo> GetDeviceInfoAsync(FitnessDiscipline sport, Settings settings)
 		{
-			GarminDeviceInfo userProvidedDeviceInfo = null;
-			var userDevicePath = settings.Format.DeviceInfoPath;
+			GarminDeviceInfo userProvidedDeviceInfo = await _settingsService.GetCustomDeviceInfoAsync(settings.Garmin.Email);
 
-			if (!string.IsNullOrEmpty(userDevicePath))
-			{
-				if(_fileHandler.TryDeserializeXml(userDevicePath, out userProvidedDeviceInfo))
-					return userProvidedDeviceInfo;
-			}
+			if (userProvidedDeviceInfo is object) return userProvidedDeviceInfo;
 
 			if(sport == FitnessDiscipline.Cycling)
 				return CyclingDevice;

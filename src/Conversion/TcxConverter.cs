@@ -22,7 +22,7 @@ namespace Conversion
 			var settings = await _settingsService.GetSettingsAsync();
 			if (!settings.Format.Tcx) return new ConvertStatus() {  Result = ConversionResult.Skipped };
 
-			return base.ConvertForFormat(FileFormat.Fit, workoutData, settings);
+			return await ConvertForFormatAsync(FileFormat.Fit, workoutData, settings);
 		}
 
 		protected override void Save(XElement data, string path)
@@ -44,7 +44,7 @@ namespace Conversion
 			_logger.Information("[{@Format}] Backed up file {@File}", FileFormat.Tcx, backupDest);
 		}
 
-		protected override XElement Convert(Workout workout, WorkoutSamples samples, UserData userData, Settings settings)
+		protected override async Task<XElement> ConvertAsync(Workout workout, WorkoutSamples samples, UserData userData, Settings settings)
 		{
 			using var tracing = Tracing.Trace($"{nameof(TcxConverter)}.{nameof(ConvertAsync)}")
 								.WithTag(TagKey.Format, FileFormat.Tcx.ToString())
@@ -64,7 +64,7 @@ namespace Conversion
 			var hrSummary = GetHeartRateSummary(samples);
 			var cadenceSummary = GetCadenceSummary(samples);
 			var resistanceSummary = GetResistanceSummary(samples);
-			var deviceInfo = GetDeviceInfo(workout.Fitness_Discipline, settings);
+			var deviceInfo = await GetDeviceInfoAsync(workout.Fitness_Discipline, settings);
 
 			var lx = new XElement(activityExtensions + "TPX");
 			lx.Add(new XElement(activityExtensions + "TotalPower", workout?.Total_Work));

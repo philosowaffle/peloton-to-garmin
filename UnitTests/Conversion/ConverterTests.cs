@@ -6,6 +6,7 @@ using Common.Service;
 using Conversion;
 using Dynastream.Fit;
 using FluentAssertions;
+using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
 using System;
@@ -494,16 +495,13 @@ namespace UnitTests.Conversion
 		[TestCase(FitnessDiscipline.Stretching)]
 		[TestCase(FitnessDiscipline.Walking)]
 		[TestCase(FitnessDiscipline.Yoga)]
-		public void GetDeviceInfo_ChoosesUserDevice_WhenProvided(FitnessDiscipline sport)
+		public async Task GetDeviceInfo_ChoosesUserDevice_WhenProvided(FitnessDiscipline sport)
 		{
 			// SETUP
-			var mocker = new AutoMocker();			
-			var config = new Settings() { Format = new Format() { DeviceInfoPath = "somePath" } };
-			mocker.Use(config);
-
+			var mocker = new AutoMocker();
 			var converter = mocker.CreateInstance<ConverterInstance>();
+			var settingsService = mocker.GetMock<ISettingsService>();
 
-			var fileHandler = mocker.GetMock<IFileHandling>();
 			GarminDeviceInfo outDevice = new GarminDeviceInfo()
 			{
 				Name = "UserDevice", // Max 20 Chars
@@ -516,12 +514,11 @@ namespace UnitTests.Conversion
 					BuildMajor = 0,
 					BuildMinor = 0,
 				}
-			}; 
-			fileHandler.Setup(x => x.TryDeserializeXml<GarminDeviceInfo>("somePath", out outDevice))
-				.Returns(true);
+			};
+			settingsService.Setup(s => s.GetCustomDeviceInfoAsync(It.IsAny<string>())).ReturnsAsync(outDevice);
 
 			// ACT
-			var deviceInfo = converter.GetDeviceInfo1(sport, config);
+			var deviceInfo = await converter.GetDeviceInfo1(sport, new Settings());
 
 			// ASSERT
 			deviceInfo.Name.Should().Be("UserDevice");
@@ -535,7 +532,7 @@ namespace UnitTests.Conversion
 		}
 
 		[Test]
-		public void GetDeviceInfo_FallsBackToDefault_WhenUserDeviceFailsToDeserialize()
+		public async Task GetDeviceInfo_FallsBackToDefault_WhenUserDeviceFailsToDeserialize()
 		{
 			// SETUP
 			var mocker = new AutoMocker();
@@ -554,7 +551,7 @@ namespace UnitTests.Conversion
 				.Returns(false);
 
 			// ACT
-			var deviceInfo = converter.GetDeviceInfo1(FitnessDiscipline.Bike_Bootcamp, config);
+			var deviceInfo = await converter.GetDeviceInfo1(FitnessDiscipline.Bike_Bootcamp, config);
 
 			// ASSERT
 			deviceInfo.Name.Should().Be("Forerunner 945");
@@ -568,7 +565,7 @@ namespace UnitTests.Conversion
 		}
 
 		[Test]
-		public void GetDeviceInfo_ForCycling_ShouldReturn_CyclingDevice()
+		public async Task GetDeviceInfo_ForCycling_ShouldReturn_CyclingDevice()
 		{
 			// SETUP
 			var mocker = new AutoMocker();
@@ -576,7 +573,7 @@ namespace UnitTests.Conversion
 			var config = new Settings();
 
 			// ACT
-			var deviceInfo = converter.GetDeviceInfo1(FitnessDiscipline.Cycling, config);
+			var deviceInfo = await converter.GetDeviceInfo1(FitnessDiscipline.Cycling, config);
 
 			// ASSERT
 			deviceInfo.Name.Should().Be("TacxTrainingAppWin");
@@ -598,7 +595,7 @@ namespace UnitTests.Conversion
 		[TestCase(FitnessDiscipline.Stretching)]
 		[TestCase(FitnessDiscipline.Walking)]
 		[TestCase(FitnessDiscipline.Yoga)]
-		public void GetDeviceInfo_ForNonCycling_ShouldReturn_DefaultDevice(FitnessDiscipline sport)
+		public async Task GetDeviceInfo_ForNonCycling_ShouldReturn_DefaultDevice(FitnessDiscipline sport)
 		{
 			// SETUP
 			var mocker = new AutoMocker();
@@ -606,7 +603,7 @@ namespace UnitTests.Conversion
 			var config = new Settings();
 
 			// ACT
-			var deviceInfo = converter.GetDeviceInfo1(sport, config);
+			var deviceInfo = await converter.GetDeviceInfo1(sport, config);
 
 			// ASSERT
 			deviceInfo.Name.Should().Be("Forerunner 945");
@@ -659,7 +656,7 @@ namespace UnitTests.Conversion
 		{
 			public ConverterInstance(ISettingsService settings, IFileHandling fileHandling) : base(settings, fileHandling) { }
 
-			protected override string Convert(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
+			protected override Task<string> ConvertAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
 			{
 				throw new NotImplementedException();
 			}
@@ -739,14 +736,14 @@ namespace UnitTests.Conversion
 				return base.GetCadenceSummary(workoutSamples);
 			}
 
-			public GarminDeviceInfo GetDeviceInfo1(FitnessDiscipline sport, Settings settings)
+			public Task<GarminDeviceInfo> GetDeviceInfo1(FitnessDiscipline sport, Settings settings)
 			{
-				return base.GetDeviceInfo(sport, settings);
+				return base.GetDeviceInfoAsync(sport, settings);
 			}
 
-			public ConvertStatus Convert(P2GWorkout workoutData, Settings settings)
+			public async Task<ConvertStatus> Convert(P2GWorkout workoutData, Settings settings)
 			{
-				return base.ConvertForFormat(FileFormat.Fit, workoutData, settings);
+				return await ConvertForFormatAsync(FileFormat.Fit, workoutData, settings);
 			}
 
 			public override Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData)

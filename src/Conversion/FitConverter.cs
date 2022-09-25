@@ -26,7 +26,7 @@ namespace Conversion
 			var settings = await _settingsService.GetSettingsAsync();
 			if (!settings.Format.Fit) return new ConvertStatus() { Result = ConversionResult.Skipped};
 
-			return base.ConvertForFormat(FileFormat.Fit, workout, settings);
+			return await ConvertForFormatAsync(FileFormat.Fit, workout, settings);
 		}
 
 		protected override void Save(Tuple<string, ICollection<Mesg>> data, string path)
@@ -62,7 +62,7 @@ namespace Conversion
 			_logger.Information("[{@Format}] Backed up file {@File}", FileFormat.Fit, backupDest);
 		}
 
-		protected override Tuple<string, ICollection<Mesg>> Convert(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
+		protected override async Task<Tuple<string, ICollection<Mesg>>> ConvertAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(ConvertAsync)}")
 										.WithTag(TagKey.Format, FileFormat.Fit.ToString())
@@ -76,7 +76,7 @@ namespace Conversion
 			var title = WorkoutHelper.GetTitle(workout);
 			var sport = GetGarminSport(workout);
 			var subSport = GetGarminSubSport(workout);
-			var deviceInfo = GetDeviceInfo(workout.Fitness_Discipline, settings);
+			var deviceInfo = await GetDeviceInfoAsync(workout.Fitness_Discipline, settings);
 
 			if (sport == Sport.Invalid)
 			{

@@ -136,18 +136,18 @@ namespace UnitTests
 
 			public ConverterInstance(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
 
-			public ICollection<Mesg> ConvertForTest(string path, Settings settings)
+			public async Task<ICollection<Mesg>> ConvertForTest(string path, Settings settings)
 			{
 				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
-				var converted = this.Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
+				var converted = await this.ConvertAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
 
 				return converted.Item2;
 			}
 
-			public Tuple<string, ICollection<Mesg>> Convert(string path, Settings settings)
+			public async Task<Tuple<string, ICollection<Mesg>>> Convert(string path, Settings settings)
 			{
 				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
-				var converted = this.Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
+				var converted = await this.ConvertAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
 
 				return converted;
 			}

@@ -9,6 +9,7 @@ using Moq.AutoMock;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace UnitTests.Conversion
 {
@@ -48,7 +49,7 @@ namespace UnitTests.Conversion
 		[TestCase("walking_workout_01", PreferredLapType.Class_Targets)]
 		[TestCase("running_workout_no_metrics", PreferredLapType.Class_Targets)]
 		[TestCase("ride_based_on_distance", PreferredLapType.Class_Targets)]
-		public void Fit_Converter_Creates_Valid_Fit(string filename, PreferredLapType lapType)
+		public async Task Fit_Converter_Creates_Valid_Fit(string filename, PreferredLapType lapType)
 		{
 			var workoutPath = Path.Join(DataDirectory, $"{filename}.json");
 			var settings = new Settings()
@@ -69,7 +70,7 @@ namespace UnitTests.Conversion
 			var autoMocker = new AutoMocker();
 			var converter = autoMocker.CreateInstance<ConverterInstance>();
 
-			var convertedMesgs = converter.ConvertForTest(workoutPath, settings);
+			var convertedMesgs = await converter.ConvertForTest(workoutPath, settings);
 
 			convertedMesgs.Should().NotBeNullOrEmpty();
 
@@ -138,10 +139,10 @@ namespace UnitTests.Conversion
 
 			public ConverterInstance(ISettingsService settings) : base(settings, null) { }
 
-			public ICollection<Mesg> ConvertForTest(string path, Settings settings)
+			public async Task<ICollection<Mesg>> ConvertForTest(string path, Settings settings)
 			{
 				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
-				var converted = this.Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
+				var converted = await this.ConvertAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
 
 				return converted.Item2;
 			}

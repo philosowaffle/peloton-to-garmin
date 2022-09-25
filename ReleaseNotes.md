@@ -12,3 +12,4 @@
 ## Changes
 
 - [#316] Bump dependencies
+- [#333] Refactor Converters, Settings, Configuration - general improvments

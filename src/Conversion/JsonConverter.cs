@@ -21,13 +21,13 @@ namespace Conversion
 			var settings = await _settingsService.GetSettingsAsync();
 			if (!settings.Format.Json) return new ConvertStatus() { Result = ConversionResult.Skipped };
 
-			return ConvertForFormat(FileFormat.Json, workoutData, settings);
+			return await ConvertForFormatAsync(FileFormat.Json, workoutData, settings);
 		}
 
-		protected override P2GWorkout Convert(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
+		protected override Task<P2GWorkout> ConvertAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
 		{
 			var result = new P2GWorkout() { UserData = userData, Workout = workout, WorkoutSamples = workoutSamples };
-			return result;
+			return Task.FromResult(result);
 		}
 
 		protected override void Save(P2GWorkout data, string path)

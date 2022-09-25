@@ -51,16 +51,16 @@ static IHostBuilder CreateHostBuilder(string[] args)
 			// CACHE
 			services.AddSingleton<IMemoryCache, MemoryCache>();
 
+			// IO
+			services.AddSingleton<IFileHandling, IOWrapper>();
+
 			// SETTINGS
 			services.AddSingleton<ISettingsDb, SettingsDb>();
 			services.AddSingleton<ISettingsService>((serviceProvider) =>
 			{
-				var settingService = new SettingsService(serviceProvider.GetService<ISettingsDb>(), serviceProvider.GetService<IMemoryCache>(), serviceProvider.GetService<IConfiguration>());
+				var settingService = new SettingsService(serviceProvider.GetService<ISettingsDb>(), serviceProvider.GetService<IMemoryCache>(), serviceProvider.GetService<IConfiguration>(), serviceProvider.GetService<IFileHandling>());
 				return new FileBasedSettingsService(serviceProvider.GetService<IConfiguration>(), settingService);
 			});
-
-			// IO
-			services.AddSingleton<IFileHandling, IOWrapper>();
 
 			// PELOTON
 			services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
