@@ -4,6 +4,7 @@ using Common.Dto.Garmin;
 using Common.Dto.Peloton;
 using Common.Helpers;
 using Common.Observe;
+using Common.Service;
 using Common.Stateful;
 using Dynastream.Fit;
 using Prometheus;
@@ -11,6 +12,7 @@ using Serilog;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Metrics = Prometheus.Metrics;
 using Summary = Common.Dto.Peloton.Summary;
 
@@ -18,7 +20,7 @@ namespace Conversion
 {
 	public interface IConverter
 	{
-		ConvertStatus Convert(P2GWorkout workoutData);
+		Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData);
 	}
 
 	public abstract class Converter<T> : IConverter
@@ -62,26 +64,26 @@ namespace Conversion
 
 		public static readonly float _metersPerMile = 1609.34f;
 
-		protected Settings _config;
-		protected IFileHandling _fileHandler;
+		protected readonly ISettingsService _settingsService;
+		protected readonly IFileHandling _fileHandler;
 
-		public Converter(Settings config, IFileHandling fileHandler)
+		public Converter(ISettingsService settingsService, IFileHandling fileHandler)
 		{
-			_config = config;
+			_settingsService = settingsService;
 			_fileHandler = fileHandler;
 		}
 
-		public abstract ConvertStatus Convert(P2GWorkout workoutData);
+		public abstract Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData);
 
-		protected abstract T Convert(Workout workout, WorkoutSamples workoutSamples, UserData userData);
+		protected abstract T Convert(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings);
 
 		protected abstract void Save(T data, string path);
 
-		protected abstract void SaveLocalCopy(string sourcePath, string workoutTitle);
+		protected abstract void SaveLocalCopy(string sourcePath, string workoutTitle, Settings settings);
 
-		protected ConvertStatus ConvertForFormat(FileFormat format, P2GWorkout workoutData)
+		protected ConvertStatus ConvertForFormat(FileFormat format, P2GWorkout workoutData, Settings settings)
 		{
-			using var tracing = Tracing.Trace($"{nameof(IConverter)}.{nameof(Convert)}.Workout")?
+			using var tracing = Tracing.Trace($"{nameof(IConverter)}.{nameof(ConvertAsync)}.Workout")?
 										.WithWorkoutId(workoutData.Workout.Id)
 										.WithTag(TagKey.Format, format.ToString());
 
@@ -92,7 +94,7 @@ namespace Conversion
 			var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout);
 			try
 			{
-				converted = Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData);
+				converted = Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
 			}
 			catch (Exception e)
 			{
@@ -107,10 +109,10 @@ namespace Conversion
 			}
 
 			// write to output dir
-			var path = Path.Join(_config.App.WorkingDirectory, $"{workoutTitle}.{format}");
+			var path = Path.Join(settings.App.WorkingDirectory, $"{workoutTitle}.{format}");
 			try
 			{
-				_fileHandler.MkDirIfNotExists(_config.App.WorkingDirectory);
+				_fileHandler.MkDirIfNotExists(settings.App.WorkingDirectory);
 				Save(converted, path);
 				status.Result = ConversionResult.Success;
 			}
@@ -129,7 +131,7 @@ namespace Conversion
 			// copy to local save
 			try
 			{
-				SaveLocalCopy(path, workoutTitle);
+				SaveLocalCopy(path, workoutTitle, settings);
 			}
 			catch (Exception e)
 			{
@@ -137,12 +139,12 @@ namespace Conversion
 			}
 
 			// copy to upload dir
-			if (_config.Garmin.Upload && _config.Garmin.FormatToUpload == format)
+			if (settings.Garmin.Upload && settings.Garmin.FormatToUpload == format)
 			{
 				try
 				{
-					var uploadDest = Path.Join(_config.App.UploadDirectory, $"{workoutTitle}.{format}");
-					_fileHandler.MkDirIfNotExists(_config.App.UploadDirectory);
+					var uploadDest = Path.Join(settings.App.UploadDirectory, $"{workoutTitle}.{format}");
+					_fileHandler.MkDirIfNotExists(settings.App.UploadDirectory);
 					_fileHandler.Copy(path, uploadDest, overwrite: true);
 					_logger.Debug("Prepped {@Format} for upload: {@Path}", format, uploadDest);
 				}
@@ -474,10 +476,10 @@ namespace Conversion
 			return metric;
 		}
 
-		protected GarminDeviceInfo GetDeviceInfo(FitnessDiscipline sport)
+		protected GarminDeviceInfo GetDeviceInfo(FitnessDiscipline sport, Settings settings)
 		{
 			GarminDeviceInfo userProvidedDeviceInfo = null;
-			var userDevicePath = _config.Format.DeviceInfoPath;
+			var userDevicePath = settings.Format.DeviceInfoPath;
 
 			if (!string.IsNullOrEmpty(userDevicePath))
 			{

@@ -2,9 +2,11 @@
 using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Observe;
+using Common.Service;
 using Serilog;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Conversion
@@ -13,13 +15,14 @@ namespace Conversion
 	{
 		private static readonly ILogger _logger = LogContext.ForClass<TcxConverter>();
 
-		public TcxConverter(Settings settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
+		public TcxConverter(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
 
-		public override ConvertStatus Convert(P2GWorkout workout)
+		public override async Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData)
 		{
-			if (!_config.Format.Tcx) return new ConvertStatus() {  Result = ConversionResult.Skipped };
+			var settings = await _settingsService.GetSettingsAsync();
+			if (!settings.Format.Tcx) return new ConvertStatus() {  Result = ConversionResult.Skipped };
 
-			return base.ConvertForFormat(FileFormat.Fit, workout);
+			return base.ConvertForFormat(FileFormat.Fit, workoutData, settings);
 		}
 
 		protected override void Save(XElement data, string path)
@@ -30,20 +33,20 @@ namespace Conversion
 			data.Save(path);
 		}
 
-		protected override void SaveLocalCopy(string sourcePath, string workoutTitle)
+		protected override void SaveLocalCopy(string sourcePath, string workoutTitle, Settings settings)
 		{
-			if (!_config.Format.Tcx || !_config.Format.SaveLocalCopy) return;
+			if (!settings.Format.Tcx || !settings.Format.SaveLocalCopy) return;
 
-			_fileHandler.MkDirIfNotExists(_config.App.TcxDirectory);
+			_fileHandler.MkDirIfNotExists(settings.App.TcxDirectory);
 
-			var backupDest = Path.Join(_config.App.TcxDirectory, $"{workoutTitle}.tcx");
+			var backupDest = Path.Join(settings.App.TcxDirectory, $"{workoutTitle}.tcx");
 			_fileHandler.Copy(sourcePath, backupDest, overwrite: true);
 			_logger.Information("[{@Format}] Backed up file {@File}", FileFormat.Tcx, backupDest);
 		}
 
-		protected override XElement Convert(Workout workout, WorkoutSamples samples, UserData userDat)
+		protected override XElement Convert(Workout workout, WorkoutSamples samples, UserData userData, Settings settings)
 		{
-			using var tracing = Tracing.Trace($"{nameof(TcxConverter)}.{nameof(Convert)}")
+			using var tracing = Tracing.Trace($"{nameof(TcxConverter)}.{nameof(ConvertAsync)}")
 								.WithTag(TagKey.Format, FileFormat.Tcx.ToString())
 								.WithWorkoutId(workout.Id);
 
@@ -61,7 +64,7 @@ namespace Conversion
 			var hrSummary = GetHeartRateSummary(samples);
 			var cadenceSummary = GetCadenceSummary(samples);
 			var resistanceSummary = GetResistanceSummary(samples);
-			var deviceInfo = GetDeviceInfo(workout.Fitness_Discipline);
+			var deviceInfo = GetDeviceInfo(workout.Fitness_Discipline, settings);
 
 			var lx = new XElement(activityExtensions + "TPX");
 			lx.Add(new XElement(activityExtensions + "TotalPower", workout?.Total_Work));

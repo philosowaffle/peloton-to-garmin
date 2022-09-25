@@ -10,12 +10,7 @@ namespace WebApp.Controllers
 	[Consumes("application/json")]
 	public class SystemInfoController : Controller
 	{
-		private readonly AppConfiguration _appConfiguration;
-
-		public SystemInfoController(AppConfiguration appConfiguration)
-		{
-			_appConfiguration = appConfiguration;
-		}
+		public SystemInfoController() { }
 
 		/// <summary>
 		/// Fetches information about the service and system.

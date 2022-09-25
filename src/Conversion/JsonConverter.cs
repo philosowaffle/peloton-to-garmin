@@ -2,9 +2,11 @@
 using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Observe;
+using Common.Service;
 using Serilog;
 using System.IO;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Conversion
 {
@@ -12,16 +14,17 @@ namespace Conversion
 	{
 		private static readonly ILogger _logger = LogContext.ForClass<JsonConverter>();
 
-		public JsonConverter(Settings settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
+		public JsonConverter(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
 
-		public override ConvertStatus Convert(P2GWorkout workoutData)
+		public override async Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData)
 		{
-			if (!_config.Format.Json) return new ConvertStatus() { Result = ConversionResult.Skipped };
+			var settings = await _settingsService.GetSettingsAsync();
+			if (!settings.Format.Json) return new ConvertStatus() { Result = ConversionResult.Skipped };
 
-			return base.ConvertForFormat(FileFormat.Json, workoutData);
+			return ConvertForFormat(FileFormat.Json, workoutData, settings);
 		}
 
-		protected override P2GWorkout Convert(Workout workout, WorkoutSamples workoutSamples, UserData userData)
+		protected override P2GWorkout Convert(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
 		{
 			var result = new P2GWorkout() { UserData = userData, Workout = workout, WorkoutSamples = workoutSamples };
 			return result;
@@ -36,16 +39,16 @@ namespace Conversion
 			_fileHandler.WriteToFile(path, serializedData.ToString());
 		}
 
-		protected override void SaveLocalCopy(string sourcePath, string workoutTitle)
+		protected override void SaveLocalCopy(string sourcePath, string workoutTitle, Settings settings)
 		{
-			if (!_config.Format.Json) return;
+			if (!settings.Format.Json) return;
 
 			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(Save)}")
 										.WithTag(TagKey.Format, FileFormat.Json.ToString());
 
-			_fileHandler.MkDirIfNotExists(_config.App.JsonDirectory);
+			_fileHandler.MkDirIfNotExists(settings.App.JsonDirectory);
 
-			var backupDest = Path.Join(_config.App.JsonDirectory, $"{workoutTitle}.json");
+			var backupDest = Path.Join(settings.App.JsonDirectory, $"{workoutTitle}.json");
 			_fileHandler.Copy(sourcePath, backupDest, overwrite: true);
 			_logger.Information("[@Format] Backed up file {@File}", FileFormat.Fit, backupDest);
 		}

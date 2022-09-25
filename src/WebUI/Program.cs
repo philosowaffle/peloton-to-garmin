@@ -25,10 +25,7 @@ var configProvider = builder.Configuration.AddJsonFile(Path.Join(Environment.Cur
 				.AddCommandLine(args);
 
 var config = new AppConfiguration();
-builder.Configuration.GetSection("Api").Bind(config.Api);
-builder.Configuration.GetSection("WebUI").Bind(config.WebUI);
-builder.Configuration.GetSection(nameof(Observability)).Bind(config.Observability);
-builder.Configuration.GetSection(nameof(Developer)).Bind(config.Developer);
+ConfigurationSetup.LoadConfigValues(builder.Configuration, config);
 
 builder.WebHost.UseUrls(config.WebUI.HostUrl);
 

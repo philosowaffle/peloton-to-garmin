@@ -20,11 +20,25 @@ namespace Common.Service
 			_next = next;
 		}
 
+		public void ClearGarminAuthentication(string garminEmail)
+		{
+			using var tracing = Tracing.Trace($"{nameof(FileBasedSettingsService)}.{nameof(ClearGarminAuthentication)}");
+
+			_next.ClearGarminAuthentication(garminEmail);
+		}
+
 		public void ClearPelotonApiAuthentication(string pelotonEmail)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FileBasedSettingsService)}.{nameof(ClearPelotonApiAuthentication)}");
 
 			_next.ClearPelotonApiAuthentication(pelotonEmail);
+		}
+
+		public GarminApiAuthentication GetGarminAuthentication(string garminEmail)
+		{
+			using var tracing = Tracing.Trace($"{nameof(FileBasedSettingsService)}.{nameof(GetGarminAuthentication)}");
+
+			return _next.GetGarminAuthentication(garminEmail);
 		}
 
 		public PelotonApiAuthentication GetPelotonApiAuthentication(string pelotonEmail)
@@ -38,7 +52,15 @@ namespace Common.Service
 		{
 			var settings = new Settings();
 			ConfigurationSetup.LoadConfigValues(_configurationLoader, settings);
+
 			return Task.FromResult(settings);
+		}
+
+		public void SetGarminAuthentication(GarminApiAuthentication authentication)
+		{
+			using var tracing = Tracing.Trace($"{nameof(FileBasedSettingsService)}.{nameof(SetGarminAuthentication)}");
+
+			_next.SetGarminAuthentication(authentication);
 		}
 
 		public void SetPelotonApiAuthentication(PelotonApiAuthentication authentication)
@@ -51,6 +73,13 @@ namespace Common.Service
 		public Task UpdateSettingsAsync(Settings settings)
 		{
 			throw new NotImplementedException();
+		}
+
+		public Task<AppConfiguration> GetAppConfigurationAsync()
+		{
+			using var tracing = Tracing.Trace($"{nameof(FileBasedSettingsService)}.{nameof(GetAppConfigurationAsync)}");
+
+			return _next.GetAppConfigurationAsync();
 		}
 	}
 }

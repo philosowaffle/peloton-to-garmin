@@ -2,6 +2,7 @@
 using Common.Dto;
 using Common.Dto.Garmin;
 using Common.Dto.Peloton;
+using Common.Service;
 using Conversion;
 using Dynastream.Fit;
 using FluentAssertions;
@@ -9,6 +10,7 @@ using Moq.AutoMock;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace UnitTests.Conversion
 {
@@ -519,7 +521,7 @@ namespace UnitTests.Conversion
 				.Returns(true);
 
 			// ACT
-			var deviceInfo = converter.GetDeviceInfo1(sport);
+			var deviceInfo = converter.GetDeviceInfo1(sport, config);
 
 			// ASSERT
 			deviceInfo.Name.Should().Be("UserDevice");
@@ -552,7 +554,7 @@ namespace UnitTests.Conversion
 				.Returns(false);
 
 			// ACT
-			var deviceInfo = converter.GetDeviceInfo1(FitnessDiscipline.Bike_Bootcamp);
+			var deviceInfo = converter.GetDeviceInfo1(FitnessDiscipline.Bike_Bootcamp, config);
 
 			// ASSERT
 			deviceInfo.Name.Should().Be("Forerunner 945");
@@ -571,9 +573,10 @@ namespace UnitTests.Conversion
 			// SETUP
 			var mocker = new AutoMocker();
 			var converter = mocker.CreateInstance<ConverterInstance>();
+			var config = new Settings();
 
 			// ACT
-			var deviceInfo = converter.GetDeviceInfo1(FitnessDiscipline.Cycling);
+			var deviceInfo = converter.GetDeviceInfo1(FitnessDiscipline.Cycling, config);
 
 			// ASSERT
 			deviceInfo.Name.Should().Be("TacxTrainingAppWin");
@@ -600,9 +603,10 @@ namespace UnitTests.Conversion
 			// SETUP
 			var mocker = new AutoMocker();
 			var converter = mocker.CreateInstance<ConverterInstance>();
+			var config = new Settings();
 
 			// ACT
-			var deviceInfo = converter.GetDeviceInfo1(sport);
+			var deviceInfo = converter.GetDeviceInfo1(sport, config);
 
 			// ASSERT
 			deviceInfo.Name.Should().Be("Forerunner 945");
@@ -653,9 +657,9 @@ namespace UnitTests.Conversion
 
 		private class ConverterInstance : Converter<string>
 		{
-			public ConverterInstance(Settings settings, IFileHandling fileHandling) : base(settings, fileHandling) { }
+			public ConverterInstance(ISettingsService settings, IFileHandling fileHandling) : base(settings, fileHandling) { }
 
-			protected override string Convert(Workout workout, WorkoutSamples workoutSamples, UserData userData)
+			protected override string Convert(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
 			{
 				throw new NotImplementedException();
 			}
@@ -735,17 +739,22 @@ namespace UnitTests.Conversion
 				return base.GetCadenceSummary(workoutSamples);
 			}
 
-			public GarminDeviceInfo GetDeviceInfo1(FitnessDiscipline sport)
+			public GarminDeviceInfo GetDeviceInfo1(FitnessDiscipline sport, Settings settings)
 			{
-				return base.GetDeviceInfo(sport);
+				return base.GetDeviceInfo(sport, settings);
 			}
 
-			public override ConvertStatus Convert(P2GWorkout workoutData)
+			public ConvertStatus Convert(P2GWorkout workoutData, Settings settings)
 			{
-				return base.ConvertForFormat(FileFormat.Fit, workoutData);
+				return base.ConvertForFormat(FileFormat.Fit, workoutData, settings);
 			}
 
-			protected override void SaveLocalCopy(string sourcePath, string workoutTitle)
+			public override Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData)
+			{
+				throw new NotImplementedException();
+			}
+
+			protected override void SaveLocalCopy(string sourcePath, string workoutTitle, Settings settings)
 			{
 				return;
 			}

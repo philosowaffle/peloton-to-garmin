@@ -13,12 +13,10 @@ namespace Api.Controllers;
 public class SettingsController : Controller
 {
 	private readonly ISettingsService _settingsService;
-	private readonly AppConfiguration _appConfiguration;
 
-	public SettingsController(ISettingsService settingsService, AppConfiguration appConfiguration)
+	public SettingsController(ISettingsService settingsService)
 	{
 		_settingsService = settingsService;
-		_appConfiguration = appConfiguration;
 	}
 
 	/// <summary>

@@ -19,6 +19,8 @@ namespace Common
 
 		public static void LoadConfigValues(IConfiguration provider, AppConfiguration config)
 		{
+			provider.GetSection("Api").Bind(config.Api);
+			provider.GetSection("WebUI").Bind(config.WebUI);
 			provider.GetSection(nameof(Observability)).Bind(config.Observability);
 			provider.GetSection(nameof(Developer)).Bind(config.Developer);
 		}

@@ -1,9 +1,11 @@
 ﻿using Common;
 using Common.Dto;
 using Common.Dto.Garmin;
+using Common.Service;
 using Conversion;
 using Dynastream.Fit;
 using FluentAssertions;
+using Moq.AutoMock;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
@@ -63,8 +65,11 @@ namespace UnitTests.Conversion
 					}
 				}
 			};
-			var converter = new ConverterInstance(settings);
-			var convertedMesgs = converter.ConvertForTest(workoutPath);
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var convertedMesgs = converter.ConvertForTest(workoutPath, settings);
 
 			convertedMesgs.Should().NotBeNullOrEmpty();
 
@@ -100,7 +105,8 @@ namespace UnitTests.Conversion
 				}
 			};
 
-			var converter = new ConverterInstance();
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
 
 			var mesg = converter.GetDeviceInfo(info, new Dynastream.Fit.DateTime(System.DateTime.Now));
 
@@ -128,21 +134,21 @@ namespace UnitTests.Conversion
 		{
 			private IOWrapper fileHandler = new IOWrapper();
 
-			public ConverterInstance() : base(new Settings(), null) { }
+			public ConverterInstance(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
 
-			public ConverterInstance(Settings settings) : base(settings, null) { }
+			public ConverterInstance(ISettingsService settings) : base(settings, null) { }
 
-			public ICollection<Mesg> ConvertForTest(string path)
+			public ICollection<Mesg> ConvertForTest(string path, Settings settings)
 			{
 				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
-				var converted = this.Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData);
+				var converted = this.Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
 
 				return converted.Item2;
 			}
 
 			public DeviceInfoMesg GetDeviceInfo(GarminDeviceInfo deviceInfo, Dynastream.Fit.DateTime startTime)
 			{
-				return this.GetDeviceInfoMesg(deviceInfo, startTime);
+				return base.GetDeviceInfoMesg(deviceInfo, startTime);
 			}
 		}
 	}

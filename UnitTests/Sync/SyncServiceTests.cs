@@ -70,7 +70,7 @@ namespace UnitTests.Sync
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
 			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } });
 			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<Workout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
-			converter.Setup(x => x.Convert(It.IsAny<P2GWorkout>())).Throws(new Exception());
+			converter.Setup(x => x.ConvertAsync(It.IsAny<P2GWorkout>())).Throws(new Exception());
 
 			// ACT
 			var response = await service.SyncAsync(0);
@@ -82,7 +82,7 @@ namespace UnitTests.Sync
 			response.Errors.Should().NotBeNullOrEmpty();
 
 			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Once);
-			converter.Verify(x => x.Convert(It.IsAny<P2GWorkout>()), Times.Once);
+			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>()), Times.Once);
 			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
 		}
 
@@ -103,7 +103,7 @@ namespace UnitTests.Sync
 			settings.Format.Fit = true;
 			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
 
-			converter.Setup(c => c.Convert(It.IsAny<P2GWorkout>())).Returns(new ConvertStatus() { Result = ConversionResult.Success });
+			converter.Setup(c => c.ConvertAsync(It.IsAny<P2GWorkout>())).ReturnsAsync(new ConvertStatus() { Result = ConversionResult.Success });
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
@@ -122,7 +122,7 @@ namespace UnitTests.Sync
 			response.Errors.Should().NotBeNullOrEmpty();
 
 			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Once);
-			converter.Verify(x => x.Convert(It.IsAny<P2GWorkout>()), Times.Once);
+			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>()), Times.Once);
 			garmin.Verify(x => x.UploadToGarminAsync(), Times.Once);
 			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
 		}
@@ -145,7 +145,7 @@ namespace UnitTests.Sync
 			settings.Format.Fit = true;
 			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
 
-			converter.Setup(c => c.Convert(It.IsAny<P2GWorkout>())).Returns(new ConvertStatus() { Result = ConversionResult.Success });
+			converter.Setup(c => c.ConvertAsync(It.IsAny<P2GWorkout>())).ReturnsAsync(new ConvertStatus() { Result = ConversionResult.Success });
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
@@ -163,7 +163,7 @@ namespace UnitTests.Sync
 			response.Errors.Should().BeNullOrEmpty();
 
 			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Once);
-			converter.Verify(x => x.Convert(It.IsAny<P2GWorkout>()), Times.Once);
+			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>()), Times.Once);
 			garmin.Verify(x => x.UploadToGarminAsync(), Times.Once);
 			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
 			fileHandler.Verify(x => x.Cleanup(It.IsAny<string>()), Times.Exactly(3));
@@ -187,7 +187,7 @@ namespace UnitTests.Sync
 			settings.Format.Fit = true;
 			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
 
-			converter.Setup(c => c.Convert(It.IsAny<P2GWorkout>())).Returns(new ConvertStatus() { Result = ConversionResult.Success });
+			converter.Setup(c => c.ConvertAsync(It.IsAny<P2GWorkout>())).ReturnsAsync(new ConvertStatus() { Result = ConversionResult.Success });
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
@@ -212,7 +212,7 @@ namespace UnitTests.Sync
 			response.Errors.Should().BeNullOrEmpty();
 
 			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Once);
-			converter.Verify(x => x.Convert(It.IsAny<P2GWorkout>()), Times.Once);
+			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>()), Times.Once);
 			garmin.Verify(x => x.UploadToGarminAsync(), Times.Once);
 			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
 			fileHandler.Verify(x => x.Cleanup(It.IsAny<string>()), Times.Exactly(3));
