@@ -54,10 +54,7 @@ namespace Garmin
 
 			USERAGENT = appConfig.Developer.UserAgent;
 
-			if (auth is object 
-				&& auth.Email == settings.Garmin.Email 
-				&& auth.Password == settings.Garmin.Password
-				&& auth.CookieJar is object)
+			if (auth is object && auth.IsValid(settings))
 				return auth;
 
 			GarminUploader.ValidateConfig(settings);
