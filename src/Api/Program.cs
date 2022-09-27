@@ -1,6 +1,7 @@
 using Api.Services;
 using Common;
 using Common.Database;
+using Common.Http;
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;

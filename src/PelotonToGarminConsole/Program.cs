@@ -16,6 +16,7 @@ using Serilog.Enrichers.Span;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Extensions.Caching.Memory;
+using Common.Http;
 
 Console.WriteLine("Welcome! P2G is starting up...");
 

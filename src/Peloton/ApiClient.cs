@@ -1,5 +1,5 @@
-﻿using Common;
-using Common.Dto.Peloton;
+﻿using Common.Dto.Peloton;
+using Common.Http;
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
