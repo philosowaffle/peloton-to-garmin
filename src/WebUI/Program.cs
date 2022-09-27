@@ -7,6 +7,7 @@ using Serilog.Events;
 using Prometheus;
 using Common.Observe;
 using Common.Stateful;
+using Common.Http;
 
 ///////////////////////////////////////////////////////////
 /// STATICS

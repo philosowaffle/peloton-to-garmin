@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Http;
 using Common.Observe;
 using Flurl.Http;
 using Garmin.Dto;
