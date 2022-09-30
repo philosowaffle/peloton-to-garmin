@@ -88,13 +88,7 @@ namespace Garmin
 										.WithTag(TagKey.Category, "nativeImplV1")
 										.AddTag("workouts.count", files.Count());
 
-			try
-			{
-				await _api.InitAuth();
-			} catch (Exception e)
-			{
-				throw new GarminUploadException($"Failed to authenticate with Garmin. {e.Message}", -2, e);
-			}
+			await _api.InitAuth();
 
 			foreach (var file in files)
 			{
@@ -124,7 +118,9 @@ namespace Garmin
 		{
 			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(UploadViaPython)}.UploadToGarminViaPython")
 										.WithTag(TagKey.Category, "gupload");
-			
+
+			settings.Garmin.EnsureGarminCredentialsAreProvided();
+
 			ProcessStartInfo start = new ProcessStartInfo();
 			var paths = String.Join(" ", files.Select(p => $"\"{p}\""));
 			var cmd = string.Empty;
@@ -180,17 +176,7 @@ namespace Garmin
 		{
 			if (config.Garmin.Upload == false) return;
 
-			if (string.IsNullOrEmpty(config.Garmin.Email))
-			{
-				_logger.Error("Garmin Email required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Garmin), nameof(config.Garmin.Email));
-				throw new ArgumentException("Garmin Email must be set.", nameof(config.Garmin.Email));
-			}
-
-			if (string.IsNullOrEmpty(config.Garmin.Password))
-			{
-				_logger.Error("Garmin Password required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Garmin), nameof(config.Garmin.Password));
-				throw new ArgumentException("Garmin Password must be set.", nameof(config.Garmin.Password));
-			}
+			config.Garmin.EnsureGarminCredentialsAreProvided();
 
 			if (config.App.PythonAndGUploadInstalled.HasValue)
 			{

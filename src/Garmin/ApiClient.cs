@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -57,7 +58,8 @@ namespace Garmin
 			if (auth is object && auth.IsValid(settings))
 				return auth;
 
-			GarminUploader.ValidateConfig(settings);
+			settings.Garmin.EnsureGarminCredentialsAreProvided();
+
 			auth = new();
 			auth.Email = settings.Garmin.Email;
 			auth.Password = settings.Garmin.Password;
@@ -125,10 +127,14 @@ namespace Garmin
 								.PostUrlEncodedAsync(loginData)
 								.ReceiveString();
 			}
-			catch (FlurlHttpException e)
+			catch (FlurlHttpException e) when (e.StatusCode is (int)HttpStatusCode.Forbidden)
 			{
-				_logger.Error(e, "Authentication Failed.");
-				throw;
+				var responseContent = (await e.GetResponseStringAsync()) ?? string.Empty;
+
+				if (responseContent == "error code: 1020")
+					throw new Exception("Garmin Authentication Failed. Blocked by CloudFlare.");
+
+				throw new Exception("Garmin Authentication Failed.", e);
 			}
 
 			// Check we have SSO guid in the cookies

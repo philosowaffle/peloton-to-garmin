@@ -75,20 +75,17 @@ public static class FlurlConfiguration
 					call.HttpRequestMessage?.RequestUri,
 					call.HttpResponseMessage.Headers.ToString(),
 					responsePayload);
-				call.ExceptionHandled = true;
 				return;
 			}
 
 			if (call.Exception is FlurlHttpTimeoutException hte)
 			{
 				Log.Error(hte, $"Http Timeout: {hte.Message}");
-				call.ExceptionHandled = true;
 				return;
 			}
 
 			if (call.Exception is object)
 			{
-				Log.Error(call.Exception, $"Http Call Failed.");
 				Log.Information("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
 					call.HttpRequestMessage.Method,
 					call.HttpRequestMessage.RequestUri,
@@ -100,11 +97,9 @@ public static class FlurlConfiguration
 					call.HttpRequestMessage?.RequestUri,
 					call.HttpResponseMessage.Headers.ToString(),
 					responsePayload);
-				call.ExceptionHandled = true;
 				return;
 			}
 
-			Log.Error($"Http Call Failed.");
 			Log.Information("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
 				call.HttpRequestMessage.Method,
 				call.HttpRequestMessage.RequestUri,
@@ -116,7 +111,6 @@ public static class FlurlConfiguration
 				call.HttpRequestMessage?.RequestUri,
 				call.HttpResponseMessage.Headers.ToString(),
 				responsePayload);
-			call.ExceptionHandled = true;
 			return;
 		}
 		catch (Exception e)

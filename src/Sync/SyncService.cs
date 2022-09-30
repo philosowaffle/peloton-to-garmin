@@ -226,6 +226,15 @@ namespace Sync
 				await _garminUploader.UploadToGarminAsync();
 				response.UploadToGarminSuccess = true;
 			}
+			catch (ArgumentException ae)
+			{
+				_logger.Error(ae, $"Failed to upload to Garmin Connect. {ae.Message}");
+
+				response.SyncSuccess = false;
+				response.UploadToGarminSuccess = false;
+				response.Errors.Add(new ErrorResponse() { Message = $"Failed to upload workouts to Garmin Connect. {ae.Message}" });
+				return response;
+			}
 			catch (Exception e)
 			{
 				_logger.Error(e, "Failed to upload workouts to Garmin Connect. You can find the converted files at {@Path} \\n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", settings.App.OutputDirectory);
