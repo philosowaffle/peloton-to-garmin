@@ -100,8 +100,10 @@ namespace PelotonToGarminConsole
 
 				if (settings.App.EnablePolling)
 				{
-					while (settings.App.EnablePolling && !cancelToken.IsCancellationRequested)
+					while (!cancelToken.IsCancellationRequested)
 					{
+						settings = await _settingsService.GetSettingsAsync();
+
 						var syncResult = await _syncService.SyncAsync(settings.Peloton.NumWorkoutsToDownload);
 						Health.Set(syncResult.SyncSuccess ? HealthStatus.Healthy : HealthStatus.UnHealthy);
 
