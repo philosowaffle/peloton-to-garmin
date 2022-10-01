@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Observe;
+using Common.Service;
 using Common.Stateful;
 using Prometheus;
 using Serilog;
@@ -29,14 +30,14 @@ namespace Garmin
 			"The number of files available to be uploaded. This number sets to 0 upon successful upload.");
 		private static readonly ILogger _logger = LogContext.ForClass<GarminUploader>();
 
-		private readonly Settings _config;
-		private readonly ApiClient _api;
+		private readonly ISettingsService _settingsService;
+		private readonly IGarminApiClient _api;
 		private readonly Random _random;
 
-		public GarminUploader(Settings config, AppConfiguration appConfig)
+		public GarminUploader(ISettingsService settingsService, IGarminApiClient api)
 		{
-			_config = config;
-			_api = new ApiClient(config, appConfig);
+			_settingsService = settingsService;
+			_api = api;
 			_random = new Random();
 		}
 
@@ -44,15 +45,17 @@ namespace Garmin
 		{
 			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(UploadToGarminAsync)}");
 
-			if (!_config.Garmin.Upload) return;
+			var settings = await _settingsService.GetSettingsAsync();
 
-			if (!Directory.Exists(_config.App.UploadDirectory))
+			if (!settings.Garmin.Upload) return;
+
+			if (!Directory.Exists(settings.App.UploadDirectory))
 			{
 				_logger.Information("No upload directory found. Nothing to do.");
 				return;
 			}
 
-			var files = Directory.GetFiles(_config.App.UploadDirectory);
+			var files = Directory.GetFiles(settings.App.UploadDirectory);
 			tracing?.AddTag("workouts.count", files.Length);
 
 			if (files.Length == 0)
@@ -64,41 +67,35 @@ namespace Garmin
 			using var metrics = WorkoutUploadDuration
 								.WithLabels(files.Count().ToString()).NewTimer();
 
-			switch (_config.Garmin.UploadStrategy)
+			switch (settings.Garmin.UploadStrategy)
 			{
 				case UploadStrategy.PythonAndGuploadInstalledLocally:
 				case UploadStrategy.WindowsExeBundledPython:
-					UploadViaPython(files);
+					UploadViaPython(files, settings);
 					_logger.Information("Upload complete.");
 					return;
 				case UploadStrategy.NativeImplV1:
 				default:
-					await UploadAsync(files);
+					await UploadAsync(files, settings);
 					_logger.Information("Upload complete.");
 					return;
 			}
 		}
 
-		private async Task UploadAsync(string[] files)
+		private async Task UploadAsync(string[] files, Settings settings)
 		{
 			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(UploadAsync)}.UploadToGarminViaNative")?
 										.WithTag(TagKey.Category, "nativeImplV1")
 										.AddTag("workouts.count", files.Count());
 
-			try
-			{
-				await _api.InitAuth();
-			} catch (Exception e)
-			{
-				throw new GarminUploadException($"Failed to authenticate with Garmin. {e.Message}", -2, e);
-			}
+			await _api.InitAuth();
 
 			foreach (var file in files)
 			{
 				try
 				{
 					_logger.Information("Uploading to Garmin: {@file}", file);
-					await _api.UploadActivity(file, _config.Format.Fit ? ".fit" : ".tcx");
+					await _api.UploadActivity(file, settings.Format.Fit ? ".fit" : ".tcx");
 					await RateLimit();
 				} catch (Exception e)
 				{
@@ -117,28 +114,30 @@ namespace Garmin
 			await Task.Delay(waitDuration);
 		}
 
-		private void UploadViaPython(string[] files)
+		private void UploadViaPython(string[] files, Settings settings)
 		{
 			using var tracing = Tracing.Trace($"{nameof(GarminUploader)}.{nameof(UploadViaPython)}.UploadToGarminViaPython")
 										.WithTag(TagKey.Category, "gupload");
-			
+
+			settings.Garmin.EnsureGarminCredentialsAreProvided();
+
 			ProcessStartInfo start = new ProcessStartInfo();
 			var paths = String.Join(" ", files.Select(p => $"\"{p}\""));
 			var cmd = string.Empty;
 
-			if (_config.Garmin.UploadStrategy == UploadStrategy.PythonAndGuploadInstalledLocally)
+			if (settings.Garmin.UploadStrategy == UploadStrategy.PythonAndGuploadInstalledLocally)
 			{
 				start.FileName = "gupload";
-				cmd = $"-u {_config.Garmin.Email} -p {_config.Garmin.Password} {paths}";
+				cmd = $"-u {settings.Garmin.Email} -p {settings.Garmin.Password} {paths}";
 			} else
 			{
 				paths = String.Join(" ", files.Select(f => $"\"{Path.GetFullPath(f)}\""));
 				start.FileName = Path.Join(Environment.CurrentDirectory, "python", "upload.exe");
-				cmd = $"-ge {_config.Garmin.Email} -gp {_config.Garmin.Password} -f {paths}";
+				cmd = $"-ge {settings.Garmin.Email} -gp {settings.Garmin.Password} -f {paths}";
 			}
 
 			_logger.Information("Beginning Garmin Upload.");
-			_logger.Information("Uploading to Garmin with the following parameters: {@File} {@Command}", start.FileName, cmd.Replace(_config.Garmin.Email, "**email**").Replace(_config.Garmin.Password, "**password**"));
+			_logger.Information("Uploading to Garmin with the following parameters: {@File} {@Command}", start.FileName, cmd.Replace(settings.Garmin.Email, "**email**").Replace(settings.Garmin.Password, "**password**"));
 
 			start.Arguments = cmd;
 			start.UseShellExecute = false;
@@ -177,17 +176,7 @@ namespace Garmin
 		{
 			if (config.Garmin.Upload == false) return;
 
-			if (string.IsNullOrEmpty(config.Garmin.Email))
-			{
-				_logger.Error("Garmin Email required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Garmin), nameof(config.Garmin.Email));
-				throw new ArgumentException("Garmin Email must be set.", nameof(config.Garmin.Email));
-			}
-
-			if (string.IsNullOrEmpty(config.Garmin.Password))
-			{
-				_logger.Error("Garmin Password required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Garmin), nameof(config.Garmin.Password));
-				throw new ArgumentException("Garmin Password must be set.", nameof(config.Garmin.Password));
-			}
+			config.Garmin.EnsureGarminCredentialsAreProvided();
 
 			if (config.App.PythonAndGUploadInstalled.HasValue)
 			{

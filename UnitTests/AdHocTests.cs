@@ -2,6 +2,7 @@
 using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Helpers;
+using Common.Service;
 using Conversion;
 using Dynastream.Fit;
 using Flurl;
@@ -133,21 +134,20 @@ namespace UnitTests
 		{
 			private IOWrapper fileHandler = new IOWrapper();
 
-			public ConverterInstance() : base(new Settings(), new IOWrapper()) { }
-			public ConverterInstance(Settings settings) : base(settings, new IOWrapper()) { }
+			public ConverterInstance(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
 
-			public ICollection<Mesg> ConvertForTest(string path)
+			public async Task<ICollection<Mesg>> ConvertForTest(string path, Settings settings)
 			{
 				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
-				var converted = this.Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData);
+				var converted = await this.ConvertAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
 
 				return converted.Item2;
 			}
 
-			public Tuple<string, ICollection<Mesg>> Convert(string path)
+			public async Task<Tuple<string, ICollection<Mesg>>> Convert(string path, Settings settings)
 			{
 				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
-				var converted = this.Convert(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData);
+				var converted = await this.ConvertAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
 
 				return converted;
 			}

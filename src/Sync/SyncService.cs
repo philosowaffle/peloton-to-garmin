@@ -177,14 +177,15 @@ namespace Sync
 			var convertStatuses = new List<ConvertStatus>();
 			try
 			{
-				Parallel.ForEach(filteredWorkouts, (workout) => 
+				var tasks = new List<Task<ConvertStatus>>();
+				foreach (var workout in filteredWorkouts)
 				{
-					Parallel.ForEach(_converters, (converter) =>
-					{
-						workout.UserData = userData;
-						convertStatuses.Add(converter.Convert(workout));
-					});
-				});
+					workout.UserData = userData;
+					tasks.AddRange(_converters.Select(c => c.ConvertAsync(workout)));
+				}
+
+				await Task.WhenAll(tasks);
+				convertStatuses = tasks.Select(t => t.GetAwaiter().GetResult()).ToList();
 			}
 			catch (Exception e)
 			{
@@ -196,7 +197,7 @@ namespace Sync
 				return response;
 			}
 
-			if (convertStatuses.All(c => c.Result == ConversionResult.Skipped))
+			if (!convertStatuses.Any() || convertStatuses.All(c => c.Result == ConversionResult.Skipped))
 			{
 				_logger.Information("All converters were skipped. Ensure you have atleast one output Format configured in your settings. Converting to FIT or TCX is required prior to uploading to Garmin Connect.");
 				response.SyncSuccess = false;
@@ -224,6 +225,15 @@ namespace Sync
 			{
 				await _garminUploader.UploadToGarminAsync();
 				response.UploadToGarminSuccess = true;
+			}
+			catch (ArgumentException ae)
+			{
+				_logger.Error(ae, $"Failed to upload to Garmin Connect. {ae.Message}");
+
+				response.SyncSuccess = false;
+				response.UploadToGarminSuccess = false;
+				response.Errors.Add(new ErrorResponse() { Message = $"Failed to upload workouts to Garmin Connect. {ae.Message}" });
+				return response;
 			}
 			catch (Exception e)
 			{

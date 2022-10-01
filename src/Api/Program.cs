@@ -33,9 +33,7 @@ var configProvider = builder.Configuration.AddJsonFile(Path.Join(Environment.Cur
 				.AddCommandLine(args);
 
 var config = new AppConfiguration();
-builder.Configuration.GetSection("Api").Bind(config.Api);
-builder.Configuration.GetSection(nameof(Observability)).Bind(config.Observability);
-builder.Configuration.GetSection(nameof(Developer)).Bind(config.Developer);
+ConfigurationSetup.LoadConfigValues(builder.Configuration, config);
 
 builder.WebHost.UseUrls(config.Api.HostUrl);
 
@@ -74,32 +72,26 @@ builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
 // SETTINGS
 builder.Services.AddSingleton<ISettingsDb, SettingsDb>();
 builder.Services.AddSingleton<ISettingsService, SettingsService>();
-builder.Services.AddTransient<Settings>((serviceProvider) =>
-{
-	using var tracing = Tracing.Trace($"{nameof(Program)}.DI");
-	var settingsService = serviceProvider.GetService<ISettingsService>();
-	return settingsService?.GetSettingsAsync().GetAwaiter().GetResult() ?? new Settings();
-});
-builder.Services.AddSingleton<AppConfiguration>((serviceProvider) =>
-{
-	var config = new AppConfiguration();
-	builder.Configuration.GetSection("Api").Bind(config.Api);
-	builder.Configuration.GetSection(nameof(Observability)).Bind(config.Observability);
-	builder.Configuration.GetSection(nameof(Developer)).Bind(config.Developer);
-	return config;
-});
 
+// IO
 builder.Services.AddSingleton<IFileHandling, IOWrapper>();
+
+// PELOTON
 builder.Services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
 builder.Services.AddSingleton<IPelotonService, PelotonService>();
-builder.Services.AddTransient<IGarminUploader, GarminUploader>();
 
+// GARMIN
+builder.Services.AddSingleton<IGarminUploader, GarminUploader>();
+builder.Services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
+
+// SYNC
 builder.Services.AddSingleton<ISyncStatusDb, SyncStatusDb>();
-builder.Services.AddTransient<ISyncService, SyncService>();
+builder.Services.AddSingleton<ISyncService, SyncService>();
 
-builder.Services.AddTransient<IConverter, FitConverter>();
-builder.Services.AddTransient<IConverter, TcxConverter>();
-builder.Services.AddTransient<IConverter, JsonConverter>();
+// CONVERT
+builder.Services.AddSingleton<IConverter, FitConverter>();
+builder.Services.AddSingleton<IConverter, TcxConverter>();
+builder.Services.AddSingleton<IConverter, JsonConverter>();
 
 FlurlConfiguration.Configure(config.Observability);
 Tracing.EnableTracing(builder.Services, config.Observability.Jaeger);

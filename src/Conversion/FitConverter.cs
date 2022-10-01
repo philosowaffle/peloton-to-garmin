@@ -4,12 +4,14 @@ using Common.Dto.Garmin;
 using Common.Dto.Peloton;
 using Common.Helpers;
 using Common.Observe;
+using Common.Service;
 using Dynastream.Fit;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Conversion
 {
@@ -17,13 +19,14 @@ namespace Conversion
 	{
 		private static readonly string _spaceSeparator = "_";
 		private static readonly ILogger _logger = LogContext.ForClass<FitConverter>();
-		public FitConverter(Settings settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
+		public FitConverter(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
 
-		public override ConvertStatus Convert(P2GWorkout workout)
+		public override async Task<ConvertStatus> ConvertAsync(P2GWorkout workout)
 		{
-			if (!_config.Format.Fit) return new ConvertStatus() { Result = ConversionResult.Skipped};
+			var settings = await _settingsService.GetSettingsAsync();
+			if (!settings.Format.Fit) return new ConvertStatus() { Result = ConversionResult.Skipped};
 
-			return base.ConvertForFormat(FileFormat.Fit, workout);
+			return await ConvertForFormatAsync(FileFormat.Fit, workout, settings);
 		}
 
 		protected override void Save(Tuple<string, ICollection<Mesg>> data, string path)
@@ -48,20 +51,20 @@ namespace Conversion
 			}
 		}
 
-		protected override void SaveLocalCopy(string sourcePath, string workoutTitle)
+		protected override void SaveLocalCopy(string sourcePath, string workoutTitle, Settings settings)
 		{
-			if (!_config.Format.Fit || !_config.Format.SaveLocalCopy) return;
+			if (!settings.Format.Fit || !settings.Format.SaveLocalCopy) return;
 
-			_fileHandler.MkDirIfNotExists(_config.App.FitDirectory);
+			_fileHandler.MkDirIfNotExists(settings.App.FitDirectory);
 
-			var backupDest = Path.Join(_config.App.FitDirectory, $"{workoutTitle}.fit");
+			var backupDest = Path.Join(settings.App.FitDirectory, $"{workoutTitle}.fit");
 			_fileHandler.Copy(sourcePath, backupDest, overwrite: true);
 			_logger.Information("[{@Format}] Backed up file {@File}", FileFormat.Fit, backupDest);
 		}
 
-		protected override Tuple<string, ICollection<Mesg>> Convert(Workout workout, WorkoutSamples workoutSamples, UserData userData)
+		protected override async Task<Tuple<string, ICollection<Mesg>>> ConvertAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
 		{
-			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(Convert)}")
+			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(ConvertAsync)}")
 										.WithTag(TagKey.Format, FileFormat.Fit.ToString())
 										.WithWorkoutId(workout.Id);
 
@@ -73,7 +76,7 @@ namespace Conversion
 			var title = WorkoutHelper.GetTitle(workout);
 			var sport = GetGarminSport(workout);
 			var subSport = GetGarminSubSport(workout);
-			var deviceInfo = GetDeviceInfo(workout.Fitness_Discipline);
+			var deviceInfo = await GetDeviceInfoAsync(workout.Fitness_Discipline, settings);
 
 			if (sport == Sport.Invalid)
 			{
@@ -136,9 +139,9 @@ namespace Conversion
 			var preferredLapType = PreferredLapType.Default;
 
 			if (sport == Sport.Cycling)
-				preferredLapType = _config.Format.Cycling.PreferredLapType;
+				preferredLapType = settings.Format.Cycling.PreferredLapType;
 			if (sport == Sport.Running)
-				preferredLapType = _config.Format.Running.PreferredLapType;
+				preferredLapType = settings.Format.Running.PreferredLapType;
 
 			if ((preferredLapType == PreferredLapType.Class_Targets || preferredLapType == PreferredLapType.Default) 
 				&& workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "cadence")?.Graph_Data is object)
@@ -167,7 +170,7 @@ namespace Conversion
 			foreach (var lap in laps)
 				messages.Add(lap);
 
-			messages.Add(GetSessionMesg(workout, workoutSamples, userData, startTime, endTime, (ushort)laps.Count));
+			messages.Add(GetSessionMesg(workout, workoutSamples, userData, settings, startTime, endTime, (ushort)laps.Count));
 
 			var activityMesg = new ActivityMesg();
 			activityMesg.SetTimestamp(endTime);
@@ -322,7 +325,7 @@ namespace Conversion
 			}
 		}
 
-		private SessionMesg GetSessionMesg(Workout workout, WorkoutSamples workoutSamples, UserData userData, Dynastream.Fit.DateTime startTime, Dynastream.Fit.DateTime endTime, ushort numLaps)
+		private SessionMesg GetSessionMesg(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings, Dynastream.Fit.DateTime startTime, Dynastream.Fit.DateTime endTime, ushort numLaps)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetSessionMesg)}")
 										.WithTag(TagKey.Format, FileFormat.Fit.ToString())
@@ -365,7 +368,7 @@ namespace Conversion
 			sessionMesg.SetMaxNegGrade(0.0f);
 
 			// HR zones
-			if (_config.Format.IncludeTimeInHRZones && workoutSamples.Metrics.Any())
+			if (settings.Format.IncludeTimeInHRZones && workoutSamples.Metrics.Any())
 			{
 				var hrz1 = GetHeartRateZone(1, workoutSamples);
 				if (hrz1 is object)
@@ -389,7 +392,7 @@ namespace Conversion
 			}
 
 			// Power Zones
-			if (_config.Format.IncludeTimeInPowerZones && workoutSamples.Metrics.Any())
+			if (settings.Format.IncludeTimeInPowerZones && workoutSamples.Metrics.Any())
 			{
 				var zones = GetTimeInPowerZones(workout, workoutSamples);
 				if (zones is object)

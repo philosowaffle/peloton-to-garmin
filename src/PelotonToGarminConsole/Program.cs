@@ -48,78 +48,19 @@ static IHostBuilder CreateHostBuilder(string[] args)
 		})
 		.ConfigureServices((hostContext, services) =>
 		{
-			services.AddSingleton<AppConfiguration>((serviceProvider) =>
-			{
-				var config = new AppConfiguration();
-				var provider = serviceProvider.GetService<IConfiguration>();
-				if (provider is null) return config;
-
-				ConfigurationSetup.LoadConfigValues(provider, config);
-
-				ChangeToken.OnChange(() => provider.GetReloadToken(), () =>
-				{
-					Log.Information("Config change detected, reloading config values.");
-					ConfigurationSetup.LoadConfigValues(provider, config);
-					try
-					{
-						Metrics.ValidateConfig(config.Observability);
-						Tracing.ValidateConfig(config.Observability);
-					}
-					catch (Exception e)
-					{
-						Log.Error(e, "Configuration invalid");
-					}
-
-					Log.Information("Config reloaded.");
-				});
-
-				return config;
-			});
-
 			// CACHE
 			services.AddSingleton<IMemoryCache, MemoryCache>();
+
+			// IO
+			services.AddSingleton<IFileHandling, IOWrapper>();
 
 			// SETTINGS
 			services.AddSingleton<ISettingsDb, SettingsDb>();
 			services.AddSingleton<ISettingsService>((serviceProvider) =>
 			{
-				var configurationLoader = serviceProvider.GetService<IConfiguration>();
-				var settingService = new SettingsService(serviceProvider.GetService<ISettingsDb>(), serviceProvider.GetService<IMemoryCache>());
-				return new FileBasedSettingsService(configurationLoader, settingService);
+				var settingService = new SettingsService(serviceProvider.GetService<ISettingsDb>(), serviceProvider.GetService<IMemoryCache>(), serviceProvider.GetService<IConfiguration>(), serviceProvider.GetService<IFileHandling>());
+				return new FileBasedSettingsService(serviceProvider.GetService<IConfiguration>(), settingService);
 			});
-			services.AddSingleton<Settings>((serviceProvider) =>
-			{
-				var config = new Settings();
-				var provider = serviceProvider.GetService<IConfiguration>();
-				var settingsService = serviceProvider.GetService<ISettingsService>();
-				if (provider is null) return config;
-				if (settingsService is null) return config;
-
-				config = settingsService.GetSettingsAsync().Result;
-
-				ChangeToken.OnChange(() => provider.GetReloadToken(), () =>
-				{
-					Log.Information("Config change detected, reloading config values.");
-					config = settingsService.GetSettingsAsync().Result;
-
-					try
-					{
-						PelotonService.ValidateConfig(config.Peloton);
-						GarminUploader.ValidateConfig(config);
-					}
-					catch (Exception e)
-					{
-						Log.Error(e, "Configuration invalid");
-					}
-
-					Log.Information("Config reloaded.");
-				});
-
-				return config;
-			});
-
-			// IO
-			services.AddSingleton<IFileHandling, IOWrapper>();
 
 			// PELOTON
 			services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
@@ -127,6 +68,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
 
 			// GARMIN
 			services.AddSingleton<IGarminUploader, GarminUploader>();
+			services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
 
 			// SYNC
 			services.AddSingleton<ISyncStatusDb, SyncStatusDb>();
@@ -137,9 +79,9 @@ static IHostBuilder CreateHostBuilder(string[] args)
 			services.AddSingleton<IConverter, TcxConverter>();
 			services.AddSingleton<IConverter, JsonConverter>();
 
+			// HTTP
 			var config = new AppConfiguration();
 			ConfigurationSetup.LoadConfigValues(hostContext.Configuration, config);
-
 			FlurlConfiguration.Configure(config.Observability);
 
 			services.AddHostedService<Startup>();

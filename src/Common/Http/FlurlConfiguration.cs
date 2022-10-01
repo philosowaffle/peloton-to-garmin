@@ -10,6 +10,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Serilog.Events;
 using System.Web;
+using System.Net;
 
 namespace Common.Http;
 
@@ -37,19 +38,21 @@ public static class FlurlConfiguration
 		Func<FlurlCall, Task> beforeCallAsync = (call) =>
 		{
 			if (Log.IsEnabled(LogEventLevel.Verbose))
-				LogRequest(call, call.HttpRequestMessage?.Content?.ToString());
+				LogRequest(call, call.GetRawRequestBody());
 			return Task.CompletedTask;
 		};
 
 		Func<FlurlCall, Task> afterCallAsync = async (call) =>
 		{
 			if (Log.IsEnabled(LogEventLevel.Verbose))
-				LogResponse(call, await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
+				LogResponse(call, await call.GetRawResponseBodyAsync());
 			TrackMetrics(call);
 		};
 
 		Func<FlurlCall, Task> onErrorAsync = async (call) => {
-			LogError(call, call.HttpRequestMessage?.Content?.ToString(), await call.HttpResponseMessage?.Content?.ReadAsStringAsync());
+			var request = call.GetRawRequestBody();
+			var response = await call.GetRawResponseBodyAsync();
+			LogError(call, request, response);
 		};
 
 		FlurlHttp.Configure(settings =>
@@ -70,53 +73,47 @@ public static class FlurlConfiguration
 			{
 				Log.Error(fpe, $"Http Failed to deserialize response to target type: {fpe.ExpectedFormat}");
 				Log.Information("Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
-					call.HttpResponseMessage?.StatusCode,
+					call.HttpResponseMessage?.StatusCode ?? (HttpStatusCode)0,
 					call.HttpRequestMessage?.Method,
 					call.HttpRequestMessage?.RequestUri,
-					call.HttpResponseMessage.Headers.ToString(),
+					call.HttpResponseMessage?.Headers?.ToString() ?? string.Empty,
 					responsePayload);
-				call.ExceptionHandled = true;
 				return;
 			}
 
 			if (call.Exception is FlurlHttpTimeoutException hte)
 			{
 				Log.Error(hte, $"Http Timeout: {hte.Message}");
-				call.ExceptionHandled = true;
 				return;
 			}
 
 			if (call.Exception is object)
 			{
-				Log.Error(call.Exception, $"Http Call Failed.");
 				Log.Information("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
 					call.HttpRequestMessage.Method,
 					call.HttpRequestMessage.RequestUri,
 					call.HttpRequestMessage.Headers.ToString(),
 					requestPayload);
 				Log.Information("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
-					call.HttpResponseMessage?.StatusCode,
+					call.HttpResponseMessage?.StatusCode ?? (HttpStatusCode)0,
 					call.HttpRequestMessage?.Method,
 					call.HttpRequestMessage?.RequestUri,
-					call.HttpResponseMessage.Headers.ToString(),
+					call.HttpResponseMessage?.Headers?.ToString() ?? string.Empty,
 					responsePayload);
-				call.ExceptionHandled = true;
 				return;
 			}
 
-			Log.Error($"Http Call Failed.");
 			Log.Information("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
 				call.HttpRequestMessage.Method,
 				call.HttpRequestMessage.RequestUri,
 				call.HttpRequestMessage.Headers.ToString(),
 				requestPayload);
 			Log.Information("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
-				call.HttpResponseMessage?.StatusCode,
+				call.HttpResponseMessage?.StatusCode ?? (HttpStatusCode)0,
 				call.HttpRequestMessage?.Method,
 				call.HttpRequestMessage?.RequestUri,
-				call.HttpResponseMessage.Headers.ToString(),
+				call.HttpResponseMessage?.Headers?.ToString() ?? string.Empty,
 				responsePayload);
-			call.ExceptionHandled = true;
 			return;
 		}
 		catch (Exception e)
@@ -146,10 +143,10 @@ public static class FlurlConfiguration
 		try
 		{
 			Log.Verbose("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
-					call.HttpResponseMessage?.StatusCode,
+					call.HttpResponseMessage?.StatusCode ?? (HttpStatusCode)0,
 					call.HttpRequestMessage?.Method,
 					call.HttpRequestMessage?.RequestUri,
-					call.HttpResponseMessage.Headers.ToString(),
+					call.HttpResponseMessage?.Headers?.ToString() ?? string.Empty,
 					payload);
 		}
 		catch (Exception e)
@@ -216,8 +213,7 @@ public static class FlurlConfiguration
 			{
 				if (Log.IsEnabled(LogEventLevel.Verbose))
 				{
-					var content = call.HttpRequestMessage.Content
-									?.ToString()
+					var content = call.GetRawRequestBody()
 									?.Replace(sensitiveField, "<redacted1>")
 									?.Replace(sensitiveField2, "<redacted2>") ?? string.Empty;
 
@@ -231,7 +227,7 @@ public static class FlurlConfiguration
 			{
 				if (Log.IsEnabled(LogEventLevel.Verbose))
 				{
-					var content = (await call.HttpResponseMessage?.Content?.ReadAsStringAsync())
+					var content = (await call.GetRawResponseBodyAsync())
 									?.Replace(sensitiveField, "<redacted1>")
 									?.Replace(sensitiveField2, "<redacted2>") ?? string.Empty;
 
@@ -244,17 +240,37 @@ public static class FlurlConfiguration
 			c.OnErrorAsync = null;
 			c.OnErrorAsync = async (call) =>
 			{
-				var requestContent = call.HttpRequestMessage.Content
+				var requestContent = call.GetRawRequestBody()
 									?.ToString()
 									?.Replace(sensitiveField, "<redacted1>")
 									?.Replace(sensitiveField2, "<redacted2>") ?? string.Empty;
 
-				var responseContent = (await call.HttpResponseMessage?.Content?.ReadAsStringAsync())
+				var responseContent = (await call.GetRawResponseBodyAsync())
 								?.Replace(sensitiveField, "<redacted1>")
 								?.Replace(sensitiveField2, "<redacted2>") ?? string.Empty;
 
 				LogError(call, requestContent, responseContent);
 			};
 		});
+	}
+
+	private static string GetRawRequestBody(this FlurlCall call)
+	{
+		var request = string.Empty;
+		if (call.HttpRequestMessage is object
+			&& call.HttpRequestMessage.Content is object)
+			request = call.HttpRequestMessage.Content.ToString() ?? string.Empty;
+
+		return request;
+	}
+
+	private static async Task<string> GetRawResponseBodyAsync(this FlurlCall call)
+	{
+		var responseBody = string.Empty;
+		if (call.HttpResponseMessage is object
+			&& call.HttpResponseMessage.Content is object)
+			responseBody = await call.HttpResponseMessage.Content.ReadAsStringAsync() ?? string.Empty;
+
+		return responseBody;
 	}
 }
