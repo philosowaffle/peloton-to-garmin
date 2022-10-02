@@ -1,5 +1,4 @@
-﻿using Common;
-using Common.Http;
+﻿using Common.Http;
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
@@ -32,7 +31,6 @@ namespace Garmin
 		private static string UPLOAD_URL = $"{BASE_URL}/modern/proxy/upload-service/upload";
 
 		private const string ORIGIN = SSO_URL;
-		private static string USERAGENT = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/50.0";
 
 		private static readonly ILogger _logger = LogContext.ForClass<ApiClient>();
 
@@ -50,20 +48,23 @@ namespace Garmin
 		public async Task<GarminApiAuthentication> InitAuth()
 		{
 			var settings = await _settingsService.GetSettingsAsync();
-			var appConfig = await _settingsService.GetAppConfigurationAsync();
-			var auth = _settingsService.GetGarminAuthentication(settings.Garmin.Email);
 
-			USERAGENT = appConfig.Developer.UserAgent;
+			settings.Garmin.EnsureGarminCredentialsAreProvided();
+
+			var auth = _settingsService.GetGarminAuthentication(settings.Garmin.Email);
 
 			if (auth is object && auth.IsValid(settings))
 				return auth;
 
-			settings.Garmin.EnsureGarminCredentialsAreProvided();
+			var appConfig = await _settingsService.GetAppConfigurationAsync();
 
 			auth = new();
 			auth.Email = settings.Garmin.Email;
 			auth.Password = settings.Garmin.Password;
 			CookieJar jar = null;
+
+			if (!string.IsNullOrEmpty(appConfig.Developer.UserAgent))
+				auth.UserAgent = appConfig.Developer.UserAgent;
 
 			object queryParams = new
 			{
@@ -93,7 +94,7 @@ namespace Garmin
 			try
 			{
 				loginForm = await SIGNIN_URL
-							.WithHeader("User-Agent", USERAGENT)
+							.WithHeader("User-Agent", auth.UserAgent)
 							.WithHeader("origin", ORIGIN)
 							.SetQueryParams(queryParams)
 							.WithCookies(out jar)
@@ -119,7 +120,7 @@ namespace Garmin
 			try
 			{
 				authResponse = await SIGNIN_URL
-								.WithHeader("User-Agent", USERAGENT)
+								.WithHeader("User-Agent", auth.UserAgent)
 								.WithHeader("origin", ORIGIN)
 								.SetQueryParams(queryParams)
 								.WithCookies(jar)
@@ -185,7 +186,7 @@ namespace Garmin
 			try
 			{
 				var response = await PROFILE_URL
-							.WithHeader("User-Agent", USERAGENT)
+							.WithHeader("User-Agent", auth.UserAgent)
 							.WithHeader("origin", ORIGIN)
 							.WithCookies(jar)
 							.StripSensitiveDataFromLogging(auth.Email, auth.Password)
@@ -410,7 +411,7 @@ namespace Garmin
 				.WithCookies(auth.CookieJar)
 				.WithHeader("NK", "NT")
 				.WithHeader("origin", ORIGIN)
-				.WithHeader("User-Agent", USERAGENT)
+				.WithHeader("User-Agent", auth.UserAgent)
 				.AllowHttpStatus("2xx,409")
 				.PostMultipartAsync((data) =>
 				{
@@ -455,7 +456,7 @@ namespace Garmin
 				.WithCookies(auth.CookieJar)
 				.WithHeader("NK", "NT")
 				.WithHeader("origin", ORIGIN)
-				.WithHeader("User-Agent", USERAGENT)
+				.WithHeader("User-Agent", auth.UserAgent)
 				.AllowHttpStatus("2xx,409")
 				.PostMultipartAsync((data) =>
 				{
@@ -499,7 +500,7 @@ namespace Garmin
 
 			var response = await $"https://connect.garmin.com/proxy/device-service/deviceregistration/devices"
 				.WithCookies(auth.CookieJar)
-				.WithHeader("User-Agent", USERAGENT)
+				.WithHeader("User-Agent", auth.UserAgent)
 				.WithHeader("origin", "https://sso.garmin.com")
 				.GetJsonAsync();
 		}

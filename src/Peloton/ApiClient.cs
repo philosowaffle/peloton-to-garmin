@@ -38,11 +38,7 @@ namespace Peloton
 		{
 			var settings = await _settingsService.GetSettingsAsync();
 
-			if (string.IsNullOrEmpty(settings.Peloton.Email))
-				throw new ArgumentException("Peloton email is not set and is required.");
-
-			if (string.IsNullOrEmpty(settings.Peloton.Password))
-				throw new ArgumentException("Peloton password is not set and is required.");
+			settings.Peloton.EnsurePelotonCredentialsAreProvided();
 
 			var auth = _settingsService.GetPelotonApiAuthentication(settings.Peloton.Email);
 			if (auth is object && auth.IsValid(settings))
@@ -51,9 +47,6 @@ namespace Peloton
 			auth = new();
 			auth.Email = settings.Peloton.Email;
 			auth.Password = settings.Peloton.Password;
-
-			if (!string.IsNullOrEmpty(auth.UserId) && !string.IsNullOrEmpty(auth.SessionId))
-				return auth;
 
 			try
 			{
