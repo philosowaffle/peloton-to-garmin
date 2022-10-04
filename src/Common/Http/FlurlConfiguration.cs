@@ -74,7 +74,7 @@ public static class FlurlConfiguration
 				Log.Error(fpe, $"Http Failed to deserialize response to target type: {fpe.ExpectedFormat}");
 				Log.Information("Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
 					call.HttpResponseMessage?.StatusCode ?? (HttpStatusCode)0,
-					call.HttpRequestMessage?.Method,
+					call.HttpRequestMessage?.Method?.Method,
 					call.HttpRequestMessage?.RequestUri,
 					call.HttpResponseMessage?.Headers?.ToString() ?? string.Empty,
 					responsePayload);
@@ -90,13 +90,13 @@ public static class FlurlConfiguration
 			if (call.Exception is object)
 			{
 				Log.Information("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
-					call.HttpRequestMessage.Method,
+					call.HttpRequestMessage.Method?.Method,
 					call.HttpRequestMessage.RequestUri,
 					call.HttpRequestMessage.Headers.ToString(),
 					requestPayload);
 				Log.Information("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
 					call.HttpResponseMessage?.StatusCode ?? (HttpStatusCode)0,
-					call.HttpRequestMessage?.Method,
+					call.HttpRequestMessage?.Method?.Method,
 					call.HttpRequestMessage?.RequestUri,
 					call.HttpResponseMessage?.Headers?.ToString() ?? string.Empty,
 					responsePayload);
@@ -104,13 +104,13 @@ public static class FlurlConfiguration
 			}
 
 			Log.Information("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
-				call.HttpRequestMessage.Method,
+				call.HttpRequestMessage.Method?.Method,
 				call.HttpRequestMessage.RequestUri,
 				call.HttpRequestMessage.Headers.ToString(),
 				requestPayload);
 			Log.Information("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
 				call.HttpResponseMessage?.StatusCode ?? (HttpStatusCode)0,
-				call.HttpRequestMessage?.Method,
+				call.HttpRequestMessage?.Method?.Method,
 				call.HttpRequestMessage?.RequestUri,
 				call.HttpResponseMessage?.Headers?.ToString() ?? string.Empty,
 				responsePayload);
@@ -127,7 +127,7 @@ public static class FlurlConfiguration
 		try
 		{
 			Log.Verbose("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
-					call.HttpRequestMessage.Method,
+					call.HttpRequestMessage.Method?.Method,
 					call.HttpRequestMessage.RequestUri,
 					call.HttpRequestMessage.Headers.ToString(),
 					payload);
@@ -144,7 +144,7 @@ public static class FlurlConfiguration
 		{
 			Log.Verbose("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
 					call.HttpResponseMessage?.StatusCode ?? (HttpStatusCode)0,
-					call.HttpRequestMessage?.Method,
+					call.HttpRequestMessage?.Method?.Method,
 					call.HttpRequestMessage?.RequestUri,
 					call.HttpResponseMessage?.Headers?.ToString() ?? string.Empty,
 					payload);
