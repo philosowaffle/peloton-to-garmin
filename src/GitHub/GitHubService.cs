@@ -47,7 +47,7 @@ public class GitHubService : IGitHubService
 						ReleaseDate = latestVersionInformation.Published_At,
 						ReleaseUrl = latestVersionInformation.Html_Url,
 						Description = latestVersionInformation.Body,
-						IsReleaseNewerThanInstalledVersion = IsReleaseNewerThanInstalledVersion( latestVersionInformation.Tag_Name, Constants.AppVersion)
+						IsReleaseNewerThanInstalledVersion = IsReleaseNewerThanInstalledVersion(latestVersionInformation.Tag_Name, Constants.AppVersion)
 					};
 				} catch (Exception e)
 				{

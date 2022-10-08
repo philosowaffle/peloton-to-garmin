@@ -1,0 +1,11 @@
+<Creator>
+  <Name>Garmin Sample Device - please create from exported TCX file</Name>
+  <UnitId>12345</UnitId>
+  <ProductID>4580</ProductID>
+  <Version>
+    <VersionMajor>54</VersionMajor>
+    <VersionMinor>55</VersionMinor>
+    <BuildMajor>56</BuildMajor>
+    <BuildMinor>57</BuildMinor>
+  </Version>
+</Creator>
