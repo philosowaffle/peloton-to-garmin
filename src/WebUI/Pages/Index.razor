@@ -55,6 +55,7 @@ else
 	private SyncPostResponse? syncResponse;
 	private SyncGetResponse syncStatus;
 	private SettingsGetResponse settings;
+	private SystemInfoGetResponse systemInfo;
 	private bool syncRunning;
 
 	private string syncStatusBorderClass = "border-light";
@@ -67,6 +68,8 @@ else
 
 		settings = new SettingsGetResponse();
 		syncRunning = false;
+
+		systemInfo = new SystemInfoGetResponse();
 
 		_toaster?.Clear();
 	}
@@ -81,6 +84,14 @@ else
 			await Task.WhenAll(getSettingsTask, LoadSyncStatusAsync());
 
 			settings = await getSettingsTask;
+
+			if (settings.App.CheckForUpdates)
+			{
+				systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = true });
+				if (systemInfo.NewerVersionAvailable.GetValueOrDefault())
+					_toaster.AddInformation(title: "New Version Available!", message: "Head over to the About page to learn more");
+			}
+
 		} catch (Exception e)
 		{
 			Log.Error("UI - Failed to fetch data for home page.", e);

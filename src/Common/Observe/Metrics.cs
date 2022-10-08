@@ -1,4 +1,5 @@
-﻿using Common.Stateful;
+﻿using Common.Dto;
+using Common.Stateful;
 using Prometheus;
 using Prometheus.DotNetRuntime;
 using Serilog;
@@ -52,6 +53,15 @@ namespace Common.Observe
 			return null;
 		}
 
+		public static void CreateAppInfo()
+		{
+			PromMetrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
+			{
+				LabelNames = new[] { Label.Version, Label.Os, Label.OsVersion, Label.DotNetRuntime, Label.RunningInDocker }
+			}).WithLabels(Constants.AppVersion, SystemInformation.OS, SystemInformation.OSVersion, SystemInformation.RunTimeVersion, SystemInformation.RunningInDocker.ToString())
+.Set(1);
+		}
+
 		public static class Label
 		{
 			public static string HttpMethod = "http_method";
@@ -72,6 +82,7 @@ namespace Common.Observe
 			public static string OsVersion = "os_version";
 			public static string Version = "version";
 			public static string DotNetRuntime = "dotnet_runtime";
+			public static string RunningInDocker = "is_docker";
 
 			public static string ReflectionMethod = "reflection_method";
 		}

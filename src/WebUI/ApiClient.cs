@@ -18,7 +18,7 @@ public interface IApiClient
 	Task<SyncGetResponse> SyncGetAsync();
 	Task<SyncPostResponse> SyncPostAsync(SyncPostRequest syncPostRequest);
 
-	Task<SystemInfoGetResponse> SystemInfoGetAsync();
+	Task<SystemInfoGetResponse> SystemInfoGetAsync(SystemInfoGetRequest systemInfoGetRequest);
 }
 
 public class ApiClient : IApiClient
@@ -84,9 +84,10 @@ public class ApiClient : IApiClient
 				.ReceiveJson<SyncPostResponse>();
 	}
 
-	public Task<SystemInfoGetResponse> SystemInfoGetAsync()
+	public Task<SystemInfoGetResponse> SystemInfoGetAsync(SystemInfoGetRequest systemInfoGetRequest)
 	{
 		return $"{_apiUrl}/api/systemInfo"
+				.SetQueryParams(systemInfoGetRequest)
 				.GetJsonAsync<SystemInfoGetResponse>();
 	}
 }

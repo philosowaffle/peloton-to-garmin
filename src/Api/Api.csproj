@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\GitHub\GitHub.csproj" />
     <ProjectReference Include="..\Sync\Sync.csproj" />
   </ItemGroup>
 
@@ -48,11 +49,15 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-	<Content Remove="appsettings.json;appsettings.Development.json"/>
+	<Content Remove="appsettings.json;appsettings.Development.json" />
 	<None Include="appsettings.json;appsettings.Development.json">
 		<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 		<CopyToPublishDirectory>Never</CopyToPublishDirectory>
 	</None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="output\" />
   </ItemGroup>
 
 </Project>

@@ -20,10 +20,6 @@ namespace PelotonToGarminConsole
 	internal class Startup : BackgroundService
 	{
 		private static readonly ILogger _logger = LogContext.ForClass<Startup>();
-		private static readonly Gauge BuildInfo = Prometheus.Metrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
-		{
-			LabelNames = new[] { Metrics.Label.Version, Metrics.Label.Os, Metrics.Label.OsVersion, Metrics.Label.DotNetRuntime }
-		});
 		private static readonly Gauge Health = Prometheus.Metrics.CreateGauge("p2g_health_info", "Health status for P2G.");
 		private static readonly Gauge NextSyncTime = Prometheus.Metrics.CreateGauge("p2g_next_sync_time", "The next time the sync will run in seconds since epoch.");
 
@@ -35,15 +31,11 @@ namespace PelotonToGarminConsole
 			_settingsService = settingsService;
 			_syncService = syncService;
 
-			var runtimeVersion = Environment.Version.ToString();
-			var os = Environment.OSVersion.Platform.ToString();
-			var osVersion = Environment.OSVersion.VersionString;
-			var version = Constants.AppVersion;
+			Statics.AppType = Constants.ConsoleAppName;
+			Statics.MetricPrefix = Constants.ConsoleAppName;
+			Statics.TracingService = Constants.ConsoleAppName;
 
-			BuildInfo.WithLabels(version, os, osVersion, runtimeVersion).Set(1);
-			_logger.Information("App Version: {@Version}", version);
-			_logger.Information("Operating System: {@Os}", osVersion);
-			_logger.Information("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
+			Logging.LogSystemInformation();
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken cancelToken)
@@ -77,15 +69,14 @@ namespace PelotonToGarminConsole
 		{
 			int exitCode = 0;
 
-			Statics.MetricPrefix = Constants.ConsoleAppName;
-			Statics.TracingService = Constants.ConsoleAppName;
-
 			var appConfig = await _settingsService.GetAppConfigurationAsync();
 
 			using var metrics = Metrics.EnableMetricsServer(appConfig.Observability.Prometheus);
 			using var metricsCollector = Metrics.EnableCollector(appConfig.Observability.Prometheus);
 			using var tracing = Tracing.EnableTracing(appConfig.Observability.Jaeger);
 			using var tracingSource = new ActivitySource("ROOT");
+
+			Metrics.CreateAppInfo();
 
 			var settings = await _settingsService.GetSettingsAsync();
 

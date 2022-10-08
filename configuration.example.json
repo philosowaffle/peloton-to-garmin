@@ -3,7 +3,8 @@
     "OutputDirectory": "./output",
     "EnablePolling": true,
     "PollingIntervalSeconds": 86400,
-    "CloseWindowOnFinish": false
+    "CloseWindowOnFinish": false,
+    "CheckForUpdates": true
   },
 
   "Format": {

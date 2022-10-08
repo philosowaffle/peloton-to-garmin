@@ -12,6 +12,7 @@ using Common.Http;
 ///////////////////////////////////////////////////////////
 /// STATICS
 ///////////////////////////////////////////////////////////
+Statics.AppType = Constants.WebUIName;
 Statics.MetricPrefix = Constants.WebUIName;
 Statics.TracingService = Constants.WebUIName;
 
@@ -57,20 +58,8 @@ Log.Logger = new LoggerConfiguration()
 				.Enrich.FromLogContext()
 				.CreateLogger();
 
-var runtimeVersion = Environment.Version.ToString();
-var os = Environment.OSVersion.Platform.ToString();
-var osVersion = Environment.OSVersion.VersionString;
-var version = Constants.AppVersion;
-
-Prometheus.Metrics.CreateGauge($"{Statics.MetricPrefix}_build_info", "Build info for the running instance.", new GaugeConfiguration()
-{
-	LabelNames = new[] { Common.Observe.Metrics.Label.Version, Common.Observe.Metrics.Label.Os, Common.Observe.Metrics.Label.OsVersion, Common.Observe.Metrics.Label.DotNetRuntime }
-}).WithLabels(version, os, osVersion, runtimeVersion)
-.Set(1);
-
-Log.Information("P2G WebUI Version: {@Version}", version);
-Log.Information("Operating System: {@Os}", osVersion);
-Log.Information("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
+Logging.LogSystemInformation();
+Common.Observe.Metrics.CreateAppInfo();
 
 ///////////////////////////////////////////////////////////
 /// APP
