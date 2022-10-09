@@ -14,10 +14,12 @@ public static class Logging
 {
 	public static void LogSystemInformation()
 	{
+		Log.Information("*********************************************");
 		Log.Information("P2G Version: {@AppName} {@Version}", Statics.AppType, Constants.AppVersion);
 		Log.Information("Operating System: {@Os}", SystemInformation.OS);
 		Log.Information("OS Version: {@OsVersion}", SystemInformation.OSVersion);
 		Log.Information("DotNet Runtime: {@DotnetRuntime}", SystemInformation.OSVersion);
 		Log.Information("Docker Deployment: {@IsDocker}", SystemInformation.RunningInDocker);
+		Log.Information("*********************************************");
 	}
 }

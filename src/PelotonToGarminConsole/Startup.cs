@@ -31,10 +31,6 @@ namespace PelotonToGarminConsole
 			_settingsService = settingsService;
 			_syncService = syncService;
 
-			Statics.AppType = Constants.ConsoleAppName;
-			Statics.MetricPrefix = Constants.ConsoleAppName;
-			Statics.TracingService = Constants.ConsoleAppName;
-
 			Logging.LogSystemInformation();
 		}
 
@@ -71,10 +67,12 @@ namespace PelotonToGarminConsole
 
 			var appConfig = await _settingsService.GetAppConfigurationAsync();
 
+			Log.Information("*********************************************");
 			using var metrics = Metrics.EnableMetricsServer(appConfig.Observability.Prometheus);
 			using var metricsCollector = Metrics.EnableCollector(appConfig.Observability.Prometheus);
 			using var tracing = Tracing.EnableTracing(appConfig.Observability.Jaeger);
 			using var tracingSource = new ActivitySource("ROOT");
+			Log.Information("*********************************************");
 
 			Metrics.CreateAppInfo();
 

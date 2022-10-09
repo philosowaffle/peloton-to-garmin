@@ -64,9 +64,11 @@ namespace Sync
 				var latestVersionInformation = await _gitHubService.GetLatestReleaseAsync();
 				if (latestVersionInformation.IsReleaseNewerThanInstalledVersion)
 				{
+					_logger.Information("*********************************************");
 					_logger.Information("A new version of P2G is available: {@Version}", latestVersionInformation.LatestVersion);
 					_logger.Information("Release Date: {@ReleaseDate}", latestVersionInformation.ReleaseDate);
 					_logger.Information("Release Information: {@ReleaseUrl}", latestVersionInformation.ReleaseUrl);
+					_logger.Information("*********************************************");
 				}
 			}
 
