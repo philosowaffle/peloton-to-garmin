@@ -1,5 +1,8 @@
 ﻿using Common;
+using Common.Dto;
 using Common.Dto.Api;
+using GitHub;
+using GitHub.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers
@@ -10,29 +13,42 @@ namespace WebApp.Controllers
 	[Consumes("application/json")]
 	public class SystemInfoController : Controller
 	{
-		public SystemInfoController() { }
+		private readonly IGitHubService _gitHubService;
+
+		public SystemInfoController(IGitHubService gitHubService) 
+		{
+			_gitHubService = gitHubService;
+		}
 
 		/// <summary>
 		/// Fetches information about the service and system.
 		/// </summary>
-		/// <returns>SystemInfoGetResponse</returns>
 		/// <response code="200">Returns the system information</response>
 		[HttpGet]
-		public ActionResult<SystemInfoGetResponse> Get()
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		public async Task<ActionResult<SystemInfoGetResponse>> GetAsync([FromQuery]SystemInfoGetRequest request)
 		{
-			return Ok(GetData());
-		}
+			P2GLatestRelease? versionInformation = null;
 
-		private SystemInfoGetResponse GetData()
-		{
+			if (request.CheckForUpdate)
+				versionInformation = await _gitHubService.GetLatestReleaseAsync();
+
 			return new SystemInfoGetResponse()
 			{
-				OperatingSystem = Environment.OSVersion.Platform.ToString(),
-				OperatingSystemVersion = Environment.OSVersion.VersionString,
+				OperatingSystem = SystemInformation.OS,
+				OperatingSystemVersion = SystemInformation.OSVersion,
 
-				RunTimeVersion = Environment.Version.ToString(),
+				RunTimeVersion = SystemInformation.RunTimeVersion,
 
 				Version = Constants.AppVersion,
+				NewerVersionAvailable = versionInformation?.IsReleaseNewerThanInstalledVersion,
+				LatestVersionInformation = request.CheckForUpdate ? new LatestVersionInformation()
+				{
+					LatestVersion = versionInformation?.LatestVersion,
+					ReleaseDate = versionInformation?.ReleaseDate.ToString(),
+					ReleaseUrl = versionInformation?.ReleaseUrl,
+					Description = versionInformation?.Description
+				} : null,
 
 				GitHub = "https://github.com/philosowaffle/peloton-to-garmin",
 				Documentation = "https://philosowaffle.github.io/peloton-to-garmin/",

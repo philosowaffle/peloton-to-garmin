@@ -7,6 +7,7 @@ using Common.Service;
 using Common.Stateful;
 using Conversion;
 using Garmin;
+using GitHub;
 using Microsoft.Extensions.Caching.Memory;
 using Peloton;
 using Prometheus;
@@ -19,6 +20,7 @@ using System.Reflection;
 ///////////////////////////////////////////////////////////
 /// STATICS
 ///////////////////////////////////////////////////////////
+Statics.AppType = Constants.ApiName;
 Statics.MetricPrefix = Constants.ApiName;
 Statics.TracingService = Constants.ApiName;
 
@@ -84,6 +86,10 @@ builder.Services.AddSingleton<IPelotonService, PelotonService>();
 builder.Services.AddSingleton<IGarminUploader, GarminUploader>();
 builder.Services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
 
+// GITHUB
+builder.Services.AddSingleton<IGitHubApiClient, GitHub.ApiClient>();
+builder.Services.AddSingleton<IGitHubService, GitHubService>();
+
 // SYNC
 builder.Services.AddSingleton<ISyncStatusDb, SyncStatusDb>();
 builder.Services.AddSingleton<ISyncService, SyncService>();
@@ -101,20 +107,8 @@ Log.Logger = new LoggerConfiguration()
 				.Enrich.FromLogContext()
 				.CreateLogger();
 
-var runtimeVersion = Environment.Version.ToString();
-var os = Environment.OSVersion.Platform.ToString();
-var osVersion = Environment.OSVersion.VersionString;
-var version = Constants.AppVersion;
-
-Prometheus.Metrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
-{
-	LabelNames = new[] { Common.Observe.Metrics.Label.Version, Common.Observe.Metrics.Label.Os, Common.Observe.Metrics.Label.OsVersion, Common.Observe.Metrics.Label.DotNetRuntime }
-}).WithLabels(version, os, osVersion, runtimeVersion)
-.Set(1);
-
-Log.Information("Api Version: {@Version}", version);
-Log.Information("Operating System: {@Os}", osVersion);
-Log.Information("DotNet Runtime: {@DotnetRuntime}", runtimeVersion);
+Logging.LogSystemInformation();
+Common.Observe.Metrics.CreateAppInfo();
 
 ///////////////////////////////////////////////////////////
 /// APP

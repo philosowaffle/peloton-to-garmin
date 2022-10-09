@@ -3,10 +3,16 @@
 
 <PageTitle>About</PageTitle>
 
+@if (systemInfo.NewerVersionAvailable.GetValueOrDefault())
+{
+    <HxAlert Color="ThemeColor.Success"> A new version of P2G is available! Checkout the <a href="@systemInfo.LatestVersionInformation.ReleaseUrl" target="_blank" class="alert-link">release notes</a> to see whats new.</HxAlert>
+}
+
+
 <div class="row mb-3">
     <label for="version" class="col-sm-2 col-form-label bold-label">Version:</label>
     <div class="col-sm-10">
-        @systemInfo.Version
+        @systemInfo.Version @if (systemInfo.NewerVersionAvailable.GetValueOrDefault()){ <p><small> (newer version available: @systemInfo.LatestVersionInformation.LatestVersion)</small></p> }
     </div>
 
     <label for="version" class="col-sm-2 col-form-label bold-label">OS:</label>
@@ -27,12 +33,12 @@
     
 
     <ul class="list-group list-group-flush">
-        <li class="list-group-item"><a href="@systemInfo.Api">Api</a></li>
-        <li class="list-group-item"><a href="@systemInfo.GitHub">Website</a></li>
-        <li class="list-group-item"><a href="@systemInfo.Documentation">Documentation</a></li>
-        <li class="list-group-item"><a href="@systemInfo.Forums">Forums</a></li>
-        <li class="list-group-item"><a href="@systemInfo.Issues">Report an Issue</a></li>
-        <li class="list-group-item"><a href="@systemInfo.Donate">Donate</a></li>
+        <li class="list-group-item"><a href="@systemInfo.Api" target="_blank">Api</a></li>
+        <li class="list-group-item"><a href="@systemInfo.GitHub" target="_blank">Website</a></li>
+        <li class="list-group-item"><a href="@systemInfo.Documentation" target="_blank">Documentation</a></li>
+        <li class="list-group-item"><a href="@systemInfo.Forums" target="_blank">Forums</a></li>
+        <li class="list-group-item"><a href="@systemInfo.Issues" target="_blank">Report an Issue</a></li>
+        <li class="list-group-item"><a href="@systemInfo.Donate" target="_blank">Donate</a></li>
     </ul>
 
 @code {
@@ -45,6 +51,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        systemInfo = await _apiClient.SystemInfoGetAsync();
+        var settings = await _apiClient.SettingsGetAsync();
+        systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = settings.App.CheckForUpdates});
     }
 }

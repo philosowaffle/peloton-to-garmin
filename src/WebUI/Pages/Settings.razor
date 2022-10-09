@@ -18,6 +18,8 @@
 					<HxInputNumber Label="Check for new workouts every X (seconds)" TValue="int" @bind-Value="appSettings.PollingIntervalSeconds" />
 				</HxFormState>
 				<br />
+				<HxSwitch Label="Check for new P2G Releases" @bind-Value="appSettings.CheckForUpdates" />
+				<br />
 				<HxAccordion CssClass="accordion-flush">
 					<HxAccordionItem>
 						<HeaderTemplate>Advanced</HeaderTemplate>
@@ -195,7 +197,7 @@
 	private async Task LoadDataAsync()
 	{
 		var settingsTask = _apiClient.SettingsGetAsync();
-		var systemInfoTask = _apiClient.SystemInfoGetAsync();
+		var systemInfoTask = _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = false });
 
 		await Task.WhenAll(settingsTask, systemInfoTask);
 

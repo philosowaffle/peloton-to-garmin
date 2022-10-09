@@ -1,4 +1,5 @@
-﻿using Common.Stateful;
+﻿using Common.Dto;
+using Common.Stateful;
 using Prometheus;
 using Prometheus.DotNetRuntime;
 using Serilog;
@@ -52,6 +53,15 @@ namespace Common.Observe
 			return null;
 		}
 
+		public static void CreateAppInfo()
+		{
+			PromMetrics.CreateGauge("p2g_build_info", "Build info for the running instance.", new GaugeConfiguration()
+			{
+				LabelNames = new[] { Label.Version, Label.Os, Label.OsVersion, Label.DotNetRuntime, Label.RunningInDocker }
+			}).WithLabels(Constants.AppVersion, SystemInformation.OS, SystemInformation.OSVersion, SystemInformation.RunTimeVersion, SystemInformation.RunningInDocker.ToString())
+.Set(1);
+		}
+
 		public static class Label
 		{
 			public static string HttpMethod = "http_method";
@@ -72,6 +82,8 @@ namespace Common.Observe
 			public static string OsVersion = "os_version";
 			public static string Version = "version";
 			public static string DotNetRuntime = "dotnet_runtime";
+			public static string RunningInDocker = "is_docker";
+			public static string LatestVersion = "latest_version";
 
 			public static string ReflectionMethod = "reflection_method";
 		}
@@ -90,5 +102,28 @@ namespace Common.Observe
 		{
 			LabelNames = new[] { Metrics.Label.DbMethod, Metrics.Label.DbQuery }
 		});
+	}
+
+	public static class AppMetrics
+	{
+		public static readonly Gauge UpdateAvailable =  PromMetrics.CreateGauge("p2g_update_available", "Indicates a newer version of P2G is availabe.", new GaugeConfiguration()
+		{
+			LabelNames = new[] { Metrics.Label.Version, Metrics.Label.LatestVersion }
+		});
+
+		public static void SyncUpdateAvailableMetric(bool isUpdateAvailable, string latestVersion)
+		{
+			if (isUpdateAvailable)
+			{
+				UpdateAvailable
+					.WithLabels(Constants.AppVersion, latestVersion ?? string.Empty)
+					.Set(1);
+			} else
+			{
+				UpdateAvailable
+					.WithLabels(Constants.AppVersion, Constants.AppVersion)
+					.Set(0);
+			}
+		}
 	}
 }

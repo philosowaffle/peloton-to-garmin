@@ -71,6 +71,7 @@ public class App
 		OutputDirectory = Path.Join(Environment.CurrentDirectory, "output");
 		WorkingDirectory = Path.Join(Environment.CurrentDirectory, "working");
 
+		CheckForUpdates = true;
 		EnablePolling = false;
 		PollingIntervalSeconds = 86400; // 1 day
 	}
@@ -91,6 +92,8 @@ public class App
 	[Obsolete]
 	public bool? PythonAndGUploadInstalled { get; set; }
 	public bool CloseWindowOnFinish { get; set; }
+	public bool CheckForUpdates { get; set; }
+
 
 	public static string DataDirectory = Path.GetFullPath(Path.Join(Environment.CurrentDirectory, "data"));
 	public string FitDirectory => Path.GetFullPath(Path.Join(OutputDirectory, "fit"));

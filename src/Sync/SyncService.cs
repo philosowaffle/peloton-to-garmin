@@ -7,6 +7,7 @@ using Common.Service;
 using Common.Stateful;
 using Conversion;
 using Garmin;
+using GitHub;
 using Peloton;
 using Prometheus;
 using Serilog;
@@ -34,8 +35,9 @@ namespace Sync
 		private readonly ISyncStatusDb _db;
 		private readonly IFileHandling _fileHandler;
 		private readonly ISettingsService _settingsService;
+		private readonly IGitHubService _gitHubService;
 
-		public SyncService(ISettingsService settingService, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, ISyncStatusDb dbClient, IFileHandling fileHandler)
+		public SyncService(ISettingsService settingService, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, ISyncStatusDb dbClient, IFileHandling fileHandler, IGitHubService gitHubService)
 		{
 			_settingsService = settingService;
 			_pelotonService = pelotonService;
@@ -43,6 +45,7 @@ namespace Sync
 			_converters = converters;
 			_db = dbClient;
 			_fileHandler = fileHandler;
+			_gitHubService = gitHubService;
 		}
 
 		public async Task<SyncResult> SyncAsync(int numWorkouts)
@@ -53,7 +56,23 @@ namespace Sync
 
 			ICollection<Workout> recentWorkouts;
 			var syncTime = await _db.GetSyncStatusAsync();
+			var settings = await _settingsService.GetSettingsAsync();
 			syncTime.LastSyncTime = DateTime.Now;
+
+			if (settings.App.CheckForUpdates)
+			{
+				var latestVersionInformation = await _gitHubService.GetLatestReleaseAsync();
+				if (latestVersionInformation.IsReleaseNewerThanInstalledVersion)
+				{
+					_logger.Information("*********************************************");
+					_logger.Information("A new version of P2G is available: {@Version}", latestVersionInformation.LatestVersion);
+					_logger.Information("Release Date: {@ReleaseDate}", latestVersionInformation.ReleaseDate);
+					_logger.Information("Release Information: {@ReleaseUrl}", latestVersionInformation.ReleaseUrl);
+					_logger.Information("*********************************************");
+				}
+
+				AppMetrics.SyncUpdateAvailableMetric(latestVersionInformation.IsReleaseNewerThanInstalledVersion, latestVersionInformation.LatestVersion);
+			}
 
 			try
 			{
@@ -111,7 +130,6 @@ namespace Sync
 			_logger.Debug("Total workouts found after filtering out InProgress: {@FoundWorkouts}", completedWorkouts.Count());
 			activity?.AddTag("workouts.completed", completedWorkouts.Count());
 
-			var settings = await _settingsService.GetSettingsAsync();
 			var result = await SyncAsync(completedWorkouts, settings.Peloton.ExcludeWorkoutTypes);
 
 			if (result.SyncSuccess)

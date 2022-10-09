@@ -1,7 +1,6 @@
 ﻿using Common;
 using Common.Database;
 using Common.Service;
-using Common.Observe;
 using Conversion;
 using Garmin;
 using Microsoft.Extensions.Configuration;
@@ -14,11 +13,14 @@ using Sync;
 using Serilog;
 using Serilog.Enrichers.Span;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
 using Microsoft.Extensions.Caching.Memory;
 using Common.Http;
+using GitHub;
+using Common.Stateful;
 
-Console.WriteLine("Welcome! P2G is starting up...");
+Statics.AppType = Constants.ConsoleAppName;
+Statics.MetricPrefix = Constants.ConsoleAppName;
+Statics.TracingService = Constants.ConsoleAppName;
 
 using IHost host = CreateHostBuilder(args).Build();
 await host.RunAsync();
@@ -38,6 +40,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
 				.AddEnvironmentVariables(prefix: $"{Constants.EnvironmentVariablePrefix}_")
 				.AddCommandLine(args)
 				.Build();
+
 		})
 		.UseSerilog((ctx, logConfig) =>
 		{
@@ -69,6 +72,10 @@ static IHostBuilder CreateHostBuilder(string[] args)
 			// GARMIN
 			services.AddSingleton<IGarminUploader, GarminUploader>();
 			services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
+
+			// GITHUB
+			services.AddSingleton<IGitHubApiClient, GitHub.ApiClient>();
+			services.AddSingleton<IGitHubService, GitHubService>();
 
 			// SYNC
 			services.AddSingleton<ISyncStatusDb, SyncStatusDb>();
