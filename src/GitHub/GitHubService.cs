@@ -40,6 +40,9 @@ public class GitHubService : IGitHubService
 				try
 				{
 					var latestVersionInformation = await _apiClient.GetLatestReleaseAsync();
+					var newVersionAvailable = IsReleaseNewerThanInstalledVersion(latestVersionInformation.Tag_Name, Constants.AppVersion);
+
+					AppMetrics.SyncUpdateAvailableMetric(newVersionAvailable, latestVersionInformation.Tag_Name);
 
 					return new P2GLatestRelease()
 					{
@@ -47,7 +50,7 @@ public class GitHubService : IGitHubService
 						ReleaseDate = latestVersionInformation.Published_At,
 						ReleaseUrl = latestVersionInformation.Html_Url,
 						Description = latestVersionInformation.Body,
-						IsReleaseNewerThanInstalledVersion = IsReleaseNewerThanInstalledVersion(latestVersionInformation.Tag_Name, Constants.AppVersion)
+						IsReleaseNewerThanInstalledVersion = newVersionAvailable
 					};
 				} catch (Exception e)
 				{

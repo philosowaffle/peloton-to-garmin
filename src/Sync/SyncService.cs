@@ -70,6 +70,8 @@ namespace Sync
 					_logger.Information("Release Information: {@ReleaseUrl}", latestVersionInformation.ReleaseUrl);
 					_logger.Information("*********************************************");
 				}
+
+				AppMetrics.SyncUpdateAvailableMetric(latestVersionInformation.IsReleaseNewerThanInstalledVersion, latestVersionInformation.LatestVersion);
 			}
 
 			try

@@ -82,7 +82,8 @@ This section provides global settings for the P2G application.
     "EnablePolling": true,
     "PollingIntervalSeconds": 86400,
     "PythonAndGUploadInstalled": true,
-    "CloseWindowOnFinish": false
+    "CloseWindowOnFinish": false,
+    "CheckForUpdates": true
   }
 ```
 
@@ -92,6 +93,7 @@ This section provides global settings for the P2G application.
 | EnablePolling  | no | `true` | `App Tab` | `true` if you wish P2G to run continuously and poll Peloton for new workouts. |
 | PollingIntervalSeconds | no | 3600 | `App Tab` | The polling interval in seconds determines how frequently P2G should check for new workouts. Be warned, that setting this to a frequency of hourly or less may get you flagged by Peloton as a bad actor and they may reset your password. |
 | CloseWindowOnFinish | no | `false` | none | `true` if you wish the console window to close automatically when the program finishes. Not that if you have Polling enabled the program will never 'finish' as it remains active to poll regularly. |
+| CheckForUpdates | no | `true` | `App Tab` | `true` if P2G should check for updates and write a log message if a new release is available. If using the UI this message will display there as well. |
 
 ## Format Config
 

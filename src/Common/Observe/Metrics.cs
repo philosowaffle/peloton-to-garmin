@@ -83,6 +83,7 @@ namespace Common.Observe
 			public static string Version = "version";
 			public static string DotNetRuntime = "dotnet_runtime";
 			public static string RunningInDocker = "is_docker";
+			public static string LatestVersion = "latest_version";
 
 			public static string ReflectionMethod = "reflection_method";
 		}
@@ -101,5 +102,28 @@ namespace Common.Observe
 		{
 			LabelNames = new[] { Metrics.Label.DbMethod, Metrics.Label.DbQuery }
 		});
+	}
+
+	public static class AppMetrics
+	{
+		public static readonly Gauge UpdateAvailable =  PromMetrics.CreateGauge("p2g_update_available", "Indicates a newer version of P2G is availabe.", new GaugeConfiguration()
+		{
+			LabelNames = new[] { Metrics.Label.Version, Metrics.Label.LatestVersion }
+		});
+
+		public static void SyncUpdateAvailableMetric(bool isUpdateAvailable, string latestVersion)
+		{
+			if (isUpdateAvailable)
+			{
+				UpdateAvailable
+					.WithLabels(Constants.AppVersion, latestVersion ?? string.Empty)
+					.Set(1);
+			} else
+			{
+				UpdateAvailable
+					.WithLabels(Constants.AppVersion, Constants.AppVersion)
+					.Set(0);
+			}
+		}
 	}
 }
