@@ -9,87 +9,10 @@ has_children: true
 
 P2G supports configuration via [command line arguments]({{ site.baseurl }}{% link configuration/command-line.md %}), [environment variables]({{ site.baseurl }}{% link configuration/environment-variables.md %}), [json config file]({{ site.baseurl }}{% link configuration/json.md %}), and via the user interface. By default, P2G looks for a file named `configuration.local.json` in the same directory where it is run.
 
-## Quick Start
+## Example working configs
 
-Note: If you're running the new web user interface then your sample config can be found [here](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/)).
-
-1. Copy the example below into your `configuration.local.json`
-1. In the `Peloton` section set your peloton email and password
-1. If you wish P2G to automatically upload to Garmin then in the `Garmin` section set your Garmin email and password and also set `"Upload": true,`
-
-## Example Config
-
-```json
-{
-  "App": {
-    "OutputDirectory": "./output",
-    "EnablePolling": false,
-    "PollingIntervalSeconds": 86400,
-    "CloseWindowOnFinish": false
-  },
-
-  "Format": {
-    "Fit": true,
-    "Json": false,
-    "Tcx": false,
-    "SaveLocalCopy": true,
-    "IncludeTimeInHRZones": false,
-    "IncludeTimeInPowerZones": false,
-    "DeviceInfoPath": "./deviceInfo.xml"
-  },
-
-  "Peloton": {
-    "Email": "peloton@gmail.com",
-    "Password": "peloton",
-    "NumWorkoutsToDownload": 1,
-    "ExcludeWorkoutTypes": [ "meditation" ]
-  },
-
-  "Garmin": {
-    "Email": "garmin@gmail.com",
-    "Password": "garmin",
-    "Upload": false,
-    "FormatToUpload": "fit",
-    "UploadStrategy": 2
-  },
-
-  "Observability": {
-
-    "Prometheus": {
-      "Enabled": false,
-      "Port": 4000
-    },
-
-    "Jaeger": {
-      "Enabled": false,
-      "AgentHost": "localhost",
-      "AgentPort": 6831
-    },
-
-    "Serilog": {
-      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File" ],
-      "MinimumLevel": {
-        "Default": "Information",
-        "Override": {
-          "Microsoft": "Error",
-          "System": "Error"
-        }
-      },
-      "WriteTo": [
-        { "Name": "Console" },
-        {
-          "Name": "File",
-          "Args": {
-            "path": "./output/log.txt",
-            "rollingInterval": "Day",
-            "retainedFileCountLimit": 7
-          }
-        }
-      ]
-    }
-  }
-}
-```
+1. [Headless config](https://github.com/philosowaffle/peloton-to-garmin/blob/master/configuration.example.json)
+1. [WebUI configs](https://github.com/philosowaffle/peloton-to-garmin/tree/master/docker/webui)
 
 ## Config Precedence
 

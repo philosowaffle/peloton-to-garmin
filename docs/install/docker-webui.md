@@ -18,40 +18,34 @@ With version 3, P2G now ships with an optional User Interface. Some key features
 
 ## docker-compose
 
-With the below docker configuration you can launch the containers and visit `http://localhost:8002` to reach the `p2g` web UI.  A sample `docker-compose.yaml` and config files can also be found [`in the project repo`](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/). 
+*Pre-requisite:* You have either `docker-compose` or `Docker Desktop` installed
 
-```yaml
-version: "3.9"
+1. Create a folder named `p2g-webui`
+    1. Inside this folder create [docker-compose.yaml](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/docker-compose-ui.yaml)
+    1. Also create [api.local.json](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/api.local.json)
+    1. Also create [webui.local.json](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/webui.local.json)
+1. Open a terminal in this folder
+1. Run: `docker-compose pull && docker-compose up -d`
+    1. This will pull the containers and start them up running in the background
+    1. You can close the terminal at this time
+1. Open a browser and navigate to `http://localhost:8002`
 
-services:
-  p2g-api:
-    container_name: p2g-api
-    image: philosowaffle/peloton-to-garmin:api-stable
-    environment:
-      - TZ=America/Chicago
-    volumes:
-      - ./api.local.json:/app/configuration.local.json
-      - ./data:/app/data # recommended for saving settings across restarts
-      - ./output:/app/output # optional, if you want access to the generated workout and log files
-  
-  p2g-webui:
-    container_name: p2g-webui
-    image: philosowaffle/peloton-to-garmin:webui-stable
-    ports:
-      - 8002:80
-    environment:
-      - TZ=America/Chicago
-    volumes:
-      - ./webui.local.json:/app/configuration.local.json
-    depends_on:
-      - p2g-api
-```
+Any logs or generated files will be available in the `output` directory.  Additionally, you can learn more about customizing your configuration over in the [Configuration Section]({{ site.baseurl }}{% link configuration/index.md %})
+
+### To stop P2G
+
+1. You can use Docker Desktop application to kill the containers
+1. Or, you can open a terminal in the `p2g-webui` folder
+    1. Run: `docker-compose down`
+
+### To update P2G
+
+1. Open a terminal in the `p2g-webui` folder
+    1. Run: `docker-compose pull && docker-compose up -d`
 
 ## Configuration
 
 If you are migrating to the Web UI for the first time you will need to reconfigure most of your settings using the user interface.  The only settings that are carried over and still configured via the configuration file are the ones related to `Observability` and `Api`.
-
-You can find examples of these config files [in the project repo](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/).
 
 ## Open Api
 
@@ -67,7 +61,7 @@ services:
     environment:
       - TZ=America/Chicago
     ports:
-      - 8001:80
+      - 8001:8080 # to access the api or swagger docs
     volumes:
       - ./api.local.json:/app/configuration.local.json
       - ./data:/app/data
@@ -77,7 +71,7 @@ services:
     container_name: p2g-webui
     image: philosowaffle/peloton-to-garmin:webui-stable
     ports:
-      - 8002:80
+      - 8002:8080
     environment:
       - TZ=America/Chicago
     volumes:

@@ -1,3 +1,6 @@
+<span class="badge-buymeacoffee"><a href="https://www.buymeacoffee.com/philosowaffle" title="Donate to this project using Buy Me A Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee donate button" /></a></span>
+---
+
 ## Features
 
 - [#335] P2G can now check if a new version is available and let you know
@@ -14,3 +17,6 @@
 
 - [#316] Bump dependencies
 - [#333] Refactor Converters, Settings, Configuration - general improvments
+- [#318] Documentation improvements
+	- Better install instructions for Mac + Docker
+	- Update default configs to use new port binding to avoid permission issues on port 80

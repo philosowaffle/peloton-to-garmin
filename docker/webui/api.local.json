@@ -1,36 +1,40 @@
 {
-    "Observability": {
-  
-      "Prometheus": {
-        "Enabled": false
-      },
-  
-      "Jaeger": {
-        "Enabled": false,
-        "AgentHost": "localhost",
-        "AgentPort": 6831
-      },
+  "Api": {
+    "HostUrl": "http://*:8080"
+  },
 
-      "Serilog": {
-        "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File" ],
-        "MinimumLevel": {
-          "Default": "Information",
-          "Override": {
-            "Microsoft": "Error",
-            "System": "Error"
+  "Observability": {
+
+    "Prometheus": {
+      "Enabled": false
+    },
+
+    "Jaeger": {
+      "Enabled": false,
+      "AgentHost": "localhost",
+      "AgentPort": 6831
+    },
+
+    "Serilog": {
+      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File" ],
+      "MinimumLevel": {
+        "Default": "Information",
+        "Override": {
+          "Microsoft": "Error",
+          "System": "Error"
+        }
+      },
+      "WriteTo": [
+        { "Name": "Console" },
+        {
+          "Name": "File",
+          "Args": {
+            "path": "./output/log.txt",
+            "rollingInterval": "Day",
+            "retainedFileCountLimit": 7
           }
-        },
-        "WriteTo": [
-          { "Name": "Console" },
-          {
-            "Name": "File",
-            "Args": {
-              "path": "./output/log.txt",
-              "rollingInterval": "Day",
-              "retainedFileCountLimit": 7
-            }
-          }
-        ]
-      }
+        }
+      ]
     }
   }
+}
