@@ -30,11 +30,13 @@ The config file is organized into the below sections.
 
 ## Api Config
 
-If you aren't running the Web UI version of P2G you can ignore this section.  This section lives in `webui.local.json`.
+If you aren't running the Web UI version of P2G you can ignore this section.  
+
+This section lives in `webui.local.json`.
 
 ```json
  "Api": {
-      "HostUrl": "http://p2g-api"
+      "HostUrl": "http://p2g-api:8080"
     }
 ```
 
@@ -48,7 +50,7 @@ Typically this section is only needed in the `webui.local.json` so that the Web 
 
 ```json
  "Api": {
-      "HostUrl": "http://localhost:8080"
+      "HostUrl": "http://*:8080"
     }
 ```
 
@@ -60,11 +62,11 @@ Typically this section is only needed in the `webui.local.json` so that the Web 
 
 If you aren't running the Web UI version of P2G you can ignore this section.
 
-Most users should not need to add this section to their config. However, if you have a unique setup and need to modify the Host and Port the WebUI binds to, then you can provide this config section in the `webui.local.json`.
+You can provide this config section in the `webui.local.json`.
 
 ```json
  "WebUI": {
-      "HostUrl": "http://localhost:8080"
+      "HostUrl": "http://*:8080"
     }
 ```
 

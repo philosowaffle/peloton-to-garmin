@@ -6,6 +6,8 @@ services:
     image: philosowaffle/peloton-to-garmin:api-stable
     environment:
       - TZ=America/Chicago
+    # ports:
+    #   - 8001:8080 # optional, only if you plan to interact with the API directly
     volumes:
       - ./api.local.json:/app/configuration.local.json
       - ./data:/app/data # recommended for saving settings across restarts
@@ -15,7 +17,7 @@ services:
     container_name: p2g-webui
     image: philosowaffle/peloton-to-garmin:webui-stable
     ports:
-      - 8002:80
+      - 8002:8080
     environment:
       - TZ=America/Chicago
     volumes:

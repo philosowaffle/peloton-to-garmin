@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Migrating from V1 to V2
-parent: Install
-nav_order: 6
+parent: Migrating
+nav_order: 1
 ---
 
 # Migrating from V1 to V2

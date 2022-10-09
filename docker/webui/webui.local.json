@@ -1,7 +1,11 @@
 {
-    "Api": {
-      "HostUrl": "http://p2g-api"
-    },
+  "Api": {
+    "HostUrl": "http://p2g-api:8080"
+  },
+
+  "WebUI": {
+    "HostUrl": "http://*:8080"
+  },
 
   "Observability": {
 
@@ -37,4 +41,4 @@
       ]
     }
   }
-  }
+}
