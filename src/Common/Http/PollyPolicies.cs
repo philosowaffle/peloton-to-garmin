@@ -24,9 +24,6 @@ public static class PollyPolicies
 		},
 		(result, timeSpan, retryCount, context) =>
 		{
-			Log.Verbose("Retry Policy - {@Url} - attempt {@Attempt}", result?.Result?.RequestMessage?.RequestUri, retryCount);
+			Log.Information("Retry Policy - {@Url} - attempt {@Attempt}", result?.Result?.RequestMessage?.RequestUri, retryCount);
 		});
-
-	public static AsyncRateLimitPolicy<HttpResponseMessage> RateLimit = Policy
-		.RateLimitAsync<HttpResponseMessage>(20, TimeSpan.FromSeconds(1));
 }

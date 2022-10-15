@@ -67,7 +67,7 @@ public static class FlurlConfiguration
 
 		FlurlHttp.ConfigureClient("https://api.onepeloton.com", client =>
 		{
-			var policies = Policy.WrapAsync(PollyPolicies.Retry, PollyPolicies.RateLimit);
+			var policies = Policy.WrapAsync(PollyPolicies.Retry, PollyPolicies.NoOp);
 			client.Settings.HttpClientFactory = new PollyHttpClientFactory(policies);
 		});
 	}

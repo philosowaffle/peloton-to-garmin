@@ -148,10 +148,9 @@ namespace Peloton
 				batchSize++;
 				tasks.Add(GetWorkoutDetailsAsync(popped.Id));
 
-				_logger.Information($"Batch Size: {batchSize}");
 				if (batchSize >= maxBatchSize)
 				{
-					_logger.Information($"Fetching Batch Size: {batchSize}");
+					_logger.Verbose($"Fetching Batch Size: {batchSize}");
 					var awaited = await Task.WhenAll(tasks);
 					var successful = awaited.Where(t => t is object);
 					results.AddRange(successful);
@@ -168,14 +167,6 @@ namespace Peloton
 				results.AddRange(successful);
 			}
 
-			//foreach (var recentWorkout in workoutIds)
-			//{
-			//	var workoutId = recentWorkout.Id;
-
-			//	tasks.Add(GetWorkoutDetailsAsync(workoutId));
-			//}
-
-			//return (await Task.WhenAll(tasks)).Where(t => t is object).ToArray();
 			return results.ToArray();
 		}
 

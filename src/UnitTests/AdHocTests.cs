@@ -37,25 +37,11 @@ namespace UnitTests
 					.CreateLogger();
 		}
 
-		[Test]
-		public async Task AA()
-		{
-			FlurlConfiguration.Configure(new Observability(), 10);
-			FlurlHttp.ConfigureClient("https://p2g-api.bbelvis.com", c =>
-			{
-				c.Settings.HttpClientFactory = new PollyHttpClientFactory();
-			});
-
-			try
-			{
-				await "https://p2g-api.bbelvis.com/api/settings".GetAsync();
-			} catch { }
+		//[Test]
+		//public async Task AA()
+		//{
 			
-			try
-			{
-				await "https://paperless.bbelvis.com/api/documents/".GetAsync();
-			} catch { }	
-		}
+		//}
 
 		//[Test]
 		//public void DecodeFitFile()
