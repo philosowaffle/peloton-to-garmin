@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Serilog.Events;
 using System.Web;
 using System.Net;
+using Polly;
 
 namespace Common.Http;
 
@@ -62,6 +63,12 @@ public static class FlurlConfiguration
 			settings.AfterCallAsync = afterCallAsync;
 			settings.OnErrorAsync = onErrorAsync;
 			settings.Redirects.ForwardHeaders = true;
+		});
+
+		FlurlHttp.ConfigureClient("https://api.onepeloton.com", client =>
+		{
+			var policies = Policy.WrapAsync(PollyPolicies.Retry, PollyPolicies.RateLimit);
+			client.Settings.HttpClientFactory = new PollyHttpClientFactory(policies);
 		});
 	}
 

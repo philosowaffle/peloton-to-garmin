@@ -2,6 +2,7 @@
 using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Helpers;
+using Common.Http;
 using Common.Service;
 using Conversion;
 using Dynastream.Fit;
@@ -31,8 +32,29 @@ namespace UnitTests
 		{
 			Log.Logger = new LoggerConfiguration()
 					.WriteTo.Console()
-					.MinimumLevel.Verbose()
+					//.MinimumLevel.Verbose()
+					.MinimumLevel.Information()
 					.CreateLogger();
+		}
+
+		[Test]
+		public async Task AA()
+		{
+			FlurlConfiguration.Configure(new Observability(), 10);
+			FlurlHttp.ConfigureClient("https://p2g-api.bbelvis.com", c =>
+			{
+				c.Settings.HttpClientFactory = new PollyHttpClientFactory();
+			});
+
+			try
+			{
+				await "https://p2g-api.bbelvis.com/api/settings".GetAsync();
+			} catch { }
+			
+			try
+			{
+				await "https://paperless.bbelvis.com/api/documents/".GetAsync();
+			} catch { }	
 		}
 
 		//[Test]
