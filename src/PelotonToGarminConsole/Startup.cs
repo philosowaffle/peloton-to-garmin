@@ -71,7 +71,7 @@ namespace PelotonToGarminConsole
 			using var metrics = Metrics.EnableMetricsServer(appConfig.Observability.Prometheus);
 			using var metricsCollector = Metrics.EnableCollector(appConfig.Observability.Prometheus);
 			using var tracing = Tracing.EnableTracing(appConfig.Observability.Jaeger);
-			using var tracingSource = new ActivitySource("ROOT");
+			using var tracingSource = new ActivitySource(Statics.TracingService);
 			Log.Information("*********************************************");
 
 			Metrics.CreateAppInfo();

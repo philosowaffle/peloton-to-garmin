@@ -74,10 +74,10 @@ else
 		_toaster?.Clear();
 	}
 
-	public void Dispose() => _toaster.Clear();
-
 	protected override async Task OnInitializedAsync()
 	{
+		using var tracing = Tracing.Trace($"{nameof(Index)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+
 		try
 		{
 			var getSettingsTask = _apiClient.SettingsGetAsync();
@@ -99,8 +99,17 @@ else
 		}
 	}
 
+	public void Dispose()
+    {
+		_toaster.Clear();
+        Activity.Current?.Dispose();
+        Activity.Current = null;
+    }
+
 	private async Task LoadSyncStatusAsync()
 	{
+		using var tracing = Tracing.Trace($"{nameof(Index)}.{nameof(LoadSyncStatusAsync)}", kind: ActivityKind.Client);
+
 		try
 		{
 			syncStatus = await _apiClient.SyncGetAsync();
@@ -132,6 +141,8 @@ else
 
 	private async Task SyncAsync()
 	{
+		using var tracing = Tracing.Trace($"{nameof(Index)}.{nameof(SyncAsync)}", kind: ActivityKind.Client);
+
 		try
 		{
 			syncRunning = true;

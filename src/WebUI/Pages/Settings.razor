@@ -170,32 +170,44 @@
 
 	protected override Task OnInitializedAsync()
 	{
+		using var tracing = Tracing.Trace($"{nameof(Settings)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
 		return LoadDataAsync();
 	}
 
+	public void Dispose()
+    {
+        Activity.Current?.Dispose();
+        Activity.Current = null;
+    }
+
 	protected async Task SaveAppSettings()
 	{
+		using var tracing = Tracing.Trace($"{nameof(Settings)}.{nameof(SaveAppSettings)}", kind: ActivityKind.Client);
 		appSettings = await _apiClient.SettingsAppPostAsync(appSettings);
 	}
 
 	protected async Task SaveFormatSettings() 
 	{
+		using var tracing = Tracing.Trace($"{nameof(Settings)}.{nameof(SaveFormatSettings)}", kind: ActivityKind.Client);
 		formatSettings = await _apiClient.SettingsFormatPostAsync(formatSettings);
 	}
 
 	protected async Task SavePelotonSettings() 
 	{
+		using var tracing = Tracing.Trace($"{nameof(Settings)}.{nameof(SavePelotonSettings)}", kind: ActivityKind.Client);
 		pelotonSettings.ExcludeWorkoutTypes = selectedWorkoutTypes;
 		pelotonSettings = await _apiClient.SettingsPelotonPostAsync(pelotonSettings);
 	}
 
 	protected async Task SaveGarminSettings() 
 	{
+		using var tracing = Tracing.Trace($"{nameof(Settings)}.{nameof(SaveGarminSettings)}", kind: ActivityKind.Client);
 		garminSettings = await _apiClient.SettingsGarminPostAsync(garminSettings);
 	}
 
 	private async Task LoadDataAsync()
 	{
+		using var tracing = Tracing.Trace($"{nameof(Settings)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
 		var settingsTask = _apiClient.SettingsGetAsync();
 		var systemInfoTask = _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = false });
 

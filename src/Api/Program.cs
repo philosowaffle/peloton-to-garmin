@@ -116,6 +116,9 @@ Common.Observe.Metrics.CreateAppInfo();
 
 var app = builder.Build();
 
+// Setup initial Tracing Source
+Tracing.Source = new(Statics.TracingService);
+
 app.UseCors(options =>
 {
 	options

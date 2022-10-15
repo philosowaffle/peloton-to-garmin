@@ -27,10 +27,24 @@
 	private static int PageSize = 25;
 
 	public Sync() : base() => _toaster?.Clear();
-	public void Dispose() => _toaster.Clear();
+
+	protected override Task OnInitializedAsync()
+	{
+		using var tracing = Tracing.Trace($"{nameof(Sync)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+		return Task.CompletedTask;
+	}
+
+	public void Dispose()
+	{
+		_toaster.Clear();
+		Activity.Current?.Dispose();
+        Activity.Current = null;
+    }
 
 	private async Task<GridDataProviderResult<Workout>> LoadDataAsync(GridDataProviderRequest<Workout> request)
 	{
+		using var tracing = Tracing.Trace($"{nameof(Sync)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
+
 		_toaster.Clear();
 
 		try 
@@ -54,6 +68,8 @@
 
 	private async Task SyncAsync()
 	{
+		using var tracing = Tracing.Trace($"{nameof(Sync)}.{nameof(SyncAsync)}", kind: ActivityKind.Client);
+
 		_toaster.Clear();
 
 		try
