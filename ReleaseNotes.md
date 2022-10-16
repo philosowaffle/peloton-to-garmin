@@ -14,6 +14,7 @@
 - [#342] Fixed - Failed to deserialzie UserData when `null` cycling_ftp_source
 - [#343] Fixed - Back-Syncing hundreds of workouts on some computers could lead to resource exhaustion 
 	- `System.IO.IOException: Unable to write data to the transport connection: An existing connection was forcibly closed by the remote host..`
+- [#336] Fixed - Fixed OpenTelemetry Tracing not tracing cleanly, especially on the WebUI
 
 ## Changes
 
