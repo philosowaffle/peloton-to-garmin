@@ -4,6 +4,7 @@ using Common.Dto.Peloton;
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json.Linq;
 using Prometheus;
 using Serilog;
@@ -137,15 +138,36 @@ namespace Peloton
 
 			if (workoutIds is null || workoutIds.Count() <= 0) return new P2GWorkout[0];
 
-			var tasks = new List<Task<P2GWorkout>>();
-			foreach (var recentWorkout in workoutIds)
+			var maxBatchSize = 25;
+			var tasks = new List<Task<P2GWorkout>>(maxBatchSize);
+			var results = new List<P2GWorkout>(workoutIds.Count);
+			var stack = new Stack<Workout>(workoutIds);
+			var batchSize = 0;
+			while (stack.TryPop(out var popped))
 			{
-				var workoutId = recentWorkout.Id;
+				batchSize++;
+				tasks.Add(GetWorkoutDetailsAsync(popped.Id));
 
-				tasks.Add(GetWorkoutDetailsAsync(workoutId));
+				if (batchSize >= maxBatchSize)
+				{
+					_logger.Verbose($"Fetching Batch Size: {batchSize}");
+					var awaited = await Task.WhenAll(tasks);
+					var successful = awaited.Where(t => t is object);
+					results.AddRange(successful);
+
+					batchSize = 0;
+					tasks.Clear();
+				}
 			}
 
-			return (await Task.WhenAll(tasks)).Where(t => t is object).ToArray();
+			if (tasks.Any())
+			{
+				var awaited = await Task.WhenAll(tasks);
+				var successful = awaited.Where(t => t is object);
+				results.AddRange(successful);
+			}
+
+			return results.ToArray();
 		}
 
 		private async Task<P2GWorkout> GetWorkoutDetailsAsync(string workoutId)

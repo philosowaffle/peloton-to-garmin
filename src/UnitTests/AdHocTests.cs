@@ -2,6 +2,7 @@
 using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Helpers;
+using Common.Http;
 using Common.Service;
 using Conversion;
 using Dynastream.Fit;
@@ -31,9 +32,16 @@ namespace UnitTests
 		{
 			Log.Logger = new LoggerConfiguration()
 					.WriteTo.Console()
-					.MinimumLevel.Verbose()
+					//.MinimumLevel.Verbose()
+					.MinimumLevel.Information()
 					.CreateLogger();
 		}
+
+		//[Test]
+		//public async Task AA()
+		//{
+			
+		//}
 
 		//[Test]
 		//public void DecodeFitFile()

@@ -41,3 +41,8 @@ P2G provides two different versions of the executable you can choose between:
 1. [The latest dev version](https://github.com/philosowaffle/peloton-to-garmin/actions/workflows/publish_distros_latest.yml)
     1. Click on the first item in the list with a green checkmark, this will be the latest successful build.
     1. On the summary page, at the bottom you will see a section called `Artifacts` with various builds attached. Click on one of these builds to download for your operating system.
+
+## Limitations
+
+1. Does not truly run in the background, the program must be minimized to the the task bar if using it to automatically sync, and you must manually restart it if your computer reboots
+1. No GUI - yet ;)

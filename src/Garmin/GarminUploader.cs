@@ -49,9 +49,11 @@ namespace Garmin
 
 			if (!settings.Garmin.Upload) return;
 
+			_logger.Information("Uploading workouts to Garmin...");
+
 			if (!Directory.Exists(settings.App.UploadDirectory))
 			{
-				_logger.Information("No upload directory found. Nothing to do.");
+				_logger.Information("No upload directory found. Done.");
 				return;
 			}
 
@@ -60,7 +62,7 @@ namespace Garmin
 
 			if (files.Length == 0)
 			{
-				_logger.Information("No files to upload in output directory. Nothing to do.");
+				_logger.Information("No files to upload in output directory. Done.");
 				return;
 			}
 
