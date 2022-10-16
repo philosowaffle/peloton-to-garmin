@@ -1,5 +1,5 @@
 ﻿@page "/sync"
-@implements IDisposable
+@inherits TracingComponentBase
 @inject IApiClient _apiClient;
 @inject IHxMessengerService _toaster;
 
@@ -26,24 +26,17 @@
 	private HashSet<Workout> selectedItems = new();
 	private static int PageSize = 25;
 
-	public Sync() : base() => _toaster?.Clear();
+	public Sync() : base(nameof(Sync)) => _toaster?.Clear();
 
-	protected override Task OnInitializedAsync()
-	{
-		using var tracing = Tracing.Trace($"{nameof(Sync)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
-		return Task.CompletedTask;
-	}
-
-	public void Dispose()
+	public override void Dispose()
 	{
 		_toaster.Clear();
-		Activity.Current?.Dispose();
-        Activity.Current = null;
-    }
+		base.Dispose();
+	}
 
 	private async Task<GridDataProviderResult<Workout>> LoadDataAsync(GridDataProviderRequest<Workout> request)
 	{
-		using var tracing = Tracing.Trace($"{nameof(Sync)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
+		using var tracing = Tracing.ClientTrace($"{nameof(Sync)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
 
 		_toaster.Clear();
 
@@ -68,7 +61,7 @@
 
 	private async Task SyncAsync()
 	{
-		using var tracing = Tracing.Trace($"{nameof(Sync)}.{nameof(SyncAsync)}", kind: ActivityKind.Client);
+		using var tracing = Tracing.ClientTrace($"{nameof(Sync)}.{nameof(SyncAsync)}", kind: ActivityKind.Client);
 
 		_toaster.Clear();
 

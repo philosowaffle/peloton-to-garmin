@@ -14,8 +14,6 @@
 @code {
     private Task OnNavigateAsync(NavigationContext args)
     {
-        Activity.Current?.Dispose();
-        Activity.Current = null;
         return Task.CompletedTask;
     }
 }

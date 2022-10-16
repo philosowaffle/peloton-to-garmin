@@ -1,5 +1,5 @@
 ﻿@page "/"
-@implements IDisposable
+@inherits TracingComponentBase
 @inject IApiClient _apiClient
 @inject IHxMessengerService _toaster;
 
@@ -61,7 +61,7 @@ else
 	private string syncStatusBorderClass = "border-light";
 	private string syncStatusTextClass = "";
 
-	public Index() : base()
+	public Index() : base(nameof(Index))
 	{
 		syncStatus = new SyncGetResponse();
 		syncResponse = null;
@@ -76,7 +76,7 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		using var tracing = Tracing.Trace($"{nameof(Index)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+		using var tracing = Tracing.ClientTrace($"{nameof(Index)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
 
 		try
 		{
@@ -99,16 +99,15 @@ else
 		}
 	}
 
-	public void Dispose()
-    {
+	public override void Dispose()
+	{
 		_toaster.Clear();
-        Activity.Current?.Dispose();
-        Activity.Current = null;
-    }
+		base.Dispose();
+	}
 
 	private async Task LoadSyncStatusAsync()
 	{
-		using var tracing = Tracing.Trace($"{nameof(Index)}.{nameof(LoadSyncStatusAsync)}", kind: ActivityKind.Client);
+		using var tracing = Tracing.ClientTrace($"{nameof(Index)}.{nameof(LoadSyncStatusAsync)}", kind: ActivityKind.Client);
 
 		try
 		{
@@ -141,7 +140,7 @@ else
 
 	private async Task SyncAsync()
 	{
-		using var tracing = Tracing.Trace($"{nameof(Index)}.{nameof(SyncAsync)}", kind: ActivityKind.Client);
+		using var tracing = Tracing.ClientTrace($"{nameof(Index)}.{nameof(SyncAsync)}", kind: ActivityKind.Client);
 
 		try
 		{

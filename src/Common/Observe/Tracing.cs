@@ -34,7 +34,7 @@ namespace Common.Observe
 	{
 		public static ActivitySource Source;
 
-		public static TracerProvider EnableTracing(Jaeger config)
+		public static TracerProvider EnableConsoleTracing(Jaeger config)
 		{
 			TracerProvider tracing = null;
 			if (!config.Enabled)
@@ -49,7 +49,7 @@ namespace Common.Observe
 			return tracing;
 		}
 
-		public static void EnableTracing(IServiceCollection services, Jaeger config)
+		public static void EnableApiTracing(IServiceCollection services, Jaeger config)
 		{
 			if (!config.Enabled)
 				return;
@@ -97,7 +97,6 @@ namespace Common.Observe
 							new KeyValuePair<string, object>("host.machineName", Environment.MachineName),
 							new KeyValuePair<string, object>("host.os", Environment.OSVersion.VersionString),
 							new KeyValuePair<string, object>("dotnet.version", Environment.Version.ToString()),
-							new KeyValuePair<string, object>("app.version", Constants.AppVersion),
 						})
 					)
 					.SetSampler(new AlwaysOnSampler())
@@ -117,6 +116,25 @@ namespace Common.Observe
 
 		public static Activity Trace(string name, string category = "app", ActivityKind kind = ActivityKind.Server)
 		{
+			var activity = Source?.StartActivity(name, kind);
+
+			activity?
+				.SetTag(TagKey.Category, category)
+				.SetTag("SpanId", activity.SpanId)
+				.SetTag("TraceId", activity.TraceId);
+
+			return activity;
+		}
+
+		public static Activity ClientTrace(string name, string category = "app", ActivityKind kind = ActivityKind.Client)
+		{
+			if (Activity.Current is null || Activity.Current.Kind != ActivityKind.Client)
+			{
+				Activity.Current?.Dispose();
+				Activity.Current = null;
+				Activity.Current = Source?.CreateActivity(name, kind);
+			}
+
 			var activity = Source?.StartActivity(name, kind);
 
 			activity?

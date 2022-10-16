@@ -1,4 +1,5 @@
 ﻿@page "/about"
+@inherits TracingComponentBase
 @inject IApiClient _apiClient
 
 <PageTitle>About</PageTitle>
@@ -44,21 +45,15 @@
 @code {
     private SystemInfoGetResponse systemInfo;
 
-    public About() : base()
+    public About() : base(nameof(About))
     {
         systemInfo = new SystemInfoGetResponse();
     }
 
     protected override async Task OnInitializedAsync()
     {
-        using var tracing = Tracing.Trace($"{nameof(About)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+        using var tracing = Tracing.ClientTrace($"{nameof(About)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
         var settings = await _apiClient.SettingsGetAsync();
         systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = settings.App.CheckForUpdates});
-    }
-
-    public void Dispose()
-    {
-        Activity.Current?.Dispose();
-        Activity.Current = null;
     }
 }
