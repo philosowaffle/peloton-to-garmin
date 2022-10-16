@@ -34,97 +34,108 @@ namespace Common.Observe
 	{
 		public static ActivitySource Source;
 
-		public static TracerProvider EnableTracing(Jaeger config)
+		public static TracerProvider EnableConsoleTracing(Jaeger config)
 		{
 			TracerProvider tracing = null;
-			if (config.Enabled)
-			{
-				tracing = Sdk.CreateTracerProviderBuilder()
-							.SetResourceBuilder(ResourceBuilder.CreateDefault()
-							.AddService(Statics.TracingService)
-							.AddAttributes(new List<KeyValuePair<string, object>>()
-							{
-								new KeyValuePair<string, object>("host.machineName", Environment.MachineName),
-								new KeyValuePair<string, object>("host.os", Environment.OSVersion.VersionString),
-								new KeyValuePair<string, object>("dotnet.version", Environment.Version.ToString()),
-								new KeyValuePair<string, object>("app.version", Constants.AppVersion),
-							})
-							)
-							.AddSource(Statics.TracingService)
-							.SetSampler(new AlwaysOnSampler())
-							.SetErrorStatusOnException()
-							.AddAspNetCoreInstrumentation(c =>
-							{
-								c.RecordException = true;
-								c.RecordException = true;
-								c.Enrich = AspNetCoreEnricher;
-							})
-							.AddHttpClientInstrumentation(h =>
-							{
-								h.RecordException = true;
-								h.RecordException = true;
-								h.Enrich = HttpEnricher;
-							})
-							.AddJaegerExporter(o =>
-							{
-								o.AgentHost = config.AgentHost;
-								o.AgentPort = config.AgentPort.GetValueOrDefault();
-								o.Protocol = OpenTelemetry.Exporter.JaegerExportProtocol.UdpCompactThrift;
-							})
-							.Build();
+			if (!config.Enabled)
+				return tracing;
 
-				Log.Information("Tracing started and exporting to: http://{@Host}:{@Port}", config.AgentHost, config.AgentPort);
-			}
+			var builder = Sdk.CreateTracerProviderBuilder()
+				.ConfigureDefaultBuilder(config)
+				.Build();
+
+			Log.Information("Tracing started and exporting to: http://{@Host}:{@Port}", config.AgentHost, config.AgentPort);
 
 			return tracing;
 		}
 
-		public static void EnableTracing(IServiceCollection services, Jaeger config)
+		public static void EnableApiTracing(IServiceCollection services, Jaeger config)
 		{
-			if (config.Enabled)
-			{
-				services.AddOpenTelemetryTracing(
-					(builder) => builder
-						.SetResourceBuilder(ResourceBuilder.CreateDefault()
-							.AddService(Statics.TracingService)
-							.AddAttributes(new List<KeyValuePair<string, object>>()
-							{
-								new KeyValuePair<string, object>("host.machineName", Environment.MachineName),
-								new KeyValuePair<string, object>("host.os", Environment.OSVersion.VersionString),
-								new KeyValuePair<string, object>("dotnet.version", Environment.Version.ToString()),
-								new KeyValuePair<string, object>("app.version", Constants.AppVersion),
-							})
-						)
-						.AddSource(Statics.TracingService)
-						.SetSampler(new AlwaysOnSampler())
-						.SetErrorStatusOnException()
-						.AddAspNetCoreInstrumentation(c =>
-						{
-							c.RecordException = true;
-							c.Enrich = AspNetCoreEnricher;
-						})
-						.AddHttpClientInstrumentation(h =>
-						{
-							h.RecordException = true;
-							h.Enrich = HttpEnricher;
-						})
-						.AddJaegerExporter(o =>
-						{
-							o.AgentHost = config.AgentHost;
-							o.AgentPort = config.AgentPort.GetValueOrDefault();
-							o.Protocol = OpenTelemetry.Exporter.JaegerExportProtocol.UdpCompactThrift;
-						})
-					);
+			if (!config.Enabled)
+				return;
 
-				Log.Information("Tracing started and exporting to: http://{@Host}:{@Port}", config.AgentHost, config.AgentPort);
-			}
+			services.AddOpenTelemetryTracing(
+				(builder) =>
+				{
+					builder
+					.ConfigureDefaultBuilder(config)
+					.AddAspNetCoreInstrumentation(c =>
+					{
+						c.RecordException = true;
+						c.Enrich = AspNetCoreEnricher;
+					});
+				});
+
+			Log.Information("Tracing started and exporting to: http://{@Host}:{@Port}", config.AgentHost, config.AgentPort);
+
 		}
 
-		public static Activity Trace(string name, string category = "app")
+		public static void EnableWebUITracing(IServiceCollection services, Jaeger config)
 		{
-			var activity = Activity.Current?.Source.StartActivity(name)
-				??
-				new ActivitySource(Statics.TracingService)?.StartActivity(name);
+			if (!config.Enabled)
+				return;
+
+			services.AddOpenTelemetryTracing(
+				(builder) =>
+				{
+					builder.ConfigureDefaultBuilder(config);
+				});
+
+			Log.Information("Tracing started and exporting to: http://{@Host}:{@Port}", config.AgentHost, config.AgentPort);
+		}
+
+		private static TracerProviderBuilder ConfigureDefaultBuilder(this TracerProviderBuilder builder, Jaeger config)
+		{
+			return builder
+					.AddSource(Statics.TracingService)
+					.SetResourceBuilder(
+						ResourceBuilder
+						.CreateDefault()
+						.AddService(serviceName: Statics.TracingService, serviceVersion: Constants.AppVersion)
+						.AddAttributes(new List<KeyValuePair<string, object>>()
+						{
+							new KeyValuePair<string, object>("host.machineName", Environment.MachineName),
+							new KeyValuePair<string, object>("host.os", Environment.OSVersion.VersionString),
+							new KeyValuePair<string, object>("dotnet.version", Environment.Version.ToString()),
+						})
+					)
+					.SetSampler(new AlwaysOnSampler())
+					.SetErrorStatusOnException()
+					.AddHttpClientInstrumentation(h =>
+					{
+						h.RecordException = true;
+						h.Enrich = HttpEnricher;
+					})
+					.AddJaegerExporter(o =>
+					{
+						o.AgentHost = config.AgentHost;
+						o.AgentPort = config.AgentPort.GetValueOrDefault();
+						o.Protocol = OpenTelemetry.Exporter.JaegerExportProtocol.UdpCompactThrift;
+					});
+		}
+
+		public static Activity Trace(string name, string category = "app", ActivityKind kind = ActivityKind.Server)
+		{
+			var activity = Source?.StartActivity(name, kind);
+
+			activity?
+				.SetTag(TagKey.Category, category)
+				.SetTag("SpanId", activity.SpanId)
+				.SetTag("TraceId", activity.TraceId);
+
+			return activity;
+		}
+
+		public static Activity ClientTrace(string name, string category = "app", ActivityKind kind = ActivityKind.Client)
+		{
+			if (Activity.Current is null || Activity.Current.Kind != ActivityKind.Client)
+			{
+				Activity.Current?.Dispose();
+				Activity.Current = null;
+				Activity.Current = Source?.CreateActivity(name, kind);
+			}
+
+			var activity = Source?.StartActivity(name, kind);
 
 			activity?
 				.SetTag(TagKey.Category, category)

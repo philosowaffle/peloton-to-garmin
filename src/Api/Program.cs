@@ -100,7 +100,7 @@ builder.Services.AddSingleton<IConverter, TcxConverter>();
 builder.Services.AddSingleton<IConverter, JsonConverter>();
 
 FlurlConfiguration.Configure(config.Observability);
-Tracing.EnableTracing(builder.Services, config.Observability.Jaeger);
+Tracing.EnableApiTracing(builder.Services, config.Observability.Jaeger);
 
 Log.Logger = new LoggerConfiguration()
 				.ReadFrom.Configuration(builder.Configuration, sectionName: $"{nameof(Observability)}:Serilog")
@@ -115,6 +115,9 @@ Common.Observe.Metrics.CreateAppInfo();
 ///////////////////////////////////////////////////////////
 
 var app = builder.Build();
+
+// Setup initial Tracing Source
+Tracing.Source = new(Statics.TracingService);
 
 app.UseCors(options =>
 {
