@@ -12,6 +12,8 @@
 - [#331] Fixed - System.IO.IOException: The process cannot access the file 'deviceInfo.xml' because it is being used by another process.
 - [#289] Fixed - Better logs and messaging when no convert Formats are configured in Settings
 - [#342] Fixed - Failed to deserialzie UserData when `null` cycling_ftp_source
+- [#343] Fixed - Back-Syncing hundreds of workouts on some computers could lead to resource exhaustion 
+	- `System.IO.IOException: Unable to write data to the transport connection: An existing connection was forcibly closed by the remote host..`
 
 ## Changes
 
