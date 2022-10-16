@@ -46,8 +46,6 @@ namespace Conversion
 				{
 					encoder.Close();
 				}
-
-				_logger.Information("[{@Format}] Encoded file {@Path}", FileFormat.Fit, fitDest.Name);
 			}
 		}
 

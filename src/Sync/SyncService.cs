@@ -74,6 +74,8 @@ namespace Sync
 				AppMetrics.SyncUpdateAvailableMetric(latestVersionInformation.IsReleaseNewerThanInstalledVersion, latestVersionInformation.LatestVersion);
 			}
 
+			_logger.Information("Begining sync for {@NumWorkouts} workouts.", numWorkouts);
+
 			try
 			{
 				recentWorkouts = await _pelotonService.GetRecentWorkoutsAsync(numWorkouts);
@@ -127,8 +129,9 @@ namespace Sync
 									.Select(r => r.Id)
 									.ToList();
 
-			_logger.Debug("Total workouts found after filtering out InProgress: {@FoundWorkouts}", completedWorkouts.Count());
-			activity?.AddTag("workouts.completed", completedWorkouts.Count());
+			var completedWorkoutsCount = completedWorkouts.Count();
+			_logger.Information("Found {@NumWorkouts} completed workouts.", completedWorkoutsCount);
+			activity?.AddTag("workouts.completed", completedWorkoutsCount);
 
 			var result = await SyncAsync(completedWorkouts, settings.Peloton.ExcludeWorkoutTypes);
 
@@ -189,12 +192,14 @@ namespace Sync
 									return true;
 								});
 
-			activity?.AddTag("workouts.filtered", filteredWorkouts.Count());
-			_logger.Debug("Number of workouts to convert after filtering InProgress: {@NumWorkouts}", filteredWorkouts.Count());
+			var filteredWorkoutsCount = filteredWorkouts.Count();
+			activity?.AddTag("workouts.filtered", filteredWorkoutsCount);
+			_logger.Information("Found {@NumWorkouts} workouts remaining after filtering ExcludedWorkoutTypes.", filteredWorkoutsCount);
 
 			var convertStatuses = new List<ConvertStatus>();
 			try
 			{
+				_logger.Information("Converting workouts...");
 				var tasks = new List<Task<ConvertStatus>>();
 				foreach (var workout in filteredWorkouts)
 				{
