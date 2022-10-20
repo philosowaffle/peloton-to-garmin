@@ -62,7 +62,9 @@ static IHostBuilder CreateHostBuilder(string[] args)
 			services.AddSingleton<ISettingsService>((serviceProvider) =>
 			{
 				var settingService = new SettingsService(serviceProvider.GetService<ISettingsDb>(), serviceProvider.GetService<IMemoryCache>(), serviceProvider.GetService<IConfiguration>(), serviceProvider.GetService<IFileHandling>());
-				return new FileBasedSettingsService(serviceProvider.GetService<IConfiguration>(), settingService);
+				var memCache = serviceProvider.GetService<IMemoryCache>();
+				var fileHandler = serviceProvider.GetService<IFileHandling>();
+				return new FileBasedSettingsService(serviceProvider.GetService<IConfiguration>(), settingService, memCache, fileHandler);
 			});
 
 			// PELOTON
