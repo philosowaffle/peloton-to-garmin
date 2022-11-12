@@ -96,9 +96,6 @@ public class App
 
 
 	public static string DataDirectory = Path.GetFullPath(Path.Join(Environment.CurrentDirectory, "data"));
-	public string FitDirectory => Path.GetFullPath(Path.Join(OutputDirectory, "fit"));
-	public string JsonDirectory => Path.GetFullPath(Path.Join(OutputDirectory, "json"));
-	public string TcxDirectory => Path.GetFullPath(Path.Join(OutputDirectory, "tcx"));
 	public string FailedDirectory => Path.GetFullPath(Path.Join(OutputDirectory, "failed"));
 	public string DownloadDirectory => Path.GetFullPath(Path.Join(WorkingDirectory, "downloaded"));
 	public string UploadDirectory => Path.GetFullPath(Path.Join(WorkingDirectory, "upload"));

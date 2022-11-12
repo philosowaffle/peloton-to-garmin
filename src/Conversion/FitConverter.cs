@@ -19,15 +19,12 @@ namespace Conversion
 	{
 		private static readonly string _spaceSeparator = "_";
 		private static readonly ILogger _logger = LogContext.ForClass<FitConverter>();
-		public FitConverter(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
-
-		public override async Task<ConvertStatus> ConvertAsync(P2GWorkout workout)
+		public FitConverter(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) 
 		{
-			var settings = await _settingsService.GetSettingsAsync();
-			if (!settings.Format.Fit) return new ConvertStatus() { Result = ConversionResult.Skipped};
-
-			return await ConvertForFormatAsync(FileFormat.Fit, workout, settings);
+			Format = FileFormat.Fit;
 		}
+
+		protected override bool ShouldConvert(Format settings) => settings.Fit;
 
 		protected override void Save(Tuple<string, ICollection<Mesg>> data, string path)
 		{
@@ -49,18 +46,7 @@ namespace Conversion
 			}
 		}
 
-		protected override void SaveLocalCopy(string sourcePath, string workoutTitle, Settings settings)
-		{
-			if (!settings.Format.Fit || !settings.Format.SaveLocalCopy) return;
-
-			_fileHandler.MkDirIfNotExists(settings.App.FitDirectory);
-
-			var backupDest = Path.Join(settings.App.FitDirectory, $"{workoutTitle}.fit");
-			_fileHandler.Copy(sourcePath, backupDest, overwrite: true);
-			_logger.Information("[{@Format}] Backed up file {@File}", FileFormat.Fit, backupDest);
-		}
-
-		protected override async Task<Tuple<string, ICollection<Mesg>>> ConvertAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
+		protected override async Task<Tuple<string, ICollection<Mesg>>> ConvertInternalAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(ConvertAsync)}")
 										.WithTag(TagKey.Format, FileFormat.Fit.ToString())

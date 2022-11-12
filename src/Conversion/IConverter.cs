@@ -64,6 +64,8 @@ namespace Conversion
 
 		public static readonly float _metersPerMile = 1609.34f;
 
+		public FileFormat Format { get; init; }
+
 		protected readonly ISettingsService _settingsService;
 		protected readonly IFileHandling _fileHandler;
 
@@ -73,32 +75,37 @@ namespace Conversion
 			_fileHandler = fileHandler;
 		}
 
-		public abstract Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData);
+		protected abstract bool ShouldConvert(Format settings);
 
-		protected abstract Task<T> ConvertAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings);
+		protected abstract Task<T> ConvertInternalAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings);
 
 		protected abstract void Save(T data, string path);
 
-		protected abstract void SaveLocalCopy(string sourcePath, string workoutTitle, Settings settings);
-
-		protected async Task<ConvertStatus> ConvertForFormatAsync(FileFormat format, P2GWorkout workoutData, Settings settings)
+		public async Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData)
 		{
 			using var tracing = Tracing.Trace($"{nameof(IConverter)}.{nameof(ConvertAsync)}.Workout")?
 										.WithWorkoutId(workoutData.Workout.Id)
-										.WithTag(TagKey.Format, format.ToString());
+										.WithTag(TagKey.Format, Format.ToString());
 
 			var status = new ConvertStatus();
+			var settings = await _settingsService.GetSettingsAsync();
+
+			if (!ShouldConvert(settings.Format))
+			{
+				status.Result = ConversionResult.Skipped;
+				return status;
+			}
 
 			// call internal convert method
 			T converted = default;
 			var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout);
 			try
 			{
-				converted = await ConvertAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
+				converted = await ConvertInternalAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
 			}
 			catch (Exception e)
 			{
-				_logger.Error(e, "Failed to convert workout data to format {@Format} {@Workout}", format, workoutTitle);
+				_logger.Error(e, "Failed to convert workout data to format {@Format} {@Workout}", Format, workoutTitle);
 				status.Result = ConversionResult.Failed;
 				status.ErrorMessage = $"Unknown error while trying to convert workout data for {workoutTitle} - {e.Message}";
 				tracing?.AddTag("excetpion.message", e.Message);
@@ -109,7 +116,7 @@ namespace Conversion
 			}
 
 			// write to output dir
-			var path = Path.Join(settings.App.WorkingDirectory, $"{workoutTitle}.{format}");
+			var path = Path.Join(settings.App.WorkingDirectory, $"{workoutTitle}.{Format}");
 			try
 			{
 				_fileHandler.MkDirIfNotExists(settings.App.WorkingDirectory);
@@ -120,7 +127,7 @@ namespace Conversion
 			{
 				status.Result = ConversionResult.Failed;
 				status.ErrorMessage = $"Failed to save converted workout {workoutTitle} for upload. - {e.Message}";
-				_logger.Error(e, "Failed to write {@Format} file for {@Workout}", format, workoutTitle);
+				_logger.Error(e, "Failed to write {@Format} file for {@Workout}", Format, workoutTitle);
 				tracing?.AddTag("excetpion.message", e.Message);
 				tracing?.AddTag("exception.stacktrace", e.StackTrace);
 				tracing?.AddTag("convert.success", false);
@@ -129,30 +136,24 @@ namespace Conversion
 			}
 
 			// copy to local save
-			try
-			{
-				SaveLocalCopy(path, workoutTitle, settings);
-			}
-			catch (Exception e)
-			{
-				_logger.Error(e, "Failed to backup {@Format} file for {@Workout}", format, workoutTitle);
-			}
+			if (settings.Format.SaveLocalCopy)
+				CopyToLocalSaveDir(path, workoutTitle, settings);
 
 			// copy to upload dir
-			if (settings.Garmin.Upload && settings.Garmin.FormatToUpload == format)
+			if (settings.Garmin.Upload && settings.Garmin.FormatToUpload == Format)
 			{
 				try
 				{
-					var uploadDest = Path.Join(settings.App.UploadDirectory, $"{workoutTitle}.{format}");
+					var uploadDest = Path.Join(settings.App.UploadDirectory, $"{workoutTitle}.{Format.ToString().ToLower()}");
 					_fileHandler.MkDirIfNotExists(settings.App.UploadDirectory);
 					_fileHandler.Copy(path, uploadDest, overwrite: true);
-					_logger.Debug("Prepped {@Format} for upload: {@Path}", format, uploadDest);
+					_logger.Debug("Prepped {@Format} for upload: {@Path}", Format, uploadDest);
 				}
 				catch (Exception e)
 				{
-					_logger.Error(e, "Failed to copy {@Format} file for {@Workout}", format, workoutTitle);
+					_logger.Error(e, "Failed to copy {@Format} file for {@Workout}", Format, workoutTitle);
 					status.Result = ConversionResult.Failed;
-					status.ErrorMessage = $"Failed to save file for {@format} and workout {workoutTitle} to Upload directory - {e.Message}";
+					status.ErrorMessage = $"Failed to save file for {Format} and workout {workoutTitle} to Upload directory - {e.Message}";
 					tracing?.AddTag("excetpion.message", e.Message);
 					tracing?.AddTag("exception.stacktrace", e.StackTrace);
 					tracing?.AddTag("convert.success", false);
@@ -162,6 +163,28 @@ namespace Conversion
 			}
 
 			return status;
+		}
+
+		protected void CopyToLocalSaveDir(string sourcePath, string workoutTitle, Settings settings)
+		{
+			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(CopyToLocalSaveDir)}")
+										.WithTag(TagKey.Format, FileFormat.Json.ToString());
+
+			var formatString = Format.ToString().ToLower();
+			var localSaveDir = Path.GetFullPath(Path.Join(settings.App.OutputDirectory, formatString));
+
+			try
+			{
+				_fileHandler.MkDirIfNotExists(localSaveDir);
+
+				var backupDest = Path.Join(localSaveDir, $"{workoutTitle}.{formatString}");
+				_fileHandler.Copy(sourcePath, backupDest, overwrite: true);
+				_logger.Information("[@Format] Backed up file {@File}", Format, backupDest);
+			}
+			catch (Exception e)
+			{
+				_logger.Error(e, "Failed to backup {@Format} file for {@Workout} to directory {@Path}", Format, workoutTitle, localSaveDir);
+			}
 		}
 
 		protected System.DateTime GetStartTimeUtc(Workout workout)
