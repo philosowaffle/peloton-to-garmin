@@ -4,3 +4,4 @@
 ## Fixes
 
 - [#361] When multiple convert formats were specified (FIT and TCX) the incorrect format could get uploaded to Garmin Connect
+- [#353] Fix New Release Check not handling release candidates correctly
