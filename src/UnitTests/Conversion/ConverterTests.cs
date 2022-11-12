@@ -1,5 +1,4 @@
 ﻿using Common;
-using Common.Dto;
 using Common.Dto.Garmin;
 using Common.Dto.Peloton;
 using Common.Service;
@@ -654,9 +653,12 @@ namespace UnitTests.Conversion
 
 		private class ConverterInstance : Converter<string>
 		{
-			public ConverterInstance(ISettingsService settings, IFileHandling fileHandling) : base(settings, fileHandling) { }
+			public ConverterInstance(ISettingsService settings, IFileHandling fileHandling) : base(settings, fileHandling) 
+			{
+				Format = FileFormat.Fit;
+			}
 
-			protected override Task<string> ConvertAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
+			protected override Task<string> ConvertInternalAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
 			{
 				throw new NotImplementedException();
 			}
@@ -665,6 +667,8 @@ namespace UnitTests.Conversion
 			{
 				throw new NotImplementedException();
 			}
+
+			protected override bool ShouldConvert(Format settings) => true;
 
 			public System.DateTime GetStartTime1(Workout workout)
 			{
@@ -739,21 +743,6 @@ namespace UnitTests.Conversion
 			public Task<GarminDeviceInfo> GetDeviceInfo1(FitnessDiscipline sport, Settings settings)
 			{
 				return base.GetDeviceInfoAsync(sport, settings);
-			}
-
-			public async Task<ConvertStatus> Convert(P2GWorkout workoutData, Settings settings)
-			{
-				return await ConvertForFormatAsync(FileFormat.Fit, workoutData, settings);
-			}
-
-			public override Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData)
-			{
-				throw new NotImplementedException();
-			}
-
-			protected override void SaveLocalCopy(string sourcePath, string workoutTitle, Settings settings)
-			{
-				return;
 			}
 
 			public ushort? GetCyclingFtp1(Workout workout, UserData userData)

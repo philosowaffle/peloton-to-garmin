@@ -3,4 +3,4 @@
 
 ## Fixes
 
-- [#354] Console application failed to convert workout with error: `KeyNotFoundException`
+- [#361] When multiple convert formats were specified (FIT and TCX) the incorrect format could get uploaded to Garmin Connect

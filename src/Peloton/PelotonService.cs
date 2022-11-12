@@ -222,7 +222,7 @@ namespace Peloton
 										.WithTag("workout.title", workoutTitle);
 
 			var settings = await _settingsService.GetSettingsAsync();
-			var outputDir = settings.App.JsonDirectory;
+			var outputDir = settings.App.FailedDirectory;
 			_fileHandler.MkDirIfNotExists(outputDir);
 
 			_logger.Debug("Write peloton json to file for {@WorkoutId}", data.Workout.Id);
