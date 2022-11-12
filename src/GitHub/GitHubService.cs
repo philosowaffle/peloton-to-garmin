@@ -76,8 +76,11 @@ public class GitHubService : IGitHubService
 			return false;
 		}
 
-		var cleanedReleaseVersion = releaseVersion.Trim().ToLower().Replace("v", string.Empty);
-		var cleanedInstalledVersion = currentVersion.Trim().ToLower().Replace("-rc", string.Empty);
+		var standardizedInstallVersion = currentVersion.Trim().ToLower();
+		var isInstalledVersionRC = standardizedInstallVersion.Contains("-rc");
+		var installedVersionCleaned = standardizedInstallVersion.Replace("-rc", string.Empty);
+
+		var cleanedReleaseVersion = standardizedInstallVersion.Replace("v", string.Empty);
 
 		if (!Version.TryParse(cleanedReleaseVersion, out var latestVersion))
 		{
@@ -85,11 +88,14 @@ public class GitHubService : IGitHubService
 			return false;
 		}
 
-		if (!Version.TryParse(cleanedInstalledVersion, out var installedVersion))
+		if (!Version.TryParse(installedVersionCleaned, out var installedVersion))
 		{
-			_logger.Verbose("Failed to parse installed version: {@Version}", cleanedInstalledVersion);
+			_logger.Verbose("Failed to parse installed version: {@Version}", installedVersionCleaned);
 			return false;
 		}
+
+		if (isInstalledVersionRC)
+			return latestVersion >= installedVersion;
 
 		return latestVersion > installedVersion;
 	}
