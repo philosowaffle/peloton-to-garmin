@@ -80,7 +80,7 @@ public class GitHubService : IGitHubService
 		var isInstalledVersionRC = standardizedInstallVersion.Contains("-rc");
 		var installedVersionCleaned = standardizedInstallVersion.Replace("-rc", string.Empty);
 
-		var cleanedReleaseVersion = standardizedInstallVersion.Replace("v", string.Empty);
+		var cleanedReleaseVersion = releaseVersion.Trim().ToLower().Replace("v", string.Empty);
 
 		if (!Version.TryParse(cleanedReleaseVersion, out var latestVersion))
 		{

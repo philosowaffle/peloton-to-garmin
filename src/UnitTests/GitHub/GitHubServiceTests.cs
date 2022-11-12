@@ -84,7 +84,6 @@ public class GitHubServiceTests
 	[TestCase("v0.0.1" , ExpectedResult = false)]
 	[TestCase("0.1.1", ExpectedResult = false)]
 	[TestCase("1.1.1", ExpectedResult = false)]
-	[TestCase(Constants.AppVersion, ExpectedResult = false)]
 	[TestCase("8.0.0", ExpectedResult = true)]
 	[TestCase("8.0.1", ExpectedResult = true)]
 	public async Task<bool> GetLatestReleaseAsync_Calculates_IsNewVersion_Correctly(string ghVersion)
