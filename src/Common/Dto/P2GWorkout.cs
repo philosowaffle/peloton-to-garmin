@@ -18,27 +18,7 @@ namespace Common.Dto
 			if (_workoutType != WorkoutType.None) return _workoutType;
 			if (Workout is null) return WorkoutType.None;
 
-			var isOutdoorWorkout = IsOutdoorWorkout(WorkoutSamples);
-
-			switch (Workout.Fitness_Discipline)
-			{
-				case FitnessDiscipline.None: _workoutType = WorkoutType.None; break;
-				case FitnessDiscipline.Bike_Bootcamp: _workoutType = WorkoutType.BikeBootcamp; break;
-				case FitnessDiscipline.Caesar: _workoutType = WorkoutType.Rowing; break;
-				case FitnessDiscipline.Cardio: _workoutType = WorkoutType.Cardio; break;
-				case FitnessDiscipline.Circuit: _workoutType = WorkoutType.Circuit; break;
-				case FitnessDiscipline.Cycling: _workoutType = WorkoutType.Cycling; break;
-				case FitnessDiscipline.Meditation: _workoutType = WorkoutType.Meditation; break;
-				case FitnessDiscipline.Strength: _workoutType = WorkoutType.Strength; break;
-				case FitnessDiscipline.Stretching: _workoutType = WorkoutType.Stretching; break;
-				case FitnessDiscipline.Yoga: _workoutType = WorkoutType.Yoga; break;
-				case FitnessDiscipline.Running when isOutdoorWorkout: _workoutType = WorkoutType.OutdoorRunning; break;
-				case FitnessDiscipline.Running: _workoutType = WorkoutType.TreadmillRunning; break;
-				case FitnessDiscipline.Walking when isOutdoorWorkout: _workoutType = WorkoutType.OutdoorWalking; break;
-				case FitnessDiscipline.Walking: _workoutType = WorkoutType.TreadmillWalking; break;
-			}
-
-			return _workoutType;
+			return Workout.GetWorkoutType();
 		}
 
 		private bool IsOutdoorWorkout(WorkoutSamples workoutSamples)
@@ -47,6 +27,31 @@ namespace Common.Dto
 
 			return workoutSamples.Location_Data is object
 				&& workoutSamples.Location_Data.Count > 0;
+		}
+	}
+
+	public static class Extensions
+	{
+		public static WorkoutType GetWorkoutType(this Workout workout)
+		{
+			switch (workout.Fitness_Discipline)
+			{
+				case FitnessDiscipline.None: return WorkoutType.None;
+				case FitnessDiscipline.Bike_Bootcamp: return WorkoutType.BikeBootcamp;
+				case FitnessDiscipline.Caesar: return _workoutType = WorkoutType.Rowing; break
+				case FitnessDiscipline.Cardio: return WorkoutType.Cardio;
+				case FitnessDiscipline.Circuit: return WorkoutType.Circuit;
+				case FitnessDiscipline.Cycling: return WorkoutType.Cycling;
+				case FitnessDiscipline.Meditation: return WorkoutType.Meditation;
+				case FitnessDiscipline.Strength: return WorkoutType.Strength;
+				case FitnessDiscipline.Stretching: return WorkoutType.Stretching;
+				case FitnessDiscipline.Yoga: return WorkoutType.Yoga;
+				case FitnessDiscipline.Running when workout.Is_Outdoor: return WorkoutType.OutdoorRunning;
+				case FitnessDiscipline.Running: return WorkoutType.TreadmillRunning;
+				case FitnessDiscipline.Walking when workout.Is_Outdoor: return WorkoutType.OutdoorRunning;
+				case FitnessDiscipline.Walking: return WorkoutType.TreadmillWalking;
+				default: return WorkoutType.None;
+			}
 		}
 	}
 }

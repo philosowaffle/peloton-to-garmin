@@ -10,6 +10,7 @@ using Flurl;
 using Flurl.Http;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
+using Moq;
 using Moq.AutoMock;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -61,22 +62,25 @@ namespace UnitTests
 
 		//	var settings = new Settings()
 		//	{
-		//		Peloton = new ()
+		//		Peloton = new()
 		//		{
 		//			Email = email,
 		//			Password = password,
 		//		}
 		//	};
-		//	var config = new AppConfiguration();
 
-		//	var client = new ApiClient(settings, config);
-		//	await client.InitAuthAsync();
+		//	var autoMocker = new AutoMocker();
+		//	var settingMock = autoMocker.GetMock<ISettingsService>();
+		//	settingMock.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
+
+		//	var client = new ApiClient(settingMock.Object);
 
 		//	//var recentWorkouts = await client.GetWorkoutsAsync(userId, 5, 0);
-		//	var workoutSamples = await client.GetWorkoutSamplesByIdAsync(workoutId);
+		//	var workoutSamples = await client.GetWorkoutsAsync(System.DateTime.UtcNow.AddDays(-1), System.DateTime.UtcNow);
+		//	await client.GetUserDataAsync();
 
 		//	Log.Debug(workoutSamples.ToString());
-		//	SaveRawData(workoutSamples, workoutId, DataDirectory);
+		//	//SaveRawData(workoutSamples, workoutId, DataDirectory);
 		//}
 
 		//[Test]

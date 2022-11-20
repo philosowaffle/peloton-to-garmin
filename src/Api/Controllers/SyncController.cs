@@ -3,9 +3,7 @@ using Common.Dto.Api;
 using Common.Helpers;
 using Common.Service;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using Sync;
-using System.Runtime.CompilerServices;
 using ErrorResponse = Common.Dto.Api.ErrorResponse;
 
 namespace Api.Controllers;
@@ -101,7 +99,7 @@ public class SyncController : Controller
 		return response;
 	}
 
-	bool IsValid(this SyncPostRequest request, out ActionResult result)
+	bool IsValid(SyncPostRequest request, out ActionResult result)
 	{
 		result = new OkResult();
 

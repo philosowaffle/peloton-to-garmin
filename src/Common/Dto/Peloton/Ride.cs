@@ -5,7 +5,6 @@ namespace Common.Dto.Peloton
 {
 	public class Ride
 	{
-		// instructor object
 		public ICollection<string> Class_Type_Ids { get; set; }
 		public string Content_Provider { get; set; }
 		public string Content_Format { get; set; }
