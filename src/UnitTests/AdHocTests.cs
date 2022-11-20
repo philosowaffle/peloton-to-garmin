@@ -10,6 +10,7 @@ using Flurl;
 using Flurl.Http;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
+using Moq;
 using Moq.AutoMock;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -40,7 +41,7 @@ namespace UnitTests
 		//[Test]
 		//public async Task AA()
 		//{
-			
+
 		//}
 
 		//[Test]
@@ -50,34 +51,37 @@ namespace UnitTests
 		//	FitDecoder.Decode(syncMyWorkoutFitFile);
 		//}
 
-		//[Test]
-		//public async Task DownloadWorkout()
-		//{
-		//	var email = "";
-		//	var password = "";
+		[Test]
+		public async Task DownloadWorkout()
+		{
+			var email = "baileyb622@gmail.com";
+			var password = "x4p8ng5jd9fpk1zg79r6fr";
 
-		//	var workoutId = "";
-		//	var userId = "";
+			var workoutId = "";
+			var userId = "";
 
-		//	var settings = new Settings()
-		//	{
-		//		Peloton = new ()
-		//		{
-		//			Email = email,
-		//			Password = password,
-		//		}
-		//	};
-		//	var config = new AppConfiguration();
+			var settings = new Settings()
+			{
+				Peloton = new()
+				{
+					Email = email,
+					Password = password,
+				}
+			};
 
-		//	var client = new ApiClient(settings, config);
-		//	await client.InitAuthAsync();
+			var autoMocker = new AutoMocker();
+			var settingMock = autoMocker.GetMock<ISettingsService>();
+			settingMock.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
 
-		//	//var recentWorkouts = await client.GetWorkoutsAsync(userId, 5, 0);
-		//	var workoutSamples = await client.GetWorkoutSamplesByIdAsync(workoutId);
+			var client = new ApiClient(settingMock.Object);
 
-		//	Log.Debug(workoutSamples.ToString());
-		//	SaveRawData(workoutSamples, workoutId, DataDirectory);
-		//}
+			//var recentWorkouts = await client.GetWorkoutsAsync(userId, 5, 0);
+			var workoutSamples = await client.GetWorkoutsAsync(System.DateTime.UtcNow.AddDays(-1), System.DateTime.UtcNow);
+			await client.GetUserDataAsync();
+
+			Log.Debug(workoutSamples.ToString());
+			//SaveRawData(workoutSamples, workoutId, DataDirectory);
+		}
 
 		//[Test]
 		//public async Task DeSerialize()

@@ -26,6 +26,7 @@ namespace Peloton
 		/// <param name="numWorkoutsToDownload"></param>
 		/// <returns></returns>
 		Task<ICollection<Workout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload);
+		Task<ICollection<Workout>> GetWorkoutsSinceAsync(DateTime sinceDt);
 		/// <summary>
 		/// Fetches workouts by Page.
 		/// </summary>
@@ -130,6 +131,15 @@ namespace Peloton
 			tracing?.AddTag("workouts.found", recentWorkouts.Count);
 
 			return recentWorkouts;
+		}
+
+		public async Task<ICollection<Workout>> GetWorkoutsSinceAsync(DateTime sinceDt)
+		{
+			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetWorkoutsSinceAsync)}")
+										.WithTag("workouts.sinceDt", sinceDt.ToString());
+			
+			var workouts = await _pelotonApi.GetWorkoutsAsync(from: sinceDt, to: DateTime.UtcNow);
+			return workouts.data;
 		}
 
 		public async Task<P2GWorkout[]> GetWorkoutDetailsAsync(ICollection<Workout> workoutIds)

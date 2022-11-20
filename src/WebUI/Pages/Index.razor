@@ -5,49 +5,39 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Welcome to the Peloton to Garmin UI!</h1>
 
 <div class="row">
-	<div class="col-sm-4">
-        <div class="card @syncStatusBorderClass mb-3" style="border-width: thick">
-            <div class="card-body @syncStatusTextClass">
-                <h5 class="card-title">Automatic Syncing</h5>
-                <p class="font-weight-bold">@syncStatus.AutoSyncHealthString</p>
-                @if (syncStatus.SyncStatus != Common.Database.Status.NotRunning)
-                {
-                    <p><span class="font-weight-bold">Last Sync: </span><br />@syncStatus.LastSyncTime</p>
-                    <p><span class="font-weight-bold">Last Successful Sync: </span><br />@syncStatus.LastSuccessfulSyncTime</p>
-                    <p><span class="font-weight-bold">Next Scheduled Sync: </span><br />@syncStatus.NextSyncTime</p>
-                }
-            </div>
-        </div>
-    </div>
+	<div class="col">
+		<HxBadge Type="BadgeType.RoundedPill" Color="@GetPillThemeColor(syncStatus.SyncStatus)" TextColor="@GetPillTextThemeColor(syncStatus.SyncStatus)">Background Sync is @syncStatus.AutoSyncHealthString</HxBadge>
+		@if (syncStatus.SyncStatus != Common.Database.Status.NotRunning)
+		{
+			<span> </span>
+			<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Secondary" TextColor="ThemeColor.Light">Next Sync: @syncStatus.NextSyncTime</HxBadge>
+		}
+	</div>
 </div>
 
-@if (syncRunning)
-{
-	<p><em>Syncing...</em></p>
-}
-else
-{
-	if (syncResponse is object)
-	{
-		if (syncResponse.Errors.Any())
-		{
-			foreach (var error in syncResponse.Errors)
-			{
-				<ul>
-					<li><em>@error.Message</em></li>
-				</ul>
-			}
-		} else
-		{
-			<p>Success!</p>
-		}
-	}
+<br />
 
-	<button class="btn btn-primary" @onclick="SyncAsync">Sync Now</button>
-}
+<div class="col-4">
+	<HxButton Color="ThemeColor.Primary" @onclick="SyncAsync">Sync todays workouts</HxButton>
+</div>
+
+<br /> 
+
+<HxCard>
+    <HeaderTemplate>
+		<b>Today's Workouts</b>
+	</HeaderTemplate>
+    <BodyTemplate>
+        <HxGrid TItem="Workout" MultiSelectionEnabled="false" Responsive="true" DataProvider="LoadDataAsync" SelectionEnabled="false">
+            <Columns>
+                <HxGridColumn TItem="Workout" HeaderText="Date" ItemTextSelector="@(item => DateTimeOffset.FromUnixTimeSeconds(item.Created_At).LocalDateTime.ToString())" />
+                <HxGridColumn TItem="Workout" HeaderText="Title" ItemTextSelector="@(item => item.Ride.Title ?? item.Name)" />
+            </Columns>
+        </HxGrid>
+    </BodyTemplate>
+</HxCard>
 
 
 @code {
@@ -57,9 +47,6 @@ else
 	private SettingsGetResponse settings;
 	private SystemInfoGetResponse systemInfo;
 	private bool syncRunning;
-
-	private string syncStatusBorderClass = "border-light";
-	private string syncStatusTextClass = "";
 
 	public Index() : base(nameof(Index))
 	{
@@ -118,24 +105,33 @@ else
 			Log.Error("UI - Failed to fetch Sync status.", e);
 			_toaster.AddError($"Failed to fetch Sync status - {e.Message} - See logs for details.");
 		}
+	}
 
-		switch (syncStatus.SyncStatus)
+	private async Task<GridDataProviderResult<Workout>> LoadDataAsync(GridDataProviderRequest<Workout> request)
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Sync)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
+
+		_toaster.Clear();
+
+		try
 		{
-			case Common.Database.Status.Running:
-				syncStatusBorderClass = "border-success";
-				break;
-			case Common.Database.Status.NotRunning:
-				syncStatusBorderClass = "border-secondary";
-				syncStatusTextClass = "text-secondary";
-				break;
-			case Common.Database.Status.Dead:
-				syncStatusBorderClass = "border-danger";
-				syncStatusTextClass = "text-danger";
-				break;
-			case Common.Database.Status.UnHealthy:
-				syncStatusBorderClass = "border-warning";
-				break;
+			var today = DateTime.UtcNow.Date.AddDays(-14);
+			var todaysWorkouts = await _apiClient.PelotonWorkoutsGetAsync(new PelotoWorkoutsSinceGetRequest() { SinceDate = today, CompletedOnly = true, FilterOutExcludedWorkoutTypes = true });
+			return new GridDataProviderResult<Workout>() { Data = todaysWorkouts.Items, TotalCount = todaysWorkouts.Items.Count() };
 		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+			Log.Error("UI - Failed to load Peloton workouts.", e);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to load Peloton workouts - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to load Peloton workouts.", e);
+		}
+
+		return new GridDataProviderResult<Workout>() { Data = new List<Workout>(), TotalCount = 0 };
 	}
 
 	private async Task SyncAsync()
@@ -146,7 +142,7 @@ else
 		{
 			syncRunning = true;
 			syncResponse = null;
-			syncResponse = await _apiClient.SyncPostAsync(new SyncPostRequest() { NumWorkouts = settings.Peloton.NumWorkoutsToDownload });
+			syncResponse = await _apiClient.SyncPostAsync(new SyncPostRequest() { SinceDate = DateTime.UtcNow.Date });
 		}
 		catch (FlurlHttpTimeoutException te){
 			_toaster.AddInformation("Long running sync will continue running in the background.");
@@ -160,6 +156,47 @@ else
 		finally
 		{
 			syncRunning = false;
+			if (syncResponse?.Errors?.Any() ?? false)
+			{
+				foreach (var error in syncResponse.Errors)
+				{
+					_toaster.AddWarning($"Errors during sync - {error.Message}");
+				}
+			}
 		}
+	}
+
+	private ThemeColor GetPillThemeColor(Common.Database.Status status)
+	{
+		switch (syncStatus.SyncStatus)
+		{
+			case Common.Database.Status.Running:
+				return ThemeColor.Success;
+			case Common.Database.Status.NotRunning:
+				return ThemeColor.Secondary;
+			case Common.Database.Status.Dead:
+				return ThemeColor.Danger;
+			case Common.Database.Status.UnHealthy:
+				return ThemeColor.Warning;
+		}
+
+		return ThemeColor.Light;
+	}
+
+	private ThemeColor GetPillTextThemeColor(Common.Database.Status status)
+	{
+		switch (syncStatus.SyncStatus)
+		{
+			case Common.Database.Status.Running:
+				return ThemeColor.Light;
+			case Common.Database.Status.NotRunning:
+				return ThemeColor.Light;
+			case Common.Database.Status.Dead:
+				return ThemeColor.Light;
+			case Common.Database.Status.UnHealthy:
+				return ThemeColor.Dark;
+		}
+
+		return ThemeColor.Dark;
 	}
 }

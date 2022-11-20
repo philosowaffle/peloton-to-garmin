@@ -3,51 +3,56 @@ using System.Text.Json.Serialization;
 
 namespace Common.Dto.Peloton
 {
-	public class PagedPelotonResponse<T>
+	public record PagedPelotonResponse<T> : PelotonResponse<T>
 	{
-		public int Limit { get; set; }
-		public int Page { get; set; }
-		public int Total { get; set; }
-		public int Count { get; set; }
-		public int Page_Count { get; set; }
-		public ICollection<T> data { get; set; }
+		public ushort Limit { get; init; }
+		public ushort Page { get; init; }
+		public ushort Page_Count { get; init; }
 	}
 
-	public class Workout
+	public record PelotonResponse<T>
 	{
-		public string Id { get; set; }
-		public string Status { get; set; }
-		public string Title { get; set; }
-		public string Name { get; set; }
-		public long Created_At { get; set; }
-		[JsonConverter(typeof(JsonStringEnumConverter))]
-		public FitnessDiscipline Fitness_Discipline { get; set; }
-		public Ride Ride { get; set; }
+		public ushort Total { get; init; }
+		public ushort Count { get; init; }
+		public ICollection<T> data { get; init; }
+	}
 
-		//public string Device_Type { get; set; }
-		public long? End_Time { get; set; }
-		//public bool Has_Pedaling_Metrics { get; set; }
-		//public bool Has_Leaderboard_Metrics { get; set; }
-		//public bool Is_ToTal_Work_Personal_Record { get; set; }
-		//public string Metrics_Type { get; set; }
-		//public string Peloton_Id { get; set; }
-		//public string Platform { get; set; }
-		public long Start_Time { get; set; }
-		//public string Strava_Id { get; set; }
-		//public string Timezone { get; set; }
-		public double Total_Work { get; set; }
-		//public string User_Id { get; set; }
-		//public int? V2_Total_Video_Watch_Time_Seconds { get; set; }
-		//public int? V2_Total_Video_Buffering_Seconds { get; set; }
+	public record Workout
+	{
+		public string Id { get; init; }
+		public string Status { get; init; }
+		public string Title { get; init; }
+		public string Name { get; init; }
+		public long Created_At { get; init; }
+		[JsonConverter(typeof(JsonStringEnumConverter))]
+		public FitnessDiscipline Fitness_Discipline { get; init; }
+		public bool Is_Outdoor { get; init; }
+		public Ride Ride { get; init; }
+
+		//public string Device_Type { get; init; }
+		public long? End_Time { get; init; }
+		//public bool Has_Pedaling_Metrics { get; init; }
+		//public bool Has_Leaderboard_Metrics { get; init; }
+		//public bool Is_ToTal_Work_Personal_Record { get; init; }
+		//public string Metrics_Type { get; init; }
+		//public string Peloton_Id { get; init; }
+		//public string Platform { get; init; }
+		public long Start_Time { get; init; }
+		//public string Strava_Id { get; init; }
+		//public string Timezone { get; init; }
+		public double Total_Work { get; init; }
+		//public string User_Id { get; init; }
+		//public int? V2_Total_Video_Watch_Time_Seconds { get; init; }
+		//public int? V2_Total_Video_Buffering_Seconds { get; init; }
 		// User object
-		//public long Created { get; set; }
-		//public long Device_Time_Created_At { get; set; }
+		//public long Created { get; init; }
+		//public long Device_Time_Created_At { get; init; }
 		// achievemtn_templates
-		//public int? Leaderboard_Rank { get; set; }
-		//public int Total_Leaderboard_Users { get; set; }
-		public FTPInfo Ftp_Info { get; set; }
-		//public string Device_Type_Display_Name { get; set; }
-		//public bool Is_Skip_Intro_Available { get; set; }
+		//public int? Leaderboard_Rank { get; init; }
+		//public int Total_Leaderboard_Users { get; init; }
+		public FTPInfo Ftp_Info { get; init; }
+		//public string Device_Type_Display_Name { get; init; }
+		//public bool Is_Skip_Intro_Available { get; init; }
 		// total hr zones durations
 		// average effort score
 
@@ -66,7 +71,7 @@ namespace Common.Dto.Peloton
 		public string Ftp_Workout_Id { get; set; }
 	}
 
-	public enum FitnessDiscipline
+	public enum FitnessDiscipline : byte
 	{
 		None = 0,
 		Cycling = 1,
