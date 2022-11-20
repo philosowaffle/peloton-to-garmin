@@ -1,8 +1,11 @@
 ﻿using Common.Database;
 using Common.Dto.Api;
+using Common.Helpers;
 using Common.Service;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Sync;
+using System.Runtime.CompilerServices;
 using ErrorResponse = Common.Dto.Api.ErrorResponse;
 
 namespace Api.Controllers;
@@ -38,12 +41,8 @@ public class SyncController : Controller
 	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<SyncPostResponse>> SyncAsync([FromBody] SyncPostRequest request)
 	{
-		if (request is null ||
-			(request.NumWorkouts <= 0 && (request.WorkoutIds is null || !request.WorkoutIds.Any())))
-			return BadRequest(new ErrorResponse("Either NumWorkouts or WorkoutIds must be set."));
-
-		if (request.NumWorkouts > 0 && (request.WorkoutIds is not null && request.WorkoutIds.Any()))
-			return BadRequest(new ErrorResponse("NumWorkouts and WorkoutIds cannot both be set."));
+		if (!IsValid(request, out var result))
+			return result;
 
 		SyncResult syncResult = new();
 		try
@@ -100,5 +99,43 @@ public class SyncController : Controller
 		};
 
 		return response;
+	}
+
+	bool IsValid(this SyncPostRequest request, out ActionResult result)
+	{
+		result = new OkResult();
+
+		if (request.CheckIsNull("PostRequest", out result))
+			return false;
+
+		if (request.WorkoutIds is not null && request.WorkoutIds.Any())
+		{
+			if (request.NumWorkouts.CheckIsGreaterThan(0, nameof(request.NumWorkouts), out result))
+				return false;
+
+			if (request.SinceDate.CheckIsNotNull(nameof(request.SinceDate), out result))
+				return false;
+
+			return true;
+		}
+
+		if (request.SinceDate.HasValue)
+		{
+			if (request.NumWorkouts.CheckIsGreaterThan(0, nameof(request.NumWorkouts), out result))
+				return false;
+
+			if (request.WorkoutIds.CheckHasAny(nameof(request.WorkoutIds), out result))
+				return false;
+
+			if (request.SinceDate.Value.IsAfter(DateTime.UtcNow, nameof(request.SinceDate), out result))
+				return false;
+
+			return true;
+		}
+
+		if (request.NumWorkouts.CheckIsLessThanOrEqualTo(0, nameof(request.NumWorkouts), out result))
+			return false;
+
+		return true;
 	}
 }
