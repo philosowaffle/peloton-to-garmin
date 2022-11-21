@@ -4,20 +4,20 @@ using FluentAssertions;
 using NUnit.Framework;
 using System.Collections.Generic;
 
-namespace UnitTests.Common.Dto
-{
-	public class P2GWorkoutTests
-	{
-		[Test]
-		public void GetWorkoutType_Should_Map_Correctly([Values]FitnessDiscipline fitnessDiscipline, [Values] bool hasGPS) 
-		{
-			var workout = new P2GWorkout()
-			{
-				Workout = new Workout() { Fitness_Discipline = fitnessDiscipline },
-				WorkoutSamples = new WorkoutSamples() { Location_Data = hasGPS ? new List<LocationData>() { new LocationData() } : null }
-			};
+namespace UnitTests.Common.Dto;
 
-			var workoutType = workout.WorkoutType;
+public class P2GWorkoutTests
+{
+	[Test]
+	public void GetWorkoutType_Should_Map_Correctly([Values]FitnessDiscipline fitnessDiscipline, [Values] bool isOutdoor) 
+	{
+		var workout = new P2GWorkout()
+		{
+			Workout = new Workout() { Fitness_Discipline = fitnessDiscipline, Is_Outdoor = isOutdoor },
+			WorkoutSamples = new WorkoutSamples() { Location_Data = isOutdoor ? new List<LocationData>() { new LocationData() } : null }
+		};
+
+		var workoutType = workout.WorkoutType;
 
 			switch (fitnessDiscipline)
 			{
@@ -38,5 +38,4 @@ namespace UnitTests.Common.Dto
 			}
 		}
 
-	}
 }

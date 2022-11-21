@@ -53,7 +53,7 @@ public static class Guard
 	{
 		result = null;
 
-		if (input > limit)
+		if (input <= limit)
 		{
 			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must be greter than {limit}."));
 			return true;

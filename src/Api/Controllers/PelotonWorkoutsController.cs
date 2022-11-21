@@ -4,6 +4,7 @@ using Common.Dto.Api;
 using Common.Dto.Peloton;
 using Common.Helpers;
 using Common.Service;
+using Flurl.Http;
 using Microsoft.AspNetCore.Mvc;
 using Peloton;
 using Peloton.Dto;
@@ -97,9 +98,13 @@ namespace Api.Controllers
 				if (request.FilterOutExcludedWorkoutTypes)
 					getSettingsTask = _settingsService.GetSettingsAsync();
 
-				var workouts = await getWorkoutsTask;
+				var serviceResult = await getWorkoutsTask;
+
+				if (serviceResult.IsErrored())
+					return serviceResult.GetResultForError();
+
 				Settings? settings = null;
-				foreach(var w in workouts)
+				foreach(var w in serviceResult.Result)
 				{
 					if (request.CompletedOnly && w.Status != "COMPLETE")
 						continue;
@@ -113,14 +118,6 @@ namespace Api.Controllers
 
 					workoutsToReturn.Add(w);
 				}
-			}
-			catch (ArgumentException ae)
-			{
-				return BadRequest(new ErrorResponse(ae.Message));
-			}
-			catch (PelotonAuthenticationError pe)
-			{
-				return BadRequest(new ErrorResponse(pe.Message));
 			}
 			catch (Exception e)
 			{

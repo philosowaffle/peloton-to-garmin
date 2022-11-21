@@ -49,6 +49,8 @@ public class SyncController : Controller
 				syncResult = await _syncService.SyncAsync(request.NumWorkouts);
 			else if (request.WorkoutIds is not null)
 				syncResult = await _syncService.SyncAsync(request.WorkoutIds, exclude: null);
+			else
+				syncResult = await _syncService.SyncAsync(request.SinceDate!.Value, exclude: null); // TODO: need to handle exclude
 		}
 		catch (Exception e)
 		{

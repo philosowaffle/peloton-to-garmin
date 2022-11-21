@@ -1,19 +1,24 @@
 ﻿using Common;
 using Common.Dto;
+using Common.Dto.Api;
 using Common.Dto.Peloton;
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
+using Flurl.Http;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json.Linq;
+using Peloton.Dto;
 using Prometheus;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 using Metrics = Prometheus.Metrics;
 
 namespace Peloton
@@ -25,8 +30,8 @@ namespace Peloton
 		/// </summary>
 		/// <param name="numWorkoutsToDownload"></param>
 		/// <returns></returns>
-		Task<ICollection<Workout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload);
-		Task<ICollection<Workout>> GetWorkoutsSinceAsync(DateTime sinceDt);
+		Task<ServiceResult<ICollection<Workout>>> GetRecentWorkoutsAsync(int numWorkoutsToDownload);
+		Task<ServiceResult<ICollection<Workout>>> GetWorkoutsSinceAsync(DateTime sinceDt);
 		/// <summary>
 		/// Fetches workouts by Page.
 		/// </summary>
@@ -100,46 +105,123 @@ namespace Peloton
 			return recentWorkouts;
 		}
 
-		public async Task<ICollection<Workout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)
+		public async Task<ServiceResult<ICollection<Workout>>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)
 		{
 			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetRecentWorkoutsAsync)}")
 										.WithTag("workouts.requested", numWorkoutsToDownload.ToString());
 
+			var result = new ServiceResult<ICollection<Workout>>();
 			List<Workout> recentWorkouts = new List<Workout>();
 
-			if (numWorkoutsToDownload <= 0) return recentWorkouts;
+			if (numWorkoutsToDownload <= 0) return result;
 			
-			var page = 0;
-			while (numWorkoutsToDownload > 0)
+			try
 			{
-				_logger.Debug("Fetching recent workouts page: {@Page}", page);
-
-				var workouts = await _pelotonApi.GetWorkoutsAsync(numWorkoutsToDownload, page);
-				if (workouts.data is null || workouts.data.Count <= 0)
+				var page = 0;
+				while (numWorkoutsToDownload > 0)
 				{
-					_logger.Debug("No more workouts found from Peloton.");
-					break;
+					_logger.Debug("Fetching recent workouts page: {@Page}", page);
+
+					var workouts = await _pelotonApi.GetWorkoutsAsync(numWorkoutsToDownload, page);
+					if (workouts.data is null || workouts.data.Count <= 0)
+					{
+						_logger.Debug("No more workouts found from Peloton.");
+						break;
+					}
+
+					recentWorkouts.AddRange(workouts.data);
+
+					numWorkoutsToDownload -= workouts.data.Count;
+					page++;
 				}
 
-				recentWorkouts.AddRange(workouts.data);
+				_logger.Debug("Total workouts found: {@FoundWorkouts}", recentWorkouts.Count);
+				tracing?.AddTag("workouts.found", recentWorkouts.Count);
 
-				numWorkoutsToDownload -= workouts.data.Count;
-				page++;
+				result.Result = recentWorkouts;
+				return result;
 			}
-
-			_logger.Debug("Total workouts found: {@FoundWorkouts}", recentWorkouts.Count);
-			tracing?.AddTag("workouts.found", recentWorkouts.Count);
-
-			return recentWorkouts;
+			catch (FlurlHttpTimeoutException fte)
+			{
+				result.Successful = false;
+				result.Error = new ServiceError()
+				{
+					Exception = fte,
+					IsServerException = true,
+					Message = "Timed out trying to communicate with the Peloton API"
+				};
+				return result;
+			}
+			catch (PelotonAuthenticationError pe)
+			{
+				result.Successful = false;
+				result.Error = new ServiceError()
+				{
+					Exception = pe,
+					IsServerException = false,
+					Message = pe.Message
+				};
+				return result;
+			}
+			catch (ArgumentException ae)
+			{
+				result.Successful = false;
+				result.Error = new ServiceError()
+				{
+					Exception = ae,
+					IsServerException = false,
+					Message = ae.Message
+				};
+				return result;
+			}
 		}
 
-		public async Task<ICollection<Workout>> GetWorkoutsSinceAsync(DateTime sinceDt)
+		public async Task<ServiceResult<ICollection<Workout>>> GetWorkoutsSinceAsync(DateTime sinceDt)
 		{
 			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetWorkoutsSinceAsync)}")
 										.WithTag("workouts.sinceDt", sinceDt.ToString());
 			
-			var workouts = await _pelotonApi.GetWorkoutsAsync(from: sinceDt, to: DateTime.UtcNow);
-			return workouts.data;
+			var result = new ServiceResult<ICollection<Workout>>();
+
+			try
+			{
+				var workouts = await _pelotonApi.GetWorkoutsAsync(from: sinceDt, to: DateTime.UtcNow);
+				result.Result = workouts.data;
+				return result;
+			}
+			catch (FlurlHttpTimeoutException fte)
+			{
+				result.Successful = false;
+				result.Error = new ServiceError()
+				{
+					Exception = fte,
+					IsServerException = true,
+					Message = "Timed out trying to communicate with the Peloton API"
+				};
+				return result;
+			}
+			catch (PelotonAuthenticationError pe)
+			{
+				result.Successful = false;
+				result.Error = new ServiceError()
+				{
+					Exception = pe,
+					IsServerException = false,
+					Message = pe.Message
+				};
+				return result;
+			}
+			catch (ArgumentException ae)
+			{
+				result.Successful = false;
+				result.Error = new ServiceError()
+				{
+					Exception = ae,
+					IsServerException = false,
+					Message = ae.Message
+				};
+				return result;
+			}
 		}
 
 		public async Task<P2GWorkout[]> GetWorkoutDetailsAsync(ICollection<Workout> workoutIds)

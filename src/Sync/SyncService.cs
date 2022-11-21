@@ -218,7 +218,7 @@ namespace Sync
 					.Select(r => r.Id);
 		}
 
-		private async Task<SyncResult> SyncWithWorkoutLoaderAsync(Func<Task<ICollection<Workout>>> loader, ICollection<WorkoutType>? exclude)
+		private async Task<SyncResult> SyncWithWorkoutLoaderAsync(Func<Task<ServiceResult<ICollection<Workout>>>> loader, ICollection<WorkoutType>? exclude)
 		{
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.SyncWithWorkoutLoaderAsync");
 
@@ -229,7 +229,8 @@ namespace Sync
 
 			try
 			{
-				recentWorkouts = await loader();
+				var recentWorkoutsServiceResult = await loader();
+				recentWorkouts = recentWorkoutsServiceResult.Result;
 			}
 			catch (ArgumentException ae)
 			{

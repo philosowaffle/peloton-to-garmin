@@ -60,6 +60,9 @@ public record SyncPostRequest
 	/// - SinceDate
 	/// </summary>
 	public ICollection<string> WorkoutIds { get; init; }
+
+	public bool FilterOutExcludedWorkoutTypes { get; init; }
+
 }
 
 public record SyncPostResponse

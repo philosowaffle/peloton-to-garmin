@@ -16,6 +16,7 @@ using Sync;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnitTests.UnitTestHelpers;
 
 namespace UnitTests.Sync
 {
@@ -72,7 +73,7 @@ namespace UnitTests.Sync
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } });
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } }.AsServiceResult());
 			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<Workout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
 			converter.Setup(x => x.ConvertAsync(It.IsAny<P2GWorkout>())).Throws(new Exception());
 
@@ -112,7 +113,7 @@ namespace UnitTests.Sync
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } });
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } }.AsServiceResult());
 			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<Workout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
 			garmin.Setup(x => x.UploadToGarminAsync()).Throws(new Exception());
 
@@ -155,7 +156,7 @@ namespace UnitTests.Sync
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } });
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } }.AsServiceResult());
 			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<Workout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
 
 			// ACT
@@ -205,7 +206,7 @@ namespace UnitTests.Sync
 					{
 						new Workout() { Status = "COMPLETE", Id = "1" },
 						new Workout() { Status = "IN PROGRESS", Id = "2" }
-					})
+					}.AsServiceResult())
 				.Verifiable();
 
 			// ACT
@@ -243,7 +244,7 @@ namespace UnitTests.Sync
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>());
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>().AsServiceResult());
 
 			ghService.Setup(x => x.GetLatestReleaseAsync())
 				.ReturnsAsync(new P2GLatestRelease())
@@ -274,7 +275,7 @@ namespace UnitTests.Sync
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>());
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>().AsServiceResult());
 
 			ghService.Setup(x => x.GetLatestReleaseAsync())
 				.ReturnsAsync(new P2GLatestRelease());

@@ -56,6 +56,7 @@ namespace Peloton
 				.WithHeader("Accept-Language", "en-US")
 				.WithHeader("User-Agent", overrideUserAgent ?? "PostmanRuntime/7.26.10")
 				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
+				.WithTimeout(30)
 				.PostJsonAsync(new AuthRequest()
 				{
 					username_or_email = auth.Email,

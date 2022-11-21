@@ -20,7 +20,7 @@
 <br />
 
 <div class="col-4">
-	<HxButton Color="ThemeColor.Primary" @onclick="SyncAsync">Sync todays workouts</HxButton>
+	<HxButton Color="ThemeColor.Primary" @onclick="SyncTodaysWorkoutsAsync">Sync todays workouts</HxButton>
 </div>
 
 <br /> 
@@ -30,7 +30,7 @@
 		<b>Today's Workouts</b>
 	</HeaderTemplate>
     <BodyTemplate>
-        <HxGrid TItem="Workout" MultiSelectionEnabled="false" Responsive="true" DataProvider="LoadDataAsync" SelectionEnabled="false">
+        <HxGrid TItem="Workout" MultiSelectionEnabled="false" Responsive="true" DataProvider="LoadTodaysWorkoutsAsync" SelectionEnabled="false">
             <Columns>
                 <HxGridColumn TItem="Workout" HeaderText="Date" ItemTextSelector="@(item => DateTimeOffset.FromUnixTimeSeconds(item.Created_At).LocalDateTime.ToString())" />
                 <HxGridColumn TItem="Workout" HeaderText="Title" ItemTextSelector="@(item => item.Ride.Title ?? item.Name)" />
@@ -107,19 +107,20 @@
 		}
 	}
 
-	private async Task<GridDataProviderResult<Workout>> LoadDataAsync(GridDataProviderRequest<Workout> request)
+	private async Task<GridDataProviderResult<Workout>> LoadTodaysWorkoutsAsync(GridDataProviderRequest<Workout> request)
 	{
-		using var tracing = Tracing.ClientTrace($"{nameof(Sync)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
+		using var tracing = Tracing.ClientTrace($"{nameof(Sync)}.{nameof(LoadTodaysWorkoutsAsync)}", kind: ActivityKind.Client);
 
 		_toaster.Clear();
 
 		try
 		{
+			// TODO: change back todays date
 			var today = DateTime.UtcNow.Date.AddDays(-14);
 			var todaysWorkouts = await _apiClient.PelotonWorkoutsGetAsync(new PelotoWorkoutsSinceGetRequest() { SinceDate = today, CompletedOnly = true, FilterOutExcludedWorkoutTypes = true });
 			return new GridDataProviderResult<Workout>() { Data = todaysWorkouts.Items, TotalCount = todaysWorkouts.Items.Count() };
 		}
-		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		catch (FlurlHttpException e)
 		{
 			var error = await e.GetResponseJsonAsync<ErrorResponse>();
 			_toaster.AddError(error.Message);
@@ -134,9 +135,9 @@
 		return new GridDataProviderResult<Workout>() { Data = new List<Workout>(), TotalCount = 0 };
 	}
 
-	private async Task SyncAsync()
+	private async Task SyncTodaysWorkoutsAsync()
 	{
-		using var tracing = Tracing.ClientTrace($"{nameof(Index)}.{nameof(SyncAsync)}", kind: ActivityKind.Client);
+		using var tracing = Tracing.ClientTrace($"{nameof(Index)}.{nameof(SyncTodaysWorkoutsAsync)}", kind: ActivityKind.Client);
 
 		try
 		{
