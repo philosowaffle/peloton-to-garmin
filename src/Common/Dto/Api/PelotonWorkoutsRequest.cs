@@ -10,29 +10,65 @@ public class PelotonWorkoutsGetRequest : IPagingRequest
 	public int PageIndex { get; set; }
 }
 
-public class PelotonWorkoutsGetResponse : PagingResponseBase<Workout>
+public class PelotonWorkoutsGetResponse : PagingResponseBase<PelotonWorkout>
 {
 	public PelotonWorkoutsGetResponse()
 	{
-		Items = new List<Workout>();
+		Items = new List<PelotonWorkout>();
 	}
 
-	public override ICollection<Workout> Items { get; set; }
+	public override ICollection<PelotonWorkout> Items { get; set; }
 }
 
-public record PelotoWorkoutsSinceGetRequest
+public record PelotonWorkoutsGetAllRequest
 {
 	/// <summary>
-	/// Since Date UTC
+	/// Load workout from this date till now. UTC
 	/// </summary>
 	public DateTime SinceDate { get; set; }
-	public bool FilterOutExcludedWorkoutTypes { get; init; }
-	public bool CompletedOnly { get; init; }
+	/// <summary>
+	/// Exclude these WorkoutTypes from the results.
+	/// Default returns all.
+	/// </summary>
+	public ICollection<WorkoutType> ExcludeWorkoutTypes { get; init; } = new List<WorkoutType>(0);
+	/// <summary>
+	/// Only include workouts with this Status. Bitmask.
+	/// Default returns all.
+	/// </summary>
+	public WorkoutStatus? WorkoutStatusFilter { get; init; }
 }
 
-public record PelotonWorkoutsSinceGetResponse
+public record PelotonWorkoutsGetAllResponse
 {
 	public DateTime SinceDate { get; init; }
-	public ICollection<Workout> Items { get; init; }
+	public ICollection<PelotonWorkout> Items { get; init; } = new List<PelotonWorkout>();
 
+}
+
+public record PelotonWorkout
+{
+	public PelotonWorkout() { }
+
+	public PelotonWorkout(Workout workout)
+	{
+		Id = workout.Id;
+		Status = workout.Status;
+		ClassTypeTitle = workout.Title;
+		WorkoutTitle = workout.Ride?.Title;
+		Name = workout.Name;
+		Created_At = workout.Created_At;
+	}
+
+	public string Id { get; init; }
+	public string Status { get; init; }
+	public string ClassTypeTitle { get; init; }
+	public string WorkoutTitle { get; init; }
+	public string Name { get; init; }
+	public long Created_At { get; init; }
+}
+
+[Flags]
+public enum WorkoutStatus : byte
+{
+	Completed = 1,
 }

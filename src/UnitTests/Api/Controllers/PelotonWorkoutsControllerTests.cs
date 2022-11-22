@@ -1,4 +1,5 @@
 ﻿using Api.Controllers;
+using Common.Dto;
 using Common.Dto.Api;
 using Common.Dto.Peloton;
 using FluentAssertions;
@@ -12,6 +13,7 @@ using Peloton.Dto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnitTests.UnitTestHelpers;
 
 namespace UnitTests.Api.Controllers
 {
@@ -191,6 +193,133 @@ namespace UnitTests.Api.Controllers
 			result.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
 			var value = result.Value as ErrorResponse;
 			value.Message.Should().Be("Unexpected error occurred: Some unhandled case.");
+		}
+
+		[Test]
+		public async Task GetAllAsync_When_Future_SinceDate_Returns400()
+		{
+			var autoMocker = new AutoMocker();
+			var controller = autoMocker.CreateInstance<PelotonWorkoutsController>();
+
+			var now = DateTime.UtcNow;
+			var request = new PelotonWorkoutsGetAllRequest() { SinceDate = now.AddDays(1) };
+
+			var response = await controller.GetAsync(request);
+
+			var result = response.Result as BadRequestObjectResult;
+			result.Should().NotBeNull();
+			var value = result.Value as ErrorResponse;
+			value.Message.Should().Be($"SinceDate must be before {now}.");
+		}
+
+		[Test]
+		public async Task GetAllAsync_Returns_Results_SortedBy_MostRecentFirst()
+		{
+			// setup
+			var autoMocker = new AutoMocker();
+			var controller = autoMocker.CreateInstance<PelotonWorkoutsController>();
+			var service = autoMocker.GetMock<IPelotonService>();
+
+			var results = new List<Workout>()
+			{
+				new Workout() { Created_At = DateTime.Now.AddMinutes(-15).Ticks },
+				new Workout() { Created_At = DateTime.Now.AddMinutes(-3).Ticks },
+				new Workout() { Created_At = DateTime.Now.AddMinutes(-1).Ticks },
+				new Workout() { Created_At = DateTime.Now.AddMinutes(-25).Ticks },
+				new Workout() { Created_At = DateTime.Now.AddMinutes(-8).Ticks },
+			}.AsServiceResult();
+
+			service.SetReturnsDefault(Task.FromResult(results));
+
+			var request = new PelotonWorkoutsGetAllRequest() { SinceDate = DateTime.UtcNow.AddDays(-1) };
+
+			// act
+			var actionResult = await controller.GetAsync(request);
+
+			// assert
+			var response = actionResult.Value;
+			response.Should().NotBeNull();
+
+			response.Items.Should().BeInDescendingOrder(i => i.Created_At);
+		}
+
+		[Test]
+		public async Task GetAllAsync_Honors_WorkoutStatusFilter_Flag([Values]WorkoutStatus filter)
+		{
+			// setup
+			var autoMocker = new AutoMocker();
+			var controller = autoMocker.CreateInstance<PelotonWorkoutsController>();
+			var service = autoMocker.GetMock<IPelotonService>();
+
+			var results = new List<Workout>()
+			{
+				new Workout() { Id = "1", Created_At = DateTime.Now.AddMinutes(-15).Ticks, Status = "COMPLETE" },
+				new Workout() { Id = "2", Created_At = DateTime.Now.AddMinutes(-3).Ticks },
+				new Workout() { Id = "3", Created_At = DateTime.Now.AddMinutes(-1).Ticks },
+				new Workout() { Id = "4", Created_At = DateTime.Now.AddMinutes(-25).Ticks, Status = "COMPLETE" },
+				new Workout() { Id = "5", Created_At = DateTime.Now.AddMinutes(-8).Ticks, Status = "INPROGRESS" },
+			}.AsServiceResult();
+
+			service.SetReturnsDefault(Task.FromResult(results));
+
+			var request = new PelotonWorkoutsGetAllRequest() { SinceDate = DateTime.UtcNow.AddDays(-1), WorkoutStatusFilter = filter };
+
+			// act
+			var actionResult = await controller.GetAsync(request);
+
+			// assert
+			var response = actionResult.Value;
+			response.Should().NotBeNull();
+
+			if (filter == WorkoutStatus.Completed)
+			{
+				response.Items.Count.Should().Be(2);
+				response.Items.Should().ContainSingle(w => w.Id == "1");
+				response.Items.Should().ContainSingle(w => w.Id == "4");
+			} else
+			{
+				response.Items.Count.Should().Be(5);
+				response.Items.Should().ContainSingle(w => w.Id == "1");
+				response.Items.Should().ContainSingle(w => w.Id == "2");
+				response.Items.Should().ContainSingle(w => w.Id == "3");
+				response.Items.Should().ContainSingle(w => w.Id == "4");
+				response.Items.Should().ContainSingle(w => w.Id == "5");
+			}
+		}
+
+		[Test]
+		public async Task GetAllAsync_Honors_ExcludedWorkoutTypes()
+		{
+			// setup
+			var autoMocker = new AutoMocker();
+			var controller = autoMocker.CreateInstance<PelotonWorkoutsController>();
+			var service = autoMocker.GetMock<IPelotonService>();
+
+			var results = new List<Workout>()
+			{
+				new Workout() { Id = "1", Created_At = DateTime.Now.AddMinutes(-15).Ticks, Status = "COMPLETE", Fitness_Discipline = FitnessDiscipline.Running },
+				new Workout() { Id = "2", Created_At = DateTime.Now.AddMinutes(-3).Ticks, Fitness_Discipline = FitnessDiscipline.Meditation },
+				new Workout() { Id = "3", Created_At = DateTime.Now.AddMinutes(-1).Ticks, Fitness_Discipline = FitnessDiscipline.Stretching },
+				new Workout() { Id = "4", Created_At = DateTime.Now.AddMinutes(-25).Ticks, Status = "COMPLETE", Fitness_Discipline = FitnessDiscipline.Walking },
+				new Workout() { Id = "5", Created_At = DateTime.Now.AddMinutes(-8).Ticks, Status = "INPROGRESS", Fitness_Discipline = FitnessDiscipline.Strength },
+			}.AsServiceResult();
+
+			service.SetReturnsDefault(Task.FromResult(results));
+
+			var excludedTypes = new List<WorkoutType>() { WorkoutType.Meditation, WorkoutType.Stretching };
+			var request = new PelotonWorkoutsGetAllRequest() { SinceDate = DateTime.UtcNow.AddDays(-1), ExcludeWorkoutTypes = excludedTypes };
+
+			// act
+			var actionResult = await controller.GetAsync(request);
+
+			// assert
+			var response = actionResult.Value;
+			response.Should().NotBeNull();
+
+			response.Items.Count.Should().Be(3);
+			response.Items.Should().ContainSingle(w => w.Id == "1");
+			response.Items.Should().ContainSingle(w => w.Id == "4");
+			response.Items.Should().ContainSingle(w => w.Id == "5");
 		}
 	}
 }

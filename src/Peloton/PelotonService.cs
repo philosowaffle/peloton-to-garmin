@@ -1,12 +1,10 @@
 ﻿using Common;
 using Common.Dto;
-using Common.Dto.Api;
 using Common.Dto.Peloton;
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
 using Flurl.Http;
-using Microsoft.VisualBasic;
 using Newtonsoft.Json.Linq;
 using Peloton.Dto;
 using Prometheus;
@@ -15,10 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
 using Metrics = Prometheus.Metrics;
 
 namespace Peloton

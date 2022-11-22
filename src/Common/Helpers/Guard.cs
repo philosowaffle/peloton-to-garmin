@@ -55,7 +55,20 @@ public static class Guard
 
 		if (input <= limit)
 		{
-			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must be greter than {limit}."));
+			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must be greater than {limit}."));
+			return true;
+		}
+
+		return false;
+	}
+
+	public static bool CheckIsLessThan(this int input, int limit, string name, out ActionResult result, string errorMessage = null)
+	{
+		result = null;
+
+		if (input < limit)
+		{
+			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must be greater than or equal to {limit}."));
 			return true;
 		}
 

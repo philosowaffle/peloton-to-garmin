@@ -8,7 +8,7 @@ namespace WebUI;
 public interface IApiClient
 {
 	Task<PelotonWorkoutsGetResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetRequest request);
-	Task<PelotonWorkoutsSinceGetResponse> PelotonWorkoutsGetAsync(PelotoWorkoutsSinceGetRequest request);
+	Task<PelotonWorkoutsGetAllResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetAllRequest request);
 
 	Task<SettingsGetResponse> SettingsGetAsync();
 	Task<Common.App> SettingsAppPostAsync(Common.App appSettings);
@@ -92,10 +92,10 @@ public class ApiClient : IApiClient
 				.GetJsonAsync<SystemInfoGetResponse>();
 	}
 
-	public Task<PelotonWorkoutsSinceGetResponse> PelotonWorkoutsGetAsync(PelotoWorkoutsSinceGetRequest request)
+	public Task<PelotonWorkoutsGetAllResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetAllRequest request)
 	{
-		return $"{_apiUrl}/api/peloton/workouts/sinceDate"
+		return $"{_apiUrl}/api/peloton/workouts/all"
 				.SetQueryParams(request)
-				.GetJsonAsync<PelotonWorkoutsSinceGetResponse>();
+				.GetJsonAsync<PelotonWorkoutsGetAllResponse>();
 	}
 }
