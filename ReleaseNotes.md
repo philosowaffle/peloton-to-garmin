@@ -4,6 +4,7 @@
 ## Features
 
 - [#370] Add support for Peloton Row workouts
+- [#26] Web UI - Home page now lets you quick-sync all of todays workouts
 
 ## Fixes
 
@@ -13,4 +14,4 @@
 ## Changes
 
 - [#26]
-	- POST api/sync - No longer supports syncing by NumWorkouts
+	- API - `POST api/sync` - No longer supports syncing by NumWorkouts

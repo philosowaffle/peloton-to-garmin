@@ -8,7 +8,7 @@
 
 <div class="row">
 	<div class="col">
-		<HxBadge Type="BadgeType.RoundedPill" Color="@GetPillThemeColor(syncStatus.SyncStatus)" TextColor="@GetPillTextThemeColor(syncStatus.SyncStatus)">Background Sync is @syncStatus.AutoSyncHealthString</HxBadge>
+		<HxBadge Type="BadgeType.RoundedPill" Color="@GetPillThemeColor(syncStatus.SyncStatus)" TextColor="@GetPillTextThemeColor(syncStatus.SyncStatus)">Periodic syncing is @syncStatus.AutoSyncHealthString</HxBadge>
 		@if (syncStatus.SyncStatus != Common.Database.Status.NotRunning)
 		{
 			<span> </span>
@@ -38,7 +38,14 @@
 </div>
 
 <div class="row justify-content-start">
-	@if (!TodaysWorkouts.Any())
+
+	@if (TodaysWorkoutsAreLoading)
+	{
+		<HxPlaceholderContainer Animation="PlaceholderAnimation.Glow">
+			<HxPlaceholder Columns="4" />
+		</HxPlaceholderContainer>
+	}
+	else if(!TodaysWorkouts.Any())
 	{
 		<HxAlert Color="ThemeColor.Primary">No workouts today.</HxAlert>
 	}
@@ -53,7 +60,7 @@
 
 @code {
 
-	private SyncPostResponse? syncResponse;
+	private bool TodaysWorkoutsAreLoading = true;
 	private SyncGetResponse syncStatus;
 	private SettingsGetResponse settings;
 	private SystemInfoGetResponse systemInfo;
@@ -62,10 +69,10 @@
 	public Index() : base(nameof(Index))
 	{
 		syncStatus = new SyncGetResponse();
-		syncResponse = null;
 		settings = new SettingsGetResponse();
 		systemInfo = new SystemInfoGetResponse();
 		TodaysWorkouts = new List<PelotonWorkout>(0);
+
 
 		_toaster?.Clear();
 	}
@@ -76,11 +83,12 @@
 
 		try
 		{
-			var getSettingsTask = _apiClient.SettingsGetAsync();
 			var getTodaysWorkoutsTask = LoadTodaysWorkoutsAsync();
+			var getSettingsTask = _apiClient.SettingsGetAsync();
 			var getSyncStatusAsync = LoadSyncStatusAsync();
 
 			TodaysWorkouts = await getTodaysWorkoutsTask;
+			TodaysWorkoutsAreLoading = false;
 
 			settings = await getSettingsTask;
 			if (settings.App.CheckForUpdates)
@@ -126,7 +134,7 @@
 
 		try
 		{
-			var today = DateTime.UtcNow.Date.AddDays(-4);
+			var today = DateTime.UtcNow.Date;
 			var todaysWorkouts = await _apiClient.PelotonWorkoutsGetAsync(new PelotonWorkoutsGetAllRequest() 
 			{ 
 				SinceDate = today, 
@@ -161,9 +169,9 @@
 			return;
 		}
 
+		SyncPostResponse? syncResponse = null;
 		try
 		{
-			syncResponse = null;
 			syncResponse = await _apiClient.SyncPostAsync(new SyncPostRequest() { WorkoutIds = TodaysWorkouts.Select(w => w.Id).ToList() });
 		}
 		catch (FlurlHttpTimeoutException te){
