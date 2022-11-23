@@ -7,7 +7,6 @@ using Common.Service;
 using Common.Stateful;
 using Conversion;
 using Garmin;
-using GitHub;
 using Peloton;
 using Prometheus;
 using Serilog;
@@ -36,9 +35,8 @@ namespace Sync
 		private readonly ISyncStatusDb _db;
 		private readonly IFileHandling _fileHandler;
 		private readonly ISettingsService _settingsService;
-		private readonly IGitHubService _gitHubService;
 
-		public SyncService(ISettingsService settingService, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, ISyncStatusDb dbClient, IFileHandling fileHandler, IGitHubService gitHubService)
+		public SyncService(ISettingsService settingService, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, ISyncStatusDb dbClient, IFileHandling fileHandler)
 		{
 			_settingsService = settingService;
 			_pelotonService = pelotonService;
@@ -46,7 +44,6 @@ namespace Sync
 			_converters = converters;
 			_db = dbClient;
 			_fileHandler = fileHandler;
-			_gitHubService = gitHubService;
 		}
 
 		public async Task<SyncResult> SyncAsync(int numWorkouts)
@@ -57,6 +54,17 @@ namespace Sync
 
 			var settings = await _settingsService.GetSettingsAsync();
 			return await SyncWithWorkoutLoaderAsync(() => _pelotonService.GetRecentWorkoutsAsync(numWorkouts), settings.Peloton.ExcludeWorkoutTypes);
+		}
+
+		public Task<SyncResult> SyncAsync(DateTime sinceDt, ICollection<WorkoutType>? exclude = null)
+		{
+			using var timer = SyncHistogram.NewTimer();
+			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.BySinceDt");
+
+			_logger.Information("Begining sync for workouts since {date}.", sinceDt.ToLocalTime());
+
+			return SyncWithWorkoutLoaderAsync(() => _pelotonService.GetWorkoutsSinceAsync(sinceDt), exclude);
+
 		}
 
 		public async Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null)
@@ -191,17 +199,6 @@ namespace Sync
 
 			response.SyncSuccess = true;
 			return response;
-		}
-
-		public Task<SyncResult> SyncAsync(DateTime sinceDt, ICollection<WorkoutType>? exclude = null)
-		{
-			using var timer = SyncHistogram.NewTimer();
-			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.BySinceDt");
-
-			_logger.Information("Begining sync for workouts since {date}.", sinceDt.ToLocalTime());
-
-			return SyncWithWorkoutLoaderAsync(() => _pelotonService.GetWorkoutsSinceAsync(sinceDt), exclude);
-			
 		}
 
 		private IEnumerable<string> FilterToCompletedWorkoutIds(ICollection<Workout> workouts)

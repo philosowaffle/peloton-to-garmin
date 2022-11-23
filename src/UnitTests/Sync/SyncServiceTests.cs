@@ -227,37 +227,6 @@ namespace UnitTests.Sync
 		}
 
 		[Test]
-		public async Task SyncAsync_When_CheckForUpdates_Enabled_Should_Check()
-		{
-			// SETUP
-			var mocker = new AutoMocker();
-
-			var service = mocker.CreateInstance<SyncService>();
-			var peloton = mocker.GetMock<IPelotonService>();
-			var db = mocker.GetMock<ISyncStatusDb>();
-			var settingsService = mocker.GetMock<ISettingsService>();
-			var ghService = mocker.GetMock<IGitHubService>();
-			
-			var settings = new Settings();
-			settings.App.CheckForUpdates = true;
-			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
-
-			var syncStatus = new SyncServiceStatus();
-			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>().AsServiceResult());
-
-			ghService.Setup(x => x.GetLatestReleaseAsync())
-				.ReturnsAsync(new P2GLatestRelease())
-				.Verifiable();
-
-			// ACT
-			var response = await service.SyncAsync(0);
-
-			// ASSERT
-			ghService.Verify();
-		}
-
-		[Test]
 		public async Task SyncAsync_When_CheckForUpdates_Disabled_Should_NotCheck()
 		{
 			// SETUP
