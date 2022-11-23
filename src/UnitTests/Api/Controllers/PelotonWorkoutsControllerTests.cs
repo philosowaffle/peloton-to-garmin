@@ -87,7 +87,7 @@ namespace UnitTests.Api.Controllers
 			var response = actionResult.Value;
 			response.Should().NotBeNull();
 
-			response.Items.Should().BeInDescendingOrder(i => i.Created_At);
+			response.Items.Should().BeInDescendingOrder(i => i.CreatedAt);
 		}
 
 		[Test]
@@ -240,7 +240,7 @@ namespace UnitTests.Api.Controllers
 			var response = actionResult.Value;
 			response.Should().NotBeNull();
 
-			response.Items.Should().BeInDescendingOrder(i => i.Created_At);
+			response.Items.Should().BeInDescendingOrder(i => i.CreatedAt);
 		}
 
 		[Test]

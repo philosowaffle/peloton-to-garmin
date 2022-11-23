@@ -52,8 +52,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\" />
-	<Content Remove="appsettings.json;appsettings.Development.json"/>
+	<Content Remove="appsettings.json;appsettings.Development.json" />
 	<None Include="appsettings.json;appsettings.Development.json">
 		<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 		<CopyToPublishDirectory>Never</CopyToPublishDirectory>

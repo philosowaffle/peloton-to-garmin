@@ -56,7 +56,8 @@ public record PelotonWorkout
 		ClassTypeTitle = workout.Title;
 		WorkoutTitle = workout.Ride?.Title;
 		Name = workout.Name;
-		Created_At = workout.Created_At;
+		CreatedAt = workout.Created_At;
+		ImageUrl = workout.Ride?.Image_Url;
 	}
 
 	public string Id { get; init; }
@@ -64,7 +65,9 @@ public record PelotonWorkout
 	public string ClassTypeTitle { get; init; }
 	public string WorkoutTitle { get; init; }
 	public string Name { get; init; }
-	public long Created_At { get; init; }
+	public long CreatedAt { get; init; }
+	public Uri ImageUrl { get; set; }
+
 }
 
 [Flags]

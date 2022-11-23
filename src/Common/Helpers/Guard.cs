@@ -42,7 +42,7 @@ public static class Guard
 
 		if (input > limit)
 		{
-			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must not be greter than {limit}."));
+			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must not be greater than {limit}."));
 			return true;
 		}
 
@@ -82,6 +82,19 @@ public static class Guard
 		if (input is not null && input.Any())
 		{
 			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must be empty."));
+			return true;
+		}
+
+		return false;
+	}
+
+	public static bool CheckDoesNotHaveAny<T>(this ICollection<T> input, string name, out ActionResult result, string errorMessage = null)
+	{
+		result = null;
+
+		if (input is null || !input.Any())
+		{
+			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must not be empty."));
 			return true;
 		}
 

@@ -45,12 +45,7 @@ public class SyncController : Controller
 		SyncResult syncResult = new();
 		try
 		{
-			if (request.NumWorkouts > 0)
-				syncResult = await _syncService.SyncAsync(request.NumWorkouts);
-			else if (request.WorkoutIds is not null)
-				syncResult = await _syncService.SyncAsync(request.WorkoutIds, exclude: null);
-			else
-				syncResult = await _syncService.SyncAsync(request.SinceDate!.Value, exclude: null); // TODO: need to handle exclude
+			syncResult = await _syncService.SyncAsync(request.WorkoutIds, exclude: null);
 		}
 		catch (Exception e)
 		{
@@ -108,32 +103,7 @@ public class SyncController : Controller
 		if (request.CheckIsNull("PostRequest", out result))
 			return false;
 
-		if (request.WorkoutIds is not null && request.WorkoutIds.Any())
-		{
-			if (request.NumWorkouts.CheckIsGreaterThan(0, nameof(request.NumWorkouts), out result))
-				return false;
-
-			if (request.SinceDate.CheckIsNotNull(nameof(request.SinceDate), out result))
-				return false;
-
-			return true;
-		}
-
-		if (request.SinceDate.HasValue)
-		{
-			if (request.NumWorkouts.CheckIsGreaterThan(0, nameof(request.NumWorkouts), out result))
-				return false;
-
-			if (request.WorkoutIds.CheckHasAny(nameof(request.WorkoutIds), out result))
-				return false;
-
-			if (request.SinceDate.Value.IsAfter(DateTime.UtcNow, nameof(request.SinceDate), out result))
-				return false;
-
-			return true;
-		}
-
-		if (request.NumWorkouts.CheckIsLessThanOrEqualTo(0, nameof(request.NumWorkouts), out result))
+		if (request.WorkoutIds.CheckDoesNotHaveAny(nameof(request.WorkoutIds), out result))
 			return false;
 
 		return true;
