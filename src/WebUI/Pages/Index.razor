@@ -5,7 +5,6 @@
 
 <PageTitle>Home</PageTitle>
 
-
 <div class="row">
 	<div class="col">
 		<HxBadge Type="BadgeType.RoundedPill" Color="@GetPillThemeColor(syncStatus.SyncStatus)" TextColor="@GetPillTextThemeColor(syncStatus.SyncStatus)">Periodic syncing is @syncStatus.AutoSyncHealthString</HxBadge>
@@ -191,7 +190,10 @@
 				{
 					_toaster.AddWarning($"Errors during sync - {error.Message}");
 				}
-			}
+			} 
+
+			if (syncResponse?.SyncSuccess ?? false)
+				_toaster.AddInformation("Success! Synced today's workouts.");
 		}
 	}
 
