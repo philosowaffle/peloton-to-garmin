@@ -66,7 +66,7 @@ namespace Common.Dto.Peloton
 		public string Ftp_Workout_Id { get; set; }
 	}
 
-	public enum FitnessDiscipline
+	public enum FitnessDiscipline : byte
 	{
 		None = 0,
 		Cycling = 1,
@@ -78,6 +78,7 @@ namespace Common.Dto.Peloton
 		Strength = 7,
 		Stretching = 8,
 		Yoga = 9,
-		Meditation = 10
+		Meditation = 10,
+		Caesar = 11, // Project Caesar = Rower
 	}
 }

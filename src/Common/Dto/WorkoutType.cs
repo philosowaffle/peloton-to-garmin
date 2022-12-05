@@ -1,19 +1,19 @@
-﻿namespace Common.Dto
+﻿namespace Common.Dto;
+
+public enum WorkoutType : byte
 {
-	public enum WorkoutType
-	{
-		None = 0,
-		Cycling,
-		BikeBootcamp,
-		TreadmillRunning,
-		OutdoorRunning,
-		TreadmillWalking,
-		OutdoorWalking,
-		Cardio,
-		Circuit,
-		Strength,
-		Stretching,
-		Yoga,
-		Meditation
-	}
+	None = 0,
+	Cycling,
+	BikeBootcamp,
+	TreadmillRunning,
+	OutdoorRunning,
+	TreadmillWalking,
+	OutdoorWalking,
+	Cardio,
+	Circuit,
+	Strength,
+	Stretching,
+	Yoga,
+	Meditation,
+	Rowing,
 }

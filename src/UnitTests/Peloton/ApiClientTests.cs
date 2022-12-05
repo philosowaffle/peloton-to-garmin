@@ -1,50 +1,62 @@
 ﻿using Common;
-using Common.Dto.Peloton;
 using Common.Service;
 using Common.Stateful;
-using FluentAssertions;
 using Flurl.Http.Testing;
-using Microsoft.OpenApi.Expressions;
 using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
 using Peloton;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Threading.Tasks;
+using UnitTests.UnitTestHelpers;
 
 namespace UnitTests.Peloton
 {
 	public class ApiClientTests
 	{
-		//[Test]
-		//public async Task AA()
-		//{
-		//	// Some Http Test examples
-		//	var autoMocker = new AutoMocker();
-		//	var apiClient = autoMocker.CreateInstance<ApiClient>();
-		//	var settingsService = autoMocker.GetMock<ISettingsService>();
-		//	SetupSuccessfulAuth(settingsService);
+		private string DataDirectory = Path.Join(FileHelper.DataDirectory, "peloton_responses");
 
-		//	var httpMock = new HttpTest();
-		//	httpMock
-		//		.ForCallsTo("https://api.onepeloton.com/api/me")
-		//		.WithVerb("GET")
-		//		.RespondWithJson("{\"cycling_ftp_source\": null }", 500);
+		[Test]
+		public async Task RowingWorkout_CanBe_Deserialized_To_Workout()
+		{
+			var autoMocker = new AutoMocker();
+			var apiClient = autoMocker.CreateInstance<ApiClient>();
+			var settingsService = autoMocker.GetMock<ISettingsService>();
+			SetupSuccessfulAuth(settingsService);
 
-		//	httpMock.Settings.JsonSerializer.Deserialize<UserData>("{\"cycling_ftp_source\": null }");
+			var responseData = await FileHelper.ReadTextFromFileAsync(Path.Join(DataDirectory, "rower_sample.json"));
 
-		//	var response = await apiClient.GetUserDataAsync();
+			var httpMock = new HttpTest();
+			httpMock
+				.ForCallsTo("https://api.onepeloton.com/api/user/blah/workouts")
+				.WithVerb("GET")
+				.RespondWith(responseData, 200);
 
-		//	httpMock.ShouldHaveCalled("https://api.onepeloton.com/api/me");
-		//	response.Cycling_Ftp_Source.Should().Be(CyclingFtpSource.Unknown);
+			await apiClient.GetWorkoutsAsync(5, 0);
 
-			
+			httpMock.ShouldHaveMadeACall();
+		}
 
-		//	httpMock.ShouldHaveMadeACall();
-		//}
+		[Test]
+		public async Task RowingWorkout_CanBe_Deserialized_To_WorkoutSamples()
+		{
+			var autoMocker = new AutoMocker();
+			var apiClient = autoMocker.CreateInstance<ApiClient>();
+			var settingsService = autoMocker.GetMock<ISettingsService>();
+			SetupSuccessfulAuth(settingsService);
+
+			var responseData = await FileHelper.ReadTextFromFileAsync(Path.Join(DataDirectory, "rower_performance_graph.json"));
+
+			var httpMock = new HttpTest();
+			httpMock
+				.ForCallsTo("https://api.onepeloton.com/api/workout/0/performance_graph")
+				.WithVerb("GET")
+				.RespondWith(responseData, 200);
+
+			await apiClient.GetWorkoutSamplesByIdAsync("0");
+
+			httpMock.ShouldHaveMadeACall();
+		}
 
 		private void SetupSuccessfulAuth(Mock<ISettingsService> settingsService)
 		{

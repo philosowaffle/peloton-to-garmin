@@ -276,6 +276,8 @@ namespace Conversion
 				case FitnessDiscipline.Yoga:
 				case FitnessDiscipline.Meditation:
 					return Sport.Training;
+				case FitnessDiscipline.Caesar:
+					return Sport.Rowing;
 				default:
 					return Sport.Invalid;
 			}
@@ -304,6 +306,8 @@ namespace Conversion
 					return SubSport.Yoga;
 				case FitnessDiscipline.Meditation:
 					return SubSport.Breathing;
+				case FitnessDiscipline.Caesar:
+					return SubSport.IndoorRowing;
 				default:
 					return SubSport.Generic;
 			}
