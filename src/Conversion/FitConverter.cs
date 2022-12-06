@@ -372,6 +372,13 @@ namespace Conversion
 			sessionMesg.SetMaxPosGrade(GetMaxGrade(workoutSamples));
 			sessionMesg.SetMaxNegGrade(0.0f);
 
+			// TODO: for Rower
+			//sessionMesg.SetAvgStrokeDistance()
+			//sessionMesg.SetAvgStrokeCount() // strokes/lap
+			var strokeCountSummary = workoutSamples.Summaries.FirstOrDefault(m => m.Slug == "stroke_count");
+			if (strokeCountSummary is object)
+				sessionMesg.SetTotalStrokes((uint)strokeCountSummary.Value);
+
 			// HR zones
 			if (settings.Format.IncludeTimeInHRZones && workoutSamples.Metrics.Any())
 			{
