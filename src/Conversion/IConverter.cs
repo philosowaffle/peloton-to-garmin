@@ -232,14 +232,25 @@ namespace Conversion
 			return ConvertDistanceToMeters(distanceSummary.Value.GetValueOrDefault(), unit);
 		}
 
-		protected float ConvertToMetersPerSecond(double? value, WorkoutSamples workoutSamples)
+		protected float ConvertToMetersPerSecond(double? value, WorkoutSamples workoutSamples, string displayUnit = null)
 		{
 			var val = value.GetValueOrDefault();
 
-			var distanceSummary = GetDistanceSummary(workoutSamples);
-			if (distanceSummary is null) return (float)val;
+			var unit = displayUnit;
+			if (unit is null)
+			{
+				var distanceSummary = GetDistanceSummary(workoutSamples);
+				if (distanceSummary is null) return (float)val;
+				unit = distanceSummary.Display_Unit;
+			}
 
-			var unit = distanceSummary.Display_Unit;
+			if (unit == "min/500m")
+			{
+				var totalSeconds = value * 60 ?? 0;
+				var mps = 500 / totalSeconds;
+				return (float)mps;
+			}
+
 			var metersPerHour = ConvertDistanceToMeters(val, unit);
 			var metersPerMinute = metersPerHour / 60;
 			var metersPerSecond = metersPerMinute / 60;

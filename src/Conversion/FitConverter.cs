@@ -193,8 +193,15 @@ namespace Conversion
 			var allMetrics = workoutSamples.Metrics;
 			var hrMetrics = allMetrics.FirstOrDefault(m => m.Slug == "heart_rate");
 			var outputMetrics = allMetrics.FirstOrDefault(m => m.Slug == "output");
+
+			// Cadence Related
 			var cadenceMetrics = allMetrics.FirstOrDefault(m => m.Slug == "cadence");
+			var strokePerMinMetrics = allMetrics.FirstOrDefault(m => m.Slug == "stroke_rate");
+
+			// Speed Related
 			var speedMetrics = GetSpeedSummary(workoutSamples);
+			var splitPaceMetrics = allMetrics.FirstOrDefault(m => m.Slug == "split_pace");
+
 			var resistanceMetrics = allMetrics.FirstOrDefault(m => m.Slug == "resistance");
 			var inclineMetrics = GetGradeSummary(workoutSamples);
 			var locationMetrics = workoutSamples.Location_Data?.SelectMany(x => x.Coordinates).ToArray();
@@ -208,14 +215,24 @@ namespace Conversion
 					var record = new RecordMesg();
 					record.SetTimestamp(recordsTimeStamp);
 
+					// Bike & Run Speed
 					if (speedMetrics is object && i < speedMetrics.Values.Length)
 						record.SetSpeed(ConvertToMetersPerSecond(speedMetrics.GetValue(i), workoutSamples));
 
+					// Rower Speed
+					if (splitPaceMetrics is object && i < splitPaceMetrics.Values.Length)
+						record.SetSpeed(ConvertToMetersPerSecond(splitPaceMetrics.GetValue(i), workoutSamples, splitPaceMetrics.Display_Unit));
+
 					if (hrMetrics is object && i < hrMetrics.Values.Length)
 						record.SetHeartRate((byte)hrMetrics.Values[i]);
-
+					
+					// Bike & Run Cadence
 					if (cadenceMetrics is object && i < cadenceMetrics.Values.Length)
 						record.SetCadence((byte)cadenceMetrics.Values[i]);
+
+					// Rower Cadence
+					if (strokePerMinMetrics is object && i < strokePerMinMetrics.Values.Length)
+						record.SetCadence((byte)strokePerMinMetrics.Values[i]);
 
 					if (outputMetrics is object && i < outputMetrics.Values.Length)
 						record.SetPower((ushort)outputMetrics.Values[i]);
@@ -574,7 +591,7 @@ namespace Conversion
 			}
 
 			LapMesg lap = null;
-			ushort stepIndex = 0;			
+			ushort stepIndex = 0;
 			var lapDistanceInMeters = 0f;
 			float lapLengthSeconds = 0;
 
