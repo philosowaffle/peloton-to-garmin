@@ -296,7 +296,8 @@ namespace Conversion
 			if (speedSummary is null) return 0.0f;
 
 			var max = speedSummary.Max_Value.GetValueOrDefault();
-			return ConvertToMetersPerSecond(max, workoutSamples);
+			var unit = speedSummary.Slug == "split_pace" ? speedSummary.Display_Unit : null;
+			return ConvertToMetersPerSecond(max, workoutSamples, unit);
 		}
 
 		protected float GetAvgSpeedMetersPerSecond(WorkoutSamples workoutSamples)
@@ -305,7 +306,8 @@ namespace Conversion
 			if (speedSummary is null) return 0.0f;
 
 			var avg = speedSummary.Average_Value.GetValueOrDefault();
-			return ConvertToMetersPerSecond(avg, workoutSamples);
+			var unit = speedSummary.Slug == "split_pace" ? speedSummary.Display_Unit : null;
+			return ConvertToMetersPerSecond(avg, workoutSamples, unit);
 		}
 
 		protected float GetAvgGrade(WorkoutSamples workoutSamples)
@@ -330,7 +332,12 @@ namespace Conversion
 
 		protected Metric GetSpeedSummary(WorkoutSamples workoutSamples)
 		{
-			return GetMetric("speed", workoutSamples);
+			var speed = GetMetric("speed", workoutSamples);
+
+			if (speed is null)
+				speed = GetMetric("split_pace", workoutSamples);
+
+			return speed;
 		}
 
 		protected byte? GetUserMaxHeartRate(WorkoutSamples workoutSamples) 
@@ -479,7 +486,12 @@ namespace Conversion
 
 		protected Metric GetCadenceSummary(WorkoutSamples workoutSamples)
 		{
-			return GetMetric("cadence", workoutSamples);
+			var cadence = GetMetric("cadence", workoutSamples);
+
+			if (cadence is null)
+				cadence = GetMetric("stroke_rate", workoutSamples);
+
+			return cadence;
 		}
 
 		protected Metric GetResistanceSummary(WorkoutSamples workoutSamples)
