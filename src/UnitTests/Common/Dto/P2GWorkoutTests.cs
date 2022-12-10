@@ -31,9 +31,9 @@ public class P2GWorkoutTests
 				case FitnessDiscipline.Strength: workoutType.Should().Be(WorkoutType.Strength); break;
 				case FitnessDiscipline.Stretching: workoutType.Should().Be(WorkoutType.Stretching); break;
 				case FitnessDiscipline.Yoga: workoutType.Should().Be(WorkoutType.Yoga); break;
-				case FitnessDiscipline.Running when hasGPS: workoutType.Should().Be(WorkoutType.OutdoorRunning); break;
+				case FitnessDiscipline.Running when isOutdoor: workoutType.Should().Be(WorkoutType.OutdoorRunning); break;
 				case FitnessDiscipline.Running: workoutType.Should().Be(WorkoutType.TreadmillRunning); break;
-				case FitnessDiscipline.Walking when hasGPS: workoutType.Should().Be(WorkoutType.OutdoorWalking); break;
+				case FitnessDiscipline.Walking when isOutdoor: workoutType.Should().Be(WorkoutType.OutdoorWalking); break;
 				case FitnessDiscipline.Walking: workoutType.Should().Be(WorkoutType.TreadmillWalking); break;
 			}
 		}
