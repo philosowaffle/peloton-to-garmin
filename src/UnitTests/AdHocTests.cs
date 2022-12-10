@@ -146,7 +146,7 @@ namespace UnitTests
 				return converted;
 			}
 
-			public void Save(Tuple<string, ICollection<Mesg>> data, string path)
+			public new void Save(Tuple<string, ICollection<Mesg>> data, string path)
 			{
 				base.Save(data, path);
 			}

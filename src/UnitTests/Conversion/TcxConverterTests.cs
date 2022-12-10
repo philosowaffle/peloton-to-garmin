@@ -36,7 +36,7 @@ public class TcxConverterTests
 
 	private class TcxConverterInstance : TcxConverter
 	{
-		public FileFormat Format => base.Format;
+		public new FileFormat Format => base.Format;
 
 		public TcxConverterInstance(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
 

@@ -207,6 +207,18 @@ namespace UnitTests.Conversion
 		}
 
 		[Test]
+		public void ConvertToMetersPerSecondTest_Is_Converted_To_MetersPerSecond_ForRower([Values("min/500m")] string unit)
+		{
+			var value = 5;
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var converted = converter.ConvertToMetersPerSecond1(value, null, unit);
+			converted.Should().Be(1.6666666F);
+		}
+
+		[Test]
 		public void GetMaxSpeedMetersPerSecond_NullMetrics_Returns0()
 		{
 			var workoutSample = new WorkoutSamples();
@@ -242,6 +254,23 @@ namespace UnitTests.Conversion
 		}
 
 		[Test]
+		public void GetMaxSpeedMetersPerSecond_MaxSpeed_Is_Converted_ForRower([Values("min/500m")] string unit)
+		{
+			var speed = 5;
+			var workoutSample = new WorkoutSamples();
+			workoutSample.Metrics = new List<Metric>()
+			{
+				new Metric() { Slug = "split_pace", Display_Unit = unit, Max_Value = speed }
+			};
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var converted = converter.GetMaxSpeedMetersPerSecond1(workoutSample);
+			converted.Should().Be(1.6666666F);
+		}
+
+		[Test]
 		public void GetAvgSpeedMetersPerSecond_NullMetrics_Returns0()
 		{
 			var workoutSample = new WorkoutSamples();
@@ -274,6 +303,23 @@ namespace UnitTests.Conversion
 
 			var converted = converter.GetAvgSpeedMetersPerSecond1(workoutSample);
 			converted.Should().Be(expectedDistance);
+		}
+
+		[Test]
+		public void GetAvgSpeedMetersPerSecond_MaxSpeed_Is_Converted_ForRower([Values("min/500m")] string unit)
+		{
+			var speed = 5;
+			var workoutSample = new WorkoutSamples();
+			workoutSample.Metrics = new List<Metric>()
+			{
+				new Metric() { Slug = "split_pace", Display_Unit = unit, Average_Value = speed }
+			};
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var converted = converter.GetAvgSpeedMetersPerSecond1(workoutSample);
+			converted.Should().Be(1.6666666F);
 		}
 
 		[Test]
@@ -695,9 +741,9 @@ namespace UnitTests.Conversion
 				return base.GetTotalDistance(workoutSamples);
 			}
 
-			public float ConvertToMetersPerSecond1(double value, WorkoutSamples workoutSamples)
+			public float ConvertToMetersPerSecond1(double value, WorkoutSamples workoutSamples, string unit = null)
 			{
-				return base.ConvertToMetersPerSecond(value, workoutSamples);
+				return base.ConvertToMetersPerSecond(value, workoutSamples, unit);
 			}
 
 			public float GetMaxSpeedMetersPerSecond1(WorkoutSamples workoutSamples)

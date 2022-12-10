@@ -51,7 +51,7 @@ public class LatestVersionInformation
 	}
 
 	public string LatestVersion { get; set; }
-	public string? ReleaseDate { get; set; }
+	public string ReleaseDate { get; set; }
 	public string ReleaseUrl { get; set; }
 	public string Description { get; set; }
 }
