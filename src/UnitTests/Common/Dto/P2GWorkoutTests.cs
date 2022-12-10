@@ -24,6 +24,7 @@ namespace UnitTests.Common.Dto
 				case FitnessDiscipline.None: workoutType.Should().Be(WorkoutType.None); break;
 				case FitnessDiscipline.Bike_Bootcamp: workoutType.Should().Be(WorkoutType.BikeBootcamp); break;
 				case FitnessDiscipline.Cardio: workoutType.Should().Be(WorkoutType.Cardio); break;
+				case FitnessDiscipline.Caesar: workoutType.Should().Be(WorkoutType.Rowing); break;
 				case FitnessDiscipline.Circuit: workoutType.Should().Be(WorkoutType.Circuit); break;
 				case FitnessDiscipline.Cycling: workoutType.Should().Be(WorkoutType.Cycling); break;
 				case FitnessDiscipline.Meditation: workoutType.Should().Be(WorkoutType.Meditation); break;
@@ -32,7 +33,7 @@ namespace UnitTests.Common.Dto
 				case FitnessDiscipline.Yoga: workoutType.Should().Be(WorkoutType.Yoga); break;
 				case FitnessDiscipline.Running when hasGPS: workoutType.Should().Be(WorkoutType.OutdoorRunning); break;
 				case FitnessDiscipline.Running: workoutType.Should().Be(WorkoutType.TreadmillRunning); break;
-				case FitnessDiscipline.Walking when hasGPS: workoutType.Should().Be(WorkoutType.OutdoorRunning); break;
+				case FitnessDiscipline.Walking when hasGPS: workoutType.Should().Be(WorkoutType.OutdoorWalking); break;
 				case FitnessDiscipline.Walking: workoutType.Should().Be(WorkoutType.TreadmillWalking); break;
 			}
 		}

@@ -25,7 +25,7 @@ namespace UnitTests
 {
 	public class AdHocTests
 	{
-		private string DataDirectory = Path.Join(Directory.GetCurrentDirectory(), "..", "..", "..", "Data");
+		private string DataDirectory = Path.Join(Directory.GetCurrentDirectory(), "..", "..", "..", "Data", "p2g_workouts");
 
 		[OneTimeSetUp]
 		public void Setup()
@@ -40,7 +40,7 @@ namespace UnitTests
 		//[Test]
 		//public async Task AA()
 		//{
-			
+
 		//}
 
 		//[Test]
@@ -90,35 +90,21 @@ namespace UnitTests
 		//[Test]
 		//public async Task Convert()
 		//{
-		//	var file = Path.Join(DataDirectory, "lanebreaker.json");
+		//	var file = Path.Join(DataDirectory, "rower_workout.json");
 
 		//	var autoMocker = new AutoMocker();
-		//	var settings = new Settings();
+		//	var settingsService = autoMocker.CreateInstance<SettingsService>();
 
-		//	var fitConverter = new ConverterInstance(settings);
-		//	var messages = fitConverter.Convert(file);
+		//	var settings = new Settings();
+		//	var fileHandler = new IOWrapper();
+
+		//	var fitConverter = new ConverterInstance(settingsService, fileHandler);
+		//	var messages = await fitConverter.Convert(file, settings);
 
 		//	var output = Path.Join(DataDirectory, "output.fit");
 
-		//	SaveFit(messages, output);
+		//	fitConverter.Save(messages, output);
 		//}
-
-		private void SaveFit(Tuple<string, ICollection<Mesg>> messages, string outputPath)
-		{
-			using(FileStream fitDest = new FileStream(outputPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
-			{
-				Encode encoder = new Encode(ProtocolVersion.V20);
-				try
-				{
-					encoder.Open(fitDest);
-					encoder.Write(messages.Item2);
-				}
-				finally
-				{
-					encoder.Close();
-				}
-			}
-		}
 
 		private void SaveRawData(dynamic data, string workoutId, string path)
 		{
@@ -158,6 +144,11 @@ namespace UnitTests
 				var converted = await this.ConvertInternalAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
 
 				return converted;
+			}
+
+			public new void Save(Tuple<string, ICollection<Mesg>> data, string path)
+			{
+				base.Save(data, path);
 			}
 		}
 	}

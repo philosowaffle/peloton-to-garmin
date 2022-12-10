@@ -24,6 +24,7 @@ namespace Common.Dto
 			{
 				case FitnessDiscipline.None: _workoutType = WorkoutType.None; break;
 				case FitnessDiscipline.Bike_Bootcamp: _workoutType = WorkoutType.BikeBootcamp; break;
+				case FitnessDiscipline.Caesar: _workoutType = WorkoutType.Rowing; break;
 				case FitnessDiscipline.Cardio: _workoutType = WorkoutType.Cardio; break;
 				case FitnessDiscipline.Circuit: _workoutType = WorkoutType.Circuit; break;
 				case FitnessDiscipline.Cycling: _workoutType = WorkoutType.Cycling; break;
@@ -33,7 +34,7 @@ namespace Common.Dto
 				case FitnessDiscipline.Yoga: _workoutType = WorkoutType.Yoga; break;
 				case FitnessDiscipline.Running when isOutdoorWorkout: _workoutType = WorkoutType.OutdoorRunning; break;
 				case FitnessDiscipline.Running: _workoutType = WorkoutType.TreadmillRunning; break;
-				case FitnessDiscipline.Walking when isOutdoorWorkout: _workoutType = WorkoutType.OutdoorRunning; break;
+				case FitnessDiscipline.Walking when isOutdoorWorkout: _workoutType = WorkoutType.OutdoorWalking; break;
 				case FitnessDiscipline.Walking: _workoutType = WorkoutType.TreadmillWalking; break;
 			}
 

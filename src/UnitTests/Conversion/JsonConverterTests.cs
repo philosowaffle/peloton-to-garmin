@@ -36,7 +36,7 @@ public class JsonConverterTests
 
 	private class JsonConverterInstance : JsonConverter
 	{
-		public FileFormat Format => base.Format;
+		public new FileFormat Format => base.Format;
 
 		public JsonConverterInstance(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
 

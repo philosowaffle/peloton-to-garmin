@@ -1,0 +1,1619 @@
+﻿{
+  "UserData": {
+    "Cycling_Ftp_Source": "ftp_manual_source",
+    "Cycling_Ftp": 154,
+    "Estimated_Cycling_Ftp": 92,
+    "Default_Max_Heart_Rate": 189,
+    "Customized_Max_Heart_Rate": 189,
+    "Weight": 121
+  },
+  "Workout": {
+    "created_at": 1670191449,
+    "device_type": "caesar",
+    "end_time": 1670192109,
+    "fitness_discipline": "caesar",
+    "has_pedaling_metrics": false,
+    "has_leaderboard_metrics": true,
+    "id": "3a5af153444941c0aa54c52aee4726fa",
+    "is_total_work_personal_record": true,
+    "is_outdoor": false,
+    "metrics_type": "caesar",
+    "name": "Rowing Workout",
+    "peloton_id": "0a1c8fa834474805b8ac7ebca301a2b7",
+    "platform": "caesar",
+    "start_time": 1670191506,
+    "status": "COMPLETE",
+    "timezone": "Etc/GMT+6",
+    "title": null,
+    "total_work": 22629.63,
+    "user_id": "ac6b497fc71d48fbb844366ccfa5921f",
+    "workout_type": "class",
+    "total_video_watch_time_seconds": 0,
+    "total_video_buffering_seconds": 0,
+    "v2_total_video_watch_time_seconds": 759,
+    "v2_total_video_buffering_seconds": 1,
+    "total_music_audio_play_seconds": null,
+    "total_music_audio_buffer_seconds": null,
+    "ride": {
+      "has_closed_captions": false,
+      "content_provider": "peloton",
+      "content_format": "video",
+      "description": "Maximize your potential on the Row by continuously improving your form. This drill-based class is meant to help prevent injury & improve efficiency by giving you confidence in every stroke.",
+      "difficulty_rating_avg": 5.2762,
+      "difficulty_rating_count": 181,
+      "difficulty_level": null,
+      "distance": null,
+      "distance_display_value": null,
+      "distance_unit": null,
+      "duration": 600,
+      "dynamic_video_recorded_speed_in_mph": 0.0,
+      "extra_images": [],
+      "fitness_discipline": "caesar",
+      "fitness_discipline_display_name": "Rowing",
+      "has_pedaling_metrics": false,
+      "home_peloton_id": "1d35427b791946ae8b5b0440b30f6978",
+      "id": "fbd71d16462c473d8c7aae32b440a775",
+      "image_url": "https://s3.amazonaws.com/peloton-ride-images/918c33400864462400657762a2cdce1d4d4e593c/img_1662683206_017a9ea5293e4c73ac7b4ff2ee941666.png",
+      "instructor_id": "15f01c9145de4d21b58c1a3e4e44a486",
+      "is_archived": true,
+      "is_closed_caption_shown": false,
+      "is_dynamic_video_eligible": false,
+      "is_explicit": false,
+      "is_fixed_distance": false,
+      "is_live_in_studio_only": true,
+      "language": "english",
+      "length": 786,
+      "live_stream_id": "fbd71d16462c473d8c7aae32b300a775-live",
+      "live_stream_url": null,
+      "location": "psny-studio-3",
+      "metrics": [ "heart_rate", "calories" ],
+      "origin_locale": "en-US",
+      "original_air_time": 1668092400,
+      "overall_rating_avg": 0.9952,
+      "overall_rating_count": 210,
+      "pedaling_start_offset": 60,
+      "pedaling_end_offset": 660,
+      "pedaling_duration": 600,
+      "rating": 0,
+      "ride_type_id": "10e246846d2245eb8e26e50f06377e73",
+      "ride_type_ids": [ "10e246846d2245eb8e26e50f06377e73" ],
+      "sample_vod_stream_url": null,
+      "sample_preview_stream_url": null,
+      "scheduled_start_time": 1668092400,
+      "series_id": "42d023efe202401184c15e335b7657ff",
+      "sold_out": false,
+      "studio_peloton_id": "d802dcc018dc4e51873acaff2bc4c1ec",
+      "title": "10 min Form & Drills Row",
+      "total_ratings": 0,
+      "total_in_progress_workouts": 1,
+      "total_workouts": 2630,
+      "vod_stream_url": "https://amd-vod.akamaized.net/svod/classes/caesar/09-2022/fbd71d16462c473d8c7aae32b300a775/1/master.m3u8",
+      "vod_stream_id": "fbd71d16462c473d8c7aae32b300a775-vod",
+      "class_type_ids": [ "10e246846d2245eb8e26e50f06377e73" ],
+      "difficulty_estimate": 5.2762,
+      "overall_estimate": 0.9952,
+      "availability": {
+        "is_available": true,
+        "reason": null
+      },
+      "explicit_rating": 0,
+      "flags": []
+    },
+    "created": 1670191449,
+    "device_time_created_at": 1670169849,
+    "strava_id": null,
+    "fitbit_id": null,
+    "effort_zones": {
+      "total_effort_points": 10.3,
+      "heart_rate_zone_durations": {
+        "heart_rate_z1_duration": 164,
+        "heart_rate_z2_duration": 173,
+        "heart_rate_z3_duration": 246,
+        "heart_rate_z4_duration": 70,
+        "heart_rate_z5_duration": 0
+      }
+    },
+    "service_id": null
+
+  },
+  "WorkoutSamples": {
+    "duration": 600,
+    "is_class_plan_shown": true,
+    "segment_list": [
+      {
+        "id": "ec29c96da27d4e9cbc20eb7c5a5592e8",
+        "length": 70,
+        "start_time_offset": 0,
+        "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/segment-icons/warmup.png",
+        "intensity_in_mets": 1.0,
+        "metrics_type": "caesar",
+        "icon_name": "warmup",
+        "icon_slug": "warmup",
+        "name": "Warm Up",
+        "is_drill": false
+      },
+      {
+        "id": "61109870c75b486191f505fef97ba16e",
+        "length": 85,
+        "start_time_offset": 70,
+        "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/segment-icons/caesar.png",
+        "intensity_in_mets": 0.0,
+        "metrics_type": "caesar",
+        "icon_name": "caesar",
+        "icon_slug": "caesar",
+        "name": "Drills",
+        "is_drill": true
+      },
+      {
+        "id": "5b7d278cb6934130a95ad1bfb31522cc",
+        "length": 185,
+        "start_time_offset": 155,
+        "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/segment-icons/caesar.png",
+        "intensity_in_mets": 0.0,
+        "metrics_type": "caesar",
+        "icon_name": "caesar",
+        "icon_slug": "caesar",
+        "name": "Rowing",
+        "is_drill": false
+      },
+      {
+        "id": "0a1378cdd44f491fbcd2b0a0bb9b8d11",
+        "length": 60,
+        "start_time_offset": 340,
+        "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/segment-icons/caesar.png",
+        "intensity_in_mets": 0.0,
+        "metrics_type": "caesar",
+        "icon_name": "caesar",
+        "icon_slug": "caesar",
+        "name": "Drills",
+        "is_drill": true
+      },
+      {
+        "id": "e8853d0e8c3f48f7987a7ae14a5f1b3a",
+        "length": 135,
+        "start_time_offset": 400,
+        "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/segment-icons/caesar.png",
+        "intensity_in_mets": 0.0,
+        "metrics_type": "caesar",
+        "icon_name": "caesar",
+        "icon_slug": "caesar",
+        "name": "Rowing",
+        "is_drill": false
+      },
+      {
+        "id": "d2292a4ab16b4c29b82882b47640a843",
+        "length": 65,
+        "start_time_offset": 535,
+        "icon_url": "https://s3.amazonaws.com/static-cdn.pelotoncycle.com/segment-icons/caesar.png",
+        "intensity_in_mets": 0.0,
+        "metrics_type": "caesar",
+        "icon_name": "caesar",
+        "icon_slug": "caesar",
+        "name": "Drills",
+        "is_drill": true
+      }
+    ],
+    "seconds_since_pedaling_start": [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347, 348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 389, 390, 391, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 531, 532, 533, 534, 535, 536, 537, 538, 539, 540, 541, 542, 543, 544, 545, 546, 547, 548, 549, 550, 551, 552, 553, 554, 555, 556, 557, 558, 559, 560, 561, 562, 563, 564, 565, 566, 567, 568, 569, 570, 571, 572, 573, 574, 575, 576, 577, 578, 579, 580, 581, 582, 583, 584, 585, 586, 587, 588, 589, 590, 591, 592, 593, 594, 595, 596, 597, 598, 599, 600 ],
+    "average_summaries": [
+      {
+        "display_name": "Avg Stroke Output",
+        "display_unit": "watts",
+        "value": 55,
+        "slug": "avg_output"
+      },
+      {
+        "display_name": "Avg Stroke Rate",
+        "display_unit": "spm",
+        "value": 20,
+        "slug": "avg_stroke_rate"
+      },
+      {
+        "display_name": "Avg Pace",
+        "display_unit": "min/500m",
+        "value": 3.26,
+        "slug": "avg_split_pace"
+      }
+    ],
+    "summaries": [
+      {
+        "display_name": "Total Output",
+        "display_unit": "kj",
+        "value": 23,
+        "slug": "total_output"
+      },
+      {
+        "display_name": "Distance",
+        "display_unit": "m",
+        "value": 1023.28,
+        "slug": "distance"
+      },
+      {
+        "display_name": "Strokes",
+        "display_unit": null,
+        "value": 133,
+        "slug": "stroke_count"
+      },
+      {
+        "display_name": "Calories",
+        "display_unit": "kcal",
+        "value": 123,
+        "slug": "calories"
+      }
+    ],
+    "metrics": [
+      {
+        "display_name": "Stroke Output",
+        "display_unit": "watts",
+        "max_value": 93,
+        "average_value": 55,
+        "values": [ 25, 25, 10, 10, 10, 10, 64, 64, 64, 66, 66, 63, 63, 63, 57, 57, 57, 41, 41, 41, 53, 53, 53, 47, 47, 47, 52, 52, 52, 33, 33, 33, 33, 32, 32, 32, 33, 33, 33, 41, 41, 41, 41, 34, 34, 34, 34, 34, 34, 48, 48, 48, 39, 39, 39, 39, 42, 42, 42, 48, 48, 48, 63, 63, 63, 58, 58, 58, 49, 49, 49, 49, 25, 25, 25, 25, 15, 15, 1, 1, 7, 7, 1, 1, 11, 11, 9, 9, 14, 14, 11, 11, 11, 11, 13, 13, 13, 12, 12, 14, 14, 19, 19, 19, 13, 13, 13, 13, 13, 13, 14, 14, 15, 15, 17, 17, 15, 15, 13, 13, 16, 16, 19, 19, 19, 10, 10, 16, 16, 18, 18, 23, 23, 52, 52, 35, 35, 27, 27, 27, 31, 31, 39, 39, 32, 32, 52, 52, 52, 49, 49, 49, 37, 37, 37, 36, 36, 36, 36, 43, 43, 43, 48, 48, 48, 56, 56, 56, 51, 51, 51, 44, 44, 54, 54, 54, 54, 41, 41, 41, 49, 49, 49, 50, 50, 50, 56, 56, 56, 49, 49, 49, 58, 58, 58, 46, 46, 46, 59, 59, 59, 54, 54, 54, 54, 54, 54, 55, 55, 55, 55, 51, 51, 51, 43, 43, 43, 50, 50, 50, 54, 54, 54, 54, 54, 54, 53, 53, 53, 66, 66, 66, 65, 65, 65, 46, 46, 46, 46, 46, 46, 53, 53, 53, 56, 56, 56, 56, 56, 56, 57, 57, 57, 47, 47, 47, 59, 59, 59, 57, 57, 57, 63, 63, 63, 57, 57, 55, 55, 55, 58, 58, 58, 66, 66, 66, 79, 79, 79, 63, 63, 63, 57, 57, 84, 84, 84, 76, 76, 68, 68, 68, 46, 46, 46, 49, 49, 49, 52, 52, 52, 51, 51, 51, 59, 59, 59, 58, 58, 58, 48, 48, 48, 61, 61, 61, 58, 58, 58, 69, 69, 69, 55, 55, 55, 49, 49, 49, 56, 56, 56, 51, 51, 51, 42, 42, 42, 61, 61, 61, 15, 15, 15, 0, 0, 0, 11, 11, 8, 8, 24, 24, 24, 13, 13, 0, 0, 36, 36, 38, 38, 38, 17, 17, 20, 20, 20, 17, 17, 17, 17, 17, 13, 13, 20, 20, 20, 17, 17, 17, 19, 19, 14, 14, 14, 18, 18, 19, 19, 19, 22, 22, 24, 24, 24, 35, 35, 35, 24, 24, 24, 74, 74, 82, 82, 82, 62, 62, 62, 52, 52, 52, 69, 69, 69, 68, 68, 68, 68, 68, 68, 80, 80, 63, 63, 63, 74, 74, 74, 83, 83, 83, 82, 82, 82, 75, 75, 66, 66, 66, 61, 61, 61, 77, 77, 77, 73, 73, 71, 71, 71, 65, 65, 65, 93, 93, 93, 62, 62, 62, 63, 63, 66, 66, 66, 70, 70, 70, 75, 75, 75, 65, 65, 65, 72, 72, 72, 83, 83, 83, 81, 81, 88, 88, 88, 71, 71, 71, 82, 82, 70, 70, 70, 90, 90, 77, 77, 67, 67, 67, 66, 66, 66, 61, 61, 61, 69, 69, 53, 53, 53, 68, 68, 68, 60, 60, 60, 59, 59, 59, 64, 64, 63, 63, 63, 68, 68, 68, 53, 53, 53, 50, 50, 50, 65, 65, 65, 29, 29, 29, 29, 1, 1, 1, 1, 1, 1, 1, 1, 6, 6, 7, 7, 4, 4, 6, 6, 6, 6, 6, 6, 7, 7, 8, 11, 11, 7, 7, 8, 8, 6, 6, 6, 6, 6, 9, 9, 11, 11, 17, 17, 17, 57, 57, 53, 53, 40, 40, 44, 44, 51, 51, 51, 37, 37, 36, 36, 35, 35, 35 ],
+        "slug": "output"
+      },
+      {
+        "display_name": "Stroke Rate",
+        "display_unit": "spm",
+        "max_value": 26,
+        "average_value": 20,
+        "values": [ 14, 14, 11, 11, 11, 11, 17, 17, 17, 21, 21, 22, 22, 22, 21, 21, 21, 20, 20, 20, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 18, 18, 18, 18, 18, 18, 17, 17, 17, 17, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 20, 20, 20, 19, 19, 19, 20, 20, 20, 20, 15, 15, 15, 15, 12, 12, 37, 37, 31, 31, 29, 29, 28, 28, 31, 31, 29, 29, 29, 29, 29, 29, 28, 28, 28, 26, 26, 24, 24, 24, 24, 24, 27, 27, 28, 28, 29, 29, 29, 29, 28, 28, 28, 28, 28, 28, 27, 27, 27, 27, 27, 27, 27, 25, 25, 27, 27, 31, 31, 31, 31, 29, 29, 26, 26, 24, 24, 24, 25, 25, 26, 26, 27, 27, 28, 28, 28, 21, 21, 21, 19, 19, 19, 18, 18, 18, 18, 18, 18, 18, 20, 20, 20, 20, 20, 20, 19, 19, 19, 20, 20, 20, 20, 20, 20, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 20, 20, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 18, 18, 18, 19, 19, 19, 19, 19, 19, 20, 20, 20, 19, 19, 19, 20, 20, 20, 20, 20, 20, 20, 20, 20, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 18, 18, 18, 20, 20, 20, 19, 19, 19, 19, 19, 19, 20, 20, 20, 22, 22, 22, 23, 23, 20, 20, 20, 21, 21, 21, 20, 20, 20, 22, 22, 22, 22, 22, 22, 21, 21, 21, 21, 21, 24, 24, 23, 23, 23, 21, 21, 21, 20, 20, 20, 19, 19, 19, 19, 19, 19, 20, 20, 20, 20, 20, 20, 19, 19, 19, 19, 19, 19, 19, 19, 19, 21, 21, 21, 20, 20, 20, 20, 20, 20, 20, 20, 20, 19, 19, 19, 18, 18, 18, 18, 18, 18, 18, 18, 18, 22, 22, 22, 23, 23, 26, 26, 24, 24, 24, 23, 23, 25, 25, 35, 35, 24, 24, 24, 23, 23, 24, 24, 24, 23, 23, 23, 23, 23, 24, 24, 24, 24, 24, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 22, 22, 22, 24, 24, 23, 23, 23, 24, 24, 24, 19, 19, 19, 20, 20, 23, 23, 23, 21, 21, 21, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 21, 21, 21, 22, 22, 22, 22, 22, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22, 22, 20, 20, 20, 23, 23, 23, 21, 21, 21, 21, 21, 21, 21, 21, 20, 20, 20, 20, 20, 20, 19, 19, 19, 20, 20, 20, 21, 21, 21, 22, 22, 22, 22, 22, 22, 22, 22, 23, 23, 22, 22, 22, 23, 23, 26, 26, 24, 24, 24, 22, 22, 22, 21, 21, 21, 22, 22, 20, 20, 20, 22, 22, 22, 21, 21, 21, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 20, 20, 20, 20, 20, 20, 19, 19, 19, 19, 19, 19, 19, 15, 15, 15, 15, 15, 15, 15, 15, 32, 32, 32, 32, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 31, 32, 32, 30, 30, 30, 30, 29, 29, 29, 28, 28, 27, 27, 27, 27, 23, 23, 23, 25, 25, 27, 27, 27, 27, 28, 28, 26, 26, 26, 28, 28, 28, 28, 29, 29, 28 ],
+        "slug": "stroke_rate"
+      },
+      {
+        "display_name": "Pace",
+        "display_unit": "min/500m",
+        "max_value": 2.79,
+        "average_value": 3.26,
+        "values": [ 4.93, 4.93, 4.73, 4.73, 4.73, 4.73, 4.6, 4.6, 4.6, 3.36, 3.36, 3.13, 3.13, 3.13, 3.1, 3.1, 3.1, 3.16, 3.16, 3.16, 3.29, 3.29, 3.29, 3.31, 3.31, 3.31, 3.31, 3.31, 3.31, 3.33, 3.33, 3.33, 3.33, 3.59, 3.59, 3.59, 3.7, 3.7, 3.7, 3.74, 3.74, 3.74, 3.74, 3.62, 3.62, 3.62, 3.69, 3.69, 3.69, 3.69, 3.69, 3.69, 3.52, 3.52, 3.52, 3.52, 3.53, 3.53, 3.53, 3.5, 3.5, 3.5, 3.33, 3.33, 3.33, 3.17, 3.17, 3.17, 3.17, 3.17, 3.17, 3.17, 3.31, 3.31, 3.31, 3.31, 4.15, 4.15, 4.3, 4.3, 4.82, 4.82, 5.31, 5.31, 6.0, 6.0, 6.13, 6.13, 6.27, 6.27, 6.17, 6.17, 6.27, 6.27, 6.31, 6.31, 6.31, 6.27, 6.27, 6.08, 6.08, 6.08, 6.08, 6.08, 5.67, 5.67, 5.67, 5.67, 5.71, 5.71, 5.71, 5.71, 5.67, 5.67, 5.52, 5.52, 5.45, 5.45, 5.41, 5.41, 5.48, 5.48, 5.34, 5.34, 5.34, 5.27, 5.27, 5.41, 5.41, 5.24, 5.24, 5.14, 5.14, 4.68, 4.68, 4.03, 4.03, 3.89, 3.89, 3.89, 3.91, 3.91, 3.82, 3.82, 3.72, 3.72, 3.62, 3.62, 3.62, 3.52, 3.52, 3.52, 3.47, 3.47, 3.47, 3.55, 3.55, 3.55, 3.55, 3.61, 3.61, 3.61, 3.47, 3.47, 3.47, 3.36, 3.36, 3.36, 3.27, 3.27, 3.27, 3.31, 3.31, 3.32, 3.32, 3.32, 3.32, 3.32, 3.32, 3.32, 3.39, 3.39, 3.39, 3.33, 3.33, 3.33, 3.28, 3.28, 3.28, 3.27, 3.27, 3.27, 3.24, 3.24, 3.24, 3.23, 3.23, 3.23, 3.28, 3.28, 3.28, 3.23, 3.23, 3.23, 3.21, 3.21, 3.21, 3.18, 3.18, 3.18, 3.18, 3.23, 3.23, 3.23, 3.28, 3.28, 3.28, 3.36, 3.36, 3.36, 3.29, 3.29, 3.29, 3.27, 3.27, 3.27, 3.26, 3.26, 3.26, 3.18, 3.18, 3.18, 3.11, 3.11, 3.11, 3.11, 3.11, 3.11, 3.26, 3.26, 3.26, 3.33, 3.33, 3.33, 3.28, 3.28, 3.28, 3.23, 3.23, 3.23, 3.17, 3.17, 3.17, 3.21, 3.21, 3.21, 3.26, 3.26, 3.26, 3.17, 3.17, 3.17, 3.12, 3.12, 3.12, 3.1, 3.1, 3.17, 3.17, 3.17, 3.16, 3.16, 3.16, 3.14, 3.14, 3.14, 3.02, 3.02, 3.02, 2.94, 2.94, 2.94, 3.04, 3.04, 3.04, 3.04, 3.04, 2.88, 2.88, 2.89, 2.89, 2.89, 3.01, 3.01, 3.01, 3.21, 3.21, 3.21, 3.27, 3.27, 3.27, 3.27, 3.27, 3.27, 3.24, 3.24, 3.24, 3.18, 3.18, 3.18, 3.21, 3.21, 3.21, 3.24, 3.24, 3.24, 3.18, 3.18, 3.18, 3.11, 3.11, 3.11, 3.06, 3.06, 3.06, 3.14, 3.14, 3.14, 3.23, 3.23, 3.23, 3.24, 3.24, 3.24, 3.31, 3.31, 3.31, 3.35, 3.35, 3.35, 3.32, 3.32, 3.32, 3.95, 3.95, 3.95, 4.73, 4.73, 5.11, 5.11, 5.34, 5.34, 5.34, 5.08, 5.08, 5.48, 5.48, 5.83, 5.83, 5.02, 5.02, 5.02, 4.48, 4.48, 4.55, 4.55, 4.55, 4.58, 4.58, 4.58, 4.66, 4.66, 4.76, 4.76, 4.87, 4.87, 4.87, 4.79, 4.79, 4.79, 4.82, 4.82, 4.79, 4.79, 4.79, 4.87, 4.87, 4.84, 4.84, 4.84, 4.71, 4.71, 4.53, 4.53, 4.53, 4.34, 4.34, 4.34, 4.08, 4.08, 4.08, 3.91, 3.91, 3.17, 3.17, 3.17, 2.99, 2.99, 2.99, 3.06, 3.06, 3.06, 3.11, 3.11, 3.11, 3.02, 3.02, 3.02, 3.0, 3.0, 3.0, 2.98, 2.98, 2.92, 2.92, 2.92, 2.98, 2.98, 2.98, 2.91, 2.91, 2.91, 2.84, 2.84, 2.84, 2.82, 2.82, 2.88, 2.88, 2.88, 2.97, 2.97, 2.97, 3.0, 3.0, 3.0, 2.92, 2.92, 2.91, 2.91, 2.91, 2.98, 2.98, 2.98, 2.89, 2.89, 2.89, 2.86, 2.86, 2.86, 2.97, 2.97, 3.01, 3.01, 3.01, 3.02, 3.02, 3.02, 2.98, 2.98, 2.98, 2.94, 2.94, 2.94, 2.98, 2.98, 2.98, 2.9, 2.9, 2.9, 2.83, 2.83, 2.82, 2.82, 2.82, 2.81, 2.81, 2.81, 2.83, 2.83, 2.85, 2.85, 2.85, 2.85, 2.85, 2.79, 2.79, 2.84, 2.84, 2.84, 2.96, 2.96, 2.96, 3.0, 3.0, 3.0, 3.03, 3.03, 3.04, 3.04, 3.04, 3.1, 3.1, 3.1, 3.06, 3.06, 3.06, 3.11, 3.11, 3.11, 3.09, 3.09, 3.08, 3.08, 3.08, 3.05, 3.05, 3.05, 3.05, 3.05, 3.05, 3.14, 3.14, 3.14, 3.21, 3.21, 3.21, 3.19, 3.19, 3.19, 3.19, 3.79, 4.66, 4.66, 5.24, 5.24, 6.22, 7.44, 7.44, 8.68, 8.68, 8.96, 8.96, 9.26, 9.26, 9.92, 9.92, 10.29, 10.29, 11.74, 11.74, 11.57, 11.57, 10.68, 9.8, 9.8, 9.06, 9.06, 8.96, 8.96, 8.96, 8.96, 8.96, 9.26, 9.26, 9.58, 9.58, 8.87, 8.87, 8.17, 8.17, 8.17, 6.17, 6.17, 4.3, 4.3, 3.79, 3.79, 3.65, 3.65, 3.56, 3.56, 3.56, 3.43, 3.43, 3.5, 3.5, 3.55, 3.55, 3.61 ],
+        "slug": "split_pace"
+      },
+      {
+        "display_name": "Heart Rate",
+        "display_unit": "bpm",
+        "max_value": 147,
+        "average_value": 125,
+        "values": [ 95, 95, 97, 97, 98, 98, 98, 98, 98, 99, 101, 101, 101, 101, 101, 101, 101, 101, 102, 102, 102, 103, 104, 104, 104, 104, 105, 105, 106, 106, 107, 107, 107, 107, 107, 107, 107, 107, 107, 107, 108, 108, 109, 109, 110, 111, 111, 112, 112, 112, 113, 113, 113, 114, 114, 114, 114, 114, 113, 113, 113, 112, 112, 112, 112, 112, 113, 113, 113, 113, 114, 114, 114, 114, 114, 114, 113, 112, 111, 111, 111, 111, 110, 110, 109, 109, 108, 108, 107, 106, 106, 105, 105, 105, 105, 105, 105, 105, 105, 105, 106, 106, 106, 106, 105, 105, 104, 104, 105, 105, 105, 105, 105, 105, 105, 105, 104, 104, 104, 103, 103, 104, 104, 104, 105, 106, 107, 107, 107, 107, 106, 106, 106, 105, 105, 105, 105, 106, 106, 107, 107, 106, 106, 106, 106, 106, 107, 107, 108, 107, 107, 107, 107, 108, 109, 109, 109, 110, 110, 111, 111, 111, 111, 111, 111, 112, 112, 112, 112, 113, 113, 114, 114, 114, 114, 115, 115, 115, 115, 115, 114, 115, 114, 114, 115, 115, 115, 115, 116, 116, 117, 117, 118, 118, 119, 119, 119, 119, 119, 120, 120, 120, 121, 121, 122, 122, 122, 123, 123, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 125, 125, 125, 125, 125, 126, 126, 126, 126, 126, 126, 127, 127, 127, 127, 127, 126, 126, 126, 125, 125, 125, 125, 125, 126, 126, 126, 126, 126, 126, 126, 126, 127, 127, 128, 128, 128, 128, 129, 129, 129, 129, 129, 129, 129, 129, 130, 130, 130, 131, 131, 131, 131, 132, 132, 132, 132, 132, 131, 131, 131, 131, 131, 131, 131, 131, 131, 131, 131, 131, 131, 131, 131, 131, 131, 131, 131, 131, 131, 131, 131, 132, 132, 132, 132, 133, 133, 133, 134, 134, 134, 135, 135, 136, 136, 136, 136, 136, 136, 136, 136, 136, 137, 136, 137, 137, 136, 136, 137, 136, 136, 137, 136, 136, 137, 137, 137, 138, 138, 137, 137, 137, 136, 136, 135, 135, 134, 135, 135, 134, 134, 133, 133, 132, 131, 130, 130, 130, 129, 129, 128, 128, 128, 127, 126, 126, 125, 125, 125, 125, 125, 126, 126, 125, 125, 125, 124, 124, 123, 123, 123, 123, 123, 123, 123, 124, 124, 124, 124, 123, 122, 121, 121, 121, 121, 121, 120, 120, 120, 120, 120, 121, 121, 122, 123, 123, 124, 124, 125, 125, 125, 125, 125, 125, 126, 126, 126, 126, 126, 126, 126, 126, 127, 127, 128, 128, 129, 129, 129, 130, 130, 130, 131, 131, 132, 132, 132, 132, 132, 132, 133, 133, 133, 134, 134, 134, 135, 135, 135, 135, 136, 136, 136, 136, 136, 136, 136, 136, 136, 136, 136, 136, 137, 137, 137, 138, 138, 138, 139, 139, 139, 140, 140, 140, 141, 141, 141, 141, 142, 142, 142, 142, 142, 143, 143, 143, 143, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 145, 145, 145, 145, 145, 145, 145, 145, 146, 146, 146, 146, 146, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 146, 146, 146, 146, 145, 145, 144, 144, 144, 143, 142, 142, 141, 140, 140, 140, 139, 138, 138, 138, 138, 137, 137, 137, 136, 135, 135, 135, 134, 133, 133, 132, 132, 132, 132, 131, 132, 131, 131, 130, 130, 130, 129, 129, 129, 129, 129, 130, 130, 130, 130, 130, 131, 131, 131, 131, 131, 132, 132, 132 ],
+        "slug": "heart_rate",
+        "zones": [
+          {
+            "display_name": "Zone 1",
+            "slug": "zone1",
+            "range": "<109 bpm",
+            "duration": 164,
+            "max_value": 108,
+            "min_value": 0
+          },
+          {
+            "display_name": "Zone 2",
+            "slug": "zone2",
+            "range": "109-125 bpm",
+            "duration": 173,
+            "max_value": 125,
+            "min_value": 109
+          },
+          {
+            "display_name": "Zone 3",
+            "slug": "zone3",
+            "range": "126-141 bpm",
+            "duration": 246,
+            "max_value": 141,
+            "min_value": 126
+          },
+          {
+            "display_name": "Zone 4",
+            "slug": "zone4",
+            "range": "142-158 bpm",
+            "duration": 70,
+            "max_value": 158,
+            "min_value": 142
+          },
+          {
+            "display_name": "Zone 5",
+            "slug": "zone5",
+            "range": ">=159 bpm",
+            "duration": 0,
+            "max_value": 168,
+            "min_value": 159
+          }
+        ],
+        "missing_data_duration": -53
+      }
+    ],
+    "has_apple_watch_metrics": false,
+    "caesar_metrics": {
+      "output": {
+        "slug": "stroke_output",
+        "display_name": "Stroke Output",
+        "display_unit": "watts",
+        "max_value": 93.13,
+        "average_value": 54.8,
+        "data": [
+          {
+            "id": 1,
+            "seconds_since_pedaling_start": 2,
+            "output": 10.476550102233887,
+            "stroke_rate": 11.0,
+            "errors": []
+          },
+          {
+            "id": 2,
+            "seconds_since_pedaling_start": 6,
+            "output": 63.830265045166016,
+            "stroke_rate": 17.0,
+            "errors": []
+          },
+          {
+            "id": 3,
+            "seconds_since_pedaling_start": 9,
+            "output": 65.75434112548828,
+            "stroke_rate": 21.0,
+            "errors": []
+          },
+          {
+            "id": 4,
+            "seconds_since_pedaling_start": 11,
+            "output": 63.1810188293457,
+            "stroke_rate": 22.0,
+            "errors": []
+          },
+          {
+            "id": 5,
+            "seconds_since_pedaling_start": 14,
+            "output": 57.094173431396484,
+            "stroke_rate": 21.0,
+            "errors": []
+          },
+          {
+            "id": 6,
+            "seconds_since_pedaling_start": 17,
+            "output": 41.0313835144043,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 7,
+            "seconds_since_pedaling_start": 20,
+            "output": 53.46845245361328,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 8,
+            "seconds_since_pedaling_start": 23,
+            "output": 46.566654205322266,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 9,
+            "seconds_since_pedaling_start": 26,
+            "output": 51.563167572021484,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 10,
+            "seconds_since_pedaling_start": 29,
+            "output": 33.471717834472656,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 11,
+            "seconds_since_pedaling_start": 33,
+            "output": 32.1630973815918,
+            "stroke_rate": 18.0,
+            "errors": []
+          },
+          {
+            "id": 12,
+            "seconds_since_pedaling_start": 36,
+            "output": 33.008609771728516,
+            "stroke_rate": 18.0,
+            "errors": []
+          },
+          {
+            "id": 13,
+            "seconds_since_pedaling_start": 39,
+            "output": 40.86518096923828,
+            "stroke_rate": 17.0,
+            "errors": []
+          },
+          {
+            "id": 14,
+            "seconds_since_pedaling_start": 43,
+            "output": 34.269500732421875,
+            "stroke_rate": 18.0,
+            "errors": []
+          },
+          {
+            "id": 15,
+            "seconds_since_pedaling_start": 46,
+            "output": 33.52825164794922,
+            "stroke_rate": 18.0,
+            "errors": []
+          },
+          {
+            "id": 16,
+            "seconds_since_pedaling_start": 49,
+            "output": 47.67693328857422,
+            "stroke_rate": 18.0,
+            "errors": []
+          },
+          {
+            "id": 17,
+            "seconds_since_pedaling_start": 52,
+            "output": 38.679805755615234,
+            "stroke_rate": 18.0,
+            "errors": []
+          },
+          {
+            "id": 18,
+            "seconds_since_pedaling_start": 56,
+            "output": 42.1467399597168,
+            "stroke_rate": 18.0,
+            "errors": []
+          },
+          {
+            "id": 19,
+            "seconds_since_pedaling_start": 59,
+            "output": 48.381221771240234,
+            "stroke_rate": 18.0,
+            "errors": []
+          },
+          {
+            "id": 20,
+            "seconds_since_pedaling_start": 62,
+            "output": 63.07609558105469,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 21,
+            "seconds_since_pedaling_start": 65,
+            "output": 57.83572006225586,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 22,
+            "seconds_since_pedaling_start": 68,
+            "output": 49.11997985839844,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 23,
+            "seconds_since_pedaling_start": 159,
+            "output": 42.65998840332031,
+            "stroke_rate": 18.0,
+            "errors": [
+              { "type": "under_compress" },
+              { "type": "under_extend" },
+              { "type": "too_little_layback" }
+            ]
+          },
+          {
+            "id": 24,
+            "seconds_since_pedaling_start": 162,
+            "output": 48.43581771850586,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 25,
+            "seconds_since_pedaling_start": 165,
+            "output": 55.94259262084961,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 26,
+            "seconds_since_pedaling_start": 168,
+            "output": 50.95256423950195,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 27,
+            "seconds_since_pedaling_start": 170,
+            "output": 44.08143997192383,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 28,
+            "seconds_since_pedaling_start": 173,
+            "output": 53.63103103637695,
+            "stroke_rate": 20.0,
+            "errors": [
+              { "type": "under_compress" },
+              { "type": "under_extend" }
+            ]
+          },
+          {
+            "id": 29,
+            "seconds_since_pedaling_start": 177,
+            "output": 41.3287239074707,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 30,
+            "seconds_since_pedaling_start": 180,
+            "output": 49.085105895996094,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 31,
+            "seconds_since_pedaling_start": 183,
+            "output": 50.17300033569336,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 32,
+            "seconds_since_pedaling_start": 185,
+            "output": 55.593292236328125,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 33,
+            "seconds_since_pedaling_start": 189,
+            "output": 49.082740783691406,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 34,
+            "seconds_since_pedaling_start": 192,
+            "output": 57.79634094238281,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 35,
+            "seconds_since_pedaling_start": 195,
+            "output": 45.54679870605469,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 36,
+            "seconds_since_pedaling_start": 198,
+            "output": 59.07948303222656,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 37,
+            "seconds_since_pedaling_start": 201,
+            "output": 54.25067901611328,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 38,
+            "seconds_since_pedaling_start": 204,
+            "output": 54.423561096191406,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 39,
+            "seconds_since_pedaling_start": 207,
+            "output": 55.04832077026367,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 40,
+            "seconds_since_pedaling_start": 211,
+            "output": 51.22148895263672,
+            "stroke_rate": 18.0,
+            "errors": []
+          },
+          {
+            "id": 41,
+            "seconds_since_pedaling_start": 214,
+            "output": 42.79021453857422,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 42,
+            "seconds_since_pedaling_start": 217,
+            "output": 50.030860900878906,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 43,
+            "seconds_since_pedaling_start": 220,
+            "output": 54.372039794921875,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 44,
+            "seconds_since_pedaling_start": 223,
+            "output": 53.685890197753906,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 45,
+            "seconds_since_pedaling_start": 226,
+            "output": 53.305633544921875,
+            "stroke_rate": 20.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 46,
+            "seconds_since_pedaling_start": 229,
+            "output": 66.47132873535156,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 47,
+            "seconds_since_pedaling_start": 232,
+            "output": 65.30746459960938,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 48,
+            "seconds_since_pedaling_start": 235,
+            "output": 45.82209777832031,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 49,
+            "seconds_since_pedaling_start": 238,
+            "output": 45.562705993652344,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 50,
+            "seconds_since_pedaling_start": 241,
+            "output": 52.80744934082031,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 51,
+            "seconds_since_pedaling_start": 244,
+            "output": 55.91026306152344,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 52,
+            "seconds_since_pedaling_start": 247,
+            "output": 55.82989501953125,
+            "stroke_rate": 18.0,
+            "errors": []
+          },
+          {
+            "id": 53,
+            "seconds_since_pedaling_start": 250,
+            "output": 56.63381576538086,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 54,
+            "seconds_since_pedaling_start": 253,
+            "output": 47.349246978759766,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 55,
+            "seconds_since_pedaling_start": 256,
+            "output": 59.474884033203125,
+            "stroke_rate": 19.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 56,
+            "seconds_since_pedaling_start": 259,
+            "output": 56.75204086303711,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 57,
+            "seconds_since_pedaling_start": 262,
+            "output": 63.16944122314453,
+            "stroke_rate": 22.0,
+            "errors": []
+          },
+          {
+            "id": 58,
+            "seconds_since_pedaling_start": 265,
+            "output": 56.58158493041992,
+            "stroke_rate": 23.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 59,
+            "seconds_since_pedaling_start": 267,
+            "output": 55.41379165649414,
+            "stroke_rate": 20.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 60,
+            "seconds_since_pedaling_start": 270,
+            "output": 57.993953704833984,
+            "stroke_rate": 21.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 61,
+            "seconds_since_pedaling_start": 273,
+            "output": 66.2182388305664,
+            "stroke_rate": 20.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 62,
+            "seconds_since_pedaling_start": 276,
+            "output": 79.23040008544922,
+            "stroke_rate": 22.0,
+            "errors": []
+          },
+          {
+            "id": 63,
+            "seconds_since_pedaling_start": 279,
+            "output": 63.013916015625,
+            "stroke_rate": 22.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 64,
+            "seconds_since_pedaling_start": 281,
+            "output": 56.51901626586914,
+            "stroke_rate": 21.0,
+            "errors": []
+          },
+          {
+            "id": 65,
+            "seconds_since_pedaling_start": 284,
+            "output": 83.57378387451172,
+            "stroke_rate": 21.0,
+            "errors": []
+          },
+          {
+            "id": 66,
+            "seconds_since_pedaling_start": 287,
+            "output": 76.0905532836914,
+            "stroke_rate": 24.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 67,
+            "seconds_since_pedaling_start": 289,
+            "output": 67.58092498779297,
+            "stroke_rate": 23.0,
+            "errors": []
+          },
+          {
+            "id": 68,
+            "seconds_since_pedaling_start": 292,
+            "output": 46.12054443359375,
+            "stroke_rate": 21.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 69,
+            "seconds_since_pedaling_start": 295,
+            "output": 49.06328582763672,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 70,
+            "seconds_since_pedaling_start": 298,
+            "output": 52.30674362182617,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 71,
+            "seconds_since_pedaling_start": 301,
+            "output": 50.831546783447266,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 72,
+            "seconds_since_pedaling_start": 304,
+            "output": 59.21193313598633,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 73,
+            "seconds_since_pedaling_start": 307,
+            "output": 58.189937591552734,
+            "stroke_rate": 20.0,
+            "errors": [
+              { "type": "under_compress" },
+              { "type": "lunge_catch" },
+              { "type": "under_extend" }
+            ]
+          },
+          {
+            "id": 74,
+            "seconds_since_pedaling_start": 310,
+            "output": 48.37089920043945,
+            "stroke_rate": 19.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 75,
+            "seconds_since_pedaling_start": 313,
+            "output": 61.186344146728516,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 76,
+            "seconds_since_pedaling_start": 316,
+            "output": 57.81511688232422,
+            "stroke_rate": 19.0,
+            "errors": [
+              { "type": "under_compress" },
+              { "type": "lunge_catch" },
+              { "type": "under_extend" }
+            ]
+          },
+          {
+            "id": 77,
+            "seconds_since_pedaling_start": 319,
+            "output": 69.47607421875,
+            "stroke_rate": 21.0,
+            "errors": []
+          },
+          {
+            "id": 78,
+            "seconds_since_pedaling_start": 322,
+            "output": 54.99082565307617,
+            "stroke_rate": 20.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 79,
+            "seconds_since_pedaling_start": 325,
+            "output": 49.359596252441406,
+            "stroke_rate": 20.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 80,
+            "seconds_since_pedaling_start": 328,
+            "output": 55.561744689941406,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 81,
+            "seconds_since_pedaling_start": 331,
+            "output": 51.0761604309082,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 82,
+            "seconds_since_pedaling_start": 334,
+            "output": 42.28630828857422,
+            "stroke_rate": 18.0,
+            "errors": []
+          },
+          {
+            "id": 83,
+            "seconds_since_pedaling_start": 337,
+            "output": 61.1446418762207,
+            "stroke_rate": 18.0,
+            "errors": []
+          },
+          {
+            "id": 84,
+            "seconds_since_pedaling_start": 340,
+            "output": 15.291420936584473,
+            "stroke_rate": 18.0,
+            "errors": [
+              { "type": "under_compress" },
+              { "type": "lunge_catch" }
+            ]
+          },
+          {
+            "id": 85,
+            "seconds_since_pedaling_start": 401,
+            "output": 73.58711242675781,
+            "stroke_rate": 20.0,
+            "errors": [
+              { "type": "under_compress" },
+              { "type": "under_extend" },
+              { "type": "open_early" },
+              { "type": "too_little_layback" },
+              { "type": "bend_knees_early" }
+            ]
+          },
+          {
+            "id": 86,
+            "seconds_since_pedaling_start": 403,
+            "output": 82.2972640991211,
+            "stroke_rate": 23.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 87,
+            "seconds_since_pedaling_start": 406,
+            "output": 61.79973602294922,
+            "stroke_rate": 21.0,
+            "errors": []
+          },
+          {
+            "id": 88,
+            "seconds_since_pedaling_start": 409,
+            "output": 51.78379821777344,
+            "stroke_rate": 20.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 89,
+            "seconds_since_pedaling_start": 412,
+            "output": 68.85990142822266,
+            "stroke_rate": 21.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 90,
+            "seconds_since_pedaling_start": 415,
+            "output": 68.22115325927734,
+            "stroke_rate": 21.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 91,
+            "seconds_since_pedaling_start": 418,
+            "output": 68.11593627929688,
+            "stroke_rate": 21.0,
+            "errors": []
+          },
+          {
+            "id": 92,
+            "seconds_since_pedaling_start": 421,
+            "output": 79.96092224121094,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 93,
+            "seconds_since_pedaling_start": 423,
+            "output": 62.92023849487305,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 94,
+            "seconds_since_pedaling_start": 426,
+            "output": 73.57373046875,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 95,
+            "seconds_since_pedaling_start": 429,
+            "output": 82.6025390625,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 96,
+            "seconds_since_pedaling_start": 432,
+            "output": 82.28292846679688,
+            "stroke_rate": 21.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 97,
+            "seconds_since_pedaling_start": 435,
+            "output": 75.37984466552734,
+            "stroke_rate": 22.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 98,
+            "seconds_since_pedaling_start": 437,
+            "output": 65.72838592529297,
+            "stroke_rate": 22.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 99,
+            "seconds_since_pedaling_start": 440,
+            "output": 61.285343170166016,
+            "stroke_rate": 21.0,
+            "errors": []
+          },
+          {
+            "id": 100,
+            "seconds_since_pedaling_start": 443,
+            "output": 76.85250091552734,
+            "stroke_rate": 21.0,
+            "errors": []
+          },
+          {
+            "id": 101,
+            "seconds_since_pedaling_start": 446,
+            "output": 72.72234344482422,
+            "stroke_rate": 21.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 102,
+            "seconds_since_pedaling_start": 448,
+            "output": 71.48395538330078,
+            "stroke_rate": 22.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 103,
+            "seconds_since_pedaling_start": 451,
+            "output": 65.35861206054688,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 104,
+            "seconds_since_pedaling_start": 454,
+            "output": 93.13420867919922,
+            "stroke_rate": 23.0,
+            "errors": []
+          },
+          {
+            "id": 105,
+            "seconds_since_pedaling_start": 457,
+            "output": 62.43001937866211,
+            "stroke_rate": 21.0,
+            "errors": [
+              { "type": "under_compress" },
+              { "type": "under_extend" },
+              { "type": "open_early" }
+            ]
+          },
+          {
+            "id": 106,
+            "seconds_since_pedaling_start": 460,
+            "output": 63.007652282714844,
+            "stroke_rate": 21.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 107,
+            "seconds_since_pedaling_start": 462,
+            "output": 65.71626281738281,
+            "stroke_rate": 21.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 108,
+            "seconds_since_pedaling_start": 465,
+            "output": 69.93303680419922,
+            "stroke_rate": 20.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 109,
+            "seconds_since_pedaling_start": 468,
+            "output": 75.02214050292969,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 110,
+            "seconds_since_pedaling_start": 471,
+            "output": 65.47613525390625,
+            "stroke_rate": 19.0,
+            "errors": []
+          },
+          {
+            "id": 111,
+            "seconds_since_pedaling_start": 474,
+            "output": 71.53246307373047,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 112,
+            "seconds_since_pedaling_start": 477,
+            "output": 83.40477752685547,
+            "stroke_rate": 21.0,
+            "errors": []
+          },
+          {
+            "id": 113,
+            "seconds_since_pedaling_start": 479,
+            "output": 80.85134887695312,
+            "stroke_rate": 22.0,
+            "errors": []
+          },
+          {
+            "id": 114,
+            "seconds_since_pedaling_start": 482,
+            "output": 87.94635009765625,
+            "stroke_rate": 22.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 115,
+            "seconds_since_pedaling_start": 485,
+            "output": 71.43315887451172,
+            "stroke_rate": 22.0,
+            "errors": []
+          },
+          {
+            "id": 116,
+            "seconds_since_pedaling_start": 488,
+            "output": 81.92060852050781,
+            "stroke_rate": 23.0,
+            "errors": []
+          },
+          {
+            "id": 117,
+            "seconds_since_pedaling_start": 490,
+            "output": 70.00279998779297,
+            "stroke_rate": 22.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 118,
+            "seconds_since_pedaling_start": 493,
+            "output": 89.92047119140625,
+            "stroke_rate": 23.0,
+            "errors": []
+          },
+          {
+            "id": 119,
+            "seconds_since_pedaling_start": 495,
+            "output": 76.91751098632812,
+            "stroke_rate": 26.0,
+            "errors": []
+          },
+          {
+            "id": 120,
+            "seconds_since_pedaling_start": 497,
+            "output": 66.94010925292969,
+            "stroke_rate": 24.0,
+            "errors": [
+              { "type": "under_extend" },
+              { "type": "open_early" },
+              { "type": "too_little_layback" }
+            ]
+          },
+          {
+            "id": 121,
+            "seconds_since_pedaling_start": 500,
+            "output": 65.83160400390625,
+            "stroke_rate": 22.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 122,
+            "seconds_since_pedaling_start": 503,
+            "output": 61.067527770996094,
+            "stroke_rate": 21.0,
+            "errors": [
+              { "type": "under_compress" },
+              { "type": "under_extend" }
+            ]
+          },
+          {
+            "id": 123,
+            "seconds_since_pedaling_start": 506,
+            "output": 69.11421203613281,
+            "stroke_rate": 22.0,
+            "errors": [
+              { "type": "under_extend" },
+              { "type": "open_early" }
+            ]
+          },
+          {
+            "id": 124,
+            "seconds_since_pedaling_start": 508,
+            "output": 53.45814895629883,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 125,
+            "seconds_since_pedaling_start": 511,
+            "output": 68.28274536132812,
+            "stroke_rate": 22.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 126,
+            "seconds_since_pedaling_start": 514,
+            "output": 60.38077926635742,
+            "stroke_rate": 21.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 127,
+            "seconds_since_pedaling_start": 517,
+            "output": 58.68241882324219,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 128,
+            "seconds_since_pedaling_start": 520,
+            "output": 63.51900100708008,
+            "stroke_rate": 21.0,
+            "errors": []
+          },
+          {
+            "id": 129,
+            "seconds_since_pedaling_start": 522,
+            "output": 63.46650314331055,
+            "stroke_rate": 21.0,
+            "errors": [ { "type": "open_early" } ]
+          },
+          {
+            "id": 130,
+            "seconds_since_pedaling_start": 525,
+            "output": 68.0602035522461,
+            "stroke_rate": 21.0,
+            "errors": []
+          },
+          {
+            "id": 131,
+            "seconds_since_pedaling_start": 528,
+            "output": 53.14530944824219,
+            "stroke_rate": 20.0,
+            "errors": [
+              { "type": "open_early" },
+              { "type": "too_little_layback" }
+            ]
+          },
+          {
+            "id": 132,
+            "seconds_since_pedaling_start": 531,
+            "output": 50.455711364746094,
+            "stroke_rate": 20.0,
+            "errors": []
+          },
+          {
+            "id": 133,
+            "seconds_since_pedaling_start": 534,
+            "output": 64.86837768554688,
+            "stroke_rate": 19.0,
+            "errors": [ { "type": "open_early" } ]
+          }
+        ]
+      },
+      "detail": {
+        "score": 90,
+        "user_avg_score": null,
+        "segments": [
+          {
+            "type": "catch",
+            "percent_of_good": 92,
+            "errors": [
+              {
+                "type": "over_compress",
+                "percent_of_strokes": 0,
+                "media_id": "e8ee8ecd51ab452c9f522a8f79d26494"
+              },
+              {
+                "type": "under_compress",
+                "percent_of_strokes": 6,
+                "media_id": "e0750ddc2db74db495a198e5bf51c2dc"
+              },
+              {
+                "type": "lunge_catch",
+                "percent_of_strokes": 2,
+                "media_id": "1bf8390f42ee4cfd8ee7579371ed6b70"
+              },
+              {
+                "type": "under_extend",
+                "percent_of_strokes": 7,
+                "media_id": "e97e4cf0fb8b40ca86320cb8733f24e3"
+              }
+            ],
+            "url": "https://qa1-amd.akamaized.net/svod/caesar/101-videos/01-2022/21/Brendan_Zoltowski-01_THECATCH_01_01142022_004_UPDATED.mp4?hdnts=exp=1670227425~acl=/svod/caesar/101-videos/01-2022/21/*~hmac=f2b4bb0e0cbef47e16f02b234592714f4705839df1dc3cff4a85e0ecdde7401a",
+            "media_id": "7fd3724b11f24e1c9e0def2a7a499564"
+          },
+          {
+            "type": "drive",
+            "percent_of_good": 73,
+            "errors": [
+              {
+                "type": "shoot_slide",
+                "percent_of_strokes": 0,
+                "media_id": "93dcfddd5f8d49b7baedad92a380220f"
+              },
+              {
+                "type": "open_early",
+                "percent_of_strokes": 27,
+                "media_id": "120d4965f5e84a32ba9dac8aaaab2b70"
+              }
+            ],
+            "url": "https://qa1-amd.akamaized.net/svod/caesar/101-videos/01-2022/21/Brendan_Zoltowski-02_THEDRIVE_02_01142022_004_UPDATED.mp4?hdnts=exp=1670227425~acl=/svod/caesar/101-videos/01-2022/21/*~hmac=f2b4bb0e0cbef47e16f02b234592714f4705839df1dc3cff4a85e0ecdde7401a",
+            "media_id": "8a31ffdb01cd449c81843eee79bda3ae"
+          },
+          {
+            "type": "finish",
+            "percent_of_good": 97,
+            "errors": [
+              {
+                "type": "too_much_layback",
+                "percent_of_strokes": 0,
+                "media_id": "7363e877d518489e87edad80b2901d75"
+              },
+              {
+                "type": "too_little_layback",
+                "percent_of_strokes": 3,
+                "media_id": "932324a90d134e85b6821dd651ad5178"
+              }
+            ],
+            "url": "https://qa1-amd.akamaized.net/svod/caesar/101-videos/01-2022/21/Brendan_Zoltowski-03_THEFINISH03_01142022_004_UPDATED.mp4?hdnts=exp=1670227425~acl=/svod/caesar/101-videos/01-2022/21/*~hmac=f2b4bb0e0cbef47e16f02b234592714f4705839df1dc3cff4a85e0ecdde7401a",
+            "media_id": "5339bd1ca0de48bfa0dec014d9581dc0"
+          },
+          {
+            "type": "recovery",
+            "percent_of_good": 99,
+            "errors": [
+              {
+                "type": "bend_knees_early",
+                "percent_of_strokes": 1,
+                "media_id": "9569608248da49a98c6a90c84288882c"
+              }
+            ],
+            "url": "https://qa1-amd.akamaized.net/svod/caesar/101-videos/01-2022/21/Brendan_Zoltowski-04_THERECOVERY_04_01142022_004_UPDATED.mp4?hdnts=exp=1670227425~acl=/svod/caesar/101-videos/01-2022/21/*~hmac=f2b4bb0e0cbef47e16f02b234592714f4705839df1dc3cff4a85e0ecdde7401a",
+            "media_id": "c311d3dd5b3f45ec81cb8c09c3589946"
+          }
+        ]
+      }
+    },
+    "splits_metrics": {
+      "header": [
+        {
+          "slug": "meter",
+          "display_name": "Meters"
+        },
+        {
+          "slug": "total_time",
+          "display_name": "Total Time"
+        },
+        {
+          "slug": "pace",
+          "display_name": "min/500m"
+        },
+        {
+          "slug": "spm",
+          "display_name": "spm"
+        },
+        {
+          "slug": "avg_output",
+          "display_name": "Avg Output"
+        },
+        {
+          "slug": "form_score",
+          "display_name": "Form Rating"
+        }
+      ],
+      "metrics": [
+        {
+          "is_best": false,
+          "has_floor_segment": false,
+          "data": [
+            {
+              "slug": "meter",
+              "value": 500.0,
+              "unit": "m"
+            },
+            {
+              "slug": "total_time",
+              "value": 4.77,
+              "unit": "min"
+            },
+            {
+              "slug": "pace",
+              "value": 4.77,
+              "unit": "min/500m"
+            },
+            {
+              "slug": "spm",
+              "value": 14,
+              "unit": null
+            },
+            {
+              "slug": "avg_output",
+              "value": 42,
+              "unit": "w"
+            },
+            {
+              "slug": "form_score",
+              "value": 96.15,
+              "unit": "%"
+            }
+          ]
+        },
+        {
+          "is_best": true,
+          "has_floor_segment": false,
+          "data": [
+            {
+              "slug": "meter",
+              "value": 1000.0,
+              "unit": "m"
+            },
+            {
+              "slug": "total_time",
+              "value": 8.8,
+              "unit": "min"
+            },
+            {
+              "slug": "pace",
+              "value": 4.03,
+              "unit": "min/500m"
+            },
+            {
+              "slug": "spm",
+              "value": 16,
+              "unit": null
+            },
+            {
+              "slug": "avg_output",
+              "value": 54,
+              "unit": "w"
+            },
+            {
+              "slug": "form_score",
+              "value": 84.85,
+              "unit": "%"
+            }
+          ]
+        },
+        {
+          "is_best": false,
+          "has_floor_segment": false,
+          "data": [
+            {
+              "slug": "meter",
+              "value": 23.283300000000054,
+              "unit": "m"
+            },
+            {
+              "slug": "total_time",
+              "value": 10.0,
+              "unit": "min"
+            },
+            {
+              "slug": "pace",
+              "value": 25.77,
+              "unit": "min/500m"
+            },
+            {
+              "slug": "spm",
+              "value": 0,
+              "unit": null
+            },
+            {
+              "slug": "avg_output",
+              "value": 1,
+              "unit": "w"
+            },
+            {
+              "slug": "form_score",
+              "value": 87.5,
+              "unit": "%"
+            }
+          ]
+        }
+      ]
+    },
+    "target_metrics_performance_data": {
+      "target_metrics": [],
+      "time_in_metric": []
+    },
+    "effort_zones": {
+      "total_effort_points": 10.3,
+      "heart_rate_zone_durations": {
+        "heart_rate_z1_duration": 164,
+        "heart_rate_z2_duration": 173,
+        "heart_rate_z3_duration": 246,
+        "heart_rate_z4_duration": 70,
+        "heart_rate_z5_duration": 0
+      }
+    },
+    "muscle_group_score": [
+      {
+        "muscle_group": "biceps",
+        "score": 390.0,
+        "percentage": 4,
+        "bucket": 1,
+        "display_name": "Biceps"
+      },
+      {
+        "muscle_group": "core",
+        "score": 780.0,
+        "percentage": 9,
+        "bucket": 2,
+        "display_name": "Core"
+      },
+      {
+        "muscle_group": "glutes",
+        "score": 1170.0,
+        "percentage": 13,
+        "bucket": 3,
+        "display_name": "Glutes"
+      },
+      {
+        "muscle_group": "hamstrings",
+        "score": 1170.0,
+        "percentage": 13,
+        "bucket": 3,
+        "display_name": "Hamstrings"
+      },
+      {
+        "muscle_group": "hips",
+        "score": 780.0,
+        "percentage": 9,
+        "bucket": 2,
+        "display_name": "Hips"
+      },
+      {
+        "muscle_group": "lats",
+        "score": 780.0,
+        "percentage": 9,
+        "bucket": 2,
+        "display_name": "Lats"
+      },
+      {
+        "muscle_group": "low_back",
+        "score": 780.0,
+        "percentage": 9,
+        "bucket": 2,
+        "display_name": "Low Back"
+      },
+      {
+        "muscle_group": "mid_back",
+        "score": 780.0,
+        "percentage": 9,
+        "bucket": 2,
+        "display_name": "Mid Back"
+      },
+      {
+        "muscle_group": "obliques",
+        "score": 780.0,
+        "percentage": 8,
+        "bucket": 2,
+        "display_name": "Obliques"
+      },
+      {
+        "muscle_group": "quads",
+        "score": 1170.0,
+        "percentage": 13,
+        "bucket": 3,
+        "display_name": "Quads"
+      },
+      {
+        "muscle_group": "triceps",
+        "score": 390.0,
+        "percentage": 4,
+        "bucket": 1,
+        "display_name": "Triceps"
+      }
+    ]
+  }
+}

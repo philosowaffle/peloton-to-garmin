@@ -11,6 +11,7 @@
 Convert workout data from Peloton into a format that can be uploaded to Garmin.
 
 * Fetch latest workouts from Peloton
+  * Bike, Tread, Rower, Meditation, Strength, Outdoor, and more
 * Convert Peloton workout to a variety of formats
 * Upload TCX or FIT workout to Garmin
 * Avoid duplicates in Garmin
