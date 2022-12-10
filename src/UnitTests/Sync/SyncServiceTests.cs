@@ -4,14 +4,14 @@ using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Service;
 using Conversion;
+using Core.GitHub;
 using FluentAssertions;
 using Garmin;
-using GitHub;
-using GitHub.Dto;
 using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
 using Peloton;
+using Philosowaffle.Capability.ReleaseChecks.Model;
 using Sync;
 using System;
 using System.Collections.Generic;
@@ -236,7 +236,7 @@ namespace UnitTests.Sync
 			var peloton = mocker.GetMock<IPelotonService>();
 			var db = mocker.GetMock<ISyncStatusDb>();
 			var settingsService = mocker.GetMock<ISettingsService>();
-			var ghService = mocker.GetMock<IGitHubService>();
+			var ghService = mocker.GetMock<IGitHubReleaseCheckService>();
 
 			var settings = new Settings();
 			settings.App.CheckForUpdates = false;
@@ -246,14 +246,14 @@ namespace UnitTests.Sync
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
 			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>().AsServiceResult());
 
-			ghService.Setup(x => x.GetLatestReleaseAsync())
-				.ReturnsAsync(new P2GLatestRelease());
+			ghService.Setup(x => x.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion))
+				.ReturnsAsync(new LatestReleaseInformation());
 
 			// ACT
 			var response = await service.SyncAsync(0);
 
 			// ASSERT
-			ghService.Verify(x => x.GetLatestReleaseAsync(), Times.Never);
+			ghService.Verify(x => x.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion), Times.Never);
 		}
 	}
 }

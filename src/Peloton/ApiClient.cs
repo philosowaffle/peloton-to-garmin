@@ -17,7 +17,7 @@ namespace Peloton
 	public interface IPelotonApi
 	{
 		Task<PagedPelotonResponse<Workout>> GetWorkoutsAsync(int pageSize, int page);
-		Task<PelotonResponse<Workout>> GetWorkoutsAsync(DateTime from, DateTime to);
+		Task<PelotonResponse<Workout>> GetWorkoutsAsync(DateTime fromUtc, DateTime toUtc);
 		Task<JObject> GetWorkoutByIdAsync(string id);
 		Task<JObject> GetWorkoutSamplesByIdAsync(string id);
 		Task<UserData> GetUserDataAsync();

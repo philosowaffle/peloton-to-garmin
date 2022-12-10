@@ -15,7 +15,6 @@
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Conversion\Conversion.csproj" />
     <ProjectReference Include="..\Garmin\Garmin.csproj" />
-    <ProjectReference Include="..\GitHub\GitHub.csproj" />
     <ProjectReference Include="..\Peloton\Peloton.csproj" />
   </ItemGroup>
 
