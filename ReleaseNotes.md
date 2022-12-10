@@ -13,5 +13,5 @@
 
 ## Changes
 
-- [#26]
-	- API - `POST api/sync` - No longer supports syncing by NumWorkouts
+- [#26] API - `POST api/sync` - No longer supports syncing by NumWorkouts
+- [#367] Bump dependency versions + switch to use ReleaseCheck nuget

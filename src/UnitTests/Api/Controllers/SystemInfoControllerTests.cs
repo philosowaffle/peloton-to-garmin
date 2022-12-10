@@ -1,11 +1,12 @@
-﻿using Common.Dto.Api;
+﻿using Common;
+using Common.Dto.Api;
+using Core.GitHub;
 using FluentAssertions;
-using GitHub;
-using GitHub.Dto;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
+using Philosowaffle.Capability.ReleaseChecks.Model;
 using System;
 using System.Threading.Tasks;
 using WebApp.Controllers;
@@ -20,7 +21,7 @@ public class SystemInfoControllerTests
 		// SETUP
 		var autoMocker = new AutoMocker();
 		var controller = autoMocker.CreateInstance<SystemInfoController>();
-		var ghService = autoMocker.GetMock<IGitHubService>();
+		var ghService = autoMocker.GetMock<IGitHubReleaseCheckService>();
 
 		var context = new DefaultHttpContext();
 		context.Request.Scheme = "https";
@@ -42,7 +43,7 @@ public class SystemInfoControllerTests
 		response.NewerVersionAvailable.Should().BeNull();
 		response.LatestVersionInformation.Should().BeNull();
 
-		ghService.Verify(x => x.GetLatestReleaseAsync(), Times.Never());
+		ghService.Verify(x => x.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion), Times.Never());
 	}
 
 	[Test]
@@ -51,7 +52,7 @@ public class SystemInfoControllerTests
 		// SETUP
 		var autoMocker = new AutoMocker();
 		var controller = autoMocker.CreateInstance<SystemInfoController>();
-		var ghService = autoMocker.GetMock<IGitHubService>();
+		var ghService = autoMocker.GetMock<IGitHubReleaseCheckService>();
 
 		var context = new DefaultHttpContext();
 		context.Request.Scheme = "https";
@@ -61,8 +62,8 @@ public class SystemInfoControllerTests
 			HttpContext = context
 		};
 
-		ghService.Setup(x => x.GetLatestReleaseAsync())
-			.ReturnsAsync(new P2GLatestRelease()
+		ghService.Setup(x => x.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion))
+			.ReturnsAsync(new LatestReleaseInformation()
 			{
 				IsReleaseNewerThanInstalledVersion = true, 
 				Description = "adf",
@@ -82,6 +83,6 @@ public class SystemInfoControllerTests
 		response.NewerVersionAvailable.Should().NotBeNull();
 		response.LatestVersionInformation.Should().NotBeNull();
 
-		ghService.Verify(x => x.GetLatestReleaseAsync(), Times.Once());
+		ghService.Verify(x => x.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion), Times.Once());
 	}
 }

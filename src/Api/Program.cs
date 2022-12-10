@@ -7,9 +7,9 @@ using Common.Service;
 using Common.Stateful;
 using Conversion;
 using Garmin;
-using GitHub;
 using Microsoft.Extensions.Caching.Memory;
 using Peloton;
+using Philosowaffle.Capability.ReleaseChecks;
 using Prometheus;
 using Serilog;
 using Serilog.Enrichers.Span;
@@ -86,9 +86,8 @@ builder.Services.AddSingleton<IPelotonService, PelotonService>();
 builder.Services.AddSingleton<IGarminUploader, GarminUploader>();
 builder.Services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
 
-// GITHUB
-builder.Services.AddSingleton<IGitHubApiClient, GitHub.ApiClient>();
-builder.Services.AddSingleton<IGitHubService, GitHubService>();
+// RELEASE CHECKS
+builder.Services.AddGitHubReleaseChecker();
 
 // SYNC
 builder.Services.AddSingleton<ISyncStatusDb, SyncStatusDb>();

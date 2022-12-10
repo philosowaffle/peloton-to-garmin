@@ -1,9 +1,9 @@
 ﻿using Common;
 using Common.Dto;
 using Common.Dto.Api;
-using GitHub;
-using GitHub.Dto;
+using Core.GitHub;
 using Microsoft.AspNetCore.Mvc;
+using Philosowaffle.Capability.ReleaseChecks.Model;
 
 namespace WebApp.Controllers
 {
@@ -13,9 +13,9 @@ namespace WebApp.Controllers
 	[Consumes("application/json")]
 	public class SystemInfoController : Controller
 	{
-		private readonly IGitHubService _gitHubService;
+		private readonly IGitHubReleaseCheckService _gitHubService;
 
-		public SystemInfoController(IGitHubService gitHubService) 
+		public SystemInfoController(IGitHubReleaseCheckService gitHubService) 
 		{
 			_gitHubService = gitHubService;
 		}
@@ -28,10 +28,10 @@ namespace WebApp.Controllers
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		public async Task<ActionResult<SystemInfoGetResponse>> GetAsync([FromQuery]SystemInfoGetRequest request)
 		{
-			P2GLatestRelease? versionInformation = null;
+			LatestReleaseInformation? versionInformation = null;
 
 			if (request.CheckForUpdate)
-				versionInformation = await _gitHubService.GetLatestReleaseAsync();
+				versionInformation = await _gitHubService.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion);
 
 			return new SystemInfoGetResponse()
 			{

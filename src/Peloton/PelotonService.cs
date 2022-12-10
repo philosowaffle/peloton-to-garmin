@@ -181,7 +181,7 @@ namespace Peloton
 
 			try
 			{
-				var workouts = await _pelotonApi.GetWorkoutsAsync(from: sinceDt, to: DateTime.UtcNow);
+				var workouts = await _pelotonApi.GetWorkoutsAsync(fromUtc: sinceDt, toUtc: DateTime.UtcNow);
 				result.Result = workouts.data;
 				return result;
 			}
