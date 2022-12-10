@@ -1,8 +1,10 @@
 ﻿using Common;
+using Common.Dto.Api;
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
 using Garmin;
+using GitHub;
 using Microsoft.Extensions.Hosting;
 using Peloton;
 using Prometheus;
@@ -25,11 +27,13 @@ namespace PelotonToGarminConsole
 
 		private readonly ISettingsService _settingsService;
 		private readonly ISyncService _syncService;
+		private readonly IGitHubService _githubService;
 
-		public Startup(ISettingsService settingsService, ISyncService syncService)
+		public Startup(ISettingsService settingsService, ISyncService syncService, IGitHubService gitHubService)
 		{
 			_settingsService = settingsService;
 			_syncService = syncService;
+			_githubService = gitHubService;
 
 			Logging.LogSystemInformation();
 		}
@@ -92,6 +96,22 @@ namespace PelotonToGarminConsole
 					while (!cancelToken.IsCancellationRequested)
 					{
 						settings = await _settingsService.GetSettingsAsync();
+
+						if (settings.App.CheckForUpdates)
+						{
+							var latestReleaseInformation = await _githubService.GetLatestReleaseAsync();
+							if (latestReleaseInformation.IsReleaseNewerThanInstalledVersion)
+							{
+								_logger.Information("*********************************************");
+								_logger.Information("A new version of P2G is available: {@Version}", latestReleaseInformation.LatestVersion);
+								_logger.Information("Release Date: {@ReleaseDate}", latestReleaseInformation.ReleaseDate);
+								_logger.Information("Release Information: {@ReleaseUrl}", latestReleaseInformation.ReleaseUrl);
+								_logger.Information("*********************************************");
+
+								AppMetrics.SyncUpdateAvailableMetric(latestReleaseInformation.IsReleaseNewerThanInstalledVersion, latestReleaseInformation.LatestVersion);
+							}
+
+						}
 
 						var syncResult = await _syncService.SyncAsync(settings.Peloton.NumWorkoutsToDownload);
 						Health.Set(syncResult.SyncSuccess ? HealthStatus.Healthy : HealthStatus.UnHealthy);

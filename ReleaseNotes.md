@@ -4,8 +4,14 @@
 ## Features
 
 - [#370] Add support for Peloton Row workouts
+- [#26] Web UI - Home page now lets you quick-sync all of todays workouts
 
 ## Fixes
 
 - [#361] When multiple convert formats were specified (FIT and TCX) the incorrect format could get uploaded to Garmin Connect
 - [#353] Fix New Release Check not handling release candidates correctly
+
+## Changes
+
+- [#26]
+	- API - `POST api/sync` - No longer supports syncing by NumWorkouts

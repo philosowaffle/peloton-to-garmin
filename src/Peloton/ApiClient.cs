@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using Peloton.Dto;
 using Serilog;
 using System;
+using System.Globalization;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -16,6 +17,7 @@ namespace Peloton
 	public interface IPelotonApi
 	{
 		Task<PagedPelotonResponse<Workout>> GetWorkoutsAsync(int pageSize, int page);
+		Task<PelotonResponse<Workout>> GetWorkoutsAsync(DateTime from, DateTime to);
 		Task<JObject> GetWorkoutByIdAsync(string id);
 		Task<JObject> GetWorkoutSamplesByIdAsync(string id);
 		Task<UserData> GetUserDataAsync();
@@ -54,6 +56,7 @@ namespace Peloton
 				.WithHeader("Accept-Language", "en-US")
 				.WithHeader("User-Agent", overrideUserAgent ?? "PostmanRuntime/7.26.10")
 				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
+				.WithTimeout(30)
 				.PostJsonAsync(new AuthRequest()
 				{
 					username_or_email = auth.Email,
@@ -95,6 +98,22 @@ namespace Peloton
 			})
 			.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 			.GetJsonAsync<PagedPelotonResponse<Workout>>();
+		}
+
+		public async Task<PelotonResponse<Workout>> GetWorkoutsAsync(DateTime fromUtc, DateTime toUtc)
+		{
+			var auth = await GetAuthAsync();
+			return await $"{BaseUrl}/user/{auth.UserId}/workouts"
+			.WithCookie("peloton_session_id", auth.SessionId)
+			.SetQueryParams(new
+			{
+				from = fromUtc.ToString("o", CultureInfo.InvariantCulture),
+				to = toUtc.ToString("o", CultureInfo.InvariantCulture),
+				sort_by = "-created",
+				joins = "ride"
+			})
+			.StripSensitiveDataFromLogging(auth.Email, auth.Password)
+			.GetJsonAsync<PelotonResponse<Workout>>();
 		}
 
 		/// <summary>

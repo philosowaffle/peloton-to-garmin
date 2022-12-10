@@ -4,20 +4,20 @@ using FluentAssertions;
 using NUnit.Framework;
 using System.Collections.Generic;
 
-namespace UnitTests.Common.Dto
-{
-	public class P2GWorkoutTests
-	{
-		[Test]
-		public void GetWorkoutType_Should_Map_Correctly([Values]FitnessDiscipline fitnessDiscipline, [Values] bool hasGPS) 
-		{
-			var workout = new P2GWorkout()
-			{
-				Workout = new Workout() { Fitness_Discipline = fitnessDiscipline },
-				WorkoutSamples = new WorkoutSamples() { Location_Data = hasGPS ? new List<LocationData>() { new LocationData() } : null }
-			};
+namespace UnitTests.Common.Dto;
 
-			var workoutType = workout.WorkoutType;
+public class P2GWorkoutTests
+{
+	[Test]
+	public void GetWorkoutType_Should_Map_Correctly([Values]FitnessDiscipline fitnessDiscipline, [Values] bool isOutdoor) 
+	{
+		var workout = new P2GWorkout()
+		{
+			Workout = new Workout() { Fitness_Discipline = fitnessDiscipline, Is_Outdoor = isOutdoor },
+			WorkoutSamples = new WorkoutSamples() { Location_Data = isOutdoor ? new List<LocationData>() { new LocationData() } : null }
+		};
+
+		var workoutType = workout.WorkoutType;
 
 			switch (fitnessDiscipline)
 			{
@@ -31,12 +31,11 @@ namespace UnitTests.Common.Dto
 				case FitnessDiscipline.Strength: workoutType.Should().Be(WorkoutType.Strength); break;
 				case FitnessDiscipline.Stretching: workoutType.Should().Be(WorkoutType.Stretching); break;
 				case FitnessDiscipline.Yoga: workoutType.Should().Be(WorkoutType.Yoga); break;
-				case FitnessDiscipline.Running when hasGPS: workoutType.Should().Be(WorkoutType.OutdoorRunning); break;
+				case FitnessDiscipline.Running when isOutdoor: workoutType.Should().Be(WorkoutType.OutdoorRunning); break;
 				case FitnessDiscipline.Running: workoutType.Should().Be(WorkoutType.TreadmillRunning); break;
-				case FitnessDiscipline.Walking when hasGPS: workoutType.Should().Be(WorkoutType.OutdoorWalking); break;
+				case FitnessDiscipline.Walking when isOutdoor: workoutType.Should().Be(WorkoutType.OutdoorWalking); break;
 				case FitnessDiscipline.Walking: workoutType.Should().Be(WorkoutType.TreadmillWalking); break;
 			}
 		}
 
-	}
 }
