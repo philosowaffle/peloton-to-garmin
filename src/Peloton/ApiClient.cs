@@ -100,15 +100,15 @@ namespace Peloton
 			.GetJsonAsync<PagedPelotonResponse<Workout>>();
 		}
 
-		public async Task<PelotonResponse<Workout>> GetWorkoutsAsync(DateTime from, DateTime to)
+		public async Task<PelotonResponse<Workout>> GetWorkoutsAsync(DateTime fromUtc, DateTime toUtc)
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/user/{auth.UserId}/workouts"
 			.WithCookie("peloton_session_id", auth.SessionId)
 			.SetQueryParams(new
 			{
-				from = from.ToLocalTime().ToString("o", CultureInfo.InvariantCulture),
-				to = to.ToLocalTime().ToString("o", CultureInfo.InvariantCulture),
+				from = fromUtc.ToString("o", CultureInfo.InvariantCulture),
+				to = toUtc.ToString("o", CultureInfo.InvariantCulture),
 				sort_by = "-created",
 				joins = "ride"
 			})
