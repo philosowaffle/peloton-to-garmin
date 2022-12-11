@@ -3,7 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using System.Text.Json;
 
-namespace UnitTests.Common.Dto
+namespace UnitTests.Common.Dto.Peloton
 {
 	public class MetricTests
 	{

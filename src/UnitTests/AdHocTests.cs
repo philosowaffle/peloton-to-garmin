@@ -10,6 +10,7 @@ using Flurl;
 using Flurl.Http;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
+using Moq;
 using Moq.AutoMock;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -25,7 +26,7 @@ namespace UnitTests
 {
 	public class AdHocTests
 	{
-		private string DataDirectory = Path.Join(Directory.GetCurrentDirectory(), "..", "..", "..", "Data");
+		private string DataDirectory = Path.Join(Directory.GetCurrentDirectory(), "..", "..", "..", "Data", "p2g_workouts");
 
 		[OneTimeSetUp]
 		public void Setup()
@@ -40,7 +41,7 @@ namespace UnitTests
 		//[Test]
 		//public async Task AA()
 		//{
-			
+
 		//}
 
 		//[Test]
@@ -61,22 +62,25 @@ namespace UnitTests
 
 		//	var settings = new Settings()
 		//	{
-		//		Peloton = new ()
+		//		Peloton = new()
 		//		{
 		//			Email = email,
 		//			Password = password,
 		//		}
 		//	};
-		//	var config = new AppConfiguration();
 
-		//	var client = new ApiClient(settings, config);
-		//	await client.InitAuthAsync();
+		//	var autoMocker = new AutoMocker();
+		//	var settingMock = autoMocker.GetMock<ISettingsService>();
+		//	settingMock.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
+
+		//	var client = new ApiClient(settingMock.Object);
 
 		//	//var recentWorkouts = await client.GetWorkoutsAsync(userId, 5, 0);
-		//	var workoutSamples = await client.GetWorkoutSamplesByIdAsync(workoutId);
+		//	var workoutSamples = await client.GetWorkoutsAsync(System.DateTime.UtcNow.AddDays(-1), System.DateTime.UtcNow);
+		//	await client.GetUserDataAsync();
 
 		//	Log.Debug(workoutSamples.ToString());
-		//	SaveRawData(workoutSamples, workoutId, DataDirectory);
+		//	//SaveRawData(workoutSamples, workoutId, DataDirectory);
 		//}
 
 		//[Test]
@@ -90,35 +94,21 @@ namespace UnitTests
 		//[Test]
 		//public async Task Convert()
 		//{
-		//	var file = Path.Join(DataDirectory, "lanebreaker.json");
+		//	var file = Path.Join(DataDirectory, "rower_workout.json");
 
 		//	var autoMocker = new AutoMocker();
-		//	var settings = new Settings();
+		//	var settingsService = autoMocker.CreateInstance<SettingsService>();
 
-		//	var fitConverter = new ConverterInstance(settings);
-		//	var messages = fitConverter.Convert(file);
+		//	var settings = new Settings();
+		//	var fileHandler = new IOWrapper();
+
+		//	var fitConverter = new ConverterInstance(settingsService, fileHandler);
+		//	var messages = await fitConverter.Convert(file, settings);
 
 		//	var output = Path.Join(DataDirectory, "output.fit");
 
-		//	SaveFit(messages, output);
+		//	fitConverter.Save(messages, output);
 		//}
-
-		private void SaveFit(Tuple<string, ICollection<Mesg>> messages, string outputPath)
-		{
-			using(FileStream fitDest = new FileStream(outputPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
-			{
-				Encode encoder = new Encode(ProtocolVersion.V20);
-				try
-				{
-					encoder.Open(fitDest);
-					encoder.Write(messages.Item2);
-				}
-				finally
-				{
-					encoder.Close();
-				}
-			}
-		}
 
 		private void SaveRawData(dynamic data, string workoutId, string path)
 		{
@@ -147,7 +137,7 @@ namespace UnitTests
 			public async Task<ICollection<Mesg>> ConvertForTest(string path, Settings settings)
 			{
 				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
-				var converted = await this.ConvertAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
+				var converted = await this.ConvertInternalAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
 
 				return converted.Item2;
 			}
@@ -155,9 +145,14 @@ namespace UnitTests
 			public async Task<Tuple<string, ICollection<Mesg>>> Convert(string path, Settings settings)
 			{
 				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
-				var converted = await this.ConvertAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
+				var converted = await this.ConvertInternalAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
 
 				return converted;
+			}
+
+			public new void Save(Tuple<string, ICollection<Mesg>> data, string path)
+			{
+				base.Save(data, path);
 			}
 		}
 	}

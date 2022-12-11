@@ -14,17 +14,14 @@ namespace Conversion
 	{
 		private static readonly ILogger _logger = LogContext.ForClass<JsonConverter>();
 
-		public JsonConverter(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
-
-		public override async Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData)
+		public JsonConverter(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) 
 		{
-			var settings = await _settingsService.GetSettingsAsync();
-			if (!settings.Format.Json) return new ConvertStatus() { Result = ConversionResult.Skipped };
-
-			return await ConvertForFormatAsync(FileFormat.Json, workoutData, settings);
+			Format = FileFormat.Json;
 		}
 
-		protected override Task<P2GWorkout> ConvertAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
+		protected override bool ShouldConvert(Format settings) => settings.Json;
+
+		protected override Task<P2GWorkout> ConvertInternalAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
 		{
 			var result = new P2GWorkout() { UserData = userData, Workout = workout, WorkoutSamples = workoutSamples };
 			return Task.FromResult(result);
@@ -37,20 +34,6 @@ namespace Conversion
 
 			var serializedData = JsonSerializer.Serialize(data, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, WriteIndented = true });
 			_fileHandler.WriteToFile(path, serializedData.ToString());
-		}
-
-		protected override void SaveLocalCopy(string sourcePath, string workoutTitle, Settings settings)
-		{
-			if (!settings.Format.Json) return;
-
-			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(Save)}")
-										.WithTag(TagKey.Format, FileFormat.Json.ToString());
-
-			_fileHandler.MkDirIfNotExists(settings.App.JsonDirectory);
-
-			var backupDest = Path.Join(settings.App.JsonDirectory, $"{workoutTitle}.json");
-			_fileHandler.Copy(sourcePath, backupDest, overwrite: true);
-			_logger.Information("[@Format] Backed up file {@File}", FileFormat.Fit, backupDest);
 		}
 	}
 }

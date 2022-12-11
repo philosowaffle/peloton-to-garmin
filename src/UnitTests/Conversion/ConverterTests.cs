@@ -1,5 +1,4 @@
 ﻿using Common;
-using Common.Dto;
 using Common.Dto.Garmin;
 using Common.Dto.Peloton;
 using Common.Service;
@@ -208,6 +207,18 @@ namespace UnitTests.Conversion
 		}
 
 		[Test]
+		public void ConvertToMetersPerSecondTest_Is_Converted_To_MetersPerSecond_ForRower([Values("min/500m")] string unit)
+		{
+			var value = 5;
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var converted = converter.ConvertToMetersPerSecond1(value, null, unit);
+			converted.Should().Be(1.6666666F);
+		}
+
+		[Test]
 		public void GetMaxSpeedMetersPerSecond_NullMetrics_Returns0()
 		{
 			var workoutSample = new WorkoutSamples();
@@ -243,6 +254,23 @@ namespace UnitTests.Conversion
 		}
 
 		[Test]
+		public void GetMaxSpeedMetersPerSecond_MaxSpeed_Is_Converted_ForRower([Values("min/500m")] string unit)
+		{
+			var speed = 5;
+			var workoutSample = new WorkoutSamples();
+			workoutSample.Metrics = new List<Metric>()
+			{
+				new Metric() { Slug = "split_pace", Display_Unit = unit, Max_Value = speed }
+			};
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var converted = converter.GetMaxSpeedMetersPerSecond1(workoutSample);
+			converted.Should().Be(1.6666666F);
+		}
+
+		[Test]
 		public void GetAvgSpeedMetersPerSecond_NullMetrics_Returns0()
 		{
 			var workoutSample = new WorkoutSamples();
@@ -275,6 +303,23 @@ namespace UnitTests.Conversion
 
 			var converted = converter.GetAvgSpeedMetersPerSecond1(workoutSample);
 			converted.Should().Be(expectedDistance);
+		}
+
+		[Test]
+		public void GetAvgSpeedMetersPerSecond_MaxSpeed_Is_Converted_ForRower([Values("min/500m")] string unit)
+		{
+			var speed = 5;
+			var workoutSample = new WorkoutSamples();
+			workoutSample.Metrics = new List<Metric>()
+			{
+				new Metric() { Slug = "split_pace", Display_Unit = unit, Average_Value = speed }
+			};
+
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var converted = converter.GetAvgSpeedMetersPerSecond1(workoutSample);
+			converted.Should().Be(1.6666666F);
 		}
 
 		[Test]
@@ -654,9 +699,12 @@ namespace UnitTests.Conversion
 
 		private class ConverterInstance : Converter<string>
 		{
-			public ConverterInstance(ISettingsService settings, IFileHandling fileHandling) : base(settings, fileHandling) { }
+			public ConverterInstance(ISettingsService settings, IFileHandling fileHandling) : base(settings, fileHandling) 
+			{
+				Format = FileFormat.Fit;
+			}
 
-			protected override Task<string> ConvertAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
+			protected override Task<string> ConvertInternalAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
 			{
 				throw new NotImplementedException();
 			}
@@ -665,6 +713,8 @@ namespace UnitTests.Conversion
 			{
 				throw new NotImplementedException();
 			}
+
+			protected override bool ShouldConvert(Format settings) => true;
 
 			public System.DateTime GetStartTime1(Workout workout)
 			{
@@ -691,9 +741,9 @@ namespace UnitTests.Conversion
 				return base.GetTotalDistance(workoutSamples);
 			}
 
-			public float ConvertToMetersPerSecond1(double value, WorkoutSamples workoutSamples)
+			public float ConvertToMetersPerSecond1(double value, WorkoutSamples workoutSamples, string unit = null)
 			{
-				return base.ConvertToMetersPerSecond(value, workoutSamples);
+				return base.ConvertToMetersPerSecond(value, workoutSamples, unit);
 			}
 
 			public float GetMaxSpeedMetersPerSecond1(WorkoutSamples workoutSamples)
@@ -739,21 +789,6 @@ namespace UnitTests.Conversion
 			public Task<GarminDeviceInfo> GetDeviceInfo1(FitnessDiscipline sport, Settings settings)
 			{
 				return base.GetDeviceInfoAsync(sport, settings);
-			}
-
-			public async Task<ConvertStatus> Convert(P2GWorkout workoutData, Settings settings)
-			{
-				return await ConvertForFormatAsync(FileFormat.Fit, workoutData, settings);
-			}
-
-			public override Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData)
-			{
-				throw new NotImplementedException();
-			}
-
-			protected override void SaveLocalCopy(string sourcePath, string workoutTitle, Settings settings)
-			{
-				return;
 			}
 
 			public ushort? GetCyclingFtp1(Workout workout, UserData userData)

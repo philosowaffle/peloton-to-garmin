@@ -18,9 +18,6 @@ namespace UnitTests.Common
 			config.App.OutputDirectory.Should().Be(Path.Join(Environment.CurrentDirectory, "output"));
 			config.App.WorkingDirectory.Should().Be(Path.Join(Environment.CurrentDirectory, "working"));
 			config.App.PollingIntervalSeconds.Should().Be(86400);
-			config.App.FitDirectory.Should().Be(Path.Join(config.App.OutputDirectory, "fit"));
-			config.App.JsonDirectory.Should().Be(Path.Join(config.App.OutputDirectory, "json"));
-			config.App.TcxDirectory.Should().Be(Path.Join(config.App.OutputDirectory, "tcx"));
 			config.App.FailedDirectory.Should().Be(Path.Join(config.App.OutputDirectory, "failed"));
 			config.App.DownloadDirectory.Should().Be(Path.Join(config.App.WorkingDirectory, "downloaded"));
 			config.App.UploadDirectory.Should().Be(Path.Join(config.App.WorkingDirectory, "upload"));

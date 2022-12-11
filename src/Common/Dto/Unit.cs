@@ -1,6 +1,6 @@
 ﻿namespace Common.Dto
 {
-	public enum DistanceUnit
+	public enum DistanceUnit : byte
 	{
 		Unknown = 0,
 		Kilometers = 1,

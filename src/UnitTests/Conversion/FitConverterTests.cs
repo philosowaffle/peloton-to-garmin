@@ -15,8 +15,32 @@ namespace UnitTests.Conversion
 {
 	public class FitConverterTests
 	{
-		private string DataDirectory = Path.Join(Directory.GetCurrentDirectory(), "..", "..", "..", "Data");
-		private IOWrapper _fileHandler = new IOWrapper();
+		private string DataDirectory = Path.Join(Directory.GetCurrentDirectory(), "..", "..", "..", "Data", "p2g_workouts");
+
+		[Test]
+		public void Converter_Should_Provide_Formt_of_FIT()
+		{
+			var mocker = new AutoMocker();
+			var converter = mocker.CreateInstance<ConverterInstance>();
+
+			converter.Format.Should().Be(FileFormat.Fit);
+		}
+
+		[Test]
+		public void ShouldConvert_ShouldOnly_Support_Fit([Values] bool tcx, [Values] bool json, [Values] bool fit)
+		{
+			var mocker = new AutoMocker();
+			var converter = mocker.CreateInstance<ConverterInstance>();
+
+			var formatSettings = new Format()
+			{
+				Fit = fit,
+				Tcx = tcx,
+				Json = json
+			};
+
+			converter.ShouldConvert(formatSettings).Should().Be(fit);
+		}
 
 		[TestCase("cycling_workout", PreferredLapType.Default)]
 		[TestCase("cycling_just_ride", PreferredLapType.Default)]
@@ -25,6 +49,7 @@ namespace UnitTests.Conversion
 		[TestCase("walking_workout_01", PreferredLapType.Default)]
 		[TestCase("running_workout_no_metrics", PreferredLapType.Default)]
 		[TestCase("ride_based_on_distance", PreferredLapType.Default)]
+		[TestCase("rower_workout", PreferredLapType.Default)]
 
 		[TestCase("cycling_workout", PreferredLapType.Distance)]
 		[TestCase("cycling_just_ride", PreferredLapType.Distance)]
@@ -33,6 +58,7 @@ namespace UnitTests.Conversion
 		[TestCase("walking_workout_01", PreferredLapType.Distance)]
 		[TestCase("running_workout_no_metrics", PreferredLapType.Distance)]
 		[TestCase("ride_based_on_distance", PreferredLapType.Distance)]
+		[TestCase("rower_workout", PreferredLapType.Distance)]
 
 		[TestCase("cycling_workout", PreferredLapType.Class_Segments)]
 		[TestCase("cycling_just_ride", PreferredLapType.Class_Segments)]
@@ -41,6 +67,7 @@ namespace UnitTests.Conversion
 		[TestCase("walking_workout_01", PreferredLapType.Class_Segments)]
 		[TestCase("running_workout_no_metrics", PreferredLapType.Class_Segments)]
 		[TestCase("ride_based_on_distance", PreferredLapType.Class_Segments)]
+		[TestCase("rower_workout", PreferredLapType.Class_Segments)]
 
 		[TestCase("cycling_workout", PreferredLapType.Class_Targets)]
 		[TestCase("cycling_just_ride", PreferredLapType.Class_Targets)]
@@ -49,6 +76,7 @@ namespace UnitTests.Conversion
 		[TestCase("walking_workout_01", PreferredLapType.Class_Targets)]
 		[TestCase("running_workout_no_metrics", PreferredLapType.Class_Targets)]
 		[TestCase("ride_based_on_distance", PreferredLapType.Class_Targets)]
+		[TestCase("rower_workout", PreferredLapType.Class_Targets)]
 		public async Task Fit_Converter_Creates_Valid_Fit(string filename, PreferredLapType lapType)
 		{
 			var workoutPath = Path.Join(DataDirectory, $"{filename}.json");
@@ -135,14 +163,18 @@ namespace UnitTests.Conversion
 		{
 			private IOWrapper fileHandler = new IOWrapper();
 
+			public new FileFormat Format => base.Format;
+
 			public ConverterInstance(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
 
 			public ConverterInstance(ISettingsService settings) : base(settings, null) { }
 
+			public new bool ShouldConvert(Format settings) => base.ShouldConvert(settings);
+
 			public async Task<ICollection<Mesg>> ConvertForTest(string path, Settings settings)
 			{
 				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
-				var converted = await this.ConvertAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
+				var converted = await this.ConvertInternalAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
 
 				return converted.Item2;
 			}

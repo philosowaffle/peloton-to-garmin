@@ -5,71 +5,73 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Welcome to the Peloton to Garmin UI!</h1>
-
 <div class="row">
-	<div class="col-sm-4">
-        <div class="card @syncStatusBorderClass mb-3" style="border-width: thick">
-            <div class="card-body @syncStatusTextClass">
-                <h5 class="card-title">Automatic Syncing</h5>
-                <p class="font-weight-bold">@syncStatus.AutoSyncHealthString</p>
-                @if (syncStatus.SyncStatus != Common.Database.Status.NotRunning)
-                {
-                    <p><span class="font-weight-bold">Last Sync: </span><br />@syncStatus.LastSyncTime</p>
-                    <p><span class="font-weight-bold">Last Successful Sync: </span><br />@syncStatus.LastSuccessfulSyncTime</p>
-                    <p><span class="font-weight-bold">Next Scheduled Sync: </span><br />@syncStatus.NextSyncTime</p>
-                }
-            </div>
-        </div>
-    </div>
+	<div class="col">
+		<HxBadge Type="BadgeType.RoundedPill" Color="@GetPillThemeColor(syncStatus.SyncStatus)" TextColor="@GetPillTextThemeColor(syncStatus.SyncStatus)">Periodic syncing is @syncStatus.AutoSyncHealthString</HxBadge>
+		@if (syncStatus.SyncStatus != Common.Database.Status.NotRunning)
+		{
+			<span> </span>
+			<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Secondary" TextColor="ThemeColor.Light">Next Sync: @syncStatus.NextSyncTime</HxBadge>
+		}
+	</div>
 </div>
 
-@if (syncRunning)
-{
-	<p><em>Syncing...</em></p>
-}
-else
-{
-	if (syncResponse is object)
-	{
-		if (syncResponse.Errors.Any())
-		{
-			foreach (var error in syncResponse.Errors)
-			{
-				<ul>
-					<li><em>@error.Message</em></li>
-				</ul>
-			}
-		} else
-		{
-			<p>Success!</p>
-		}
-	}
+<br />
 
-	<button class="btn btn-primary" @onclick="SyncAsync">Sync Now</button>
-}
+<div class="row">
+
+	@foreach (var workout in TodaysWorkouts)
+	{
+		<div class="col-md-auto">
+			<HxCard ImageAlt="Grey area"
+				ImageSrc="@workout.ImageUrl?.ToString()"
+				ImageHeight="180"
+				style="width: 19rem; margin-bottom: 1rem; height: 19rem;">
+				<BodyTemplate>
+					<HxCardTitle>@workout.WorkoutTitle</HxCardTitle>
+					<HxCardSubtitle CssClass="mb-2 text-muted">@DateTimeOffset.FromUnixTimeSeconds(workout.CreatedAt).LocalDateTime.ToString()</HxCardSubtitle>
+				</BodyTemplate>
+			</HxCard>
+		</div>
+	}
+</div>
+
+<div class="row justify-content-start">
+
+	@if (TodaysWorkoutsAreLoading)
+	{
+		<HxPlaceholderContainer Animation="PlaceholderAnimation.Glow">
+			<HxPlaceholder Columns="4" />
+		</HxPlaceholderContainer>
+	}
+	else if(!TodaysWorkouts.Any())
+	{
+		<HxAlert Color="ThemeColor.Primary">No workouts today.</HxAlert>
+	}
+	else
+	{
+		<div class="col-sm-4">
+			<HxButton Color="ThemeColor.Primary" @onclick="SyncTodaysWorkoutsAsync">Sync todays workouts</HxButton>
+		</div>
+	}
+</div>
 
 
 @code {
 
-	private SyncPostResponse? syncResponse;
+	private bool TodaysWorkoutsAreLoading = true;
 	private SyncGetResponse syncStatus;
 	private SettingsGetResponse settings;
 	private SystemInfoGetResponse systemInfo;
-	private bool syncRunning;
-
-	private string syncStatusBorderClass = "border-light";
-	private string syncStatusTextClass = "";
+	private ICollection<PelotonWorkout> TodaysWorkouts;
 
 	public Index() : base(nameof(Index))
 	{
 		syncStatus = new SyncGetResponse();
-		syncResponse = null;
-
 		settings = new SettingsGetResponse();
-		syncRunning = false;
-
 		systemInfo = new SystemInfoGetResponse();
+		TodaysWorkouts = new List<PelotonWorkout>(0);
+
 
 		_toaster?.Clear();
 	}
@@ -80,17 +82,22 @@ else
 
 		try
 		{
+			var getTodaysWorkoutsTask = LoadTodaysWorkoutsAsync();
 			var getSettingsTask = _apiClient.SettingsGetAsync();
-			await Task.WhenAll(getSettingsTask, LoadSyncStatusAsync());
+			var getSyncStatusAsync = LoadSyncStatusAsync();
+
+			TodaysWorkouts = await getTodaysWorkoutsTask;
+			TodaysWorkoutsAreLoading = false;
 
 			settings = await getSettingsTask;
-
 			if (settings.App.CheckForUpdates)
 			{
 				systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = true });
 				if (systemInfo.NewerVersionAvailable.GetValueOrDefault())
 					_toaster.AddInformation(title: "New Version Available!", message: "Head over to the About page to learn more");
 			}
+
+			await getSyncStatusAsync;
 
 		} catch (Exception e)
 		{
@@ -118,35 +125,53 @@ else
 			Log.Error("UI - Failed to fetch Sync status.", e);
 			_toaster.AddError($"Failed to fetch Sync status - {e.Message} - See logs for details.");
 		}
-
-		switch (syncStatus.SyncStatus)
-		{
-			case Common.Database.Status.Running:
-				syncStatusBorderClass = "border-success";
-				break;
-			case Common.Database.Status.NotRunning:
-				syncStatusBorderClass = "border-secondary";
-				syncStatusTextClass = "text-secondary";
-				break;
-			case Common.Database.Status.Dead:
-				syncStatusBorderClass = "border-danger";
-				syncStatusTextClass = "text-danger";
-				break;
-			case Common.Database.Status.UnHealthy:
-				syncStatusBorderClass = "border-warning";
-				break;
-		}
 	}
 
-	private async Task SyncAsync()
+	private async Task<ICollection<PelotonWorkout>> LoadTodaysWorkoutsAsync()
 	{
-		using var tracing = Tracing.ClientTrace($"{nameof(Index)}.{nameof(SyncAsync)}", kind: ActivityKind.Client);
+		using var tracing = Tracing.ClientTrace($"{nameof(Index)}.{nameof(LoadTodaysWorkoutsAsync)}", kind: ActivityKind.Client);
 
 		try
 		{
-			syncRunning = true;
-			syncResponse = null;
-			syncResponse = await _apiClient.SyncPostAsync(new SyncPostRequest() { NumWorkouts = settings.Peloton.NumWorkoutsToDownload });
+			var today = DateTime.UtcNow.Date;
+			var todaysWorkouts = await _apiClient.PelotonWorkoutsGetAsync(new PelotonWorkoutsGetAllRequest() 
+			{ 
+				SinceDate = today, 
+				WorkoutStatusFilter = WorkoutStatus.Completed, 
+				ExcludeWorkoutTypes = settings.Peloton.ExcludeWorkoutTypes
+			});
+
+			return todaysWorkouts.Items;
+		}
+		catch (FlurlHttpException e)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+			Log.Error("UI - Failed to load Peloton workouts.", e);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to load Peloton workouts - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to load Peloton workouts.", e);
+		}
+
+		return new List<PelotonWorkout>(0);
+	}
+
+	private async Task SyncTodaysWorkoutsAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Index)}.{nameof(SyncTodaysWorkoutsAsync)}", kind: ActivityKind.Client);
+
+		if (!TodaysWorkouts.Any())
+		{
+			_toaster.AddInformation("No workouts to sync today.");
+			return;
+		}
+
+		SyncPostResponse? syncResponse = null;
+		try
+		{
+			syncResponse = await _apiClient.SyncPostAsync(new SyncPostRequest() { WorkoutIds = TodaysWorkouts.Select(w => w.Id).ToList() });
 		}
 		catch (FlurlHttpTimeoutException te){
 			_toaster.AddInformation("Long running sync will continue running in the background.");
@@ -159,7 +184,50 @@ else
 		}
 		finally
 		{
-			syncRunning = false;
+			if (syncResponse?.Errors?.Any() ?? false)
+			{
+				foreach (var error in syncResponse.Errors)
+				{
+					_toaster.AddWarning($"Errors during sync - {error.Message}");
+				}
+			} 
+
+			if (syncResponse?.SyncSuccess ?? false)
+				_toaster.AddInformation("Success! Synced today's workouts.");
 		}
+	}
+
+	private ThemeColor GetPillThemeColor(Common.Database.Status status)
+	{
+		switch (syncStatus.SyncStatus)
+		{
+			case Common.Database.Status.Running:
+				return ThemeColor.Success;
+			case Common.Database.Status.NotRunning:
+				return ThemeColor.Secondary;
+			case Common.Database.Status.Dead:
+				return ThemeColor.Danger;
+			case Common.Database.Status.UnHealthy:
+				return ThemeColor.Warning;
+		}
+
+		return ThemeColor.Light;
+	}
+
+	private ThemeColor GetPillTextThemeColor(Common.Database.Status status)
+	{
+		switch (syncStatus.SyncStatus)
+		{
+			case Common.Database.Status.Running:
+				return ThemeColor.Light;
+			case Common.Database.Status.NotRunning:
+				return ThemeColor.Light;
+			case Common.Database.Status.Dead:
+				return ThemeColor.Light;
+			case Common.Database.Status.UnHealthy:
+				return ThemeColor.Dark;
+		}
+
+		return ThemeColor.Dark;
 	}
 }

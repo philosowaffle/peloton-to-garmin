@@ -1,5 +1,6 @@
 ﻿using Common.Database;
 using Common.Dto.Api;
+using Common.Helpers;
 using Common.Service;
 using Microsoft.AspNetCore.Mvc;
 using Sync;
@@ -38,20 +39,13 @@ public class SyncController : Controller
 	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<SyncPostResponse>> SyncAsync([FromBody] SyncPostRequest request)
 	{
-		if (request is null ||
-			(request.NumWorkouts <= 0 && (request.WorkoutIds is null || !request.WorkoutIds.Any())))
-			return BadRequest(new ErrorResponse("Either NumWorkouts or WorkoutIds must be set."));
-
-		if (request.NumWorkouts > 0 && (request.WorkoutIds is not null && request.WorkoutIds.Any()))
-			return BadRequest(new ErrorResponse("NumWorkouts and WorkoutIds cannot both be set."));
+		if (!IsValid(request, out var result))
+			return result;
 
 		SyncResult syncResult = new();
 		try
 		{
-			if (request.NumWorkouts > 0)
-				syncResult = await _syncService.SyncAsync(request.NumWorkouts);
-			else if (request.WorkoutIds is not null)
-				syncResult = await _syncService.SyncAsync(request.WorkoutIds, exclude: null);
+			syncResult = await _syncService.SyncAsync(request.WorkoutIds, exclude: null);
 		}
 		catch (Exception e)
 		{
@@ -100,5 +94,18 @@ public class SyncController : Controller
 		};
 
 		return response;
+	}
+
+	bool IsValid(SyncPostRequest request, out ActionResult result)
+	{
+		result = new OkResult();
+
+		if (request.CheckIsNull("PostRequest", out result))
+			return false;
+
+		if (request.WorkoutIds.CheckDoesNotHaveAny(nameof(request.WorkoutIds), out result))
+			return false;
+
+		return true;
 	}
 }
