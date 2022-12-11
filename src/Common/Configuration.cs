@@ -160,7 +160,7 @@ public enum PreferredLapType
 	Class_Targets = 3
 }
 
-public class Peloton
+public class Peloton : ICredentials
 {
 	public Peloton()
 	{
@@ -170,14 +170,11 @@ public class Peloton
 
 	public string Email { get; set; }
 	public string Password { get; set; }
-	[DisplayName("Number of Workouts to Download")]
 	public int NumWorkoutsToDownload { get; set; }
-	[DisplayName("Exclude Workout Types")]
-	[Description("List of workout types that you do not want P2G to download/convert/upload. Hold the Ctrl key and click to multi-select.")]
 	public ICollection<WorkoutType> ExcludeWorkoutTypes { get; set; }
 }
 
-public class Garmin
+public class Garmin : ICredentials
 {
 	public Garmin()
 	{
@@ -187,9 +184,7 @@ public class Garmin
 	public string Email { get; set; }
 	public string Password { get; set; }
 	public bool Upload { get; set; }
-	[DisplayName("Format to Upload")]
 	public FileFormat FormatToUpload { get; set; }
-	[DisplayName("Upload Strategy")]
 	public UploadStrategy UploadStrategy { get; set; }
 }
 
@@ -255,4 +250,10 @@ public enum FileFormat
 	Fit = 0,
 	Tcx = 1,
 	Json = 2
+}
+
+public interface ICredentials
+{
+	public string Email { get; set; }
+	public string Password { get; set; }
 }
