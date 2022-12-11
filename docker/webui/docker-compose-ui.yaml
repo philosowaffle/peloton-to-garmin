@@ -5,7 +5,7 @@ services:
     container_name: p2g-api
     image: philosowaffle/peloton-to-garmin:api-stable
     environment:
-      - TZ=America/Chicago
+      - TZ=America/Los_Angeles
     # ports:
     #   - 8001:8080 # optional, only if you plan to interact with the API directly
     volumes:
@@ -19,7 +19,7 @@ services:
     ports:
       - 8002:8080
     environment:
-      - TZ=America/Chicago
+      - TZ=America/Los_Angeles
     volumes:
       - ./webui.local.json:/app/configuration.local.json
     depends_on:
