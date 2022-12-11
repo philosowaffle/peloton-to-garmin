@@ -24,6 +24,5 @@ jobs:
             - [ ] See if any new features we can take advantage of
             - [ ] Bump all Dependencies to latest
           pinned: false
-          close-previous: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
