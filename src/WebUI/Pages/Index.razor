@@ -133,10 +133,11 @@
 
 		try
 		{
-			var today = DateTime.UtcNow.Date;
+			var startOfDayLocalTime = DateTime.Now.Date;
+			var today = startOfDayLocalTime.ToUniversalTime();
 			var todaysWorkouts = await _apiClient.PelotonWorkoutsGetAsync(new PelotonWorkoutsGetAllRequest() 
 			{ 
-				SinceDate = today, 
+				SinceDate = today,
 				WorkoutStatusFilter = WorkoutStatus.Completed, 
 				ExcludeWorkoutTypes = settings.Peloton.ExcludeWorkoutTypes
 			});
