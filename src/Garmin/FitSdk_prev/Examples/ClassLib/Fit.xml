@@ -675,13 +675,13 @@
         <member name="M:Dynastream.Fit.ActivityMesg.GetLocalTimestamp">
             <summary>
              Retrieves the LocalTimestamp field
-             Comment: timestamp epoch expressed in local time, used to convert activity timestamps to local time </summary>
+             Comment: timestamp epoch expressed in local time, used to convert activity timestamps to local time</summary>
              <returns>Returns nullable uint representing the LocalTimestamp field</returns>
         </member>
         <member name="M:Dynastream.Fit.ActivityMesg.SetLocalTimestamp(System.Nullable{System.UInt32})">
             <summary>
             Set LocalTimestamp field
-            Comment: timestamp epoch expressed in local time, used to convert activity timestamps to local time </summary>
+            Comment: timestamp epoch expressed in local time, used to convert activity timestamps to local time</summary>
             <param name="localTimestamp_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.ActivityMesg.GetEventGroup">
@@ -1132,7 +1132,7 @@
             <summary>
              Retrieves the AttitudeStageComplete field
              Units: %
-             Comment: The percent complete of the current attitude stage.  Set to 0 for attitude stages 0, 1 and 2 and to 100 for attitude stage 3 by AHRS modules that do not support it.  Range - 100</summary>
+             Comment: The percent complete of the current attitude stage. Set to 0 for attitude stages 0, 1 and 2 and to 100 for attitude stage 3 by AHRS modules that do not support it. Range - 100</summary>
              <param name="index">0 based index of AttitudeStageComplete element to retrieve</param>
              <returns>Returns nullable byte representing the AttitudeStageComplete field</returns>
         </member>
@@ -1140,7 +1140,7 @@
             <summary>
             Set AttitudeStageComplete field
             Units: %
-            Comment: The percent complete of the current attitude stage.  Set to 0 for attitude stages 0, 1 and 2 and to 100 for attitude stage 3 by AHRS modules that do not support it.  Range - 100</summary>
+            Comment: The percent complete of the current attitude stage. Set to 0 for attitude stages 0, 1 and 2 and to 100 for attitude stage 3 by AHRS modules that do not support it. Range - 100</summary>
             <param name="index">0 based index of attitude_stage_complete</param>
             <param name="attitudeStageComplete_">Nullable field value to be set</param>
         </member>
@@ -1773,13 +1773,13 @@
         <member name="M:Dynastream.Fit.BloodPressureMesg.GetUserProfileIndex">
             <summary>
              Retrieves the UserProfileIndex field
-             Comment: Associates this blood pressure message to a user.  This corresponds to the index of the user profile message in the blood pressure file.</summary>
+             Comment: Associates this blood pressure message to a user. This corresponds to the index of the user profile message in the blood pressure file.</summary>
              <returns>Returns nullable ushort representing the UserProfileIndex field</returns>
         </member>
         <member name="M:Dynastream.Fit.BloodPressureMesg.SetUserProfileIndex(System.Nullable{System.UInt16})">
             <summary>
             Set UserProfileIndex field
-            Comment: Associates this blood pressure message to a user.  This corresponds to the index of the user profile message in the blood pressure file.</summary>
+            Comment: Associates this blood pressure message to a user. This corresponds to the index of the user profile message in the blood pressure file.</summary>
             <param name="userProfileIndex_">Nullable field value to be set</param>
         </member>
         <member name="T:Dynastream.Fit.BloodPressureMesg.FieldDefNum">
@@ -2473,6 +2473,68 @@
             Field Numbers for <see cref="T:Dynastream.Fit.DeveloperDataIdMesg"/>
             </summary>
         </member>
+        <member name="T:Dynastream.Fit.DeviceAuxBatteryInfoMesg">
+            <summary>
+            Implements the DeviceAuxBatteryInfo profile message.
+            </summary>
+        </member>
+        <member name="M:Dynastream.Fit.DeviceAuxBatteryInfoMesg.GetTimestamp">
+            <summary>
+             Retrieves the Timestamp field</summary>
+             <returns>Returns DateTime representing the Timestamp field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DeviceAuxBatteryInfoMesg.SetTimestamp(Dynastream.Fit.DateTime)">
+            <summary>
+            Set Timestamp field</summary>
+            <param name="timestamp_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DeviceAuxBatteryInfoMesg.GetDeviceIndex">
+            <summary>
+             Retrieves the DeviceIndex field</summary>
+             <returns>Returns nullable byte representing the DeviceIndex field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DeviceAuxBatteryInfoMesg.SetDeviceIndex(System.Nullable{System.Byte})">
+            <summary>
+            Set DeviceIndex field</summary>
+            <param name="deviceIndex_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DeviceAuxBatteryInfoMesg.GetBatteryVoltage">
+            <summary>
+             Retrieves the BatteryVoltage field
+             Units: V</summary>
+             <returns>Returns nullable float representing the BatteryVoltage field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DeviceAuxBatteryInfoMesg.SetBatteryVoltage(System.Nullable{System.Single})">
+            <summary>
+            Set BatteryVoltage field
+            Units: V</summary>
+            <param name="batteryVoltage_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DeviceAuxBatteryInfoMesg.GetBatteryStatus">
+            <summary>
+             Retrieves the BatteryStatus field</summary>
+             <returns>Returns nullable byte representing the BatteryStatus field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DeviceAuxBatteryInfoMesg.SetBatteryStatus(System.Nullable{System.Byte})">
+            <summary>
+            Set BatteryStatus field</summary>
+            <param name="batteryStatus_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DeviceAuxBatteryInfoMesg.GetBatteryIdentifier">
+            <summary>
+             Retrieves the BatteryIdentifier field</summary>
+             <returns>Returns nullable byte representing the BatteryIdentifier field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DeviceAuxBatteryInfoMesg.SetBatteryIdentifier(System.Nullable{System.Byte})">
+            <summary>
+            Set BatteryIdentifier field</summary>
+            <param name="batteryIdentifier_">Nullable field value to be set</param>
+        </member>
+        <member name="T:Dynastream.Fit.DeviceAuxBatteryInfoMesg.FieldDefNum">
+            <summary>
+            Field Numbers for <see cref="T:Dynastream.Fit.DeviceAuxBatteryInfoMesg"/>
+            </summary>
+        </member>
         <member name="T:Dynastream.Fit.DeviceInfoMesg">
             <summary>
             Implements the DeviceInfo profile message.
@@ -2740,6 +2802,18 @@
             Comment: Optional free form string to indicate the devices name or model</summary>
             <param name="productName_">field value to be set</param>
         </member>
+        <member name="M:Dynastream.Fit.DeviceInfoMesg.GetBatteryLevel">
+            <summary>
+             Retrieves the BatteryLevel field
+             Units: %</summary>
+             <returns>Returns nullable byte representing the BatteryLevel field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DeviceInfoMesg.SetBatteryLevel(System.Nullable{System.Byte})">
+            <summary>
+            Set BatteryLevel field
+            Units: %</summary>
+            <param name="batteryLevel_">Nullable field value to be set</param>
+        </member>
         <member name="T:Dynastream.Fit.DeviceInfoMesg.FieldDefNum">
             <summary>
             Field Numbers for <see cref="T:Dynastream.Fit.DeviceInfoMesg"/>
@@ -2883,14 +2957,14 @@
         <member name="M:Dynastream.Fit.DeviceSettingsMesg.GetPagesEnabled(System.Int32)">
             <summary>
              Retrieves the PagesEnabled field
-             Comment: Bitfield  to configure enabled screens for each supported loop</summary>
+             Comment: Bitfield to configure enabled screens for each supported loop</summary>
              <param name="index">0 based index of PagesEnabled element to retrieve</param>
              <returns>Returns nullable ushort representing the PagesEnabled field</returns>
         </member>
         <member name="M:Dynastream.Fit.DeviceSettingsMesg.SetPagesEnabled(System.Int32,System.Nullable{System.UInt16})">
             <summary>
             Set PagesEnabled field
-            Comment: Bitfield  to configure enabled screens for each supported loop</summary>
+            Comment: Bitfield to configure enabled screens for each supported loop</summary>
             <param name="index">0 based index of pages_enabled</param>
             <param name="pagesEnabled_">Nullable field value to be set</param>
         </member>
@@ -4065,14 +4139,14 @@
         <member name="M:Dynastream.Fit.EventMesg.GetRadarThreatAlert">
             <summary>
             Retrieves the RadarThreatAlert subfield
-            Comment: TheÂ firstÂ byteÂ isÂ theÂ radar_threat_level_max, theÂ secondÂ byteÂ isÂ theÂ radar_threat_count, and theÂ lastÂ 16Â bitsÂ areÂ reservedÂ forÂ futureÂ useÂ andÂ shouldÂ beÂ setÂ toÂ FFFF.</summary>
+            Comment: The first byte is the radar_threat_level_max, the second byte is the radar_threat_count, third bytes is the average approach speed, and the 4th byte is the max approach speed</summary>
             <returns>Nullable uint representing the RadarThreatAlert subfield</returns>
         </member>
         <member name="M:Dynastream.Fit.EventMesg.SetRadarThreatAlert(System.Nullable{System.UInt32})">
              <summary>
             
              Set RadarThreatAlert subfield
-             Comment: TheÂ firstÂ byteÂ isÂ theÂ radar_threat_level_max, theÂ secondÂ byteÂ isÂ theÂ radar_threat_count, and theÂ lastÂ 16Â bitsÂ areÂ reservedÂ forÂ futureÂ useÂ andÂ shouldÂ beÂ setÂ toÂ FFFF.</summary>
+             Comment: The first byte is the radar_threat_level_max, the second byte is the radar_threat_count, third bytes is the average approach speed, and the 4th byte is the max approach speed</summary>
              <param name="radarThreatAlert">Subfield value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.EventMesg.GetEventGroup">
@@ -4112,49 +4186,49 @@
         <member name="M:Dynastream.Fit.EventMesg.GetFrontGearNum">
             <summary>
              Retrieves the FrontGearNum field
-             Comment: Do not populate directly. Autogenerated by decoder for gear_change subfield components.  Front gear number. 1 is innermost.</summary>
+             Comment: Do not populate directly. Autogenerated by decoder for gear_change subfield components. Front gear number. 1 is innermost.</summary>
              <returns>Returns nullable byte representing the FrontGearNum field</returns>
         </member>
         <member name="M:Dynastream.Fit.EventMesg.SetFrontGearNum(System.Nullable{System.Byte})">
             <summary>
             Set FrontGearNum field
-            Comment: Do not populate directly. Autogenerated by decoder for gear_change subfield components.  Front gear number. 1 is innermost.</summary>
+            Comment: Do not populate directly. Autogenerated by decoder for gear_change subfield components. Front gear number. 1 is innermost.</summary>
             <param name="frontGearNum_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.EventMesg.GetFrontGear">
             <summary>
              Retrieves the FrontGear field
-             Comment: Do not populate directly. Autogenerated by decoder for gear_change subfield components.  Number of front teeth.</summary>
+             Comment: Do not populate directly. Autogenerated by decoder for gear_change subfield components. Number of front teeth.</summary>
              <returns>Returns nullable byte representing the FrontGear field</returns>
         </member>
         <member name="M:Dynastream.Fit.EventMesg.SetFrontGear(System.Nullable{System.Byte})">
             <summary>
             Set FrontGear field
-            Comment: Do not populate directly. Autogenerated by decoder for gear_change subfield components.  Number of front teeth.</summary>
+            Comment: Do not populate directly. Autogenerated by decoder for gear_change subfield components. Number of front teeth.</summary>
             <param name="frontGear_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.EventMesg.GetRearGearNum">
             <summary>
              Retrieves the RearGearNum field
-             Comment: Do not populate directly. Autogenerated by decoder for gear_change subfield components.  Rear gear number. 1 is innermost.</summary>
+             Comment: Do not populate directly. Autogenerated by decoder for gear_change subfield components. Rear gear number. 1 is innermost.</summary>
              <returns>Returns nullable byte representing the RearGearNum field</returns>
         </member>
         <member name="M:Dynastream.Fit.EventMesg.SetRearGearNum(System.Nullable{System.Byte})">
             <summary>
             Set RearGearNum field
-            Comment: Do not populate directly. Autogenerated by decoder for gear_change subfield components.  Rear gear number. 1 is innermost.</summary>
+            Comment: Do not populate directly. Autogenerated by decoder for gear_change subfield components. Rear gear number. 1 is innermost.</summary>
             <param name="rearGearNum_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.EventMesg.GetRearGear">
             <summary>
              Retrieves the RearGear field
-             Comment: Do not populate directly. Autogenerated by decoder for gear_change subfield components.  Number of rear teeth.</summary>
+             Comment: Do not populate directly. Autogenerated by decoder for gear_change subfield components. Number of rear teeth.</summary>
              <returns>Returns nullable byte representing the RearGear field</returns>
         </member>
         <member name="M:Dynastream.Fit.EventMesg.SetRearGear(System.Nullable{System.Byte})">
             <summary>
             Set RearGear field
-            Comment: Do not populate directly. Autogenerated by decoder for gear_change subfield components.  Number of rear teeth.</summary>
+            Comment: Do not populate directly. Autogenerated by decoder for gear_change subfield components. Number of rear teeth.</summary>
             <param name="rearGear_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.EventMesg.GetDeviceIndex">
@@ -4190,6 +4264,34 @@
             Set RadarThreatCount field
             Comment: Do not populate directly. Autogenerated by decoder for threat_alert subfield components.</summary>
             <param name="radarThreatCount_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.EventMesg.GetRadarThreatAvgApproachSpeed">
+            <summary>
+             Retrieves the RadarThreatAvgApproachSpeed field
+             Units: m/s
+             Comment: Do not populate directly. Autogenerated by decoder for radar_threat_alert subfield components</summary>
+             <returns>Returns nullable float representing the RadarThreatAvgApproachSpeed field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.EventMesg.SetRadarThreatAvgApproachSpeed(System.Nullable{System.Single})">
+            <summary>
+            Set RadarThreatAvgApproachSpeed field
+            Units: m/s
+            Comment: Do not populate directly. Autogenerated by decoder for radar_threat_alert subfield components</summary>
+            <param name="radarThreatAvgApproachSpeed_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.EventMesg.GetRadarThreatMaxApproachSpeed">
+            <summary>
+             Retrieves the RadarThreatMaxApproachSpeed field
+             Units: m/s
+             Comment: Do not populate directly. Autogenerated by decoder for radar_threat_alert subfield components</summary>
+             <returns>Returns nullable float representing the RadarThreatMaxApproachSpeed field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.EventMesg.SetRadarThreatMaxApproachSpeed(System.Nullable{System.Single})">
+            <summary>
+            Set RadarThreatMaxApproachSpeed field
+            Units: m/s
+            Comment: Do not populate directly. Autogenerated by decoder for radar_threat_alert subfield components</summary>
+            <param name="radarThreatMaxApproachSpeed_">Nullable field value to be set</param>
         </member>
         <member name="T:Dynastream.Fit.EventMesg.FieldDefNum">
             <summary>
@@ -5277,14 +5379,14 @@
             <summary>
              Retrieves the UtcTimestamp field
              Units: s
-             Comment: Used to correlate UTC to system time if the timestamp of the message is in system time.  This UTC time is derived from the GPS data.</summary>
+             Comment: Used to correlate UTC to system time if the timestamp of the message is in system time. This UTC time is derived from the GPS data.</summary>
              <returns>Returns DateTime representing the UtcTimestamp field</returns>
         </member>
         <member name="M:Dynastream.Fit.GpsMetadataMesg.SetUtcTimestamp(Dynastream.Fit.DateTime)">
             <summary>
             Set UtcTimestamp field
             Units: s
-            Comment: Used to correlate UTC to system time if the timestamp of the message is in system time.  This UTC time is derived from the GPS data.</summary>
+            Comment: Used to correlate UTC to system time if the timestamp of the message is in system time. This UTC time is derived from the GPS data.</summary>
             <param name="utcTimestamp_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.GpsMetadataMesg.GetNumVelocity">
@@ -5297,7 +5399,7 @@
             <summary>
              Retrieves the Velocity field
              Units: m/s
-             Comment: velocity[0] is lon velocity.  Velocity[1] is lat velocity.  Velocity[2] is altitude velocity.</summary>
+             Comment: velocity[0] is lon velocity. Velocity[1] is lat velocity. Velocity[2] is altitude velocity.</summary>
              <param name="index">0 based index of Velocity element to retrieve</param>
              <returns>Returns nullable float representing the Velocity field</returns>
         </member>
@@ -5305,7 +5407,7 @@
             <summary>
             Set Velocity field
             Units: m/s
-            Comment: velocity[0] is lon velocity.  Velocity[1] is lat velocity.  Velocity[2] is altitude velocity.</summary>
+            Comment: velocity[0] is lon velocity. Velocity[1] is lat velocity. Velocity[2] is altitude velocity.</summary>
             <param name="index">0 based index of velocity</param>
             <param name="velocity_">Nullable field value to be set</param>
         </member>
@@ -7109,7 +7211,7 @@
             <summary>
              Retrieves the AvgLeftPowerPhasePeak field
              Units: degrees
-             Comment: Average left power phase peak angles. Data value indexes  defined by power_phase_type.</summary>
+             Comment: Average left power phase peak angles. Data value indexes defined by power_phase_type.</summary>
              <param name="index">0 based index of AvgLeftPowerPhasePeak element to retrieve</param>
              <returns>Returns nullable float representing the AvgLeftPowerPhasePeak field</returns>
         </member>
@@ -7117,7 +7219,7 @@
             <summary>
             Set AvgLeftPowerPhasePeak field
             Units: degrees
-            Comment: Average left power phase peak angles. Data value indexes  defined by power_phase_type.</summary>
+            Comment: Average left power phase peak angles. Data value indexes defined by power_phase_type.</summary>
             <param name="index">0 based index of avg_left_power_phase_peak</param>
             <param name="avgLeftPowerPhasePeak_">Nullable field value to be set</param>
         </member>
@@ -7153,7 +7255,7 @@
             <summary>
              Retrieves the AvgRightPowerPhasePeak field
              Units: degrees
-             Comment: Average right power phase peak angles. Data value indexes  defined by power_phase_type.</summary>
+             Comment: Average right power phase peak angles. Data value indexes defined by power_phase_type.</summary>
              <param name="index">0 based index of AvgRightPowerPhasePeak element to retrieve</param>
              <returns>Returns nullable float representing the AvgRightPowerPhasePeak field</returns>
         </member>
@@ -7161,7 +7263,7 @@
             <summary>
             Set AvgRightPowerPhasePeak field
             Units: degrees
-            Comment: Average right power phase peak angles. Data value indexes  defined by power_phase_type.</summary>
+            Comment: Average right power phase peak angles. Data value indexes defined by power_phase_type.</summary>
             <param name="index">0 based index of avg_right_power_phase_peak</param>
             <param name="avgRightPowerPhasePeak_">Nullable field value to be set</param>
         </member>
@@ -7998,13 +8100,13 @@
         <member name="M:Dynastream.Fit.MemoGlobMesg.GetMessageNumber">
             <summary>
              Retrieves the MessageNumber field
-             Comment: Allows relating glob to another mesg  If used only required for first part of each memo_glob</summary>
+             Comment: Allows relating glob to another mesg If used only required for first part of each memo_glob</summary>
              <returns>Returns nullable ushort representing the MessageNumber field</returns>
         </member>
         <member name="M:Dynastream.Fit.MemoGlobMesg.SetMessageNumber(System.Nullable{System.UInt16})">
             <summary>
             Set MessageNumber field
-            Comment: Allows relating glob to another mesg  If used only required for first part of each memo_glob</summary>
+            Comment: Allows relating glob to another mesg If used only required for first part of each memo_glob</summary>
             <param name="messageNumber_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.MemoGlobMesg.GetMessageIndex">
@@ -8303,55 +8405,55 @@
         <member name="M:Dynastream.Fit.MonitoringMesg.GetDeviceIndex">
             <summary>
              Retrieves the DeviceIndex field
-             Comment: Associates this data to device_info message.  Not required for file with single device (sensor).</summary>
+             Comment: Associates this data to device_info message. Not required for file with single device (sensor).</summary>
              <returns>Returns nullable byte representing the DeviceIndex field</returns>
         </member>
         <member name="M:Dynastream.Fit.MonitoringMesg.SetDeviceIndex(System.Nullable{System.Byte})">
             <summary>
             Set DeviceIndex field
-            Comment: Associates this data to device_info message.  Not required for file with single device (sensor).</summary>
+            Comment: Associates this data to device_info message. Not required for file with single device (sensor).</summary>
             <param name="deviceIndex_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.MonitoringMesg.GetCalories">
             <summary>
              Retrieves the Calories field
              Units: kcal
-             Comment: Accumulated total calories.  Maintained by MonitoringReader for each activity_type.  See SDK documentation</summary>
+             Comment: Accumulated total calories. Maintained by MonitoringReader for each activity_type. See SDK documentation</summary>
              <returns>Returns nullable ushort representing the Calories field</returns>
         </member>
         <member name="M:Dynastream.Fit.MonitoringMesg.SetCalories(System.Nullable{System.UInt16})">
             <summary>
             Set Calories field
             Units: kcal
-            Comment: Accumulated total calories.  Maintained by MonitoringReader for each activity_type.  See SDK documentation</summary>
+            Comment: Accumulated total calories. Maintained by MonitoringReader for each activity_type. See SDK documentation</summary>
             <param name="calories_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.MonitoringMesg.GetDistance">
             <summary>
              Retrieves the Distance field
              Units: m
-             Comment: Accumulated distance.  Maintained by MonitoringReader for each activity_type.  See SDK documentation.</summary>
+             Comment: Accumulated distance. Maintained by MonitoringReader for each activity_type. See SDK documentation.</summary>
              <returns>Returns nullable float representing the Distance field</returns>
         </member>
         <member name="M:Dynastream.Fit.MonitoringMesg.SetDistance(System.Nullable{System.Single})">
             <summary>
             Set Distance field
             Units: m
-            Comment: Accumulated distance.  Maintained by MonitoringReader for each activity_type.  See SDK documentation.</summary>
+            Comment: Accumulated distance. Maintained by MonitoringReader for each activity_type. See SDK documentation.</summary>
             <param name="distance_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.MonitoringMesg.GetCycles">
             <summary>
              Retrieves the Cycles field
              Units: cycles
-             Comment: Accumulated cycles.  Maintained by MonitoringReader for each activity_type.  See SDK documentation.</summary>
+             Comment: Accumulated cycles. Maintained by MonitoringReader for each activity_type. See SDK documentation.</summary>
              <returns>Returns nullable float representing the Cycles field</returns>
         </member>
         <member name="M:Dynastream.Fit.MonitoringMesg.SetCycles(System.Nullable{System.Single})">
             <summary>
             Set Cycles field
             Units: cycles
-            Comment: Accumulated cycles.  Maintained by MonitoringReader for each activity_type.  See SDK documentation.</summary>
+            Comment: Accumulated cycles. Maintained by MonitoringReader for each activity_type. See SDK documentation.</summary>
             <param name="cycles_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.MonitoringMesg.GetSteps">
@@ -8839,14 +8941,14 @@
         <member name="M:Dynastream.Fit.ObdiiDataMesg.GetPidDataSize(System.Int32)">
             <summary>
              Retrieves the PidDataSize field
-             Comment: Optional, data size of PID[i].  If not specified refer to SAE J1979.</summary>
+             Comment: Optional, data size of PID[i]. If not specified refer to SAE J1979.</summary>
              <param name="index">0 based index of PidDataSize element to retrieve</param>
              <returns>Returns nullable byte representing the PidDataSize field</returns>
         </member>
         <member name="M:Dynastream.Fit.ObdiiDataMesg.SetPidDataSize(System.Int32,System.Nullable{System.Byte})">
             <summary>
             Set PidDataSize field
-            Comment: Optional, data size of PID[i].  If not specified refer to SAE J1979.</summary>
+            Comment: Optional, data size of PID[i]. If not specified refer to SAE J1979.</summary>
             <param name="index">0 based index of pid_data_size</param>
             <param name="pidDataSize_">Nullable field value to be set</param>
         </member>
@@ -8859,27 +8961,27 @@
         <member name="M:Dynastream.Fit.ObdiiDataMesg.GetSystemTime(System.Int32)">
             <summary>
              Retrieves the SystemTime field
-             Comment: System time associated with sample expressed in ms, can be used instead of time_offset.  There will be a system_time value for each raw_data element.  For multibyte pids the system_time is repeated.</summary>
+             Comment: System time associated with sample expressed in ms, can be used instead of time_offset. There will be a system_time value for each raw_data element. For multibyte pids the system_time is repeated.</summary>
              <param name="index">0 based index of SystemTime element to retrieve</param>
              <returns>Returns nullable uint representing the SystemTime field</returns>
         </member>
         <member name="M:Dynastream.Fit.ObdiiDataMesg.SetSystemTime(System.Int32,System.Nullable{System.UInt32})">
             <summary>
             Set SystemTime field
-            Comment: System time associated with sample expressed in ms, can be used instead of time_offset.  There will be a system_time value for each raw_data element.  For multibyte pids the system_time is repeated.</summary>
+            Comment: System time associated with sample expressed in ms, can be used instead of time_offset. There will be a system_time value for each raw_data element. For multibyte pids the system_time is repeated.</summary>
             <param name="index">0 based index of system_time</param>
             <param name="systemTime_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.ObdiiDataMesg.GetStartTimestamp">
             <summary>
              Retrieves the StartTimestamp field
-             Comment: Timestamp of first sample recorded in the message.  Used with time_offset to generate time of each sample</summary>
+             Comment: Timestamp of first sample recorded in the message. Used with time_offset to generate time of each sample</summary>
              <returns>Returns DateTime representing the StartTimestamp field</returns>
         </member>
         <member name="M:Dynastream.Fit.ObdiiDataMesg.SetStartTimestamp(Dynastream.Fit.DateTime)">
             <summary>
             Set StartTimestamp field
-            Comment: Timestamp of first sample recorded in the message.  Used with time_offset to generate time of each sample</summary>
+            Comment: Timestamp of first sample recorded in the message. Used with time_offset to generate time of each sample</summary>
             <param name="startTimestamp_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.ObdiiDataMesg.GetStartTimestampMs">
@@ -8967,13 +9069,13 @@
         <member name="M:Dynastream.Fit.OneDSensorCalibrationMesg.GetCalibrationFactor">
             <summary>
              Retrieves the CalibrationFactor field
-             Comment: Calibration factor used to convert from raw ADC value to degrees, g,  etc.</summary>
+             Comment: Calibration factor used to convert from raw ADC value to degrees, g, etc.</summary>
              <returns>Returns nullable uint representing the CalibrationFactor field</returns>
         </member>
         <member name="M:Dynastream.Fit.OneDSensorCalibrationMesg.SetCalibrationFactor(System.Nullable{System.UInt32})">
             <summary>
             Set CalibrationFactor field
-            Comment: Calibration factor used to convert from raw ADC value to degrees, g,  etc.</summary>
+            Comment: Calibration factor used to convert from raw ADC value to degrees, g, etc.</summary>
             <param name="calibrationFactor_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.OneDSensorCalibrationMesg.GetBaroCalFactor">
@@ -9242,13 +9344,13 @@
         <member name="M:Dynastream.Fit.RecordMesg.GetResistance">
             <summary>
              Retrieves the Resistance field
-             Comment: Relative. 0 is none  254 is Max.</summary>
+             Comment: Relative. 0 is none 254 is Max.</summary>
              <returns>Returns nullable byte representing the Resistance field</returns>
         </member>
         <member name="M:Dynastream.Fit.RecordMesg.SetResistance(System.Nullable{System.Byte})">
             <summary>
             Set Resistance field
-            Comment: Relative. 0 is none  254 is Max.</summary>
+            Comment: Relative. 0 is none 254 is Max.</summary>
             <param name="resistance_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.RecordMesg.GetTimeFromCourse">
@@ -9297,7 +9399,7 @@
             <summary>
              Retrieves the Speed1s field
              Units: m/s
-             Comment: Speed at 1s intervals.  Timestamp field indicates time of last array element.</summary>
+             Comment: Speed at 1s intervals. Timestamp field indicates time of last array element.</summary>
              <param name="index">0 based index of Speed1s element to retrieve</param>
              <returns>Returns nullable float representing the Speed1s field</returns>
         </member>
@@ -9305,7 +9407,7 @@
             <summary>
             Set Speed1s field
             Units: m/s
-            Comment: Speed at 1s intervals.  Timestamp field indicates time of last array element.</summary>
+            Comment: Speed at 1s intervals. Timestamp field indicates time of last array element.</summary>
             <param name="index">0 based index of speed_1s</param>
             <param name="speed1s_">Nullable field value to be set</param>
         </member>
@@ -13528,7 +13630,7 @@
             <summary>
              Retrieves the AvgRightPowerPhasePeak field
              Units: degrees
-             Comment: Average right power phase peak angles data value indexes  defined by power_phase_type.</summary>
+             Comment: Average right power phase peak angles data value indexes defined by power_phase_type.</summary>
              <param name="index">0 based index of AvgRightPowerPhasePeak element to retrieve</param>
              <returns>Returns nullable float representing the AvgRightPowerPhasePeak field</returns>
         </member>
@@ -13536,7 +13638,7 @@
             <summary>
             Set AvgRightPowerPhasePeak field
             Units: degrees
-            Comment: Average right power phase peak angles data value indexes  defined by power_phase_type.</summary>
+            Comment: Average right power phase peak angles data value indexes defined by power_phase_type.</summary>
             <param name="index">0 based index of avg_right_power_phase_peak</param>
             <param name="avgRightPowerPhasePeak_">Nullable field value to be set</param>
         </member>
@@ -13789,6 +13891,16 @@
             Set AvgVam field
             Units: m/s</summary>
             <param name="avgVam_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetTrainingLoadPeak">
+            <summary>
+             Retrieves the TrainingLoadPeak field</summary>
+             <returns>Returns nullable float representing the TrainingLoadPeak field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetTrainingLoadPeak(System.Nullable{System.Single})">
+            <summary>
+            Set TrainingLoadPeak field</summary>
+            <param name="trainingLoadPeak_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.SessionMesg.GetTotalGrit">
             <summary>
@@ -14347,13 +14459,13 @@
         <member name="M:Dynastream.Fit.ThreeDSensorCalibrationMesg.GetCalibrationFactor">
             <summary>
              Retrieves the CalibrationFactor field
-             Comment: Calibration factor used to convert from raw ADC value to degrees, g,  etc.</summary>
+             Comment: Calibration factor used to convert from raw ADC value to degrees, g, etc.</summary>
              <returns>Returns nullable uint representing the CalibrationFactor field</returns>
         </member>
         <member name="M:Dynastream.Fit.ThreeDSensorCalibrationMesg.SetCalibrationFactor(System.Nullable{System.UInt32})">
             <summary>
             Set CalibrationFactor field
-            Comment: Calibration factor used to convert from raw ADC value to degrees, g,  etc.</summary>
+            Comment: Calibration factor used to convert from raw ADC value to degrees, g, etc.</summary>
             <param name="calibrationFactor_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.ThreeDSensorCalibrationMesg.GetAccelCalFactor">
@@ -15684,14 +15796,14 @@
             <summary>
              Retrieves the TemperatureFeelsLike field
              Units: C
-             Comment: Heat Index if  GCS heatIdx above or equal to 90F or wind chill if GCS windChill below or equal to 32F</summary>
+             Comment: Heat Index if GCS heatIdx above or equal to 90F or wind chill if GCS windChill below or equal to 32F</summary>
              <returns>Returns nullable sbyte representing the TemperatureFeelsLike field</returns>
         </member>
         <member name="M:Dynastream.Fit.WeatherConditionsMesg.SetTemperatureFeelsLike(System.Nullable{System.SByte})">
             <summary>
             Set TemperatureFeelsLike field
             Units: C
-            Comment: Heat Index if  GCS heatIdx above or equal to 90F or wind chill if GCS windChill below or equal to 32F</summary>
+            Comment: Heat Index if GCS heatIdx above or equal to 90F or wind chill if GCS windChill below or equal to 32F</summary>
             <param name="temperatureFeelsLike_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.WeatherConditionsMesg.GetRelativeHumidity">
@@ -15951,13 +16063,13 @@
         <member name="M:Dynastream.Fit.WeightScaleMesg.GetUserProfileIndex">
             <summary>
              Retrieves the UserProfileIndex field
-             Comment: Associates this weight scale message to a user.  This corresponds to the index of the user profile message in the weight scale file.</summary>
+             Comment: Associates this weight scale message to a user. This corresponds to the index of the user profile message in the weight scale file.</summary>
              <returns>Returns nullable ushort representing the UserProfileIndex field</returns>
         </member>
         <member name="M:Dynastream.Fit.WeightScaleMesg.SetUserProfileIndex(System.Nullable{System.UInt16})">
             <summary>
             Set UserProfileIndex field
-            Comment: Associates this weight scale message to a user.  This corresponds to the index of the user profile message in the weight scale file.</summary>
+            Comment: Associates this weight scale message to a user. This corresponds to the index of the user profile message in the weight scale file.</summary>
             <param name="userProfileIndex_">Nullable field value to be set</param>
         </member>
         <member name="T:Dynastream.Fit.WeightScaleMesg.FieldDefNum">
@@ -16651,6 +16763,291 @@
             <summary>
             Set WeightDisplayUnit field</summary>
             <param name="weightDisplayUnit_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryTargetType">
+            <summary>
+             Retrieves the SecondaryTargetType field</summary>
+             <returns>Returns nullable WktStepTarget enum representing the SecondaryTargetType field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryTargetType(System.Nullable{Dynastream.Fit.WktStepTarget})">
+            <summary>
+            Set SecondaryTargetType field</summary>
+            <param name="secondaryTargetType_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryTargetValue">
+            <summary>
+             Retrieves the SecondaryTargetValue field</summary>
+             <returns>Returns nullable uint representing the SecondaryTargetValue field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryTargetValue(System.Nullable{System.UInt32})">
+            <summary>
+            Set SecondaryTargetValue field</summary>
+            <param name="secondaryTargetValue_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryTargetSpeedZone">
+            <summary>
+            Retrieves the SecondaryTargetSpeedZone subfield
+            Comment: speed zone (1-10);Custom =0;</summary>
+            <returns>Nullable uint representing the SecondaryTargetSpeedZone subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryTargetSpeedZone(System.Nullable{System.UInt32})">
+             <summary>
+            
+             Set SecondaryTargetSpeedZone subfield
+             Comment: speed zone (1-10);Custom =0;</summary>
+             <param name="secondaryTargetSpeedZone">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryTargetHrZone">
+            <summary>
+            Retrieves the SecondaryTargetHrZone subfield
+            Comment: hr zone (1-5);Custom =0;</summary>
+            <returns>Nullable uint representing the SecondaryTargetHrZone subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryTargetHrZone(System.Nullable{System.UInt32})">
+             <summary>
+            
+             Set SecondaryTargetHrZone subfield
+             Comment: hr zone (1-5);Custom =0;</summary>
+             <param name="secondaryTargetHrZone">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryTargetCadenceZone">
+            <summary>
+            Retrieves the SecondaryTargetCadenceZone subfield
+            Comment: Zone (1-?); Custom = 0;</summary>
+            <returns>Nullable uint representing the SecondaryTargetCadenceZone subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryTargetCadenceZone(System.Nullable{System.UInt32})">
+             <summary>
+            
+             Set SecondaryTargetCadenceZone subfield
+             Comment: Zone (1-?); Custom = 0;</summary>
+             <param name="secondaryTargetCadenceZone">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryTargetPowerZone">
+            <summary>
+            Retrieves the SecondaryTargetPowerZone subfield
+            Comment: Power Zone ( 1-7); Custom = 0;</summary>
+            <returns>Nullable uint representing the SecondaryTargetPowerZone subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryTargetPowerZone(System.Nullable{System.UInt32})">
+             <summary>
+            
+             Set SecondaryTargetPowerZone subfield
+             Comment: Power Zone ( 1-7); Custom = 0;</summary>
+             <param name="secondaryTargetPowerZone">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryTargetRepeatSteps">
+            <summary>
+            Retrieves the SecondaryTargetRepeatSteps subfield
+            Comment: # of repetitions</summary>
+            <returns>Nullable uint representing the SecondaryTargetRepeatSteps subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryTargetRepeatSteps(System.Nullable{System.UInt32})">
+             <summary>
+            
+             Set SecondaryTargetRepeatSteps subfield
+             Comment: # of repetitions</summary>
+             <param name="secondaryTargetRepeatSteps">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryTargetRepeatTime">
+            <summary>
+            Retrieves the SecondaryTargetRepeatTime subfield
+            Units: s</summary>
+            <returns>Nullable float representing the SecondaryTargetRepeatTime subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryTargetRepeatTime(System.Nullable{System.Single})">
+             <summary>
+            
+             Set SecondaryTargetRepeatTime subfield
+             Units: s</summary>
+             <param name="secondaryTargetRepeatTime">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryTargetRepeatDistance">
+            <summary>
+            Retrieves the SecondaryTargetRepeatDistance subfield
+            Units: m</summary>
+            <returns>Nullable float representing the SecondaryTargetRepeatDistance subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryTargetRepeatDistance(System.Nullable{System.Single})">
+             <summary>
+            
+             Set SecondaryTargetRepeatDistance subfield
+             Units: m</summary>
+             <param name="secondaryTargetRepeatDistance">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryTargetRepeatCalories">
+            <summary>
+            Retrieves the SecondaryTargetRepeatCalories subfield
+            Units: calories</summary>
+            <returns>Nullable uint representing the SecondaryTargetRepeatCalories subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryTargetRepeatCalories(System.Nullable{System.UInt32})">
+             <summary>
+            
+             Set SecondaryTargetRepeatCalories subfield
+             Units: calories</summary>
+             <param name="secondaryTargetRepeatCalories">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryTargetRepeatHr">
+            <summary>
+            Retrieves the SecondaryTargetRepeatHr subfield
+            Units: % or bpm</summary>
+            <returns>Nullable uint representing the SecondaryTargetRepeatHr subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryTargetRepeatHr(System.Nullable{System.UInt32})">
+             <summary>
+            
+             Set SecondaryTargetRepeatHr subfield
+             Units: % or bpm</summary>
+             <param name="secondaryTargetRepeatHr">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryTargetRepeatPower">
+            <summary>
+            Retrieves the SecondaryTargetRepeatPower subfield
+            Units: % or watts</summary>
+            <returns>Nullable uint representing the SecondaryTargetRepeatPower subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryTargetRepeatPower(System.Nullable{System.UInt32})">
+             <summary>
+            
+             Set SecondaryTargetRepeatPower subfield
+             Units: % or watts</summary>
+             <param name="secondaryTargetRepeatPower">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryTargetStrokeType">
+            <summary>
+            Retrieves the SecondaryTargetStrokeType subfield</summary>
+            <returns>Nullable SwimStroke enum representing the SecondaryTargetStrokeType subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryTargetStrokeType(System.Nullable{System.Byte})">
+             <summary>
+            
+             Set SecondaryTargetStrokeType subfield</summary>
+             <param name="secondaryTargetStrokeType">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryCustomTargetValueLow">
+            <summary>
+             Retrieves the SecondaryCustomTargetValueLow field</summary>
+             <returns>Returns nullable uint representing the SecondaryCustomTargetValueLow field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryCustomTargetValueLow(System.Nullable{System.UInt32})">
+            <summary>
+            Set SecondaryCustomTargetValueLow field</summary>
+            <param name="secondaryCustomTargetValueLow_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryCustomTargetSpeedLow">
+            <summary>
+            Retrieves the SecondaryCustomTargetSpeedLow subfield
+            Units: m/s</summary>
+            <returns>Nullable float representing the SecondaryCustomTargetSpeedLow subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryCustomTargetSpeedLow(System.Nullable{System.Single})">
+             <summary>
+            
+             Set SecondaryCustomTargetSpeedLow subfield
+             Units: m/s</summary>
+             <param name="secondaryCustomTargetSpeedLow">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryCustomTargetHeartRateLow">
+            <summary>
+            Retrieves the SecondaryCustomTargetHeartRateLow subfield
+            Units: % or bpm</summary>
+            <returns>Nullable uint representing the SecondaryCustomTargetHeartRateLow subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryCustomTargetHeartRateLow(System.Nullable{System.UInt32})">
+             <summary>
+            
+             Set SecondaryCustomTargetHeartRateLow subfield
+             Units: % or bpm</summary>
+             <param name="secondaryCustomTargetHeartRateLow">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryCustomTargetCadenceLow">
+            <summary>
+            Retrieves the SecondaryCustomTargetCadenceLow subfield
+            Units: rpm</summary>
+            <returns>Nullable uint representing the SecondaryCustomTargetCadenceLow subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryCustomTargetCadenceLow(System.Nullable{System.UInt32})">
+             <summary>
+            
+             Set SecondaryCustomTargetCadenceLow subfield
+             Units: rpm</summary>
+             <param name="secondaryCustomTargetCadenceLow">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryCustomTargetPowerLow">
+            <summary>
+            Retrieves the SecondaryCustomTargetPowerLow subfield
+            Units: % or watts</summary>
+            <returns>Nullable uint representing the SecondaryCustomTargetPowerLow subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryCustomTargetPowerLow(System.Nullable{System.UInt32})">
+             <summary>
+            
+             Set SecondaryCustomTargetPowerLow subfield
+             Units: % or watts</summary>
+             <param name="secondaryCustomTargetPowerLow">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryCustomTargetValueHigh">
+            <summary>
+             Retrieves the SecondaryCustomTargetValueHigh field</summary>
+             <returns>Returns nullable uint representing the SecondaryCustomTargetValueHigh field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryCustomTargetValueHigh(System.Nullable{System.UInt32})">
+            <summary>
+            Set SecondaryCustomTargetValueHigh field</summary>
+            <param name="secondaryCustomTargetValueHigh_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryCustomTargetSpeedHigh">
+            <summary>
+            Retrieves the SecondaryCustomTargetSpeedHigh subfield
+            Units: m/s</summary>
+            <returns>Nullable float representing the SecondaryCustomTargetSpeedHigh subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryCustomTargetSpeedHigh(System.Nullable{System.Single})">
+             <summary>
+            
+             Set SecondaryCustomTargetSpeedHigh subfield
+             Units: m/s</summary>
+             <param name="secondaryCustomTargetSpeedHigh">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryCustomTargetHeartRateHigh">
+            <summary>
+            Retrieves the SecondaryCustomTargetHeartRateHigh subfield
+            Units: % or bpm</summary>
+            <returns>Nullable uint representing the SecondaryCustomTargetHeartRateHigh subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryCustomTargetHeartRateHigh(System.Nullable{System.UInt32})">
+             <summary>
+            
+             Set SecondaryCustomTargetHeartRateHigh subfield
+             Units: % or bpm</summary>
+             <param name="secondaryCustomTargetHeartRateHigh">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryCustomTargetCadenceHigh">
+            <summary>
+            Retrieves the SecondaryCustomTargetCadenceHigh subfield
+            Units: rpm</summary>
+            <returns>Nullable uint representing the SecondaryCustomTargetCadenceHigh subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryCustomTargetCadenceHigh(System.Nullable{System.UInt32})">
+             <summary>
+            
+             Set SecondaryCustomTargetCadenceHigh subfield
+             Units: rpm</summary>
+             <param name="secondaryCustomTargetCadenceHigh">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.GetSecondaryCustomTargetPowerHigh">
+            <summary>
+            Retrieves the SecondaryCustomTargetPowerHigh subfield
+            Units: % or watts</summary>
+            <returns>Nullable uint representing the SecondaryCustomTargetPowerHigh subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.WorkoutStepMesg.SetSecondaryCustomTargetPowerHigh(System.Nullable{System.UInt32})">
+             <summary>
+            
+             Set SecondaryCustomTargetPowerHigh subfield
+             Units: % or watts</summary>
+             <param name="secondaryCustomTargetPowerHigh">Subfield value to be set</param>
         </member>
         <member name="T:Dynastream.Fit.WorkoutStepMesg.FieldDefNum">
             <summary>
