@@ -14,9 +14,13 @@ P2G offers two main flavors of docker images:
 1. [Docker Web UI]({{ site.baseurl }}{% link install/docker-webui.md %})
 1. [Docker Headless]({{ site.baseurl }}{% link install/docker-headless.md %})
 
+## Image Repositories
+
+P2G publishes Docker images to both [DockerHub](https://hub.docker.com/r/philosowaffle/peloton-to-garmin) and [GitHub Package](https://github.com/philosowaffle/peloton-to-garmin/pkgs/container/peloton-to-garmin).
+
 ## Tags
 
-The P2G docker images are available on [DockerHub](https://hub.docker.com/r/philosowaffle/peloton-to-garmin). The following tags are provided:
+The following tags are provided:
 
 ### Image flavors
 
@@ -27,6 +31,7 @@ The P2G docker images are available on [DockerHub](https://hub.docker.com/r/phil
 ### Tag versioning
 
 1. `stable` - Always points to the latest release
+1. `v{X}` / `v3` / `v4` - Always points to the latest of the current major version
 1. `latest` - The bleeding edge of the master branch, breaking changes may happen
 1. `vX.Y.Z` - For using a specific released version
 
