@@ -27,14 +27,15 @@ namespace UnitTests
 	public class AdHocTests
 	{
 		private string DataDirectory = Path.Join(Directory.GetCurrentDirectory(), "..", "..", "..", "Data", "p2g_workouts");
+		private string FitDirectory = Path.Join(Directory.GetCurrentDirectory(), "..", "..", "..", "Data", "sample_fit");
 
 		[OneTimeSetUp]
 		public void Setup()
 		{
 			Log.Logger = new LoggerConfiguration()
 					.WriteTo.Console()
-					//.MinimumLevel.Verbose()
-					.MinimumLevel.Information()
+					.MinimumLevel.Verbose()
+					//.MinimumLevel.Information()
 					.CreateLogger();
 		}
 
@@ -47,8 +48,8 @@ namespace UnitTests
 		//[Test]
 		//public void DecodeFitFile()
 		//{
-		//	var syncMyWorkoutFitFile = Path.Join(DataDirectory, "fenix_outdoor_run_vo2.fit");
-		//	FitDecoder.Decode(syncMyWorkoutFitFile);
+		//	var output = Path.Join(FitDirectory, "p2g_cycle_workout.fit");
+		//	FitDecoder.Decode(output);
 		//}
 
 		//[Test]
@@ -95,14 +96,24 @@ namespace UnitTests
 		//public async Task Convert()
 		//{
 		//	var file = Path.Join(DataDirectory, "rower_workout.json");
+		//	//var file = Path.Join(DataDirectory, "cycling_target_metrics.json");
+		//	//var file = Path.Join(DataDirectory, "tread_run_workout.json");
 
 		//	var autoMocker = new AutoMocker();
-		//	var settingsService = autoMocker.CreateInstance<SettingsService>();
+		//	var settingsService = autoMocker.GetMock<SettingsService>();
 
-		//	var settings = new Settings();
+		//	var settings = new Settings()
+		//	{
+		//		Format = new Format()
+		//		{
+		//			Rowing = new Rowing() { PreferredLapType = PreferredLapType.Class_Segments }
+		//		}
+		//	};
 		//	var fileHandler = new IOWrapper();
 
-		//	var fitConverter = new ConverterInstance(settingsService, fileHandler);
+		//	settingsService.SetReturnsDefault(settings);
+
+		//	var fitConverter = new ConverterInstance(settingsService.Object, fileHandler);
 		//	var messages = await fitConverter.Convert(file, settings);
 
 		//	var output = Path.Join(DataDirectory, "output.fit");

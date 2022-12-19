@@ -59,6 +59,13 @@
 					NullDataText="Loading info..."
 					@bind-Value="formatSettings.Running.PreferredLapType" />
 				<br />
+				<HxSelect
+					Label="Rowing Lap Type"
+					Data="@lapTypes"
+					Nullable="false"
+					NullDataText="Loading info..."
+					@bind-Value="formatSettings.Rowing.PreferredLapType" />
+				<br />
 				<br />
 				<HxAccordion CssClass="accordion-flush">
 					<HxAccordionItem>

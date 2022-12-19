@@ -46,7 +46,7 @@ public class TcxConverter : Converter<XElement>
 
 		var outputSummary = GetOutputSummary(samples);
 		var hrSummary = GetHeartRateSummary(samples);
-		var cadenceSummary = GetCadenceSummary(samples);
+		var cadenceSummary = GetCadenceSummary(samples, GetGarminSport(workout));
 		var resistanceSummary = GetResistanceSummary(samples);
 		var deviceInfo = await GetDeviceInfoAsync(workout.Fitness_Discipline, settings);
 
@@ -99,7 +99,7 @@ public class TcxConverter : Converter<XElement>
 
 			var tpx = new XElement(activityExtensions + "TPX");
 			if (speedMetrics is object && i < speedMetrics.Values.Length)
-				tpx.Add(new XElement(activityExtensions + "Speed", ConvertToMetersPerSecond(speedMetrics.GetValue(i), samples)));
+				tpx.Add(new XElement(activityExtensions + "Speed", ConvertToMetersPerSecond(speedMetrics.GetValue(i), speedMetrics.Display_Unit)));
 
 			if (outputMetrics is object && i < outputMetrics.Values.Length)
 				tpx.Add(new XElement(activityExtensions + "Watts", outputMetrics.Values[i]));
@@ -178,6 +178,8 @@ public class TcxConverter : Converter<XElement>
 			case FitnessDiscipline.Stretching:
 			case FitnessDiscipline.Yoga:
 			case FitnessDiscipline.Meditation:
+			case FitnessDiscipline.Caesar:
+				return "Rowing";
 			default:
 				return "Other";
 		}
@@ -204,6 +206,8 @@ public class TcxConverter : Converter<XElement>
 				return "yoga";
 			case FitnessDiscipline.Meditation:
 				return "breathwork";
+			case FitnessDiscipline.Caesar:
+				return "indoor_rowing";
 			default:
 				return "Other";
 		}

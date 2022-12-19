@@ -108,6 +108,7 @@ public class Format
 	{
 		Cycling = new Cycling();
 		Running = new Running();
+		Rowing = new Rowing();
 	}
 
 	[DisplayName("FIT")]
@@ -133,17 +134,21 @@ public class Format
 	public string DeviceInfoPath { get; set; }
 	public Cycling Cycling { get; set; }
 	public Running Running { get; set; }
+	public Rowing Rowing { get; init; }
 }
 
-public class Cycling
+public record Cycling
 {
-	[DisplayName("Cycling Preferred Lap Type")]
 	public PreferredLapType PreferredLapType { get; set; }
 }
 
-public class Running
+public record Running
 {
-	[DisplayName("Running Preferred Lap Type")]
+	public PreferredLapType PreferredLapType { get; set; }
+}
+
+public record Rowing
+{
 	public PreferredLapType PreferredLapType { get; set; }
 }
 
