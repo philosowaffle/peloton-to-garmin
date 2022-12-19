@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: TagAndRelease
+name: Release
 
 on:
   workflow_dispatch:
@@ -17,7 +17,6 @@ jobs:
   create_docker_images:
    name: Publish Docker Images - Release
    runs-on: ubuntu-latest
-   needs: build-and-test
    strategy:
     matrix:
         dockerfile: ['Dockerfile.console', 'Dockerfile.api', 'Dockerfile.webui']
