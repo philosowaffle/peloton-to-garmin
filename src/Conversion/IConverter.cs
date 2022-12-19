@@ -32,6 +32,21 @@ namespace Conversion
 
 		private static readonly ILogger _logger = LogContext.ForClass<Converter<T>>();
 
+		private static readonly GarminDeviceInfo RowingDevice = new GarminDeviceInfo()
+		{
+			Name = "Epix", // Max 20 Chars
+			ProductID = GarminProduct.EpixGen2,
+			UnitId = 3413684246,
+			ManufacturerId = 1, // Garmin
+			Version = new GarminDeviceVersion()
+			{
+				VersionMajor = 10,
+				VersionMinor = 43,
+				BuildMajor = 0,
+				BuildMinor = 0,
+			}
+		};
+
 		private static readonly GarminDeviceInfo CyclingDevice = new GarminDeviceInfo()
 		{
 			Name = "TacxTrainingAppWin", // Max 20 Chars
@@ -206,9 +221,9 @@ namespace Conversion
 			return startTime.AddSeconds(offset).ToString("yyyy-MM-ddTHH:mm:ssZ");
 		}
 
-		protected float ConvertDistanceToMeters(double value, string unit)
+		public static float ConvertDistanceToMeters(double value, string unit)
 		{
-			var distanceUnit = GetDistanceUnit(unit);
+			var distanceUnit = UnitHelpers.GetDistanceUnit(unit);
 			switch (distanceUnit)
 			{
 				case DistanceUnit.Kilometers:
@@ -217,13 +232,15 @@ namespace Conversion
 					return (float)value * _metersPerMile;
 				case DistanceUnit.Feet:
 					return (float)value * 0.3048f;
+				case DistanceUnit.FiveHundredMeters:
+					return (float)value / 500;
 				case DistanceUnit.Meters:
 				default:
 					return (float)value;
 			}
 		}
 
-		protected float GetTotalDistance(WorkoutSamples workoutSamples)
+		public static float GetTotalDistance(WorkoutSamples workoutSamples)
 		{
 			var distanceSummary = GetDistanceSummary(workoutSamples);
 			if (distanceSummary is null) return 0.0f;
@@ -232,33 +249,32 @@ namespace Conversion
 			return ConvertDistanceToMeters(distanceSummary.Value.GetValueOrDefault(), unit);
 		}
 
-		protected float ConvertToMetersPerSecond(double? value, WorkoutSamples workoutSamples, string displayUnit = null)
+		public static float ConvertToMetersPerSecond(double? value, string displayUnit)
 		{
-			var val = value.GetValueOrDefault();
+			float val = (float)value.GetValueOrDefault();
+			if (val <= 0) return 0.0f;
 
-			var unit = displayUnit;
-			if (unit is null)
+			var unit = UnitHelpers.GetSpeedUnit(displayUnit);
+
+			switch(unit)
 			{
-				var distanceSummary = GetDistanceSummary(workoutSamples);
-				if (distanceSummary is null) return (float)val;
-				unit = distanceSummary.Display_Unit;
+				case SpeedUnit.KilometersPerHour:
+				case SpeedUnit.MilesPerHour:
+					var meters = ConvertDistanceToMeters(val, displayUnit);
+					var metersPerMinute = meters / 60;
+					var metersPerSecond = metersPerMinute / 60;
+					return metersPerSecond;
+				case SpeedUnit.MinutesPer500Meters:
+					float secondsPer500m = val * 60f;
+					var mps = 500 / secondsPer500m;
+					return mps;
+				default:
+					Log.Error("Found unknown speed unit {@Unit}", unit);
+					return 0;
 			}
-
-			if (unit == "min/500m")
-			{
-				var totalSeconds = value * 60 ?? 0;
-				var mps = 500 / totalSeconds;
-				return (float)mps;
-			}
-
-			var metersPerHour = ConvertDistanceToMeters(val, unit);
-			var metersPerMinute = metersPerHour / 60;
-			var metersPerSecond = metersPerMinute / 60;
-
-			return metersPerSecond;
 		}
 
-		private Summary GetDistanceSummary(WorkoutSamples workoutSamples)
+		private static Summary GetDistanceSummary(WorkoutSamples workoutSamples)
 		{
 			if (workoutSamples?.Summaries is null)
 			{
@@ -296,8 +312,7 @@ namespace Conversion
 			if (speedSummary is null) return 0.0f;
 
 			var max = speedSummary.Max_Value.GetValueOrDefault();
-			var unit = speedSummary.Slug == "split_pace" ? speedSummary.Display_Unit : null;
-			return ConvertToMetersPerSecond(max, workoutSamples, unit);
+			return ConvertToMetersPerSecond(max, speedSummary.Display_Unit);
 		}
 
 		protected float GetAvgSpeedMetersPerSecond(WorkoutSamples workoutSamples)
@@ -306,8 +321,7 @@ namespace Conversion
 			if (speedSummary is null) return 0.0f;
 
 			var avg = speedSummary.Average_Value.GetValueOrDefault();
-			var unit = speedSummary.Slug == "split_pace" ? speedSummary.Display_Unit : null;
-			return ConvertToMetersPerSecond(avg, workoutSamples, unit);
+			return ConvertToMetersPerSecond(avg, speedSummary.Display_Unit);
 		}
 
 		protected float GetAvgGrade(WorkoutSamples workoutSamples)
@@ -484,14 +498,22 @@ namespace Conversion
 			return GetMetric("heart_rate", workoutSamples);
 		}
 
-		protected Metric GetCadenceSummary(WorkoutSamples workoutSamples)
+		protected static Metric GetCadenceSummary(WorkoutSamples workoutSamples, Sport sport)
 		{
-			var cadence = GetMetric("cadence", workoutSamples);
+			if (sport == Sport.Rowing)
+				return GetMetric("stroke_rate", workoutSamples);
 
-			if (cadence is null)
-				cadence = GetMetric("stroke_rate", workoutSamples);
+			return GetMetric("cadence", workoutSamples);
+		}
 
-			return cadence;
+		public static GraphData GetCadenceTargets(WorkoutSamples workoutSamples)
+		{
+			var targets = workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "cadence")?.Graph_Data;
+
+			if (targets is null)
+				targets = workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "stroke_rate")?.Graph_Data;
+
+			return targets;
 		}
 
 		protected Metric GetResistanceSummary(WorkoutSamples workoutSamples)
@@ -499,7 +521,7 @@ namespace Conversion
 			return GetMetric("resistance", workoutSamples);
 		}
 
-		protected Metric GetMetric(string slug, WorkoutSamples workoutSamples)
+		protected static Metric GetMetric(string slug, WorkoutSamples workoutSamples)
 		{
 			if (workoutSamples?.Metrics is null)
 			{
@@ -531,27 +553,10 @@ namespace Conversion
 			if(sport == FitnessDiscipline.Cycling)
 				return CyclingDevice;
 
-			return DefaultDevice;
-		}
+			if (sport == FitnessDiscipline.Caesar)
+				return RowingDevice;
 
-		protected DistanceUnit GetDistanceUnit(string unit)
-		{
-			switch (unit?.ToLower())
-			{
-				case "km":
-				case "kph":
-					return DistanceUnit.Kilometers;
-				case "m":
-					return DistanceUnit.Meters;
-				case "mi":
-				case "mph":
-					return DistanceUnit.Miles;
-				case "ft":
-					return DistanceUnit.Feet;
-				default:
-					Log.Error("Found unknown distance unit {@Unit}", unit);
-					return DistanceUnit.Unknown;
-			}
+			return DefaultDevice;
 		}
 
 		protected ushort? GetCyclingFtp(Workout workout, UserData userData)
@@ -580,6 +585,32 @@ namespace Conversion
 			}
 
 			return ftp;
+		}
+
+		protected static Sport GetGarminSport(Workout workout)
+		{
+			var fitnessDiscipline = workout.Fitness_Discipline;
+			switch (fitnessDiscipline)
+			{
+				case FitnessDiscipline.Cycling:
+				case FitnessDiscipline.Bike_Bootcamp:
+					return Sport.Cycling;
+				case FitnessDiscipline.Running:
+					return Sport.Running;
+				case FitnessDiscipline.Walking:
+					return Sport.Walking;
+				case FitnessDiscipline.Cardio:
+				case FitnessDiscipline.Circuit:
+				case FitnessDiscipline.Strength:
+				case FitnessDiscipline.Stretching:
+				case FitnessDiscipline.Yoga:
+				case FitnessDiscipline.Meditation:
+					return Sport.Training;
+				case FitnessDiscipline.Caesar:
+					return Sport.Rowing;
+				default:
+					return Sport.Invalid;
+			}
 		}
 	}
 }
