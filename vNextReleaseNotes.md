@@ -5,6 +5,8 @@
 
 - [#381] Rowing - now captures AvgStrokeDistance
 - [#374] Rowing - can now configure PreferredLapType for Row workouts
+- [#358] Begin publishing Docker Images on GitHub Packages
+- [#358] Introduce new Docker major version Release tag - allows you to pin to all updates to a major version i.e. `v3`
 
 ## Changes
 

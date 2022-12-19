@@ -33,7 +33,7 @@ jobs:
     # Publish dotnet core exe
     - uses: actions/checkout@v2
     - name: Setup .NET Core SDK ${{ matrix.dotnet }}
-      uses: actions/setup-dotnet@v1.7.2
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ matrix.dotnet }}
     

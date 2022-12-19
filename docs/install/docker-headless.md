@@ -9,8 +9,16 @@ nav_order: 2
 
 This the original flavor of P2G. It runs without any user interface and relies on configuration from `configuration.local.json` file.
 
+### [DockerHub](https://hub.docker.com/r/philosowaffle/peloton-to-garmin)
+
 ```bash
 docker run -v /full/path/to/configuration.local.json:/app/configuration.local.json -v /full/path/to/output:/app/output philosowaffle/peloton-to-garmin:stable
+```
+
+### [GitHub Package](https://github.com/philosowaffle/peloton-to-garmin/pkgs/container/peloton-to-garmin)
+
+```bash
+docker run -v /full/path/to/configuration.local.json:/app/configuration.local.json -v /full/path/to/output:/app/output ghcr.io/philosowaffle/peloton-to-garmin:stable
 ```
 
 ## docker-compose
