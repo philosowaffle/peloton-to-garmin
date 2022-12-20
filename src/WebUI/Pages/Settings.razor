@@ -1,6 +1,7 @@
 ﻿@page "/settings"
 @inherits TracingComponentBase
 @inject IApiClient _apiClient
+@inject IHxMessengerService _toaster;
 
 <PageTitle>Settings</PageTitle>
 <h1>Settings</h1>
@@ -210,7 +211,24 @@
 	protected async Task SaveAppSettings()
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(SaveAppSettings)}", kind: ActivityKind.Client);
-		appSettings = await _apiClient.SettingsAppPostAsync(appSettings);
+
+		_toaster.Clear();
+
+		try 
+		{
+			appSettings = await _apiClient.SettingsAppPostAsync(appSettings);
+			_toaster.AddInformation("App Settings Saved!");
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to save App Settings - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to save App settings.", e);
+		}
 	}
 
 	protected async Task SaveFormatSettings() 
