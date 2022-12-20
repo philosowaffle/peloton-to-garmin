@@ -186,6 +186,7 @@ This section provides settings related to fetching workouts from Peloton.
 ```
 
 ⚠️ Your username and password for Peloton and Garmin Connect are stored in clear text, which **is not secure**. Please be aware of the risks. ⚠️
+⚠️ As of version 3.3.0 credentials are stored **encrypted** for those using the **WebUI** version of P2G. ⚠️
 
 | Field      | Required | Default | UI Setting Location | Description |
 |:-----------|:---------|:--------|:--------------------|:------------|
@@ -237,6 +238,7 @@ This section provides settings related to uploading workouts to Garmin.
 ```
 
 ⚠️ Your username and password for Peloton and Garmin Connect are stored in clear text, which **is not secure**. Please be aware of the risks. ⚠️
+⚠️ As of version 3.3.0 credentials are stored **encrypted** for those using the **WebUI** version of P2G. ⚠️
 
 | Field      | Required | Default | UI Setting Location | Description |
 |:-----------|:---------|:--------|:--------------------|:------------|
