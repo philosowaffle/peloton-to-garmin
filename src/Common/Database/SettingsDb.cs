@@ -1,4 +1,5 @@
-﻿using Common.Observe;
+﻿using Common.Helpers;
+using Common.Observe;
 using JsonFlatFileDataStore;
 using Prometheus;
 using Serilog;
@@ -36,7 +37,11 @@ namespace Common.Database
 
 			try
 			{
-				return _db.GetItem<Settings>("settings");
+				var settings = _db.GetItem<Settings>("settings");
+				settings.Peloton.Decrypt();
+				settings.Garmin.Decrypt();
+
+				return settings;
 			}
 			catch (KeyNotFoundException k)
 			{
@@ -68,6 +73,9 @@ namespace Common.Database
 
 			try
 			{
+				settings.Peloton.Encrypt();
+				settings.Garmin.Encrypt();
+
 				return _db.ReplaceItemAsync("settings", settings, upsert: true);
 			}
 			catch (Exception e)
