@@ -11,8 +11,12 @@ namespace Common.Database
 {
 	public interface ISettingsDb
 	{
-		Task<Settings> GetSettingsAsync();
-		Task UpsertSettingsAsync(Settings settings);
+		[Obsolete]
+		Settings GetLegacySettings();
+		[Obsolete]
+		Task RemoveLegacySettingsAsync();
+		Task<Settings> GetSettingsAsync(int userId);
+		Task<bool> UpsertSettingsAsync(int userId, Settings settings);
 	}
 
 	public class SettingsDb : DbBase<Settings>, ISettingsDb
@@ -27,12 +31,12 @@ namespace Common.Database
 			_db = new DataStore(DbPath);
 		}
 
-		public async Task<Settings> GetSettingsAsync()
+		public Settings GetLegacySettings()
 		{
 			using var metrics = DbMetrics.DbActionDuration
 									.WithLabels("get", DbName)
 									.NewTimer();
-			using var tracing = Tracing.Trace($"{nameof(SettingsDb)}.{nameof(GetSettingsAsync)}", TagValue.Db)
+			using var tracing = Tracing.Trace($"{nameof(SettingsDb)}.{nameof(GetLegacySettings)}", TagValue.Db)
 										.WithTable(DbName);
 
 			try
@@ -43,27 +47,49 @@ namespace Common.Database
 
 				return settings;
 			}
+			catch (KeyNotFoundException)
+			{
+				return null;
+			}
+		}
+
+		public async Task<Settings> GetSettingsAsync(int userId)
+		{
+			using var metrics = DbMetrics.DbActionDuration
+									.WithLabels("get", DbName)
+									.NewTimer();
+			using var tracing = Tracing.Trace($"{nameof(SettingsDb)}.{nameof(GetSettingsAsync)}.ByUserId", TagValue.Db)
+										.WithTable(DbName);
+
+			try
+			{
+				var settings = _db.GetItem<Settings>(userId.ToString());
+				settings.Peloton.Decrypt();
+				settings.Garmin.Decrypt();
+
+				return settings;
+			}
 			catch (KeyNotFoundException k)
 			{
-				_logger.Verbose(k, "Settings key not found in DB. Creating default Settings.");
+				_logger.Verbose(k, $"Settings key not found in DB for user {userId}. Creating default Settings.");
 
-				var success = await _db.InsertItemAsync("settings", _defaultSettings);
+				var success = await _db.InsertItemAsync(userId.ToString(), _defaultSettings);
 				if (!success)
 				{
-					_logger.Error("Failed to save default Settings to Db.");
+					_logger.Error($"Failed to save default Settings to Db for user {userId}");
 					throw;
 				}
-	
+
 				return _defaultSettings;
 			}
 			catch (Exception e)
 			{
-				_logger.Error(e, "Failed to get settings from db");
+				_logger.Error(e, $"Failed to upsert settings to db for user {userId}");
 				throw;
 			}
 		}
 
-		public Task UpsertSettingsAsync(Settings settings)
+		public Task<bool> UpsertSettingsAsync(int userId, Settings settings)
 		{
 			using var metrics = DbMetrics.DbActionDuration
 									.WithLabels("upsert", DbName)
@@ -76,13 +102,18 @@ namespace Common.Database
 				settings.Peloton.Encrypt();
 				settings.Garmin.Encrypt();
 
-				return _db.ReplaceItemAsync("settings", settings, upsert: true);
+				return _db.ReplaceItemAsync(userId.ToString(), settings, upsert: true);
 			}
 			catch (Exception e)
 			{
-				_logger.Error(e, "Failed to upsert settings to db");
+				_logger.Error(e, $"Failed to upsert settings to db for user {userId}");
 				return Task.FromResult(false);
 			}
+		}
+
+		public Task RemoveLegacySettingsAsync()
+		{
+			return _db.DeleteItemAsync("settings");
 		}
 	}
 }

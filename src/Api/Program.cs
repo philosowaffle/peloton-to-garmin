@@ -98,6 +98,9 @@ builder.Services.AddSingleton<IConverter, FitConverter>();
 builder.Services.AddSingleton<IConverter, TcxConverter>();
 builder.Services.AddSingleton<IConverter, JsonConverter>();
 
+// USERS
+builder.Services.AddSingleton<IUsersDb, UsersDb>();
+
 FlurlConfiguration.Configure(config.Observability);
 Tracing.EnableApiTracing(builder.Services, config.Observability.Jaeger);
 
@@ -152,23 +155,48 @@ app.MapControllers();
 ///////////////////////////////////////////////////////////
 /// MIGRATIONS
 ///////////////////////////////////////////////////////////
+#pragma warning disable CS0612 // Type or member is obsolete
+var settingsDb = app.Services.GetService<ISettingsDb>();
+var settings = settingsDb!.GetLegacySettings();
+
+var usersDb = app.Services.GetService<IUsersDb>();
+var users = await usersDb!.GetUsersAsync();
+var admin = users.First();
+
+// Migrate to Admin user
+if (settings is object)
+{
+	try
+	{
+		var success = await settingsDb.UpsertSettingsAsync(admin.Id, settings);
+		if (success) await settingsDb.RemoveLegacySettingsAsync();
+		else Log.Error("[MIGRATION] Failed to migrate existing settings to Admin user.");
+
+		var syncStatusDb = app.Services.GetService<ISyncStatusDb>();
+		await syncStatusDb!.DeleteLegacySyncStatusAsync();
+		Log.Information("[MIGRATION] Successfully migrated existing data to new Admin user.");
+	}
+	catch (Exception e)
+	{
+		Log.Error(e, "[MIGRATION] Failed to migrate existing data to Admin user.");
+	}
+}
 
 // Migrate to Encrypted Credentials V1
-var settingsDb = app.Services.GetService<ISettingsDb>();
-var settings = await settingsDb!.GetSettingsAsync();
-
+settings = await settingsDb!.GetSettingsAsync(admin.Id);
 if (settings.Peloton.EncryptionVersion != EncryptionVersion.V1
 	|| settings.Garmin.EncryptionVersion != EncryptionVersion.V1)
 {
 	try
 	{
-		await settingsDb.UpsertSettingsAsync(settings);
-		Log.Information("Successfully encrypted Peloton and Garmin credentials.");
+		await settingsDb.UpsertSettingsAsync(admin.Id, settings);
+		Log.Information("[MIGRATION] Successfully encrypted Peloton and Garmin credentials.");
 	} catch (Exception e)
 	{
-		Log.Error(e, "Failed to encrypt Peloton and Garmin credentials.");
+		Log.Error(e, "[MIGRATION] Failed to encrypt Peloton and Garmin credentials.");
 	}	
 }
+#pragma warning restore CS0612 // Type or member is obsolete
 
 ///////////////////////////////////////////////////////////
 /// START
