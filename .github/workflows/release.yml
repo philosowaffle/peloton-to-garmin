@@ -22,17 +22,17 @@ jobs:
         dockerfile: ['Dockerfile.console', 'Dockerfile.api', 'Dockerfile.webui']
         include:
             - dockerfile: 'Dockerfile.console'
-                tag: stable
-                versionTag: v${{ github.event.inputs.version }}
-                majorVersionTag: v${{ github.event.inputs.majorVersion }}
+              tag: stable
+              versionTag: v${{ github.event.inputs.version }}
+              majorVersionTag: v${{ github.event.inputs.majorVersion }}
             - dockerfile: 'Dockerfile.api'
-                tag: api-stable
-                versionTag: api-v${{ github.event.inputs.version }}
-                majorVersionTag: api-v${{ github.event.inputs.majorVersion }}
+              tag: api-stable
+              versionTag: api-v${{ github.event.inputs.version }}
+              majorVersionTag: api-v${{ github.event.inputs.majorVersion }}
             - dockerfile: 'Dockerfile.webui'
-                tag: webui-stable
-                versionTag: webui-v${{ github.event.inputs.version }}
-                majorVersionTag: webui-v${{ github.event.inputs.majorVersion }}
+              tag: webui-stable
+              versionTag: webui-v${{ github.event.inputs.version }}
+              majorVersionTag: webui-v${{ github.event.inputs.majorVersion }}
 
    steps:
 
