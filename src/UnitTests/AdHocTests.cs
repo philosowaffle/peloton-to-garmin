@@ -19,6 +19,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -38,6 +39,21 @@ namespace UnitTests
 					//.MinimumLevel.Information()
 					.CreateLogger();
 		}
+
+		//[Test]
+		//public void EncryptionKeyGenerator()
+		//{
+		//	using var aesAlg = Aes.Create();
+
+		//	aesAlg.GenerateKey();
+		//	aesAlg.GenerateIV();
+
+		//	var key = string.Join(", ", aesAlg.Key);
+		//	var iv = string.Join(", ", aesAlg.IV);
+
+		//	TestContext.Out.WriteLine("Key: " + key);
+		//	TestContext.Out.WriteLine("IV: " + iv);
+		//}
 
 		//[Test]
 		//public async Task AA()

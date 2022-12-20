@@ -92,7 +92,21 @@
 				<br />
 				<HxInputText @bind-Value="pelotonSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
 				<br />
-				<HxInputText @bind-Value="pelotonSettings.Password" Label="Password" Placeholder="@pelotonPasswordPlaceholderString" Type="InputType.Password" />
+				<HxInputText @bind-Value="pelotonSettings.Password" Label="Password" Type="InputType.Password">
+					<LabelTemplate>
+						Password
+						@if (pelotonSettings.IsPasswordSet)
+						{
+							<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success">Password is set</HxBadge>
+						}
+					</LabelTemplate>
+					<InputGroupEndTemplate>
+						@if (pelotonSettings.IsPasswordSet)
+						{
+							<HxButton Text="Clear" Color="ThemeColor.Secondary" Outline="true" OnClick="ClearPelotonPassword" />
+						}
+					</InputGroupEndTemplate>
+				</HxInputText>
 				<br />
 				<HxMultiSelect 
 				   Label="Excluded Workout Types"
@@ -116,7 +130,21 @@
 				<HxFormState Enabled="@garminSettings.Upload">
 					<HxInputText @bind-Value="garminSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
 					<br />
-					<HxInputText @bind-Value="garminSettings.Password" Label="Password" Placeholder="@garminPasswordPlaceholderString" Type="InputType.Password" />
+					<HxInputText @bind-Value="garminSettings.Password" Label="Password" Type="InputType.Password" >
+						<LabelTemplate>
+						Password
+						@if (garminSettings.IsPasswordSet)
+						{
+							<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success">Password is set</HxBadge>
+						}
+						</LabelTemplate>
+						<InputGroupEndTemplate>
+							@if (garminSettings.IsPasswordSet)
+							{
+								<HxButton Text="Clear" Color="ThemeColor.Secondary" Outline="true" OnClick="ClearPelotonPassword" />
+							}
+						</InputGroupEndTemplate>
+					</HxInputText>
 					<br />
 					<HxAccordion CssClass="accordion-flush">
 						<HxAccordionItem>
@@ -161,9 +189,6 @@
 	private SettingsGarminGetResponse garminSettings;
 	private string configDocumentation;
 
-	private string pelotonPasswordPlaceholderString = string.Empty;
-	private string garminPasswordPlaceholderString = string.Empty;
-
 	private List<WorkoutType> selectedWorkoutTypes = new List<WorkoutType>();
 
 	public Settings() : base(nameof(Settings))
@@ -194,11 +219,25 @@
 		formatSettings = await _apiClient.SettingsFormatPostAsync(formatSettings);
 	}
 
-	protected async Task SavePelotonSettings() 
+	protected void ClearPelotonPassword()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(ClearPelotonPassword)}", kind: ActivityKind.Client);
+		pelotonSettings.Password = string.Empty;
+		pelotonSettings.IsPasswordSet = false;
+	}
+
+	protected async Task SavePelotonSettings()
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(SavePelotonSettings)}", kind: ActivityKind.Client);
 		pelotonSettings.ExcludeWorkoutTypes = selectedWorkoutTypes;
 		pelotonSettings = await _apiClient.SettingsPelotonPostAsync(pelotonSettings);
+	}
+
+	protected void ClearGarminPassword()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(ClearGarminPassword)}", kind: ActivityKind.Client);
+		garminSettings.Password = string.Empty;
+		garminSettings.IsPasswordSet = false;
 	}
 
 	protected async Task SaveGarminSettings() 
@@ -224,9 +263,6 @@
 		formatSettings = settings.Format;
 		pelotonSettings = settings.Peloton;
 		garminSettings = settings.Garmin;
-
-		pelotonPasswordPlaceholderString = pelotonSettings.IsPasswordSet ? "password is set" : "password is not set";
-		garminPasswordPlaceholderString = garminSettings.IsPasswordSet ? "password is set" : "password is not set";
 
 		selectedWorkoutTypes = pelotonSettings.ExcludeWorkoutTypes.ToList();
 	}

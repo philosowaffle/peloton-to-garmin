@@ -149,4 +149,29 @@ if (config.Observability.Prometheus.Enabled)
 app.UseAuthorization();
 app.MapControllers();
 
+///////////////////////////////////////////////////////////
+/// MIGRATIONS
+///////////////////////////////////////////////////////////
+
+// Migrate to Encrypted Credentials V1
+var settingsDb = app.Services.GetService<ISettingsDb>();
+var settings = await settingsDb!.GetSettingsAsync();
+
+if (settings.Peloton.EncryptionVersion != EncryptionVersion.V1
+	|| settings.Garmin.EncryptionVersion != EncryptionVersion.V1)
+{
+	try
+	{
+		await settingsDb.UpsertSettingsAsync(settings);
+		Log.Information("Successfully encrypted Peloton and Garmin credentials.");
+	} catch (Exception e)
+	{
+		Log.Error(e, "Failed to encrypt Peloton and Garmin credentials.");
+	}	
+}
+
+///////////////////////////////////////////////////////////
+/// START
+///////////////////////////////////////////////////////////
+
 await app.RunAsync();

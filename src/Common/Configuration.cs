@@ -168,6 +168,7 @@ public class Peloton : ICredentials
 		NumWorkoutsToDownload = 5;
 	}
 
+	public EncryptionVersion EncryptionVersion { get; set; }
 	public string Email { get; set; }
 	public string Password { get; set; }
 	public int NumWorkoutsToDownload { get; set; }
@@ -181,6 +182,7 @@ public class Garmin : ICredentials
 		UploadStrategy = UploadStrategy.NativeImplV1;
 	}
 
+	public EncryptionVersion EncryptionVersion { get; set; }
 	public string Email { get; set; }
 	public string Password { get; set; }
 	public bool Upload { get; set; }
@@ -238,22 +240,29 @@ public class Developer
 	public string UserAgent { get; set; }
 }
 
-public enum UploadStrategy
+public enum UploadStrategy : byte
 {
 	PythonAndGuploadInstalledLocally = 0,
 	WindowsExeBundledPython = 1,
 	NativeImplV1 = 2
 }
 
-public enum FileFormat
+public enum FileFormat : byte
 {
 	Fit = 0,
 	Tcx = 1,
 	Json = 2
 }
 
+public enum EncryptionVersion : byte
+{
+	None = 0,
+	V1 = 1,
+}
+
 public interface ICredentials
 {
+	public EncryptionVersion EncryptionVersion { get; set; }
 	public string Email { get; set; }
 	public string Password { get; set; }
 }

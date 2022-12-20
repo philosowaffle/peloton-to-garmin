@@ -1,23 +1,25 @@
 ﻿using Serilog;
 using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace Common.Helpers;
 
 public static class Encryption
 {
-	private const string EncryptionKey = "395b6f3e-795f-11ed-a1eb-0242ac120002";
+	private static readonly byte[] Key_V1 = new byte[] { 93, 200, 159, 57, 99, 83, 228, 185, 232, 146, 99, 32, 196, 228, 250, 171, 51, 127, 166, 88, 155, 7, 123, 92, 166, 216, 37, 103, 41, 240, 204, 70 };
+	private static readonly byte[] IV_V1 = new byte[] { 170, 245, 63, 175, 180, 206, 91, 224, 69, 186, 51, 196, 193, 166, 245, 50 };
 
-	public static string Encrypt(this string text) => Encrypt(text, EncryptionKey);
-	public static string Encrypt(this string text, string keyString)
+	public static string Encrypt(this string text) => Encrypt(text, Key_V1, IV_V1);
+	public static string Encrypt(this string text, byte[] key, byte[] iv)
 	{
-		var key = Encoding.UTF8.GetBytes(keyString);
-
 		using (var aesAlg = Aes.Create())
 		{
-			using (var encryptor = aesAlg.CreateEncryptor(key, aesAlg.IV))
+			aesAlg.Key = key;
+			aesAlg.IV = iv;
+
+			using (var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV))
 			{
 				using (var msEncrypt = new MemoryStream())
 				{
@@ -27,40 +29,29 @@ public static class Encryption
 						swEncrypt.Write(text);
 					}
 
-					var iv = aesAlg.IV;
-
-					var decryptedContent = msEncrypt.ToArray();
-
-					var result = new byte[iv.Length + decryptedContent.Length];
-
-					Buffer.BlockCopy(iv, 0, result, 0, iv.Length);
-					Buffer.BlockCopy(decryptedContent, 0, result, iv.Length, decryptedContent.Length);
-
-					return Convert.ToBase64String(result);
+					var encrypted = msEncrypt.ToArray();
+					return Convert.ToBase64String(encrypted);
 				}
 			}
 		}
 	}
 
-	public static string Decrypt(this string cipherText) => DecryptString(cipherText, EncryptionKey);
+	public static string Decrypt(this string cipherText) => DecryptString(cipherText, Key_V1, IV_V1);
 
-	public static string DecryptString(this string cipherText, string keyString)
+	public static string DecryptString(this string cipherText, byte[] key, byte[] iv)
 	{
-		var fullCipher = Convert.FromBase64String(cipherText);
-
-		var iv = new byte[16];
-		var cipher = new byte[16];
-
-		Buffer.BlockCopy(fullCipher, 0, iv, 0, iv.Length);
-		Buffer.BlockCopy(fullCipher, iv.Length, cipher, 0, iv.Length);
-		var key = Encoding.UTF8.GetBytes(keyString);
+		var encrypted = Convert.FromBase64String(cipherText);
+		var encryptedByteArray = encrypted.ToArray();
 
 		using (var aesAlg = Aes.Create())
 		{
-			using (var decryptor = aesAlg.CreateDecryptor(key, iv))
+			aesAlg.Key = key;
+			aesAlg.IV = iv;
+
+			using (var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV))
 			{
 				string result;
-				using (var msDecrypt = new MemoryStream(cipher))
+				using (var msDecrypt = new MemoryStream(encryptedByteArray))
 				{
 					using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
 					{
@@ -78,15 +69,37 @@ public static class Encryption
 
 	public static void Encrypt(this ICredentials credentials)
 	{
-		if (!string.IsNullOrWhiteSpace(credentials.Email))
-			credentials.Email = credentials.Email.Encrypt();
+		if (string.IsNullOrWhiteSpace(credentials.Password)
+			|| string.IsNullOrWhiteSpace(credentials.Email))
+		{
+			credentials.EncryptionVersion = EncryptionVersion.None;
+			return;
+		}
 
-		if (!string.IsNullOrWhiteSpace(credentials.Password))
+		var originalPassword = credentials.Password;
+		var originalEmail = credentials.Email;
+
+		try
+		{
+			credentials.Email = credentials.Email.Encrypt();
 			credentials.Password = credentials.Password.Encrypt();
+			credentials.EncryptionVersion = EncryptionVersion.V1;
+
+		} catch (Exception e)
+		{
+			Log.Error(e, "Failed to encrypt Email or Password.");
+
+			credentials.Email = originalEmail;
+			credentials.Password = originalPassword;
+			credentials.EncryptionVersion = EncryptionVersion.None;
+			return;
+		}
 	}
 
 	public static void Decrypt(this ICredentials credentials)
 	{
+		if (credentials.EncryptionVersion != EncryptionVersion.V1) return;
+
 		if (!string.IsNullOrWhiteSpace(credentials.Email))
 		{
 			try
@@ -98,7 +111,6 @@ public static class Encryption
 				Log.Verbose(e, "Failed to decrypt Email, returning as is.");
 			}
 		}
-
 
 		if (!string.IsNullOrWhiteSpace(credentials.Password))
 		{
