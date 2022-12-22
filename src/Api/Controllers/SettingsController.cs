@@ -48,27 +48,6 @@ public class SettingsController : Controller
 	}
 
 	/// <summary>
-	/// Create or update all settings.
-	/// </summary>
-	/// <response code="200">Returns the settings</response>
-	[HttpPost]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	public async Task<SettingsGetResponse> Post([FromBody]Settings updatedSettings)
-	{
-		// TODO: Validation
-
-		await _settingsService.UpdateSettingsAsync(updatedSettings);
-
-		var settings = await _settingsService.GetSettingsAsync();
-
-		var settingsResponse = new SettingsGetResponse(settings);
-		settingsResponse.Peloton.Password = null;
-		settingsResponse.Garmin.Password = null;
-
-		return settingsResponse;
-	}
-
-	/// <summary>
 	/// Update App settings.
 	/// </summary>
 	/// <response code="200">Returns the app settings</response>
@@ -113,19 +92,28 @@ public class SettingsController : Controller
 	/// <response code="200">Returns the format settings</response>
 	[HttpPost]
 	[Route("/api/settings/format")]
-	public async Task<Format> FormatPost([FromBody] Format updatedFormatSettings)
+	public async Task<ActionResult<Format>> FormatPost([FromBody] Format updatedFormatSettings)
 	{
-		using var tracing = Tracing.Trace($"{nameof(SettingsController)}.{nameof(FormatPost)}");
+		if (updatedFormatSettings.CheckIsNull("PostRequest", out var result))
+			return result;
 
-		// TODO: Validation
+		if (!string.IsNullOrWhiteSpace(updatedFormatSettings.DeviceInfoPath)
+			&& !_fileHandler.DirExists(updatedFormatSettings.DeviceInfoPath))
+			return new BadRequestObjectResult(new ErrorResponse($"DeviceInfo path is either not accessible or does not exist."));
 
-		var settings = await _settingsService.GetSettingsAsync();
-		settings.Format = updatedFormatSettings;
+		try
+		{
+			var settings = await _settingsService.GetSettingsAsync();
+			settings.Format = updatedFormatSettings;
 
-		await _settingsService.UpdateSettingsAsync(settings);
-		var updatedSettings = await _settingsService.GetSettingsAsync();
+			await _settingsService.UpdateSettingsAsync(settings);
+			var updatedSettings = await _settingsService.GetSettingsAsync();
 
-		return updatedSettings.Format;
+			return Ok(updatedSettings.Format);
+		} catch (Exception e)
+		{
+			return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));
+		}
 	}
 
 	/// <summary>

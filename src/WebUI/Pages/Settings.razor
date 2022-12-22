@@ -234,7 +234,18 @@
 	protected async Task SaveFormatSettings() 
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(SaveFormatSettings)}", kind: ActivityKind.Client);
-		formatSettings = await _apiClient.SettingsFormatPostAsync(formatSettings);
+
+		_toaster.Clear();
+		try
+		{
+			formatSettings = await _apiClient.SettingsFormatPostAsync(formatSettings);
+			_toaster.AddInformation("Format Settings Saved!");
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to save Format Settings - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to save Format settings.", e);
+		}
 	}
 
 	protected void ClearPelotonPassword()
