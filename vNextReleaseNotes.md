@@ -13,4 +13,8 @@
 
 - [#384] Bump dependency versions + Pull latest Garmin SDK (21.94)
 - [#366] WebUI - Credentials are now stored encrypted
-	- a one time migration step will happen on startup to encrypt your existing credentials
+	- A one time migration step will happen on startup to encrypt your existing credentials
+	- If a problem occurs you may have to re-configure your Peloton and Garmin credentials
+- [#399] WebUI - Existing settings will be migrated to a new format associated with a UserId
+	- A one time migration step will happen on startup to move existing settings to be associated with a UserId
+	- If a problem occurs you may have to re-configure your settings

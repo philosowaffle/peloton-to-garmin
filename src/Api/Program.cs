@@ -71,32 +71,38 @@ builder.Services.AddSwaggerGen(c =>
 // CACHE
 builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
 
-// SETTINGS
-builder.Services.AddSingleton<ISettingsDb, SettingsDb>();
-builder.Services.AddSingleton<ISettingsService, SettingsService>();
-
-// IO
-builder.Services.AddSingleton<IFileHandling, IOWrapper>();
-
-// PELOTON
-builder.Services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
-builder.Services.AddSingleton<IPelotonService, PelotonService>();
+// CONVERT
+builder.Services.AddSingleton<IConverter, FitConverter>();
+builder.Services.AddSingleton<IConverter, TcxConverter>();
+builder.Services.AddSingleton<IConverter, JsonConverter>();
 
 // GARMIN
 builder.Services.AddSingleton<IGarminUploader, GarminUploader>();
 builder.Services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
 
+// IO
+builder.Services.AddSingleton<IFileHandling, IOWrapper>();
+
+// MIGRATIONS
+builder.Services.AddSingleton<IDbMigrations, DbMigrations>();
+
+// PELOTON
+builder.Services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
+builder.Services.AddSingleton<IPelotonService, PelotonService>();
+
 // RELEASE CHECKS
 builder.Services.AddGitHubReleaseChecker();
+
+// SETTINGS
+builder.Services.AddSingleton<ISettingsDb, SettingsDb>();
+builder.Services.AddSingleton<ISettingsService, SettingsService>();
 
 // SYNC
 builder.Services.AddSingleton<ISyncStatusDb, SyncStatusDb>();
 builder.Services.AddSingleton<ISyncService, SyncService>();
 
-// CONVERT
-builder.Services.AddSingleton<IConverter, FitConverter>();
-builder.Services.AddSingleton<IConverter, TcxConverter>();
-builder.Services.AddSingleton<IConverter, JsonConverter>();
+// USERS
+builder.Services.AddSingleton<IUsersDb, UsersDb>();
 
 FlurlConfiguration.Configure(config.Observability);
 Tracing.EnableApiTracing(builder.Services, config.Observability.Jaeger);
@@ -152,23 +158,8 @@ app.MapControllers();
 ///////////////////////////////////////////////////////////
 /// MIGRATIONS
 ///////////////////////////////////////////////////////////
-
-// Migrate to Encrypted Credentials V1
-var settingsDb = app.Services.GetService<ISettingsDb>();
-var settings = await settingsDb!.GetSettingsAsync();
-
-if (settings.Peloton.EncryptionVersion != EncryptionVersion.V1
-	|| settings.Garmin.EncryptionVersion != EncryptionVersion.V1)
-{
-	try
-	{
-		await settingsDb.UpsertSettingsAsync(settings);
-		Log.Information("Successfully encrypted Peloton and Garmin credentials.");
-	} catch (Exception e)
-	{
-		Log.Error(e, "Failed to encrypt Peloton and Garmin credentials.");
-	}	
-}
+var migrationService = app.Services.GetService<IDbMigrations>();
+await migrationService!.PreformMigrations();
 
 ///////////////////////////////////////////////////////////
 /// START

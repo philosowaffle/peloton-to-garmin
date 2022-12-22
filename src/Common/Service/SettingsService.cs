@@ -35,14 +35,14 @@ public class SettingsService : ISettingsService
 	{
 		using var tracing = Tracing.Trace($"{nameof(SettingsService)}.{nameof(GetSettingsAsync)}");
 
-		return (await _db.GetSettingsAsync()) ?? new Settings();
+		return (await _db.GetSettingsAsync(1)) ?? new Settings(); // hardcode to admin user for now
 	}
 
 	public async Task UpdateSettingsAsync(Settings updatedSettings)
 	{
 		using var tracing = Tracing.Trace($"{nameof(SettingsService)}.{nameof(UpdateSettingsAsync)}");
 
-		var originalSettings = await _db.GetSettingsAsync();
+		var originalSettings = await _db.GetSettingsAsync(1); // hardcode to admin user for now
 
 		if (updatedSettings.Garmin.Password is null)
 			updatedSettings.Garmin.Password = originalSettings.Garmin.Password;
@@ -59,7 +59,7 @@ public class SettingsService : ISettingsService
 		ClearCustomDeviceInfoAsync(originalSettings.Garmin.Email);
 		ClearCustomDeviceInfoAsync(updatedSettings.Garmin.Email);
 
-		await _db.UpsertSettingsAsync(updatedSettings);
+		await _db.UpsertSettingsAsync(1, updatedSettings); // hardcode to admin user for now
 	}
 
 	public PelotonApiAuthentication GetPelotonApiAuthentication(string pelotonEmail)
