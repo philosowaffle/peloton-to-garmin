@@ -8,6 +8,7 @@
 - [#358] Begin publishing Docker Images on GitHub Packages
 - [#358] Introduce new Docker major version Release tag - allows you to pin to all updates to a major version i.e. `v3`
 - [#366] WebUI - Can now Clear your Peloton or Garmin Password via the UI
+- [#301] WebUI - Better feedback and error handling when saving Settings changes
 
 ## Changes
 
