@@ -148,4 +148,37 @@ public class SettingsControllerTests
 
 		fileHandler.Verify(f => f.DirExists(It.IsAny<string>()), Times.Never);
 	}
+
+	[Test]
+	public async Task PelotonPost_With_NullRequest_Returns400()
+	{
+		var autoMocker = new AutoMocker();
+		var controller = autoMocker.CreateInstance<SettingsController>();
+
+		var response = await controller.PelotonPost(null);
+
+		var result = response.Result as BadRequestObjectResult;
+		result.Should().NotBeNull();
+		var value = result.Value as ErrorResponse;
+		value.Message.Should().Be("PostRequest must not be null.");
+	}
+
+	[Test]
+	public async Task PelotonPost_With_Invalid_NumWorkoutsToDownload_Returns400()
+	{
+		var autoMocker = new AutoMocker();
+		var controller = autoMocker.CreateInstance<SettingsController>();
+
+		var request = new SettingsPelotonPostRequest()
+		{
+			NumWorkoutsToDownload = -1
+		};
+
+		var response = await controller.PelotonPost(request);
+
+		var result = response.Result as BadRequestObjectResult;
+		result.Should().NotBeNull();
+		var value = result.Value as ErrorResponse;
+		value.Message.Should().Be("NumWorkoutsToDownload must be greater than 0.");
+	}
 }

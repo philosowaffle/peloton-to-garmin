@@ -90,8 +90,13 @@ public class SettingsController : Controller
 	/// Update Format settings.
 	/// </summary>
 	/// <response code="200">Returns the format settings</response>
+	/// <response code="400">If the request fields are invalid.</response>
+	/// <response code="500">Unhandled exception.</response>
 	[HttpPost]
 	[Route("/api/settings/format")]
+	[ProducesResponseType(typeof(App), StatusCodes.Status200OK)]
+	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<Format>> FormatPost([FromBody] Format updatedFormatSettings)
 	{
 		if (updatedFormatSettings.CheckIsNull("PostRequest", out var result))
@@ -119,25 +124,37 @@ public class SettingsController : Controller
 	/// <summary>
 	/// Update Peloton settings.
 	/// </summary>
-	/// <response code="200">Returns the Peloton settings</response>
+	/// <response code="200">Returns the format settings</response>
+	/// <response code="400">If the request fields are invalid.</response>
+	/// <response code="500">Unhandled exception.</response>
 	[HttpPost]
 	[Route("/api/settings/peloton")]
-	public async Task<SettingsPelotonGetResponse> PelotonPost([FromBody] Common.Peloton updatedPelotonSettings)
+	[ProducesResponseType(typeof(App), StatusCodes.Status200OK)]
+	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
+	public async Task<ActionResult<SettingsPelotonGetResponse>> PelotonPost([FromBody] SettingsPelotonPostRequest updatedPelotonSettings)
 	{
-		using var tracing = Tracing.Trace($"{nameof(SettingsController)}.{nameof(PelotonPost)}");
+		if (updatedPelotonSettings.CheckIsNull("PostRequest", out var result))
+			return result;
 
-		// TODO: Validation
+		if (updatedPelotonSettings.NumWorkoutsToDownload.CheckIsLessThanOrEqualTo(0, "NumWorkoutsToDownload", out result))
+			return result;
 
-		var settings = await _settingsService.GetSettingsAsync();
-		settings.Peloton = updatedPelotonSettings;
+		try
+		{
+			var settings = await _settingsService.GetSettingsAsync();
+			settings.Peloton = updatedPelotonSettings.Map();
 
-		await _settingsService.UpdateSettingsAsync(settings);
-		var updatedSettings = await _settingsService.GetSettingsAsync();
+			await _settingsService.UpdateSettingsAsync(settings);
+			var updatedSettings = await _settingsService.GetSettingsAsync();
 
-		var settingsResponse = new SettingsGetResponse(updatedSettings);
-		settingsResponse.Peloton.Password = null;
+			var settingsResponse = new SettingsGetResponse(updatedSettings);
 
-		return settingsResponse.Peloton;
+			return Ok(settingsResponse.Peloton);
+		} catch (Exception e)
+		{
+			return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));
+		}
 	}
 
 	/// <summary>

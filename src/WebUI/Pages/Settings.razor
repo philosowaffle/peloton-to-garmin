@@ -241,6 +241,11 @@
 			formatSettings = await _apiClient.SettingsFormatPostAsync(formatSettings);
 			_toaster.AddInformation("Format Settings Saved!");
 		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+		}
 		catch (Exception e)
 		{
 			_toaster.AddError($"Failed to save Format Settings - {e.Message} - See logs for details.");
@@ -258,8 +263,24 @@
 	protected async Task SavePelotonSettings()
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(SavePelotonSettings)}", kind: ActivityKind.Client);
-		pelotonSettings.ExcludeWorkoutTypes = selectedWorkoutTypes;
-		pelotonSettings = await _apiClient.SettingsPelotonPostAsync(pelotonSettings);
+
+		_toaster.Clear();
+
+		try
+		{
+			pelotonSettings.ExcludeWorkoutTypes = selectedWorkoutTypes;
+			pelotonSettings = await _apiClient.SettingsPelotonPostAsync(pelotonSettings.Map());
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to save Peloton Settings - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to save Peloton settings.", e);
+		}
 	}
 
 	protected void ClearGarminPassword()

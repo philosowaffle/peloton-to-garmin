@@ -13,7 +13,7 @@ public interface IApiClient
 	Task<SettingsGetResponse> SettingsGetAsync();
 	Task<Common.App> SettingsAppPostAsync(Common.App appSettings);
 	Task<Format> SettingsFormatPostAsync(Format formatSettings);
-	Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(Common.Peloton pelotonSettings);
+	Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(SettingsPelotonPostRequest pelotonSettings);
 	Task<SettingsGarminGetResponse> SettingsGarminPostAsync(Common.Garmin garminSettings);
 
 	Task<SyncGetResponse> SyncGetAsync();
@@ -58,7 +58,7 @@ public class ApiClient : IApiClient
 				.ReceiveJson<Format>();
 	}
 	
-	public Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(Common.Peloton pelotonSettings)
+	public Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(SettingsPelotonPostRequest pelotonSettings)
 	{
 		return $"{_apiUrl}/api/settings/peloton"
 				.PostJsonAsync(pelotonSettings)
