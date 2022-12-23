@@ -270,6 +270,7 @@
 		{
 			pelotonSettings.ExcludeWorkoutTypes = selectedWorkoutTypes;
 			pelotonSettings = await _apiClient.SettingsPelotonPostAsync(pelotonSettings.Map());
+			_toaster.AddInformation("Peloton Settings Saved!");
 		}
 		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
 		{
@@ -293,7 +294,24 @@
 	protected async Task SaveGarminSettings() 
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(SaveGarminSettings)}", kind: ActivityKind.Client);
-		garminSettings = await _apiClient.SettingsGarminPostAsync(garminSettings);
+
+		_toaster.Clear();
+
+		try
+		{
+			garminSettings = await _apiClient.SettingsGarminPostAsync(garminSettings.Map());
+			_toaster.AddInformation("Garmin Settings Saved!");
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to save Garmin Settings - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to save Garmin settings.", e);
+		}
 	}
 
 	private async Task LoadDataAsync()

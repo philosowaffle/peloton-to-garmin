@@ -103,6 +103,18 @@ public static class Mapping
 		};
 	}
 
+	public static SettingsGarminPostRequest Map(this SettingsGarminGetResponse response)
+	{
+		return new SettingsGarminPostRequest()
+		{
+			Email = response.Email,
+			Password = response.Password,
+			FormatToUpload = response.FormatToUpload,
+			Upload = response.Upload,
+			UploadStrategy = response.UploadStrategy,
+		};
+	}
+
 	public static Common.Garmin Map(this SettingsGarminPostRequest request)
 	{
 		return new Common.Garmin()

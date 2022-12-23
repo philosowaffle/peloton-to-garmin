@@ -1,7 +1,6 @@
 ﻿using Common;
 using Common.Dto.Api;
 using Common.Helpers;
-using Common.Observe;
 using Common.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -161,23 +160,32 @@ public class SettingsController : Controller
 	/// Update Garmin settings.
 	/// </summary>
 	/// <response code="200">Returns the Garmin settings</response>
+	/// <response code="400">If the request fields are invalid.</response>
+	/// <response code="500">Unhandled exception.</response>
 	[HttpPost]
 	[Route("/api/settings/garmin")]
-	public async Task<SettingsGarminGetResponse> GarminPost([FromBody] Common.Garmin updatedGarminSettings)
+	[ProducesResponseType(typeof(App), StatusCodes.Status200OK)]
+	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
+	public async Task<ActionResult<SettingsGarminGetResponse>> GarminPost([FromBody] SettingsGarminPostRequest updatedGarminSettings)
 	{
-		using var tracing = Tracing.Trace($"{nameof(SettingsController)}.{nameof(GarminPost)}");
+		if (updatedGarminSettings.CheckIsNull("PostRequest", out var result))
+			return result;
 
-		// TODO: Validation
+		try
+		{
+			var settings = await _settingsService.GetSettingsAsync();
+			settings.Garmin = updatedGarminSettings.Map();
 
-		var settings = await _settingsService.GetSettingsAsync();
-		settings.Garmin = updatedGarminSettings;
+			await _settingsService.UpdateSettingsAsync(settings);
+			var updatedSettings = await _settingsService.GetSettingsAsync();
 
-		await _settingsService.UpdateSettingsAsync(settings);
-		var updatedSettings = await _settingsService.GetSettingsAsync();
+			var settingsResponse = new SettingsGetResponse(updatedSettings);
 
-		var settingsResponse = new SettingsGetResponse(updatedSettings);
-		settingsResponse.Garmin.Password = null;
-
-		return settingsResponse.Garmin;
+			return Ok(settingsResponse.Garmin);
+		} catch (Exception e)
+		{
+			return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));
+		}
 	}
 }
