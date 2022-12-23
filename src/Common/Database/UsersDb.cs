@@ -21,6 +21,7 @@ public class UsersDb : DbBase<P2GUser>, IUsersDb
 {
 	private static readonly ILogger _logger = LogContext.ForClass<UsersDb>();
 	private static readonly P2GUser _defaultUser = new P2GUser() { Id = 1, UserName = "Admin" };
+	private static readonly string UsersCollections = "users";
 
 	private readonly DataStore _db;
 
@@ -44,14 +45,16 @@ public class UsersDb : DbBase<P2GUser>, IUsersDb
 
 		try
 		{
-			var users = _db.GetCollection<P2GUser>();
+			var users = _db.GetCollection<P2GUser>(UsersCollections);
 
 			if (users.Count <= 0)
 			{
-				var success = await _db.InsertItemAsync(_defaultUser.Id.ToString(), _defaultUser);
+				var success = await users.InsertOneAsync(_defaultUser);
 				if (!success)
+				{
 					_logger.Error("Failed to save default User to Db.");
-				return new List<P2GUser>() { _defaultUser };
+					return new List<P2GUser>() { _defaultUser };
+				}
 			}
 
 			return users.AsQueryable().ToList();

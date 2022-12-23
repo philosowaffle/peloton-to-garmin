@@ -2,6 +2,6 @@
 
 public record P2GUser
 {
-	public byte Id { get; init; }
+	public int Id { get; init; }
 	public string UserName { get; init; }
 }
