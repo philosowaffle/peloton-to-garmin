@@ -17,7 +17,7 @@ WORKDIR /app
 ###################
 # BUILD LAYER
 ###################
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
 COPY . /build
 WORKDIR /build
