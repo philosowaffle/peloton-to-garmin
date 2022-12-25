@@ -45,7 +45,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
     elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
     RID=linux-arm ; \
     fi \
-    && dotnet publish /build/src/WebUI/WebUI.csproj -c Release -r linux-x64 -o /build/published --version-suffix $VERSION --self-contained ;
+    && dotnet publish /build/src/WebUI/WebUI.csproj -c Release -r $RID -o /build/published --version-suffix $VERSION --self-contained ;
 
 ###################
 # FINAL
