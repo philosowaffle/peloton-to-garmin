@@ -9,6 +9,7 @@
 - [#358] Introduce new Docker major version Release tag - allows you to pin to all updates to a major version i.e. `v3`
 - [#366] WebUI - Can now Clear your Peloton or Garmin Password via the UI
 - [#301] WebUI - Better feedback and error handling when saving Settings changes
+- [#310] Docker - Arm 32bit image is now available
 
 ## Changes
 
