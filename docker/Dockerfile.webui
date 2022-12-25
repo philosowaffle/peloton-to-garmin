@@ -33,6 +33,10 @@ WORKDIR /build/src/WebUI
 RUN /root/.dotnet/tools/libman restore
 
 WORKDIR /build
+
+ARG VERSION
+ENV VERSION=$VERSION
+
 ARG TARGETPLATFORM
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
     RID=linux-x64 ; \

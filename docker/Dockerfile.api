@@ -35,6 +35,9 @@ WORKDIR /build
 ###################
 # BUILD API
 ###################
+ARG VERSION
+ENV VERSION=$VERSION
+
 ARG TARGETPLATFORM
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
     RID=linux-x64 ; \
