@@ -66,14 +66,14 @@ jobs:
           echo "RUNNER_TOOL_CACHE=$Env:RUNNER_TOOL_CACHE" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
         
     - name: Publish ${{matrix.os}}
-      run: dotnet publish ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --no-restore -c Release -r ${{ matrix.os }} -o ${{ github.workspace }}/dist/${{ matrix.os }} --version-suffix ${{ env.BUILD_VERSION }}
+      run: dotnet publish ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --no-restore -c Release -r ${{ matrix.os }} -o ${{ github.workspace }}/dist/${{ matrix.os }} --version-suffix ${{ env.BUILD_VERSION }} --self-contained true
 
     - name: Copy Config to Distro
       run: cp ${{ github.workspace }}/configuration.example.json ${{ github.workspace }}/dist/${{ matrix.os }}/configuration.local.json
 
     # Package all-in-one python and add to distro
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -91,7 +91,7 @@ jobs:
 
     # Create Build Artifact
     - name: Upload Artifact ${{ matrix.os }}_${{ env.BUILD_VERSION }}
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.os }}_${{ env.BUILD_VERSION }}
         path: ${{ github.workspace }}/dist/${{ matrix.os }}
