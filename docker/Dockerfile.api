@@ -46,7 +46,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
     elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
     RID=linux-arm ; \
     fi \
-    && dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-arm64 -o /build/published --version-suffix $VERSION --self-contained ;
+    && dotnet publish /build/src/Api/Api.csproj -c Release -r linux-arm64 -o /build/published --version-suffix $VERSION --self-contained ;
 
 ###################
 # FINAL
