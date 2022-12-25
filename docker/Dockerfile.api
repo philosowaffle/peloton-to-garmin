@@ -32,23 +32,18 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 COPY . /build
 WORKDIR /build
 
-SHELL ["/bin/bash", "-c"]
-
-ARG TARGETPLATFORM
-ARG VERSION
-
-RUN echo $TARGETPLATFORM \
-	&& echo $VERSION
-ENV VERSION=${VERSION}
-
 ###################
 # BUILD API
 ###################
-RUN if [[ "$TARGETPLATFORM" = "linux/arm64" ]] ; then \
-		dotnet publish /build/src/Api/Api.csproj -c Release -r linux-arm64 -o /build/published --version-suffix $VERSION --self-contained ; \
-	else \
-		dotnet publish /build/src/Api/Api.csproj -c Release -r linux-x64 -o /build/published --version-suffix $VERSION --self-contained ; \
-	fi
+ARG TARGETPLATFORM
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+    RID=linux-x64 ; \
+    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+    RID=linux-arm64 ; \
+    elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
+    RID=linux-arm ; \
+    fi \
+    && dotnet publish /build/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj -c Release -r linux-arm64 -o /build/published --version-suffix $VERSION --self-contained ;
 
 ###################
 # FINAL
