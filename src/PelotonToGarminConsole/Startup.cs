@@ -2,6 +2,7 @@
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
+using Core.GitHub;
 using Garmin;
 using Microsoft.Extensions.Hosting;
 using Peloton;
@@ -9,7 +10,6 @@ using Prometheus;
 using Serilog;
 using Sync;
 using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using static Common.Observe.Metrics;
@@ -25,11 +25,13 @@ namespace PelotonToGarminConsole
 
 		private readonly ISettingsService _settingsService;
 		private readonly ISyncService _syncService;
+		private readonly IGitHubReleaseCheckService _githubService;
 
-		public Startup(ISettingsService settingsService, ISyncService syncService)
+		public Startup(ISettingsService settingsService, ISyncService syncService, IGitHubReleaseCheckService gitHubService)
 		{
 			_settingsService = settingsService;
 			_syncService = syncService;
+			_githubService = gitHubService;
 
 			Logging.LogSystemInformation();
 		}
@@ -47,6 +49,21 @@ namespace PelotonToGarminConsole
 				GarminUploader.ValidateConfig(settings);
 				Metrics.ValidateConfig(appConfig.Observability);
 				Tracing.ValidateConfig(appConfig.Observability);
+
+				if (settings.App.CheckForUpdates)
+				{
+					var latestReleaseInformation = await _githubService.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion);
+					if (latestReleaseInformation.IsReleaseNewerThanInstalledVersion)
+					{
+						_logger.Information("*********************************************");
+						_logger.Information("A new version is available: {@Version}", latestReleaseInformation.LatestVersion);
+						_logger.Information("Release Date: {@ReleaseDate}", latestReleaseInformation.ReleaseDate);
+						_logger.Information("Release Information: {@ReleaseUrl}", latestReleaseInformation.ReleaseUrl);
+						_logger.Information("*********************************************");
+
+						AppMetrics.SyncUpdateAvailableMetric(latestReleaseInformation.IsReleaseNewerThanInstalledVersion, latestReleaseInformation.LatestVersion);
+					}
+				}
 			}
 			catch (Exception ex)
 			{
@@ -92,6 +109,21 @@ namespace PelotonToGarminConsole
 					while (!cancelToken.IsCancellationRequested)
 					{
 						settings = await _settingsService.GetSettingsAsync();
+
+						if (settings.App.CheckForUpdates)
+						{
+							var latestReleaseInformation = await _githubService.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion);
+							if (latestReleaseInformation.IsReleaseNewerThanInstalledVersion)
+							{
+								_logger.Information("*********************************************");
+								_logger.Information("A new version is available: {@Version}", latestReleaseInformation.LatestVersion);
+								_logger.Information("Release Date: {@ReleaseDate}", latestReleaseInformation.ReleaseDate);
+								_logger.Information("Release Information: {@ReleaseUrl}", latestReleaseInformation.ReleaseUrl);
+								_logger.Information("*********************************************");
+
+								AppMetrics.SyncUpdateAvailableMetric(latestReleaseInformation.IsReleaseNewerThanInstalledVersion, latestReleaseInformation.LatestVersion);
+							}
+						}
 
 						var syncResult = await _syncService.SyncAsync(settings.Peloton.NumWorkoutsToDownload);
 						Health.Set(syncResult.SyncSuccess ? HealthStatus.Healthy : HealthStatus.UnHealthy);

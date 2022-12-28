@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace Common.Dto.Api;
 
-public class SyncGetResponse
+public record SyncGetResponse
 {
-	public bool SyncEnabled { get; set; }
+	public bool SyncEnabled { get; init; }
 	public string AutoSyncHealthString
 	{
 		get {
@@ -21,13 +21,13 @@ public class SyncGetResponse
 			return "Unknown";
 		}
 	}
-	public Status SyncStatus { get; set; }
-	public DateTime? LastSyncTime { get; set; }
-	public DateTime? LastSuccessfulSyncTime { get; set; }
-	public DateTime? NextSyncTime { get; set; }
+	public Status SyncStatus { get; init; }
+	public DateTime? LastSyncTime { get; init; }
+	public DateTime? LastSuccessfulSyncTime { get; init; }
+	public DateTime? NextSyncTime { get; init; }
 }
 
-public class SyncPostRequest
+public record SyncPostRequest
 {
 	public SyncPostRequest()
 	{
@@ -35,25 +35,25 @@ public class SyncPostRequest
 	}
 
 	/// <summary>
-	/// Mutually exclusive with WorkoutIds.
+	/// Sync a specific set of workouts by their Ids.
+	/// 
+	/// Mutually exclusive with 
+	/// - NumWorkouts
+	/// - SinceDate
 	/// </summary>
-	public int NumWorkouts { get; set; }
-	/// <summary>
-	/// Mutually exclusive with NumWorkouts.
-	/// </summary>
-	public ICollection<string> WorkoutIds { get; set; }
+	public ICollection<string> WorkoutIds { get; init; }
 }
 
-public class SyncPostResponse
+public record SyncPostResponse
 {
 	public SyncPostResponse()
 	{
 		Errors = new List<ErrorResponse>();
 	}
 
-	public bool SyncSuccess { get; set; }
-	public bool PelotonDownloadSuccess { get; set; }
-	public bool? ConverToFitSuccess { get; set; }
-	public bool? UploadToGarminSuccess { get; set; }
-	public ICollection<ErrorResponse> Errors { get; set; }
+	public bool SyncSuccess { get; init; }
+	public bool PelotonDownloadSuccess { get; init; }
+	public bool? ConverToFitSuccess { get; init; }
+	public bool? UploadToGarminSuccess { get; init; }
+	public ICollection<ErrorResponse> Errors { get; init; }
 }

@@ -29,7 +29,7 @@ namespace UnitTests.Api.Controllers
 			var result = response.Result as BadRequestObjectResult;
 			result.Should().NotBeNull();
 			var value = result.Value as ErrorResponse;
-			value.Message.Should().Be("Either NumWorkouts or WorkoutIds must be set.");
+			value.Message.Should().Be("PostRequest must not be null.");
 		}
 
 		[Test]
@@ -45,23 +45,7 @@ namespace UnitTests.Api.Controllers
 			var result = response.Result as BadRequestObjectResult;
 			result.Should().NotBeNull();
 			var value = result.Value as ErrorResponse;
-			value.Message.Should().Be("Either NumWorkouts or WorkoutIds must be set.");
-		}
-
-		[Test]
-		public async Task SyncAsync_With_NegativeNumWorkoutsRequest_Returns400()
-		{
-			var autoMocker = new AutoMocker();
-			var controller = autoMocker.CreateInstance<SyncController>();
-
-			var request = new SyncPostRequest() { NumWorkouts = -1 };
-
-			var response = await controller.SyncAsync(request);
-
-			var result = response.Result as BadRequestObjectResult;
-			result.Should().NotBeNull();
-			var value = result.Value as ErrorResponse;
-			value.Message.Should().Be("Either NumWorkouts or WorkoutIds must be set.");
+			value.Message.Should().Be("WorkoutIds must not be empty.");
 		}
 
 		[Test]
@@ -70,48 +54,14 @@ namespace UnitTests.Api.Controllers
 			var autoMocker = new AutoMocker();
 			var controller = autoMocker.CreateInstance<SyncController>();
 
-			var request = new SyncPostRequest() { NumWorkouts = 0, WorkoutIds = new List<string>() };
+			var request = new SyncPostRequest() { WorkoutIds = new List<string>() };
 
 			var response = await controller.SyncAsync(request);
 
 			var result = response.Result as BadRequestObjectResult;
 			result.Should().NotBeNull();
 			var value = result.Value as ErrorResponse;
-			value.Message.Should().Be("Either NumWorkouts or WorkoutIds must be set.");
-		}
-
-		[Test]
-		public async Task SyncAsync_With_BothParamsSet_Returns400()
-		{
-			var autoMocker = new AutoMocker();
-			var controller = autoMocker.CreateInstance<SyncController>();
-
-			var request = new SyncPostRequest() { NumWorkouts = 1, WorkoutIds = new List<string>() { "someId" } };
-
-			var response = await controller.SyncAsync(request);
-
-			var result = response.Result as BadRequestObjectResult;
-			result.Should().NotBeNull();
-			var value = result.Value as ErrorResponse;
-			value.Message.Should().Be("NumWorkouts and WorkoutIds cannot both be set.");
-		}
-
-		[Test]
-		public async Task SyncAsync_NumWorkouts_Calls_CorrectMethod()
-		{
-			var autoMocker = new AutoMocker();
-			var controller = autoMocker.CreateInstance<SyncController>();
-			var service = autoMocker.GetMock<ISyncService>();
-			service.SetReturnsDefault(Task.FromResult(new SyncResult() { SyncSuccess = true }));
-
-			var request = new SyncPostRequest() { NumWorkouts = 5 };
-
-			var actionResult = await controller.SyncAsync(request);
-
-			var response = actionResult.Result as CreatedResult;
-			response.Should().NotBeNull();
-
-			service.Verify(s => s.SyncAsync(It.IsAny<int>()), Times.Once);
+			value.Message.Should().Be("WorkoutIds must not be empty.");
 		}
 
 		[Test]
@@ -122,7 +72,7 @@ namespace UnitTests.Api.Controllers
 			var service = autoMocker.GetMock<ISyncService>();
 			service.SetReturnsDefault(Task.FromResult(new SyncResult() { SyncSuccess = true }));
 
-			var request = new SyncPostRequest() { NumWorkouts = 0, WorkoutIds = new List<string>() { "someId" } };
+			var request = new SyncPostRequest() { WorkoutIds = new List<string>() { "someId" } };
 
 			var actionResult = await controller.SyncAsync(request);
 
@@ -139,10 +89,10 @@ namespace UnitTests.Api.Controllers
 			var controller = autoMocker.CreateInstance<SyncController>();
 			var service = autoMocker.GetMock<ISyncService>();
 
-			service.Setup(s => s.SyncAsync(It.IsAny<int>()))
+			service.Setup(s => s.SyncAsync(It.IsAny<ICollection<string>>(), null))
 				.Throws(new Exception("Some unhandled case."));
 
-			var request = new SyncPostRequest() { NumWorkouts = 5 };
+			var request = new SyncPostRequest() { WorkoutIds = new List<string>() { "someId" } };
 
 			var actionResult = await controller.SyncAsync(request);
 
@@ -153,16 +103,15 @@ namespace UnitTests.Api.Controllers
 			value.Message.Should().Be("Unexpected error occurred: Some unhandled case.");
 		}
 
-		[TestCase(5, new string[0])]
-		[TestCase(0, new string[1] { "someId" })]
-		public async Task SyncAsync_When_SyncUnsuccessful_OkResult_Returned(int numWorkouts, string[] workoutIds)
+		[Test]
+		public async Task SyncAsync_When_SyncUnsuccessful_OkResult_Returned()
 		{
 			var autoMocker = new AutoMocker();
 			var controller = autoMocker.CreateInstance<SyncController>();
 			var service = autoMocker.GetMock<ISyncService>();
 			service.SetReturnsDefault(Task.FromResult(new SyncResult() { SyncSuccess = false }));
 
-			var request = new SyncPostRequest() { NumWorkouts = numWorkouts, WorkoutIds = workoutIds };
+			var request = new SyncPostRequest() { WorkoutIds = new List<string>() { "someId" } };
 
 			var actionResult = await controller.SyncAsync(request);
 
@@ -173,9 +122,8 @@ namespace UnitTests.Api.Controllers
 			result.SyncSuccess.Should().BeFalse();
 		}
 
-		[TestCase(5, new string[0])]
-		[TestCase(0, new string[1] { "someId" })]
-		public async Task SyncAsync_When_SyncSuccessful_CreatedResult_Returned(int numWorkouts, string[] workoutIds)
+		[Test]
+		public async Task SyncAsync_When_SyncSuccessful_CreatedResult_Returned()
 		{
 			var autoMocker = new AutoMocker();
 			var controller = autoMocker.CreateInstance<SyncController>();
@@ -188,7 +136,7 @@ namespace UnitTests.Api.Controllers
 				UploadToGarminSuccess = true
 			}));
 
-			var request = new SyncPostRequest() { NumWorkouts = numWorkouts, WorkoutIds = workoutIds };
+			var request = new SyncPostRequest() { WorkoutIds = new List<string>() { "someId" } };
 
 			var actionResult = await controller.SyncAsync(request);
 
@@ -203,9 +151,8 @@ namespace UnitTests.Api.Controllers
 			result.Errors.Should().BeNullOrEmpty();
 		}
 
-		[TestCase(5, new string[0] )]
-		[TestCase(0, new string[1] {"someId"})]
-		public async Task SyncAsync_When_SyncErrors_MapsErrorsCorrectly(int numWorkouts, string[] workoutIds)
+		[Test]
+		public async Task SyncAsync_When_SyncErrors_MapsErrorsCorrectly()
 		{
 			var autoMocker = new AutoMocker();
 			var controller = autoMocker.CreateInstance<SyncController>();
@@ -220,7 +167,7 @@ namespace UnitTests.Api.Controllers
 			syncResult.Errors.Add(new SyncErrorResponse() { Message = "error 3" });
 			service.SetReturnsDefault(Task.FromResult(syncResult));
 
-			var request = new SyncPostRequest() { NumWorkouts = numWorkouts, WorkoutIds = workoutIds };
+			var request = new SyncPostRequest() { WorkoutIds = new List<string>() { "someId" } };
 
 			var actionResult = await controller.SyncAsync(request);
 

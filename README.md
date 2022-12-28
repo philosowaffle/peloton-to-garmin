@@ -11,6 +11,7 @@
 Convert workout data from Peloton into a format that can be uploaded to Garmin.
 
 * Fetch latest workouts from Peloton
+  * Bike, Tread, Rower, Meditation, Strength, Outdoor, and more
 * Convert Peloton workout to a variety of formats
 * Upload TCX or FIT workout to Garmin
 * Avoid duplicates in Garmin
@@ -34,7 +35,9 @@ Special thanks to all the [contributors](https://github.com/philosowaffle/peloto
 
 ## Warnings
 
-⚠️ WARNING!!! Your username and password for Peloton and Garmin Connect are stored in clear text, WHICH IS NOT SECURE. If you have concerns about storing your credentials in an unsecure file, do not use this option.
+⚠️ WARNING!!! For the Console or Docker Headless deployments your username and password for Peloton and Garmin Connect are stored in clear text, WHICH IS NOT SECURE. If you have concerns about storing your credentials in an unsecure file, do not use this option.
+
+This warning does not apply to Docker WebUI nor GitHub Actions deployments. Both of these methods store credentials encrypted at rest.
 
 ## Donate
 <a href="https://www.buymeacoffee.com/philosowaffle" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/black_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>

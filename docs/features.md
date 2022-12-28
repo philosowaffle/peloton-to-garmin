@@ -11,7 +11,7 @@ Convert, Backup, and Sync.
 ## Feature List
 
 1. Syncs workout data from Peloton to Garmin Connect
-1. Supports all Peloton workout types (Biking, Tread, Core, Meditation, etc.)
+1. Supports all Peloton workout types (Biking, Tread, Core, Meditation, Rower etc.)
 1. Syncs all available metric data from Peloton over to Garmin Connect
 1. Syncs laps and target cadence
 1. Synced workouts count towards Garmin Badges and Challenges

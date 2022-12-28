@@ -120,7 +120,7 @@ namespace Conversion
 			_logger.Verbose($"{e.mesg.Name}::");
 			foreach(var f in e.mesg.Fields)
 			{
-				_logger.Verbose($"{f.Name}::{f.GetValue()}");
+				_logger.Verbose($"{f.GetName()}::{f.GetValue()}");
 			}
 
 			try

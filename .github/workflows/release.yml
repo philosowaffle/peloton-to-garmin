@@ -1,0 +1,166 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release Version'
+        required: true
+      majorVersion:
+        description: 'Major Version Tag'
+        required: true
+
+jobs:
+  create_docker_images:
+   name: Publish Docker Images - Release
+   runs-on: ubuntu-latest
+   strategy:
+    matrix:
+        dockerfile: ['Dockerfile.console', 'Dockerfile.api', 'Dockerfile.webui']
+        include:
+            - dockerfile: 'Dockerfile.console'
+              tag: stable
+              versionTag: v${{ github.event.inputs.version }}
+              majorVersionTag: v${{ github.event.inputs.majorVersion }}
+            - dockerfile: 'Dockerfile.api'
+              tag: api-stable
+              versionTag: api-v${{ github.event.inputs.version }}
+              majorVersionTag: api-v${{ github.event.inputs.majorVersion }}
+            - dockerfile: 'Dockerfile.webui'
+              tag: webui-stable
+              versionTag: webui-v${{ github.event.inputs.version }}
+              majorVersionTag: webui-v${{ github.event.inputs.majorVersion }}
+
+   steps:
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+      with:
+        platforms: linux/amd64,linux/arm64,linux/arm/v7
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+      with:
+        platforms: linux/amd64,linux/arm64,linux/arm/v7
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+      
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GH_PACKAGE_SECRET }}
+      
+    - name: Prepare env
+      run: |
+        echo "BUILD_VERSION=${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}" >> $GITHUB_ENV
+
+    - name: Build & Push to Package Repositories
+      id: docker_build
+      uses: docker/build-push-action@v3
+      with:
+        push: true
+        file: ./docker/${{ matrix.dockerfile }}
+        platforms: linux/amd64,linux/arm64,linux/arm/v7
+        build-args: VERSION=${{ env.BUILD_VERSION }}
+        tags: |
+            ${{ secrets.DOCKER_USERNAME }}/peloton-to-garmin:${{ matrix.tag }}
+            ${{ secrets.DOCKER_USERNAME }}/peloton-to-garmin:${{ matrix.versionTag }}
+            ${{ secrets.DOCKER_USERNAME }}/peloton-to-garmin:${{ matrix.majorVersionTag }}
+            ghcr.io/${{ github.repository_owner }}/peloton-to-garmin:${{ matrix.tag }}
+            ghcr.io/${{ github.repository_owner }}/peloton-to-garmin:${{ matrix.versionTag }}
+            ghcr.io/${{ github.repository_owner }}/peloton-to-garmin:${{ matrix.majorVersionTag }}
+
+    - name: Image digest
+      run: echo ${{ steps.docker_build.outputs.digest }}
+
+  compile_distro_and_create_gh_release:
+    name: Compile Distro & Create GH Release - Release
+    runs-on: 'windows-latest'
+    strategy:
+      max-parallel: 1
+      matrix:
+        dotnet: [ '6.0' ]
+        #os: [ 'win10-x64', 'osx-x64' ] # osx signing issue, mac wont run the executable
+        os: [ 'win10-x64' ]
+        python-version: [ 3.9.6 ]
+
+    steps:
+
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core SDK ${{ matrix.dotnet }}
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ matrix.dotnet }}
+    
+    - name: Clean
+      run: dotnet clean --configuration Release && dotnet nuget locals all --clear
+    
+    - name: Restore
+      run: dotnet restore
+
+    - name: Prepare env
+      run: |
+          echo "BUILD_VERSION=${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}" >> $GITHUB_ENV
+          echo "RUNNER_TOOL_CACHE=$Env:RUNNER_TOOL_CACHE" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
+        
+    - name: Publish ${{matrix.os}}
+      run: dotnet publish ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --no-restore -c Release -r ${{ matrix.os }} -o ${{ github.workspace }}/dist/${{ matrix.os }} --self-contained true
+
+    - name: Copy Config to Distro
+      run: cp ${{ github.workspace }}/configuration.example.json ${{ github.workspace }}/dist/${{ matrix.os }}/configuration.local.json
+
+    # Package all-in-one python and add to distro
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r ${{ github.workspace }}/python/requirements.txt
+        pip install pyinstaller
+
+    - name: Package Python - Windows
+      if: ${{ matrix.os == 'win10-x64' }}
+      working-directory: ${{ github.workspace }}/python
+      run: |
+        pyinstaller -n upload --distpath ${{ github.workspace }}/dist/${{ matrix.os }}/python/ --console --clean --onefile --noconfirm --add-data "${{ env.RUNNER_TOOL_CACHE }}/python/3.9.6/x64/lib/site-packages/cloudscraper;./cloudscraper" ${{ github.workspace }}/python/upload.py
+    
+    - name: Package Python - MacOS
+      if: ${{ matrix.os == 'osx-x64' }}
+      working-directory: ${{ github.workspace }}/python
+      run: |
+        pyinstaller -n upload --distpath ${{ github.workspace }}/dist/${{ matrix.os }}/python/ --console --clean --onefile --noconfirm --add-data "${{ env.RUNNER_TOOL_CACHE }}/python/3.9.6/x64/lib/site-packages/cloudscraper;./cloudscraper" ${{ github.workspace }}/python/upload.py
+
+    # Create Build Artifact
+    - name: Upload Artifact ${{ matrix.os }}_${{ github.event.inputs.version }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.os }}_${{ github.event.inputs.version }}
+        path: ${{ github.workspace }}/dist/${{ matrix.os }}
+    
+    - name: Create Zip for Release Artifact 
+      uses: papeloto/action-zip@v1
+      with:
+        files: /dist/${{ matrix.os }}
+        dest: /dist/${{ matrix.os }}_${{ github.event.inputs.version }}.zip
+    
+    - name: Create Release and Upload Artifact
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "${{ github.workspace }}/dist/${{ matrix.os }}_${{ github.event.inputs.version }}.zip"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: v${{ github.event.inputs.version }}
+        allowUpdates: true
+        replacesArtifacts: true
+        bodyFile:  ${{ github.workspace }}/vNextReleaseNotes.md

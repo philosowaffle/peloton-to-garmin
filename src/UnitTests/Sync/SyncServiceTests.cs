@@ -4,18 +4,19 @@ using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Service;
 using Conversion;
+using Core.GitHub;
 using FluentAssertions;
 using Garmin;
-using GitHub;
-using GitHub.Dto;
 using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
 using Peloton;
+using Philosowaffle.Capability.ReleaseChecks.Model;
 using Sync;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnitTests.UnitTestHelpers;
 
 namespace UnitTests.Sync
 {
@@ -72,7 +73,7 @@ namespace UnitTests.Sync
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } });
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } }.AsServiceResult());
 			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<Workout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
 			converter.Setup(x => x.ConvertAsync(It.IsAny<P2GWorkout>())).Throws(new Exception());
 
@@ -112,7 +113,7 @@ namespace UnitTests.Sync
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } });
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } }.AsServiceResult());
 			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<Workout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
 			garmin.Setup(x => x.UploadToGarminAsync()).Throws(new Exception());
 
@@ -155,7 +156,7 @@ namespace UnitTests.Sync
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } });
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } }.AsServiceResult());
 			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<Workout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
 
 			// ACT
@@ -205,7 +206,7 @@ namespace UnitTests.Sync
 					{
 						new Workout() { Status = "COMPLETE", Id = "1" },
 						new Workout() { Status = "IN PROGRESS", Id = "2" }
-					})
+					}.AsServiceResult())
 				.Verifiable();
 
 			// ACT
@@ -226,37 +227,6 @@ namespace UnitTests.Sync
 		}
 
 		[Test]
-		public async Task SyncAsync_When_CheckForUpdates_Enabled_Should_Check()
-		{
-			// SETUP
-			var mocker = new AutoMocker();
-
-			var service = mocker.CreateInstance<SyncService>();
-			var peloton = mocker.GetMock<IPelotonService>();
-			var db = mocker.GetMock<ISyncStatusDb>();
-			var settingsService = mocker.GetMock<ISettingsService>();
-			var ghService = mocker.GetMock<IGitHubService>();
-			
-			var settings = new Settings();
-			settings.App.CheckForUpdates = true;
-			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
-
-			var syncStatus = new SyncServiceStatus();
-			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>());
-
-			ghService.Setup(x => x.GetLatestReleaseAsync())
-				.ReturnsAsync(new P2GLatestRelease())
-				.Verifiable();
-
-			// ACT
-			var response = await service.SyncAsync(0);
-
-			// ASSERT
-			ghService.Verify();
-		}
-
-		[Test]
 		public async Task SyncAsync_When_CheckForUpdates_Disabled_Should_NotCheck()
 		{
 			// SETUP
@@ -266,7 +236,7 @@ namespace UnitTests.Sync
 			var peloton = mocker.GetMock<IPelotonService>();
 			var db = mocker.GetMock<ISyncStatusDb>();
 			var settingsService = mocker.GetMock<ISettingsService>();
-			var ghService = mocker.GetMock<IGitHubService>();
+			var ghService = mocker.GetMock<IGitHubReleaseCheckService>();
 
 			var settings = new Settings();
 			settings.App.CheckForUpdates = false;
@@ -274,16 +244,16 @@ namespace UnitTests.Sync
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>());
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>().AsServiceResult());
 
-			ghService.Setup(x => x.GetLatestReleaseAsync())
-				.ReturnsAsync(new P2GLatestRelease());
+			ghService.Setup(x => x.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion))
+				.ReturnsAsync(new LatestReleaseInformation());
 
 			// ACT
 			var response = await service.SyncAsync(0);
 
 			// ASSERT
-			ghService.Verify(x => x.GetLatestReleaseAsync(), Times.Never);
+			ghService.Verify(x => x.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion), Times.Never);
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Service;
 using FluentAssertions;
@@ -85,7 +86,7 @@ namespace UnitTests.Peloton
 				.ReturnsAsync(new PagedPelotonResponse<Workout>() { data = new List<Workout>() { new Workout() } });
 
 			var workouts = await pelotonService.GetRecentWorkoutsAsync(2);
-			workouts.Count.Should().Be(2);
+			workouts.Result.Count.Should().Be(2);
 
 			pelotonApi.Verify(x => x.GetWorkoutsAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
 		}
@@ -105,7 +106,7 @@ namespace UnitTests.Peloton
 				.ReturnsAsync(new PagedPelotonResponse<Workout>() { data = new List<Workout>() });
 
 			var workouts = await pelotonService.GetRecentWorkoutsAsync(20);
-			workouts.Count.Should().Be(2);
+			workouts.Result.Count.Should().Be(2);
 
 			pelotonApi.Verify(x => x.GetWorkoutsAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(3));
 		}
@@ -117,7 +118,7 @@ namespace UnitTests.Peloton
 		{
 		}
 
-		public new Task<ICollection<Workout>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)
+		public new Task<ServiceResult<ICollection<Workout>>> GetRecentWorkoutsAsync(int numWorkoutsToDownload)
 		{
 			return base.GetRecentWorkoutsAsync(numWorkoutsToDownload);
 		}

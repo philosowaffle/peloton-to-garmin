@@ -8,12 +8,13 @@ namespace WebUI;
 public interface IApiClient
 {
 	Task<PelotonWorkoutsGetResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetRequest request);
+	Task<PelotonWorkoutsGetAllResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetAllRequest request);
 
 	Task<SettingsGetResponse> SettingsGetAsync();
 	Task<Common.App> SettingsAppPostAsync(Common.App appSettings);
 	Task<Format> SettingsFormatPostAsync(Format formatSettings);
-	Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(Common.Peloton pelotonSettings);
-	Task<SettingsGarminGetResponse> SettingsGarminPostAsync(Common.Garmin garminSettings);
+	Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(SettingsPelotonPostRequest pelotonSettings);
+	Task<SettingsGarminGetResponse> SettingsGarminPostAsync(SettingsGarminPostRequest garminSettings);
 
 	Task<SyncGetResponse> SyncGetAsync();
 	Task<SyncPostResponse> SyncPostAsync(SyncPostRequest syncPostRequest);
@@ -57,14 +58,14 @@ public class ApiClient : IApiClient
 				.ReceiveJson<Format>();
 	}
 	
-	public Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(Common.Peloton pelotonSettings)
+	public Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(SettingsPelotonPostRequest pelotonSettings)
 	{
 		return $"{_apiUrl}/api/settings/peloton"
 				.PostJsonAsync(pelotonSettings)
 				.ReceiveJson<SettingsPelotonGetResponse>();
 	}
 
-	public Task<SettingsGarminGetResponse> SettingsGarminPostAsync(Common.Garmin garminSettings)
+	public Task<SettingsGarminGetResponse> SettingsGarminPostAsync(SettingsGarminPostRequest garminSettings)
 	{
 		return $"{_apiUrl}/api/settings/garmin"
 				.PostJsonAsync(garminSettings)
@@ -89,5 +90,12 @@ public class ApiClient : IApiClient
 		return $"{_apiUrl}/api/systemInfo"
 				.SetQueryParams(systemInfoGetRequest)
 				.GetJsonAsync<SystemInfoGetResponse>();
+	}
+
+	public Task<PelotonWorkoutsGetAllResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetAllRequest request)
+	{
+		return $"{_apiUrl}/api/peloton/workouts/all"
+				.SetQueryParams(request)
+				.GetJsonAsync<PelotonWorkoutsGetAllResponse>();
 	}
 }

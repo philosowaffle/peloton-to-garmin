@@ -7,7 +7,6 @@ using Common.Service;
 using Common.Stateful;
 using Conversion;
 using Garmin;
-using GitHub;
 using Peloton;
 using Prometheus;
 using Serilog;
@@ -21,7 +20,8 @@ namespace Sync
 	public interface ISyncService
 	{
 		Task<SyncResult> SyncAsync(int numWorkouts);
-		Task<SyncResult> SyncAsync(ICollection<string> workoutIds, ICollection<WorkoutType>? exclude = null);
+		Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null);
+		Task<SyncResult> SyncAsync(DateTime sinceDt, ICollection<WorkoutType>? exclude = null);
 	}
 
 	public class SyncService : ISyncService
@@ -35,9 +35,8 @@ namespace Sync
 		private readonly ISyncStatusDb _db;
 		private readonly IFileHandling _fileHandler;
 		private readonly ISettingsService _settingsService;
-		private readonly IGitHubService _gitHubService;
 
-		public SyncService(ISettingsService settingService, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, ISyncStatusDb dbClient, IFileHandling fileHandler, IGitHubService gitHubService)
+		public SyncService(ISettingsService settingService, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, ISyncStatusDb dbClient, IFileHandling fileHandler)
 		{
 			_settingsService = settingService;
 			_pelotonService = pelotonService;
@@ -45,105 +44,30 @@ namespace Sync
 			_converters = converters;
 			_db = dbClient;
 			_fileHandler = fileHandler;
-			_gitHubService = gitHubService;
 		}
 
 		public async Task<SyncResult> SyncAsync(int numWorkouts)
 		{
 			using var timer = SyncHistogram.NewTimer();
-			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}")
+			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.ByNumWorkouts")
 										.WithTag("numWorkouts", numWorkouts.ToString());
 
-			ICollection<Workout> recentWorkouts;
-			var syncTime = await _db.GetSyncStatusAsync();
 			var settings = await _settingsService.GetSettingsAsync();
-			syncTime.LastSyncTime = DateTime.Now;
-
-			if (settings.App.CheckForUpdates)
-			{
-				var latestVersionInformation = await _gitHubService.GetLatestReleaseAsync();
-				if (latestVersionInformation.IsReleaseNewerThanInstalledVersion)
-				{
-					_logger.Information("*********************************************");
-					_logger.Information("A new version of P2G is available: {@Version}", latestVersionInformation.LatestVersion);
-					_logger.Information("Release Date: {@ReleaseDate}", latestVersionInformation.ReleaseDate);
-					_logger.Information("Release Information: {@ReleaseUrl}", latestVersionInformation.ReleaseUrl);
-					_logger.Information("*********************************************");
-				}
-
-				AppMetrics.SyncUpdateAvailableMetric(latestVersionInformation.IsReleaseNewerThanInstalledVersion, latestVersionInformation.LatestVersion);
-			}
-
-			_logger.Information("Begining sync for {@NumWorkouts} workouts.", numWorkouts);
-
-			try
-			{
-				recentWorkouts = await _pelotonService.GetRecentWorkoutsAsync(numWorkouts);
-			}
-			catch (ArgumentException ae)
-			{
-				var errorMessage = $"Failed to fetch recent workouts from Peleoton: {ae.Message}";
-
-				_logger.Error(ae, errorMessage);
-				activity?.AddTag("exception.message", ae.Message);
-				activity?.AddTag("exception.stacktrace", ae.StackTrace);
-
-				syncTime.SyncStatus = Status.UnHealthy;
-				syncTime.LastErrorMessage = errorMessage;
-				await _db.UpsertSyncStatusAsync(syncTime);
-
-				var response = new SyncResult();
-				response.SyncSuccess = false;
-				response.PelotonDownloadSuccess = false;
-				response.Errors.Add(new ErrorResponse() { Message = $"{errorMessage}" });
-				return response;
-			}
-			catch (Exception ex)
-			{
-				var errorMessage = "Failed to fetch recent workouts from Peleoton.";
-
-				_logger.Error(ex, errorMessage);
-				activity?.AddTag("exception.message", ex.Message);
-				activity?.AddTag("exception.stacktrace", ex.StackTrace);
-
-				syncTime.SyncStatus = Status.UnHealthy;
-				syncTime.LastErrorMessage = errorMessage;
-				await _db.UpsertSyncStatusAsync(syncTime);
-
-				var response = new SyncResult();
-				response.SyncSuccess = false;
-				response.PelotonDownloadSuccess = false;
-				response.Errors.Add(new ErrorResponse() { Message = $"{errorMessage} Check logs for more details." });
-				return response;
-			}
-
-			var completedWorkouts = recentWorkouts
-									.Where(w =>
-									{
-										var shouldKeep = w.Status == "COMPLETE";
-										if (shouldKeep) return true;
-
-										_logger.Debug("Skipping in progress workout. {@WorkoutId} {@WorkoutStatus} {@WorkoutType} {@WorkoutTitle}", w.Id, w.Status, w.Fitness_Discipline, w.Title);
-										return false;
-									})
-									.Select(r => r.Id)
-									.ToList();
-
-			var completedWorkoutsCount = completedWorkouts.Count();
-			_logger.Information("Found {@NumWorkouts} completed workouts.", completedWorkoutsCount);
-			activity?.AddTag("workouts.completed", completedWorkoutsCount);
-
-			var result = await SyncAsync(completedWorkouts, settings.Peloton.ExcludeWorkoutTypes);
-
-			if (result.SyncSuccess)
-				syncTime.LastSuccessfulSyncTime = DateTime.Now;
-
-			await _db.UpsertSyncStatusAsync(syncTime);
-
-			return result;
+			return await SyncWithWorkoutLoaderAsync(() => _pelotonService.GetRecentWorkoutsAsync(numWorkouts), settings.Peloton.ExcludeWorkoutTypes);
 		}
 
-		public async Task<SyncResult> SyncAsync(ICollection<string> workoutIds, ICollection<WorkoutType>? exclude = null)
+		public Task<SyncResult> SyncAsync(DateTime sinceDt, ICollection<WorkoutType>? exclude = null)
+		{
+			using var timer = SyncHistogram.NewTimer();
+			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.BySinceDt");
+
+			_logger.Information("Begining sync for workouts since {date}.", sinceDt.ToLocalTime());
+
+			return SyncWithWorkoutLoaderAsync(() => _pelotonService.GetWorkoutsSinceAsync(sinceDt), exclude);
+
+		}
+
+		public async Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null)
 		{
 			using var timer = SyncHistogram.NewTimer();
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.ByWorkoutIds");
@@ -275,6 +199,87 @@ namespace Sync
 
 			response.SyncSuccess = true;
 			return response;
+		}
+
+		private IEnumerable<string> FilterToCompletedWorkoutIds(ICollection<Workout> workouts)
+		{
+			return workouts
+					.Where(w =>
+					{
+						var shouldKeep = w.Status == "COMPLETE";
+						if (shouldKeep) return true;
+
+						_logger.Debug("Skipping in progress workout. {@WorkoutId} {@WorkoutStatus} {@WorkoutType} {@WorkoutTitle}", w.Id, w.Status, w.Fitness_Discipline, w.Title);
+						return false;
+					})
+					.Select(r => r.Id);
+		}
+
+		private async Task<SyncResult> SyncWithWorkoutLoaderAsync(Func<Task<ServiceResult<ICollection<Workout>>>> loader, ICollection<WorkoutType>? exclude)
+		{
+			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.SyncWithWorkoutLoaderAsync");
+
+			ICollection<Workout> recentWorkouts;
+			var syncTime = await _db.GetSyncStatusAsync();
+			var settings = await _settingsService.GetSettingsAsync();
+			syncTime.LastSyncTime = DateTime.Now;
+
+			try
+			{
+				var recentWorkoutsServiceResult = await loader();
+				recentWorkouts = recentWorkoutsServiceResult.Result;
+			}
+			catch (ArgumentException ae)
+			{
+				var errorMessage = $"Failed to fetch workouts from Peloton: {ae.Message}";
+
+				_logger.Error(ae, errorMessage);
+				activity?.AddTag("exception.message", ae.Message);
+				activity?.AddTag("exception.stacktrace", ae.StackTrace);
+
+				syncTime.SyncStatus = Status.UnHealthy;
+				syncTime.LastErrorMessage = errorMessage;
+				await _db.UpsertSyncStatusAsync(syncTime);
+
+				var response = new SyncResult();
+				response.SyncSuccess = false;
+				response.PelotonDownloadSuccess = false;
+				response.Errors.Add(new ErrorResponse() { Message = $"{errorMessage}" });
+				return response;
+			}
+			catch (Exception ex)
+			{
+				var errorMessage = "Failed to fetch workouts from Peloton.";
+
+				_logger.Error(ex, errorMessage);
+				activity?.AddTag("exception.message", ex.Message);
+				activity?.AddTag("exception.stacktrace", ex.StackTrace);
+
+				syncTime.SyncStatus = Status.UnHealthy;
+				syncTime.LastErrorMessage = errorMessage;
+				await _db.UpsertSyncStatusAsync(syncTime);
+
+				var response = new SyncResult();
+				response.SyncSuccess = false;
+				response.PelotonDownloadSuccess = false;
+				response.Errors.Add(new ErrorResponse() { Message = $"{errorMessage} Check logs for more details." });
+				return response;
+			}
+
+			var completedWorkouts = FilterToCompletedWorkoutIds(recentWorkouts);
+
+			var completedWorkoutsCount = completedWorkouts.Count();
+			_logger.Information("Found {@NumWorkouts} completed workouts.", completedWorkoutsCount);
+			activity?.AddTag("workouts.completed", completedWorkoutsCount);
+
+			var result = await SyncAsync(completedWorkouts, settings.Peloton.ExcludeWorkoutTypes);
+
+			if (result.SyncSuccess)
+				syncTime.LastSuccessfulSyncTime = DateTime.Now;
+
+			await _db.UpsertSyncStatusAsync(syncTime);
+
+			return result;
 		}
 	}
 }

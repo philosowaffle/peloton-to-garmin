@@ -33,7 +33,7 @@ jobs:
     # Publish dotnet core exe
     - uses: actions/checkout@v2
     - name: Setup .NET Core SDK ${{ matrix.dotnet }}
-      uses: actions/setup-dotnet@v1.7.2
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ matrix.dotnet }}
     
@@ -56,7 +56,7 @@ jobs:
 
     # Package all-in-one python and add to distro
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -79,7 +79,7 @@ jobs:
 
     # Create Artifact
     - name: Upload Artifact ${{ matrix.os }}_${{ env.BUILD_VERSION }}
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.os }}_${{ env.BUILD_VERSION }}
         path: ${{ github.workspace }}/dist/${{ matrix.os }}
