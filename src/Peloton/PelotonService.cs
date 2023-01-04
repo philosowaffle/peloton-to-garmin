@@ -258,7 +258,7 @@ namespace Peloton
 			return results.ToArray();
 		}
 
-		private async Task<P2GWorkout> GetWorkoutDetailsAsync(string workoutId)
+		public async Task<P2GWorkout> GetWorkoutDetailsAsync(string workoutId)
 		{
 			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(GetWorkoutDetailsAsync)}.Item")
 										.WithWorkoutId(workoutId);
