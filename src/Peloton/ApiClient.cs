@@ -54,7 +54,7 @@ namespace Peloton
 			{
 				var response = await $"{AuthBaseUrl}"
 				.WithHeader("Accept-Language", "en-US")
-				.WithHeader("User-Agent", overrideUserAgent ?? "PostmanRuntime/7.26.10")
+				.WithHeader("User-Agent", overrideUserAgent ?? "PostmanRuntime/7.26.20")
 				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 				.WithTimeout(30)
 				.PostJsonAsync(new AuthRequest()
@@ -89,6 +89,7 @@ namespace Peloton
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/user/{auth.UserId}/workouts"
 			.WithCookie("peloton_session_id", auth.SessionId)
+			.WithCommonHeaders()
 			.SetQueryParams(new
 			{
 				limit = pageSize,
@@ -105,6 +106,7 @@ namespace Peloton
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/user/{auth.UserId}/workouts"
 			.WithCookie("peloton_session_id", auth.SessionId)
+			.WithCommonHeaders()
 			.SetQueryParams(new
 			{
 				from = fromUtc.ToString("o", CultureInfo.InvariantCulture),
@@ -124,6 +126,7 @@ namespace Peloton
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/user/{userId}/workouts"
 			.WithCookie("peloton_session_id", auth.SessionId)
+			.WithCommonHeaders()
 			.SetQueryParams(new
 			{
 				limit = numWorkouts,
@@ -140,6 +143,7 @@ namespace Peloton
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/me"
 			.WithCookie("peloton_session_id", auth.SessionId)
+			.WithCommonHeaders()
 			.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 			.GetJsonAsync<UserData>();
 		}
@@ -149,6 +153,7 @@ namespace Peloton
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/workout/{id}"
 				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithCommonHeaders()
 				.SetQueryParams(new
 				{
 					joins = "ride,ride.instructor"
@@ -162,6 +167,7 @@ namespace Peloton
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/workout/{id}/performance_graph"
 				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithCommonHeaders()
 				.SetQueryParams(new
 				{
 					every_n=1
