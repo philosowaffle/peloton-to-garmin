@@ -17,6 +17,6 @@ public static class Extensions
 	public static IFlurlRequest WithCommonHeaders(this IFlurlRequest request)
 	{
 		return request
-			.WithHeader("Peloton-Platform", "web");
+			.WithHeader("Peloton-Platform", "web"); // needed to get GPS points for outdoor activity in response
 	}
 }

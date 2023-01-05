@@ -1,6 +1,6 @@
 ﻿using Common.Dto.Api;
 using Microsoft.AspNetCore.Mvc;
-using Peloton;
+using Peloton.AnnualChallenge;
 
 namespace Api.Controllers;
 
