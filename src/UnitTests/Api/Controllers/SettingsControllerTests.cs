@@ -98,14 +98,14 @@ public class SettingsControllerTests
 	}
 
 	[Test]
-	public async Task FormatPost_With_InvalidOutPutDir_Returns400()
+	public async Task FormatPost_With_InvalidDeviceInfoPath_Returns400()
 	{
 		var autoMocker = new AutoMocker();
 		var controller = autoMocker.CreateInstance<SettingsController>();
 		var fileHandler = autoMocker.GetMock<IFileHandling>();
 
 		fileHandler
-			.Setup(f => f.DirExists("blah"))
+			.Setup(f => f.FileExists("blah"))
 			.Returns(false)
 			.Verifiable();
 
