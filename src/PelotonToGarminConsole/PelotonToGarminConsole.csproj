@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <PackageReference Include="Flurl.Http" Version="3.2.4" />
-    <PackageReference Include="JsonFlatFileDataStore" Version="2.3.0" />
+    <PackageReference Include="JsonFlatFileDataStore" Version="2.4.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
     <PackageReference Include="Philosowaffle.Capability.ReleaseChecks" Version="1.0.0" />
     <PackageReference Include="prometheus-net.DotNetRuntime" Version="4.4.0" />

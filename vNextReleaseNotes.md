@@ -4,3 +4,7 @@
 ## Fixes
 
 - [#404] Fixed where outdoor Just walk/Just run could be missing GPS data on Garmin Connect
+
+## Changes
+
+- [#402] [housekeeping] Dependency bumps
