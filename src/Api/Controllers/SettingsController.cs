@@ -102,7 +102,7 @@ public class SettingsController : Controller
 			return result;
 
 		if (!string.IsNullOrWhiteSpace(updatedFormatSettings.DeviceInfoPath)
-			&& !_fileHandler.DirExists(updatedFormatSettings.DeviceInfoPath))
+			&& !_fileHandler.FileExists(updatedFormatSettings.DeviceInfoPath))
 			return new BadRequestObjectResult(new ErrorResponse($"DeviceInfo path is either not accessible or does not exist."));
 
 		try
