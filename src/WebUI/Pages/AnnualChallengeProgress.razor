@@ -1,0 +1,85 @@
+﻿@page "/annualChallengeProgress"
+@inherits TracingComponentBase
+@inject IApiClient _apiClient
+@inject IHxMessengerService _toaster;
+
+<PageTitle>Annual Challenge Progress</PageTitle>
+
+
+<div class="row mb-3">
+        @foreach (var tier in annualProgress.Tiers)
+        {
+            <HxCard style="border: 0px;">
+                <BodyTemplate>
+                    <HxProgress Height="50">
+                        <img src="@tier.BadgeUrl" height="50" width="50">
+                        <HxProgressBar Value="@tier.PercentComplete" Label="@GetProgressLabel(annualProgress.EarnedMinutes, tier.RequiredMinutes)" Color="@GetThemeColor(tier.IsOnTrackToEarndByEndOfYear)" />
+                    </HxProgress>
+                    
+                    @if (!tier.HasEarned)
+                    {
+                        <ul style="list-style: none; padding-left: 0;">
+                        <li>Badge requires averaging <b>@Math.Round(tier.MinutesNeededPerDay, 2)</b> min/day or <b>@Math.Round(tier.MinutesNeededPerWeek, 2)</b> min/week.</li>
+                            @if (!tier.IsOnTrackToEarndByEndOfYear)
+                            {
+                                <li>You are <b>@Math.Round(tier.MinutesBehindPace, 2)</b> minutes behind pace.</li>
+                            }
+                        </ul>
+                    }
+                
+                </BodyTemplate>
+            </HxCard>
+            <br />
+        }
+</div>
+
+<div class="row justify-content-start">
+
+    @if (!annualProgress.Tiers.Any())
+    {
+       <HxAlert Color="ThemeColor.Primary">Looks like you haven't signed up for the Peloton Annual 2023 Challenge yet. Join the challenge on Peloton then check back here!</HxAlert>
+    }
+</div>
+
+@code {
+    private ProgressGetResponse annualProgress;
+
+    public AnnualChallengeProgress() : base(nameof(AnnualChallengeProgress))
+    {
+        annualProgress = new ProgressGetResponse() { Tiers = new List<Tier>() };
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var tracing = Tracing.ClientTrace($"{nameof(ProgressGetResponse)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+        try
+        {
+            annualProgress = (await _apiClient.GetAnnualProgressAsync()) ?? new ProgressGetResponse() { Tiers = new List<Tier>() };
+        }
+        catch (FlurlHttpException e)
+        {
+            var error = await e.GetResponseJsonAsync<ErrorResponse>();
+            _toaster.AddError(error.Message);
+            Log.Error("UI - Failed to fetch Annual Challenge progress report.", e);
+            annualProgress = new ProgressGetResponse() { Tiers = new List<Tier>() };
+        }
+        catch (Exception e)
+        {
+            _toaster.AddError($"Failed to load Annual Challenge progress report - {e.Message} - See logs for details.");
+            Log.Error("UI - Failed to load Annual Challenge progress report.", e);
+            annualProgress = new ProgressGetResponse() { Tiers = new List<Tier>() };
+        } 
+    }
+
+    public ThemeColor GetThemeColor(bool isOnTrack)
+    {
+        if (isOnTrack) return ThemeColor.Success;
+        return ThemeColor.Danger;
+    }
+
+    public string GetProgressLabel(double earnedMinutes, double requiredMinutes)
+    {
+        if (earnedMinutes >= requiredMinutes) return "Complete!";
+        return $"{earnedMinutes} / {requiredMinutes}";
+    }
+}
