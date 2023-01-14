@@ -5,6 +5,7 @@
 
 - [#404] Fixed where outdoor Just walk/Just run could be missing GPS data on Garmin Connect
 - [#411] WebUI - Fixed issue where custom DeviceInfo file path could not be saved
+- [#414] Fixed calories missing on Garmin Connect when provided by Apple Watch
 
 ## Changes
 

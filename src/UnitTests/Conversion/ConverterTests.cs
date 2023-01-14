@@ -349,56 +349,6 @@ namespace UnitTests.Conversion
 		}
 
 		[Test]
-		public void GetCalorieSummary_NullWorkoutSamples_ReturnsNull()
-		{
-			var autoMocker = new AutoMocker();
-			var converter = autoMocker.CreateInstance<ConverterInstance>();
-
-			var calories = converter.GetCalorieSummary1(null);
-			calories.Should().BeNull();
-		}
-
-		[Test]
-		public void GetCalorieSummary_Summaries_ReturnsNull()
-		{
-			var workoutSamples = new WorkoutSamples();
-			workoutSamples.Summaries = null;
-
-			var autoMocker = new AutoMocker();
-			var converter = autoMocker.CreateInstance<ConverterInstance>();
-
-			var calories = converter.GetCalorieSummary1(workoutSamples);
-			calories.Should().BeNull();
-		}
-
-		[Test]
-		public void GetCalorieSummary_NoCalorieSlug_ReturnsNull()
-		{
-			var workoutSamples = new WorkoutSamples();
-			workoutSamples.Summaries = new List<Summary>() { new Summary() { Slug = "something" } };
-
-			var autoMocker = new AutoMocker();
-			var converter = autoMocker.CreateInstance<ConverterInstance>();
-
-			var calories = converter.GetCalorieSummary1(workoutSamples);
-			calories.Should().BeNull();
-		}
-
-		[Test]
-		public void GetCalorieSummary_CalorieSlug_ReturnsSummary()
-		{
-			var workoutSamples = new WorkoutSamples();
-			workoutSamples.Summaries = new List<Summary>() { new Summary() { Slug = "calories", Value = 100 } };
-
-			var autoMocker = new AutoMocker();
-			var converter = autoMocker.CreateInstance<ConverterInstance>();
-
-			var calories = converter.GetCalorieSummary1(workoutSamples);
-			calories.Should().NotBeNull();
-			calories.Value.Should().Be(100);
-		}
-
-		[Test]
 		public void GetOutputSummary_NullWorkoutSamples_ReturnsNull()
 		{
 			var autoMocker = new AutoMocker();
@@ -667,6 +617,37 @@ namespace UnitTests.Conversion
 			ftp.Should().Be(expectedFtp);
 		}
 
+		// null & empty cases
+		// Calorie Slug
+		// TotalCalorie Slug
+		class CalorieScenarios
+		{
+			public static object[] Cases =
+			{
+				new object[] { null, null },
+				new object[] { new WorkoutSamples(), null },
+				new object[] { new WorkoutSamples() { Summaries = new List<Summary>() }, null },
+				new object[] { new WorkoutSamples() { Summaries = new List<Summary>() { new Summary() { Slug = "calories", Value = 10 } } }, 10 },
+				new object[] { new WorkoutSamples() { Summaries = new List<Summary>() { new Summary() { Slug = "calories", Value = 10 }, new Summary() { Slug = "total_calories", Value = 20 } } }, 10 },
+				new object[] { new WorkoutSamples() { Summaries = new List<Summary>() { new Summary() { Slug = "total_calories", Value = 20 } } }, 20 },
+				new object[] { new WorkoutSamples() { Summaries = new List<Summary>() { new Summary() { Slug = "somethingElse", Value = 30 } } }, null },
+			};
+		}
+
+		[TestCaseSource(typeof(CalorieScenarios), nameof(CalorieScenarios.Cases))]
+		public void GetCalorieSummary_ShouldPickCorrectValue(WorkoutSamples samples, int? expectedCalories)
+		{
+			// SETUP
+			var mocker = new AutoMocker();
+			var converter = mocker.CreateInstance<ConverterInstance>();
+
+			// ACT
+			var calorieSummary = ConverterInstance.GetCalorieSummary(samples);
+
+			// ASSERT
+			calorieSummary?.Value.Should().Be(expectedCalories);
+		}
+
 		private class ConverterInstance : Converter<string>
 		{
 			public ConverterInstance(ISettingsService settings, IFileHandling fileHandling) : base(settings, fileHandling) 
@@ -719,11 +700,6 @@ namespace UnitTests.Conversion
 			public byte? GetUserMaxHeartRate1(WorkoutSamples workoutSamples)
 			{
 				return base.GetUserMaxHeartRate(workoutSamples);
-			}
-
-			public Summary GetCalorieSummary1(WorkoutSamples workoutSamples)
-			{
-				return base.GetCalorieSummary(workoutSamples);
 			}
 
 			public Metric GetOutputSummary1(WorkoutSamples workoutSamples)

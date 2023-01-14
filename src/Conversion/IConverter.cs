@@ -290,7 +290,7 @@ namespace Conversion
 			return distanceSummary;
 		}
 
-		protected Summary GetCalorieSummary(WorkoutSamples workoutSamples)
+		public static Summary GetCalorieSummary(WorkoutSamples workoutSamples)
 		{
 			if (workoutSamples?.Summaries is null)
 			{
@@ -300,10 +300,16 @@ namespace Conversion
 
 			var summaries = workoutSamples.Summaries;
 			var caloriesSummary = summaries.FirstOrDefault(s => s.Slug == "calories");
-			if (caloriesSummary is null)
-				_logger.Verbose("No calories slug found.");
+			if (caloriesSummary is not null)
+				return caloriesSummary;
 
-			return caloriesSummary;
+			// calories may have been provided by Apple Watch
+			caloriesSummary = summaries.FirstOrDefault(s => s.Slug == "total_calories");
+			if (caloriesSummary is not null)
+				return caloriesSummary;
+
+			_logger.Verbose("No calories slug found.");
+			return null;
 		}
 
 		protected float GetMaxSpeedMetersPerSecond(WorkoutSamples workoutSamples)
