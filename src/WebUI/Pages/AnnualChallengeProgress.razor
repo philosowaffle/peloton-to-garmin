@@ -1,6 +1,7 @@
 ﻿@page "/annualChallengeProgress"
 @inherits TracingComponentBase
 @inject IApiClient _apiClient
+@inject IHxMessengerService _toaster;
 
 <PageTitle>Annual Challenge Progress</PageTitle>
 
@@ -51,7 +52,23 @@
     protected override async Task OnInitializedAsync()
     {
         using var tracing = Tracing.ClientTrace($"{nameof(ProgressGetResponse)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
-        annualProgress = (await _apiClient.GetAnnualProgressAsync()) ?? new ProgressGetResponse() { Tiers = new List<Tier>() };
+        try
+        {
+            annualProgress = (await _apiClient.GetAnnualProgressAsync()) ?? new ProgressGetResponse() { Tiers = new List<Tier>() };
+        }
+        catch (FlurlHttpException e)
+        {
+            var error = await e.GetResponseJsonAsync<ErrorResponse>();
+            _toaster.AddError(error.Message);
+            Log.Error("UI - Failed to fetch Annual Challenge progress report.", e);
+            annualProgress = new ProgressGetResponse() { Tiers = new List<Tier>() };
+        }
+        catch (Exception e)
+        {
+            _toaster.AddError($"Failed to load Annual Challenge progress report - {e.Message} - See logs for details.");
+            Log.Error("UI - Failed to load Annual Challenge progress report.", e);
+            annualProgress = new ProgressGetResponse() { Tiers = new List<Tier>() };
+        } 
     }
 
     public ThemeColor GetThemeColor(bool isOnTrack)
