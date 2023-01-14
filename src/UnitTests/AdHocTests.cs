@@ -56,12 +56,6 @@ namespace UnitTests
 		//}
 
 		//[Test]
-		//public async Task AA()
-		//{
-
-		//}
-
-		//[Test]
 		//public void DecodeFitFile()
 		//{
 		//	var output = Path.Join(FitDirectory, "p2g_cycle_workout.fit");
@@ -108,8 +102,8 @@ namespace UnitTests
 		//	var email = "";
 		//	var password = "";
 
-		//	var workoutId = "13afceebe0f74a338f60bf9d70f657ef";
-		//	var userId = "";
+		//	var workoutId = "db3ec6bf91094060aaad7df12a1f1ca1";
+		//	var userId = "bfe1cd4a3f554a53b2ac0af386562e3d";
 
 		//	var settings = new Settings()
 		//	{
