@@ -20,6 +20,8 @@ public interface IApiClient
 	Task<SyncPostResponse> SyncPostAsync(SyncPostRequest syncPostRequest);
 
 	Task<SystemInfoGetResponse> SystemInfoGetAsync(SystemInfoGetRequest systemInfoGetRequest);
+
+	Task<ProgressGetResponse> GetAnnualProgressAsync();
 }
 
 public class ApiClient : IApiClient
@@ -97,5 +99,11 @@ public class ApiClient : IApiClient
 		return $"{_apiUrl}/api/peloton/workouts/all"
 				.SetQueryParams(request)
 				.GetJsonAsync<PelotonWorkoutsGetAllResponse>();
+	}
+
+	public Task<ProgressGetResponse> GetAnnualProgressAsync()
+	{
+		return $"{_apiUrl}/api/pelotonannualchallenge/progress"
+				.GetJsonAsync<ProgressGetResponse>();
 	}
 }

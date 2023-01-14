@@ -4,17 +4,20 @@ namespace Common.Dto.Api;
 
 public record ProgressGetResponse
 {
-	public short EarnedMinutes { get; set; }
-	public ICollection<Tier> Tiers { get; set; }
+	public double EarnedMinutes { get; init; }
+	public ICollection<Tier> Tiers { get; init; }
 }
 
 public record Tier
 {
-	public string BadgeUrl { get; set; } // tiers.detailed_badge_image
-	public string Title { get; set; }
-	public short RequiredMinutes { get; set; }
-	public bool HasEarned { get; set; }
-	public bool IsOnTrackToEarndByEndOfYear { get; set; }
-	public bool MinutesBehindPace { get; set; }
-	public bool MinutesAheadOfPace { get; set; }
+	public string BadgeUrl { get; init; }
+	public string Title { get; init; }
+	public double RequiredMinutes { get; init; }
+	public bool HasEarned { get; init; }
+	public float PercentComplete { get; init; }
+	public bool IsOnTrackToEarndByEndOfYear { get; init; }
+	public double MinutesBehindPace { get; init; }
+	public double MinutesAheadOfPace { get; init; }
+	public double MinutesNeededPerDay { get; init; }
+	public double MinutesNeededPerWeek { get; init; }
 }

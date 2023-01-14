@@ -1,4 +1,5 @@
-﻿using Common.Dto.Api;
+﻿using Common.Dto;
+using Common.Dto.Api;
 using Microsoft.AspNetCore.Mvc;
 using Peloton.AnnualChallenge;
 
@@ -30,8 +31,37 @@ public class PelotonAnnualChallengeController : Controller
 	public async Task<ActionResult<ProgressGetResponse>> GetProgressSummaryAsync()
 	{
 		var userId = 1;
-		var result = await _annualChallengeService.GetAnnualChallengeProgressAsync(userId);
+		try
+		{
+			var serviceResult = await _annualChallengeService.GetAnnualChallengeProgressAsync(userId);
 
-		return null;
+			if (serviceResult.IsErrored())
+				return serviceResult.GetResultForError();
+
+			var data = serviceResult.Result;
+			var tiers = data.Tiers?.Select(t => new Common.Dto.Api.Tier()
+			{
+				BadgeUrl = t.BadgeUrl,
+				Title = t.Title,
+				RequiredMinutes = t.RequiredMinutes,
+				HasEarned = t.HasEarned,
+				PercentComplete = Convert.ToSingle(t.PercentComplete * 100),
+				IsOnTrackToEarndByEndOfYear = t.IsOnTrackToEarndByEndOfYear,
+				MinutesBehindPace = t.MinutesBehindPace,
+				MinutesAheadOfPace = t.MinutesAheadOfPace,
+				MinutesNeededPerDay = t.MinutesNeededPerDay,
+				MinutesNeededPerWeek = t.MinutesNeededPerWeek,
+			}).ToList();
+
+			return Ok(new ProgressGetResponse()
+			{
+				EarnedMinutes = data.EarnedMinutes,
+				Tiers = tiers ?? new List<Common.Dto.Api.Tier>(),
+			});
+		}
+		catch (Exception e)
+		{
+			return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));
+		}
 	}
 }

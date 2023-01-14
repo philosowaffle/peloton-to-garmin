@@ -2,12 +2,12 @@
 
 public record PelotonChallenges
 {
-	public ChallengeSummary[] Challenges { get; set; }
+	public PelotonChallenge[] Challenges { get; set; }
 }
 
 public record PelotonChallenge
 {
-	public ChallengeSummary ChallengeSummary { get; }
+	public ChallengeSummary Challenge_Summary { get; set; }
 
 	// participants
 	// progress
@@ -15,31 +15,39 @@ public record PelotonChallenge
 
 public record ChallengeSummary
 {
-	public string Id { get; }
-	public string Title { get; }
-	public string Symbol_Image_Url { get; }
-	public long Start_Time { get; }
-	public long End_Time { get; }
+	public string Id { get; set; }
+	public string Title { get; set; }
+	public string Symbol_Image_Url { get; set; }
+	public long Start_Time { get; set; }
+	public long End_Time { get; set; }
 }
 
 public record PelotonUserChallengeDetail
 {
-	public ChallengeDetail Challenge_Detail { get; }
-	public ChallengeSummary ChallengeSummary { get; }
+	public ChallengeDetail Challenge_Detail { get; set; }
+	public ChallengeSummary Challenge_Summary { get; set; }
+	public ChallengeProgress Progress { get; set; }
 }
 
 public record ChallengeDetail
 {
-	public string Detailed_Description { get; }
-	public PelotonChallengeTier[] Tiers { get; }
+	public string Detailed_Description { get; set; }
+	public PelotonChallengeTier[] Tiers { get; set; }
 
 }
 
 public record PelotonChallengeTier
 {
-	public string Id { get; }
-	public string Title { get; }
-	public string detailed_badge_image_url { get; }
-	public short Metric_Value { get; set; }
+	public string Id { get; set; }
+	public string Title { get; set; }
+	public string detailed_badge_image_url { get; set; }
+	public double Metric_Value { get; set; }
+	public string Metric_Display_Unit { get; set; }
+}
+
+public record ChallengeProgress
+{
+	// Current User Value
+	public double Metric_Value { get; set; }
 	public string Metric_Display_Unit { get; set; }
 }
