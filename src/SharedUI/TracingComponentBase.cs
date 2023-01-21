@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
 
-namespace WebUI;
+namespace SharedUI;
 
 public class TracingComponentBase : ComponentBase, IDisposable
 {

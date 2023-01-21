@@ -8,6 +8,7 @@ using Prometheus;
 using Common.Observe;
 using Common.Stateful;
 using Common.Http;
+using SharedUI;
 
 ///////////////////////////////////////////////////////////
 /// STATICS
