@@ -41,8 +41,7 @@ jobs:
         {
           "App": {
             "OutputDirectory": "/app/output",
-            "EnablePolling": false,
-            "CloseWindowOnFinish": true
+            "EnablePolling": false
           },
           "Format": {
             "Fit": true,

@@ -182,21 +182,6 @@ namespace Garmin
 			if (config.Garmin.Upload == false) return;
 
 			config.Garmin.EnsureGarminCredentialsAreProvided();
-
-			if (config.App.EnablePolling && config.Garmin.TwoStepVerificationEnabled)
-				throw new ArgumentException("App.EnablePolling cannot be true when Garmin.TwoStepVerificationEnabled is true.");
-
-			if (config.App.PythonAndGUploadInstalled.HasValue)
-			{
-				_logger.Warning("App.PythonAndGuploadInstalledLocally setting is deprecated and will be removed in a future release. Please swith to using Garmin.UploadStrategy config.");
-
-				if (config.Garmin.UploadStrategy == UploadStrategy.PythonAndGuploadInstalledLocally
-					&& config.App.PythonAndGUploadInstalled.Value == false)
-				{
-					config.Garmin.UploadStrategy = UploadStrategy.WindowsExeBundledPython;
-					_logger.Warning("Detected use of deprecated config App.PythonAndGuploadInstalledLocally, setting Garmin.UploadStrategy to WindowsExeBundledPython=1");
-				}
-			}
 		}
 	}
 }
