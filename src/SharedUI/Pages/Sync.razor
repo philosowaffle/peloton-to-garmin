@@ -44,10 +44,10 @@
 			var pageIndex = request.StartIndex / PageSize;
 			var recentWorkouts = await _apiClient.PelotonWorkoutsGetAsync(new PelotonWorkoutsGetRequest() { PageSize = PageSize, PageIndex = pageIndex});
 			return new GridDataProviderResult<PelotonWorkout>() { Data = recentWorkouts.Items, TotalCount = recentWorkouts.TotalItems };
-		} catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		}
+		catch (ApiClientException e)
 		{
-			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			_toaster.AddError(error.Message);
+			_toaster.AddError(e.Message);
 			Log.Error("UI - Failed to load Peloton workouts.", e);
 		} catch (Exception e)
 		{
@@ -84,15 +84,14 @@
 					_toaster.AddError(error.Message);
 			}
 
-		} catch(FlurlHttpTimeoutException te)
+		} catch(SyncTimeoutException te)
 		{
 			_toaster.AddInformation("Long running sync will continue running in the background.");
 			Log.Information("UI - Sync timeout reached.", te);
 		} 
-		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		catch (ApiClientException e)
 		{
-			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			_toaster.AddError(error.Message);
+			_toaster.AddError(e.Message);
 			Log.Error("UI - Failed to load Peloton workouts.", e);
 		}
 		catch (Exception e)

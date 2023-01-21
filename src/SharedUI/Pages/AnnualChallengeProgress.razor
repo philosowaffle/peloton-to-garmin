@@ -55,10 +55,9 @@
         {
             annualProgress = (await _apiClient.GetAnnualProgressAsync()) ?? new ProgressGetResponse() { Tiers = new List<Tier>() };
         }
-        catch (FlurlHttpException e)
+        catch (ApiClientException e)
         {
-            var error = await e.GetResponseJsonAsync<ErrorResponse>();
-            _toaster.AddError(error.Message);
+            _toaster.AddError(e.Message);
             Log.Error("UI - Failed to fetch Annual Challenge progress report.", e);
             annualProgress = new ProgressGetResponse() { Tiers = new List<Tier>() };
         }

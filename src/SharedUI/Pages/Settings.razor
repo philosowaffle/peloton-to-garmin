@@ -218,10 +218,9 @@
 			appSettings = await _apiClient.SettingsAppPostAsync(appSettings);
 			_toaster.AddInformation("App Settings Saved!");
 		}
-		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		catch (ApiClientException e)
 		{
-			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			_toaster.AddError(error.Message);
+			_toaster.AddError(e.Message);
 		}
 		catch (Exception e)
 		{
@@ -240,10 +239,9 @@
 			formatSettings = await _apiClient.SettingsFormatPostAsync(formatSettings);
 			_toaster.AddInformation("Format Settings Saved!");
 		}
-		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		catch (ApiClientException e)
 		{
-			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			_toaster.AddError(error.Message);
+			_toaster.AddError(e.Message);
 		}
 		catch (Exception e)
 		{
@@ -271,10 +269,9 @@
 			pelotonSettings = await _apiClient.SettingsPelotonPostAsync(pelotonSettings.Map());
 			_toaster.AddInformation("Peloton Settings Saved!");
 		}
-		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		catch (ApiClientException e)
 		{
-			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			_toaster.AddError(error.Message);
+			_toaster.AddError(e.Message);
 		}
 		catch (Exception e)
 		{
@@ -301,10 +298,9 @@
 			garminSettings = await _apiClient.SettingsGarminPostAsync(garminSettings.Map());
 			_toaster.AddInformation("Garmin Settings Saved!");
 		}
-		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		catch (ApiClientException e)
 		{
-			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			_toaster.AddError(error.Message);
+			_toaster.AddError(e.Message);
 		}
 		catch (Exception e)
 		{
