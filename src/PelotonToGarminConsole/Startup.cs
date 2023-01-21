@@ -73,8 +73,7 @@ namespace PelotonToGarminConsole
 			{
 				_logger.Error(ex, "Exception during config validation. Please modify your configuration.local.json and relaunch the application.");
 				Health.Set(HealthStatus.Dead);
-				if (!settings.App.CloseWindowOnFinish)
-					Console.ReadLine();
+				Console.ReadLine();
 				Environment.Exit(-1);
 			}
 
@@ -181,10 +180,7 @@ namespace PelotonToGarminConsole
 			finally
 			{
 				_logger.Verbose("Exit.");
-
-				if (!settings.App.CloseWindowOnFinish)
-					Console.ReadLine();
-
+				Console.ReadLine();
 				Environment.Exit(exitCode);
 			}
 		}

@@ -5,3 +5,6 @@
 
 - [#421] Uplift to dotnet 7
 
+## Changes
+
+- [#302] Removed deprecated settings `PythonAndGUploadInstalled` and `CloseWindowOnFinish`
