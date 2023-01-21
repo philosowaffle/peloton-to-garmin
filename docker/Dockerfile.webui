@@ -1,7 +1,7 @@
 ###################
 # CREATE FINAL LAYER
 ###################
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 as final
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 as final
 
 RUN apt-get update \
 	&& apt-get -y install bash tzdata \
@@ -17,7 +17,7 @@ WORKDIR /app
 ###################
 # BUILD LAYER
 ###################
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 
 COPY . /build
 WORKDIR /build
