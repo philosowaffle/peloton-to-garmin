@@ -22,6 +22,9 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ matrix.dotnet }}
+    
+    - name: Install MAUI Workloads
+      run: dotnet workload install maui --ignore-failed-sources
 
     - name: Clean
       run: dotnet clean --configuration Debug && dotnet nuget locals all --clear
