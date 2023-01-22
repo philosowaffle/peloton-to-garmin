@@ -52,7 +52,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientUI", "src\ClientUI\Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api.Service", "src\Api.Service\Api.Service.csproj", "{AE7ED46D-B1F6-402F-AA9F-EE952984B3BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.Contract", "src\Api.Contract\Api.Contract.csproj", "{629769E4-3048-41B6-8818-141DED7AD8D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api.Contract", "src\Api.Contract\Api.Contract.csproj", "{629769E4-3048-41B6-8818-141DED7AD8D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

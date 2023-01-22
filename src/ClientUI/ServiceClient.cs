@@ -1,7 +1,9 @@
 ﻿using Api.Contract;
+using Api.Service.Helpers;
 using Api.Services;
 using Common;
 using Common.Service;
+using Peloton.AnnualChallenge;
 using SharedUI;
 
 namespace ClientUI;
@@ -10,16 +12,52 @@ public class ServiceClient : IApiClient
 {
 	private readonly ISystemInfoService _systemInfoService;
 	private readonly ISettingsService _settingsService;
+	private readonly IAnnualChallengeService _annualChallengeService;
 
-	public ServiceClient(ISystemInfoService systemInfoService, ISettingsService settingsService)
+	public ServiceClient(ISystemInfoService systemInfoService, ISettingsService settingsService, IAnnualChallengeService annualChallengeService)
 	{
 		_systemInfoService = systemInfoService;
 		_settingsService = settingsService;
+		_annualChallengeService = annualChallengeService;
 	}
 
-	public Task<ProgressGetResponse> GetAnnualProgressAsync()
+	public async Task<ProgressGetResponse> GetAnnualProgressAsync()
 	{
-		throw new NotImplementedException();
+		var userId = 1;
+		try
+		{
+			var serviceResult = await _annualChallengeService.GetAnnualChallengeProgressAsync(userId);
+
+			if (serviceResult.IsErrored())
+			{
+				throw new ApiClientException(serviceResult.Error.Message, serviceResult.Error.Exception);
+			}
+
+			var data = serviceResult.Result;
+			var tiers = data.Tiers?.Select(t => new Api.Contract.Tier()
+			{
+				BadgeUrl = t.BadgeUrl,
+				Title = t.Title,
+				RequiredMinutes = t.RequiredMinutes,
+				HasEarned = t.HasEarned,
+				PercentComplete = Convert.ToSingle(t.PercentComplete * 100),
+				IsOnTrackToEarndByEndOfYear = t.IsOnTrackToEarndByEndOfYear,
+				MinutesBehindPace = t.MinutesBehindPace,
+				MinutesAheadOfPace = t.MinutesAheadOfPace,
+				MinutesNeededPerDay = t.MinutesNeededPerDay,
+				MinutesNeededPerWeek = t.MinutesNeededPerWeek,
+			}).ToList();
+
+			return new ProgressGetResponse()
+			{
+				EarnedMinutes = data.EarnedMinutes,
+				Tiers = tiers ?? new List<Api.Contract.Tier>(),
+			};
+		}
+		catch (Exception e)
+		{
+			throw new ApiClientException($"Unexpected error ocurred: {e.Message}", e);
+		}
 	}
 
 	public Task<PelotonWorkoutsGetResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetRequest request)

@@ -1,5 +1,4 @@
-﻿using ClientUI.Data;
-using Common.Observe;
+﻿using Common.Observe;
 using Common;
 using Microsoft.Extensions.Logging;
 using SharedUI;
@@ -63,8 +62,6 @@ public static class MauiProgram
 		builder.Services.AddBlazorWebViewDeveloperTools();
 	builder.Logging.AddDebug();
 #endif
-
-		builder.Services.AddSingleton<WeatherForecastService>();
 
 		// Setup initial Tracing Source
 		Tracing.Source = new(Statics.TracingService);
