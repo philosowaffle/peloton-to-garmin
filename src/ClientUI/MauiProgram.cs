@@ -31,6 +31,10 @@ public static class MauiProgram
 		Statics.MetricPrefix = Constants.ClientUIName;
 		Statics.TracingService = Constants.ClientUIName;
 
+		Statics.DefaultDataDirectory = FileSystem.Current.AppDataDirectory;
+		Statics.DefaultOutputDirectory = FileSystem.Current.AppDataDirectory;
+		Statics.DefaultTempDirectory = FileSystem.Current.CacheDirectory;
+
 		///////////////////////////////////////////////////////////
 		/// HOST
 		///////////////////////////////////////////////////////////

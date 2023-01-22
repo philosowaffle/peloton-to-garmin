@@ -1,4 +1,5 @@
 ﻿using Common.Dto;
+using Common.Stateful;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -68,8 +69,8 @@ public class App
 {
 	public App()
 	{
-		OutputDirectory = Path.Join(Environment.CurrentDirectory, "output");
-		WorkingDirectory = Path.Join(Environment.CurrentDirectory, "working");
+		OutputDirectory = Path.Join(Statics.DefaultDataDirectory, "output");
+		WorkingDirectory = Path.Join(Statics.DefaultTempDirectory, "working");
 
 		CheckForUpdates = true;
 		EnablePolling = false;
@@ -92,7 +93,7 @@ public class App
 	public bool CheckForUpdates { get; set; }
 
 
-	public static string DataDirectory = Path.GetFullPath(Path.Join(Environment.CurrentDirectory, "data"));
+	public static string DataDirectory = Path.GetFullPath(Path.Join(Statics.DefaultDataDirectory, "data"));
 	public string FailedDirectory => Path.GetFullPath(Path.Join(OutputDirectory, "failed"));
 	public string DownloadDirectory => Path.GetFullPath(Path.Join(WorkingDirectory, "downloaded"));
 	public string UploadDirectory => Path.GetFullPath(Path.Join(WorkingDirectory, "upload"));

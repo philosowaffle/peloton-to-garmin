@@ -19,11 +19,10 @@ public class ServiceClient : IApiClient
 	private readonly IGitHubReleaseCheckService _gitHubService;
 	private readonly ISettingsService _settingsService;
 
-	//public ServiceClient(IGitHubReleaseCheckService gitHubService, ISettingsService settingsService)
-	public ServiceClient(IGitHubReleaseCheckService gitHubService)
+	public ServiceClient(IGitHubReleaseCheckService gitHubService, ISettingsService settingsService)
 	{
 		_gitHubService = gitHubService;
-		//_settingsService = settingsService;
+		_settingsService = settingsService;
 	}
 
 	public Task<ProgressGetResponse> GetAnnualProgressAsync()
@@ -60,9 +59,6 @@ public class ServiceClient : IApiClient
 	{
 		try
 		{
-			// TODO: DB tries to create directory but is not allowed because
-			// we're running in a Win Sys32 dir
-			return new SettingsGetResponse();
 			var settings = await _settingsService.GetSettingsAsync();
 
 			var settingsResponse = new SettingsGetResponse(settings);
