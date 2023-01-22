@@ -1,6 +1,6 @@
-﻿using Common;
-using Common.Dto.Api;
-using Common.Helpers;
+﻿using Api.Contract;
+using Api.Service.Helpers;
+using Common;
 using Common.Service;
 using Microsoft.AspNetCore.Mvc;
 

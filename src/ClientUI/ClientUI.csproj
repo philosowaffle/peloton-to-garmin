@@ -51,18 +51,12 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
-		<PackageReference Include="Philosowaffle.Capability.ReleaseChecks" Version="1.0.0" />
-		<PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
-		<PackageReference Include="Serilog.Enrichers.Span" Version="3.0.0" />
-		<PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
     </ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Conversion\Conversion.csproj" />
-		<ProjectReference Include="..\Peloton\Peloton.csproj" />
 		<ProjectReference Include="..\SharedUI\SharedUI.csproj" />
+		<ProjectReference Include="..\Api.Service\Api.Service.csproj" />
 		<ProjectReference Include="..\Common\Common.csproj" />
-		<ProjectReference Include="..\Sync\Sync.csproj" />
 	</ItemGroup>
 
 </Project>

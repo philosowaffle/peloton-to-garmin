@@ -1,27 +1,19 @@
-﻿using Common;
-using Common.Dto;
-using Common.Dto.Api;
+﻿using Api.Contract;
+using Api.Services;
+using Common;
 using Common.Service;
-using Core.GitHub;
-using Microsoft.AspNetCore.Http;
-using Philosowaffle.Capability.ReleaseChecks.Model;
 using SharedUI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ClientUI;
 
 public class ServiceClient : IApiClient
 {
-	private readonly IGitHubReleaseCheckService _gitHubService;
+	private readonly ISystemInfoService _systemInfoService;
 	private readonly ISettingsService _settingsService;
 
-	public ServiceClient(IGitHubReleaseCheckService gitHubService, ISettingsService settingsService)
+	public ServiceClient(ISystemInfoService systemInfoService, ISettingsService settingsService)
 	{
-		_gitHubService = gitHubService;
+		_systemInfoService = systemInfoService;
 		_settingsService = settingsService;
 	}
 
@@ -90,33 +82,8 @@ public class ServiceClient : IApiClient
 
 	public async Task<SystemInfoGetResponse> SystemInfoGetAsync(SystemInfoGetRequest systemInfoGetRequest)
 	{
-		LatestReleaseInformation? versionInformation = null;
-
-		if (systemInfoGetRequest.CheckForUpdate)
-			versionInformation = await _gitHubService.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion);
-
-		return new SystemInfoGetResponse()
-		{
-			OperatingSystem = SystemInformation.OS,
-			OperatingSystemVersion = SystemInformation.OSVersion,
-
-			RunTimeVersion = SystemInformation.RunTimeVersion,
-
-			Version = Constants.AppVersion,
-			NewerVersionAvailable = versionInformation?.IsReleaseNewerThanInstalledVersion,
-			LatestVersionInformation = systemInfoGetRequest.CheckForUpdate ? new LatestVersionInformation()
-			{
-				LatestVersion = versionInformation?.LatestVersion,
-				ReleaseDate = versionInformation?.ReleaseDate.ToString(),
-				ReleaseUrl = versionInformation?.ReleaseUrl,
-				Description = versionInformation?.Description
-			} : null,
-
-			GitHub = "https://github.com/philosowaffle/peloton-to-garmin",
-			Documentation = "https://philosowaffle.github.io/peloton-to-garmin/",
-			Forums = "https://github.com/philosowaffle/peloton-to-garmin/discussions",
-			Donate = "https://www.buymeacoffee.com/philosowaffle",
-			Issues = "https://github.com/philosowaffle/peloton-to-garmin/issues"
-		};
+		var result = await _systemInfoService.GetAsync(systemInfoGetRequest);
+		result.Api = null;
+		return result;
 	}
 }

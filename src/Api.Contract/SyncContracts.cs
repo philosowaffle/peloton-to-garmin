@@ -1,8 +1,6 @@
 ﻿using Common.Database;
-using System;
-using System.Collections.Generic;
 
-namespace Common.Dto.Api;
+namespace Api.Contract;
 
 public record SyncGetResponse
 {

@@ -1,7 +1,7 @@
-﻿using Common.Dto;
-using Common.Dto.Api;
+﻿using Api.Contract;
+using Api.Service.Helpers;
+using Common.Dto;
 using Common.Dto.Peloton;
-using Common.Helpers;
 using Flurl.Http;
 using Microsoft.AspNetCore.Mvc;
 using Peloton;

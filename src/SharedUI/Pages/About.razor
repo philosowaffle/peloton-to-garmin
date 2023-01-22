@@ -33,7 +33,10 @@
     
 
     <ul class="list-group list-group-flush">
-        <li class="list-group-item"><a href="@systemInfo.Api" target="_blank">Api</a></li>
+        @if (!string.IsNullOrWhiteSpace(systemInfo.Api))
+        {
+            <li class="list-group-item"><a href="@systemInfo.Api" target="_blank">Api</a></li>
+        } 
         <li class="list-group-item"><a href="@systemInfo.GitHub" target="_blank">Website</a></li>
         <li class="list-group-item"><a href="@systemInfo.Documentation" target="_blank">Documentation</a></li>
         <li class="list-group-item"><a href="@systemInfo.Forums" target="_blank">Forums</a></li>

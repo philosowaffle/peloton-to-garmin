@@ -1,8 +1,7 @@
-﻿using Common.Dto.Peloton;
-using System;
-using System.Collections.Generic;
+﻿using Common.Dto;
+using Common.Dto.Peloton;
 
-namespace Common.Dto.Api;
+namespace Api.Contract;
 
 public class PelotonWorkoutsGetRequest : IPagingRequest
 {
@@ -60,13 +59,13 @@ public record PelotonWorkout
 		ImageUrl = workout.Ride?.Image_Url;
 	}
 
-	public string Id { get; init; }
-	public string Status { get; init; }
-	public string ClassTypeTitle { get; init; }
-	public string WorkoutTitle { get; init; }
-	public string Name { get; init; }
+	public string? Id { get; init; }
+	public string? Status { get; init; }
+	public string? ClassTypeTitle { get; init; }
+	public string? WorkoutTitle { get; init; }
+	public string? Name { get; init; }
 	public long CreatedAt { get; init; }
-	public Uri ImageUrl { get; set; }
+	public Uri? ImageUrl { get; set; }
 
 }
 

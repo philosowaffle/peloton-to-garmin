@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Common;
+using Common.Dto;
+using System.Collections.Generic;
 
-namespace Common.Dto.Api;
+namespace Api.Contract;
 
 public class SettingsGetResponse
 {
@@ -47,8 +49,8 @@ public class SettingsGetResponse
 public class SettingsGarminGetResponse
 {
 	public bool IsPasswordSet { get; set; }
-	public string Email { get; set; }
-	public string Password { get; set; }
+	public string? Email { get; set; }
+	public string? Password { get; set; }
 	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
@@ -57,8 +59,8 @@ public class SettingsGarminGetResponse
 
 public class SettingsGarminPostRequest
 {
-	public string Email { get; set; }
-	public string Password { get; set; }
+	public string? Email { get; set; }
+	public string? Password { get; set; }
 	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
@@ -67,18 +69,23 @@ public class SettingsGarminPostRequest
 
 public class SettingsPelotonGetResponse
 {
+	public SettingsPelotonGetResponse() 
+	{
+		ExcludeWorkoutTypes = new List<WorkoutType>();
+	}
+
 	public bool IsPasswordSet { get; set; }
-	public string Email { get; set; }
-	public string Password { get; set; }
+	public string? Email { get; set; }
+	public string? Password { get; set; }
 	public ICollection<WorkoutType> ExcludeWorkoutTypes { get; set; }
 	public int NumWorkoutsToDownload { get; set; }
 }
 
 public class SettingsPelotonPostRequest
 {
-	public string Email { get; set; }
-	public string Password { get; set; }
-	public ICollection<WorkoutType> ExcludeWorkoutTypes { get; set; }
+	public string? Email { get; set; }
+	public string? Password { get; set; }
+	public ICollection<WorkoutType>? ExcludeWorkoutTypes { get; set; }
 	public int NumWorkoutsToDownload { get; set; }
 }
 
@@ -95,9 +102,9 @@ public static class Mapping
 		};
 	}
 
-	public static Common.Peloton Map(this SettingsPelotonPostRequest request)
+	public static Peloton Map(this SettingsPelotonPostRequest request)
 	{
-		return new Common.Peloton()
+		return new Peloton()
 		{
 			Email = request.Email,
 			Password = request.Password,
@@ -119,9 +126,9 @@ public static class Mapping
 		};
 	}
 
-	public static Common.Garmin Map(this SettingsGarminPostRequest request)
+	public static Garmin Map(this SettingsGarminPostRequest request)
 	{
-		return new Common.Garmin()
+		return new Garmin()
 		{
 			Email = request.Email,
 			Password = request.Password,

@@ -1,6 +1,6 @@
-﻿using Api.Controllers;
+﻿using Api.Contract;
+using Api.Controllers;
 using Common;
-using Common.Dto.Api;
 using Common.Service;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;

@@ -1,22 +1,11 @@
 ﻿using ClientUI.Data;
-using Common.Http;
 using Common.Observe;
 using Common;
 using Microsoft.Extensions.Logging;
-using Philosowaffle.Capability.ReleaseChecks;
-using Serilog;
 using SharedUI;
 using Common.Stateful;
 using Microsoft.Extensions.Configuration;
-using Havit.Blazor.Components.Web;
-using Common.Service;
-using Common.Database;
-using Microsoft.Extensions.Caching.Memory;
-using Conversion;
-using Garmin;
-using Peloton;
-using Peloton.AnnualChallenge;
-using Sync;
+using SharedStartup;
 
 namespace ClientUI;
 
@@ -59,56 +48,10 @@ public static class MauiProgram
 		// API CLIENT
 		builder.Services.AddSingleton<IApiClient, ServiceClient>();
 
-		// CACHE
-		builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
+		builder.Services.ConfigureSharedUIServices();
+		builder.Services.ConfigureP2GApiServices();
 
-		// CONVERT
-		builder.Services.AddSingleton<IConverter, FitConverter>();
-		builder.Services.AddSingleton<IConverter, TcxConverter>();
-		builder.Services.AddSingleton<IConverter, JsonConverter>();
-
-		// GARMIN
-		builder.Services.AddSingleton<IGarminUploader, GarminUploader>();
-		builder.Services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
-
-		// IO
-		builder.Services.AddSingleton<IFileHandling, IOWrapper>();
-
-		// HAVIT
-		builder.Services.AddHxServices();
-		builder.Services.AddHxMessenger();
-
-		// MIGRATIONS
-		builder.Services.AddSingleton<IDbMigrations, DbMigrations>();
-
-		// PELOTON
-		builder.Services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
-		builder.Services.AddSingleton<IPelotonService, PelotonService>();
-		builder.Services.AddSingleton<IAnnualChallengeService, AnnualChallengeService>();
-
-		// RELEASE CHECKS
-		builder.Services.AddGitHubReleaseChecker();
-
-		// SETTINGS
-		builder.Services.AddSingleton<ISettingsDb, SettingsDb>();
-		builder.Services.AddSingleton<ISettingsService, SettingsService>();
-
-		// SYNC
-		builder.Services.AddSingleton<ISyncStatusDb, SyncStatusDb>();
-		builder.Services.AddSingleton<ISyncService, SyncService>();
-
-		// USERS
-		builder.Services.AddSingleton<IUsersDb, UsersDb>();
-
-		FlurlConfiguration.Configure(config.Observability, 30);
-		Tracing.EnableWebUITracing(builder.Services, config.Observability.Jaeger);
-
-		Log.Logger = new LoggerConfiguration()
-						.ReadFrom.Configuration(builder.Configuration, sectionName: $"{nameof(Observability)}:Serilog")
-						.Enrich.FromLogContext()
-						.CreateLogger();
-
-		Logging.LogSystemInformation();
+		ObservabilityStartup.Configure(builder.Services, builder.Configuration, config);
 
 		///////////////////////////////////////////////////////////
 		/// APP

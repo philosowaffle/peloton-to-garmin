@@ -1,14 +1,11 @@
-﻿using Common.Dto.Api;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
+using Api.Contract;
 
-namespace Common.Helpers;
+namespace Api.Service.Helpers;
 
 public static class Guard
 {
-	public static bool CheckIsNull<T>(this T input, string name, out ActionResult result, string errorMessage = null)
+	public static bool CheckIsNull<T>(this T input, string name, out ActionResult? result, string? errorMessage = null)
 	{
 		result = null;
 
@@ -34,7 +31,7 @@ public static class Guard
 		return false;
 	}
 
-	public static bool CheckIsNotNull<T>(this T input, string name, out ActionResult result, string errorMessage = null)
+	public static bool CheckIsNotNull<T>(this T input, string name, out ActionResult? result, string? errorMessage = null)
 	{
 		result = null;
 
@@ -47,7 +44,7 @@ public static class Guard
 		return false;
 	}
 
-	public static bool CheckIsGreaterThan(this int input, int limit, string name, out ActionResult result, string errorMessage = null)
+	public static bool CheckIsGreaterThan(this int input, int limit, string name, out ActionResult? result, string? errorMessage = null)
 	{
 		result = null;
 
@@ -60,7 +57,7 @@ public static class Guard
 		return false;
 	}
 
-	public static bool CheckIsLessThanOrEqualTo(this int input, int limit, string name, out ActionResult result, string errorMessage = null)
+	public static bool CheckIsLessThanOrEqualTo(this int input, int limit, string name, out ActionResult? result, string? errorMessage = null)
 	{
 		result = null;
 
@@ -73,7 +70,7 @@ public static class Guard
 		return false;
 	}
 
-	public static bool CheckIsLessThan(this int input, int limit, string name, out ActionResult result, string errorMessage = null)
+	public static bool CheckIsLessThan(this int input, int limit, string name, out ActionResult? result, string? errorMessage = null)
 	{
 		result = null;
 
@@ -86,7 +83,7 @@ public static class Guard
 		return false;
 	}
 
-	public static bool CheckHasAny<T>(this ICollection<T> input, string name, out ActionResult result, string errorMessage = null)
+	public static bool CheckHasAny<T>(this ICollection<T> input, string name, out ActionResult? result, string? errorMessage = null)
 	{
 		result = null;
 
@@ -99,7 +96,7 @@ public static class Guard
 		return false;
 	}
 
-	public static bool CheckDoesNotHaveAny<T>(this ICollection<T> input, string name, out ActionResult result, string errorMessage = null)
+	public static bool CheckDoesNotHaveAny<T>(this ICollection<T> input, string name, out ActionResult? result, string? errorMessage = null)
 	{
 		result = null;
 
@@ -112,7 +109,7 @@ public static class Guard
 		return false;
 	}
 
-	public static bool IsAfter(this DateTime input, DateTime limit, string name, out ActionResult result, string errorMessage = null)
+	public static bool IsAfter(this DateTime input, DateTime limit, string name, out ActionResult? result, string? errorMessage = null)
 	{
 		result = null;
 

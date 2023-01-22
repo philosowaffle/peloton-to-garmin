@@ -1,5 +1,5 @@
-﻿using Common;
-using Common.Dto.Api;
+﻿using Api.Contract;
+using Common;
 
 namespace SharedUI;
 public interface IApiClient

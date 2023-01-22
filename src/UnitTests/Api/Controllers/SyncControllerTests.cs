@@ -1,4 +1,5 @@
-﻿using Api.Controllers;
+﻿using Api.Contract;
+using Api.Controllers;
 using Common;
 using Common.Dto.Api;
 using Common.Service;
@@ -14,7 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ErrorResponse = Common.Dto.Api.ErrorResponse;
+using ErrorResponse = Api.Contract.ErrorResponse;
 using SyncErrorResponse = Sync.ErrorResponse;
 
 namespace UnitTests.Api.Controllers

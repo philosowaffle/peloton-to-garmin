@@ -1,5 +1,5 @@
-﻿using Common.Dto;
-using Common.Dto.Api;
+﻿using Api.Contract;
+using Api.Service.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Peloton.AnnualChallenge;
 
@@ -39,7 +39,7 @@ public class PelotonAnnualChallengeController : Controller
 				return serviceResult.GetResultForError();
 
 			var data = serviceResult.Result;
-			var tiers = data.Tiers?.Select(t => new Common.Dto.Api.Tier()
+			var tiers = data.Tiers?.Select(t => new Contract.Tier()
 			{
 				BadgeUrl = t.BadgeUrl,
 				Title = t.Title,
@@ -56,7 +56,7 @@ public class PelotonAnnualChallengeController : Controller
 			return Ok(new ProgressGetResponse()
 			{
 				EarnedMinutes = data.EarnedMinutes,
-				Tiers = tiers ?? new List<Common.Dto.Api.Tier>(),
+				Tiers = tiers ?? new List<Contract.Tier>(),
 			});
 		}
 		catch (Exception e)

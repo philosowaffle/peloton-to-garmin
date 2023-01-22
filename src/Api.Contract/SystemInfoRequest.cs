@@ -1,4 +1,4 @@
-﻿namespace Common.Dto.Api;
+﻿namespace Api.Contract;
 
 public class SystemInfoGetRequest
 {
@@ -38,7 +38,7 @@ public class SystemInfoGetResponse
 	public string Issues { get; set; }
 	public string Api { get; set; }
 	public bool? NewerVersionAvailable { get; set; }
-	public LatestVersionInformation LatestVersionInformation { get; set; }
+	public LatestVersionInformation? LatestVersionInformation { get; set; }
 }
 
 public class LatestVersionInformation
@@ -47,11 +47,12 @@ public class LatestVersionInformation
 	{
 		LatestVersion = string.Empty;
 		ReleaseUrl = string.Empty;
+		ReleaseDate = string.Empty;
 		Description = string.Empty;
 	}
 
-	public string LatestVersion { get; set; }
-	public string ReleaseDate { get; set; }
-	public string ReleaseUrl { get; set; }
-	public string Description { get; set; }
+	public string? LatestVersion { get; set; }
+	public string? ReleaseDate { get; set; }
+	public string? ReleaseUrl { get; set; }
+	public string? Description { get; set; }
 }

@@ -48,7 +48,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "src\Api\Api.csproj",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedUI", "src\SharedUI\SharedUI.csproj", "{5A2D34BF-6301-489C-A53C-46A2105EC923}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientUI", "src\ClientUI\ClientUI.csproj", "{E3C986C7-56B2-409B-A17F-566955804D73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientUI", "src\ClientUI\ClientUI.csproj", "{E3C986C7-56B2-409B-A17F-566955804D73}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api.Service", "src\Api.Service\Api.Service.csproj", "{AE7ED46D-B1F6-402F-AA9F-EE952984B3BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.Contract", "src\Api.Contract\Api.Contract.csproj", "{629769E4-3048-41B6-8818-141DED7AD8D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,6 +106,14 @@ Global
 		{E3C986C7-56B2-409B-A17F-566955804D73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3C986C7-56B2-409B-A17F-566955804D73}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E3C986C7-56B2-409B-A17F-566955804D73}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{AE7ED46D-B1F6-402F-AA9F-EE952984B3BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE7ED46D-B1F6-402F-AA9F-EE952984B3BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE7ED46D-B1F6-402F-AA9F-EE952984B3BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE7ED46D-B1F6-402F-AA9F-EE952984B3BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{629769E4-3048-41B6-8818-141DED7AD8D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{629769E4-3048-41B6-8818-141DED7AD8D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{629769E4-3048-41B6-8818-141DED7AD8D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{629769E4-3048-41B6-8818-141DED7AD8D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

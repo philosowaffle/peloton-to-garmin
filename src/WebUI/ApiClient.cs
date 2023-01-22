@@ -1,5 +1,5 @@
-﻿using Common;
-using Common.Dto.Api;
+﻿using Api.Contract;
+using Common;
 using Flurl;
 using Flurl.Http;
 using SharedUI;

@@ -1,8 +1,7 @@
 ﻿using Common.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
-namespace Common.Dto.Api;
+namespace Api.Contract;
 
 public interface IPagingRequest
 {
@@ -39,18 +38,3 @@ public abstract class PagingResponseBase<T> : IPagingResponse<T>
 	public abstract ICollection<T> Items { get; set; }
 
 }
-
-public static class PagingExtensions
-{
-	public static bool IsValid(this IPagingRequest request, out ActionResult result)
-	{
-		if (request.PageSize.CheckIsLessThanOrEqualTo(0, nameof(request.PageSize), out result))
-			return false;
-
-		if (request.PageIndex.CheckIsLessThan(0, nameof(request.PageIndex), out result))
-			return false;
-
-		return true;
-	}
-}
-
