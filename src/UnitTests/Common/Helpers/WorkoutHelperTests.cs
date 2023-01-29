@@ -8,6 +8,7 @@ namespace UnitTests.Common;
 public class WorkoutHelperTests
 {
 
+	[Platform(Exclude ="Unix,Linux,MacOSX")]
 	[TestCase("My Title", "Some Instructor", ExpectedResult = "My_Title_with_Some_Instructor")]
 	[TestCase("My/Title", "Some/Instructor", ExpectedResult = "My-Title_with_Some-Instructor")]
 	[TestCase("My:Title", "Some:Instructor", ExpectedResult = "My-Title_with_Some-Instructor")]
