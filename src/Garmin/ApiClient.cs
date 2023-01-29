@@ -18,6 +18,7 @@ namespace Garmin
 	public interface IGarminApiClient
 	{
 		Task<GarminApiAuthentication> InitAuth();
+		Task<GarminApiAuthentication> InitMFAAuth();
 		Task<UploadResponse> UploadActivity(string filePath, string format);
 	}
 
@@ -203,6 +204,221 @@ namespace Garmin
 			return auth;
 		}
 
+		public async Task<GarminApiAuthentication> InitMFAAuth()
+		{
+			var settings = await _settingsService.GetSettingsAsync();
+
+			settings.Garmin.EnsureGarminCredentialsAreProvided();
+
+			var auth = _settingsService.GetGarminAuthentication(settings.Garmin.Email);
+
+			if (auth is object && auth.IsValid(settings))
+				return auth;
+
+			var appConfig = await _settingsService.GetAppConfigurationAsync();
+
+			auth = new();
+			auth.Email = settings.Garmin.Email;
+			auth.Password = settings.Garmin.Password;
+			CookieJar jar = null;
+
+			if (!string.IsNullOrEmpty(appConfig.Developer.UserAgent))
+				auth.UserAgent = appConfig.Developer.UserAgent;
+
+			object queryParams = new
+			{
+				clientId = "GarminConnect",
+				consumeServiceTicket = "false",
+				createAccountShown = "true",
+				cssUrl = "https://static.garmincdn.com/com.garmin.connect/ui/css/gauth-custom-v1.2-min.css",
+				displayNameShown = "false",
+				embedWidget = "false",
+				gauthHost = "https://sso.garmin.com/sso",
+				generateExtraServiceTicket = "true",
+				generateTwoExtraServiceTickets = "true",
+				generateNoServiceTicket = "false",
+				id = "gauth-widget",
+				initialFocus = "true",
+				locale = "en_US",
+				openCreateAccount = "false",
+				redirectAfterAccountCreationUrl = "https://connect.garmin.com/",
+				redirectAfterAccountLoginUrl = "https://connect.garmin.com/",
+				rememberMeChecked = "false",
+				rememberMeShown = "true",
+				service = "https://connect.garmin.com",
+				source = "https://connect.garmin.com",
+				usernameShow = "false",
+				webhost = "https://connect.garmin.com"
+			};
+
+			string loginForm = null;
+			try
+			{
+				loginForm = await SIGNIN_URL
+							.WithHeader("User-Agent", auth.UserAgent)
+							.WithHeader("origin", ORIGIN)
+							.SetQueryParams(queryParams)
+							.WithCookies(out jar)
+							.GetStringAsync();
+			}
+			catch (FlurlHttpException e)
+			{
+				_logger.Error(e, "No login form.");
+				throw;
+			}
+
+			object loginData = new
+			{
+				embed = "true",
+				username = auth.Email,
+				password = auth.Password,
+				lt = "e1s1",
+				_eventId = "submit",
+				displayNameRequired = "false",
+			};
+
+			string authResponse = null;
+			var redirected = false;
+			var redirectedTo = "";
+			try
+			{
+				authResponse = await SIGNIN_URL
+								.WithHeader("User-Agent", auth.UserAgent)
+								.WithHeader("origin", ORIGIN)
+								.SetQueryParams(queryParams)
+								.WithCookies(jar)
+								.StripSensitiveDataFromLogging(auth.Email, auth.Password)
+								.OnRedirect((r) => { redirected = true; redirectedTo = r.Redirect.Url; })
+								.PostUrlEncodedAsync(loginData)
+								.ReceiveString();
+			}
+			catch (FlurlHttpException e) when (e.StatusCode is (int)HttpStatusCode.Forbidden)
+			{
+				var responseContent = (await e.GetResponseStringAsync()) ?? string.Empty;
+
+				if (responseContent == "error code: 1020")
+					throw new Exception("Garmin Authentication Failed. Blocked by CloudFlare.");
+
+				throw new Exception("Garmin Authentication Failed.", e);
+			}
+
+			if (redirected && redirectedTo.Contains("https://sso.garmin.com/sso/verifyMFA/loginEnterMfaCode"))
+			{
+				// this is an MFA flow
+				_logger.Verbose("Detected MFA.");
+			}
+
+			// Try to find the full post login url in response
+			var regex3 = new Regex("name=\"_csrf\"\\s+value=\"(?<csrf>[A-Z0-9]+)");
+			var match3 = regex3.Match(authResponse);
+			if (!match3.Success)
+			{
+				_logger.Error("Missing csrf token.");
+				throw new Exception("Failed to find csrf token.");
+			}
+			_logger.Verbose($"_csrf Token: {match3.Groups.GetValueOrDefault("csrf").Value}");
+
+			// ask for MFA code
+			Console.Write("Enter MFA Code: ");
+			var mfaCode = Console.ReadLine();
+
+			var mfaData = new List<KeyValuePair<string, string>>()
+			{
+				new KeyValuePair<string, string>("embed", "false"),
+				new KeyValuePair<string, string>("mfa-code", mfaCode),
+				new KeyValuePair<string, string>("fromPage", "setupEnterMfaCode"),
+				new KeyValuePair<string, string>("_csrf", match3.Groups.GetValueOrDefault("csrf").Value)
+			};
+
+			string mfaResponse = null;
+			try
+			{
+				mfaResponse = await "https://sso.garmin.com/sso/verifyMFA/loginEnterMfaCode"
+								.WithHeader("User-Agent", auth.UserAgent)
+								.WithHeader("origin", ORIGIN)
+								.SetQueryParams(queryParams)
+								.WithCookies(jar)
+								.StripSensitiveDataFromLogging(auth.Email, auth.Password)
+								.OnRedirect(redir => redir.Request.WithCookies(jar))
+								.PostUrlEncodedAsync(mfaData)
+								.ReceiveString();
+			}
+			catch (FlurlHttpException e) when (e.StatusCode is (int)HttpStatusCode.Forbidden)
+			{
+				var responseContent = (await e.GetResponseStringAsync()) ?? string.Empty;
+
+				if (responseContent == "error code: 1020")
+					throw new Exception("Garmin Authentication Failed. Blocked by CloudFlare.");
+
+				throw new Exception("Garmin Authentication Failed.", e);
+			}
+
+			// Check we have SSO guid in the cookies
+			if (!jar.Any(c => c.Name == "GARMIN-SSO-GUID"))
+			{
+				Log.Error("Missing Garmin auth cookie.");
+				throw new Exception("Failed to find Garmin auth cookie.");
+			}
+
+			// Try to find the full post login url in response
+			var regex2 = new Regex("var response_url(\\s+) = (\\\"|\\').*?ticket=(?<ticket>[\\w\\-]+)(\\\"|\\')");
+			var match = regex2.Match(mfaResponse);
+			if (!match.Success)
+			{
+				_logger.Error("Missing service ticket.");
+				throw new Exception("Failed to find service ticket.");
+			}
+
+			var ticket = match.Groups.GetValueOrDefault("ticket").Value;
+			if (string.IsNullOrEmpty(ticket))
+			{
+				_logger.Error("Failed to parse service ticket.");
+				throw new Exception("Failed to parse service ticket.");
+			}
+
+			// Second Auth Step
+			// Needs a service ticket from the previous step
+			try
+			{
+				var authResponse2 = await $"{BASE_URL}/"
+							.WithHeader("User-Agent", auth.UserAgent)
+							.WithCookies(jar)
+							.SetQueryParam("ticket", ticket)
+							.StripSensitiveDataFromLogging(auth.Email, auth.Password)
+							.GetAsync();
+
+				if (authResponse2.StatusCode == (int)HttpStatusCode.Moved)
+				{
+					_logger.Error("Second auth step failed.");
+					throw new Exception("Garmin did not accept service ticket.");
+				}
+			}
+			catch (FlurlHttpException e)
+			{
+				_logger.Error(e, "Second auth step failed.");
+				throw;
+			}
+
+			// Check login
+			try
+			{
+				var response = await PROFILE_URL
+							.WithHeader("User-Agent", auth.UserAgent)
+							.WithHeader("origin", ORIGIN)
+							.WithCookies(jar)
+							.StripSensitiveDataFromLogging(auth.Email, auth.Password)
+							.GetJsonAsync();
+			}
+			catch (FlurlHttpException e)
+			{
+				_logger.Error(e, "Login check failed.");
+				throw;
+			}
+
+			auth.CookieJar = jar;
+			_settingsService.SetGarminAuthentication(auth);
+			return auth;
+		}
 
 		//private const string URL_HOSTNAME = "https://connect.garmin.com/modern/auth/hostname";
 		//private const string URL_LOGIN = "https://sso.garmin.com/sso/login";
