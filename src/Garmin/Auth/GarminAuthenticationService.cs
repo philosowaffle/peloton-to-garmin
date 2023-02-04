@@ -154,7 +154,7 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 		}
 		catch (FlurlHttpException e)
 		{
-			throw new GarminAuthenticationError("Auth appeared successful but there was an error sending the service ticket.") { Code = Code.AuthAppearedSuccessful };
+			throw new GarminAuthenticationError("Auth appeared successful but there was an error sending the service ticket.", e) { Code = Code.AuthAppearedSuccessful };
 		}
 
 		auth.CookieJar = jar;
@@ -212,7 +212,7 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 			var responseContent = (await e.GetResponseStringAsync()) ?? string.Empty;
 
 			if (responseContent == "error code: 1020")
-				throw new GarminAuthenticationError("MFA: Garmin Authentication Failed. Blocked by CloudFlare.") { Code = Code.Cloudflare };
+				throw new GarminAuthenticationError("MFA: Garmin Authentication Failed. Blocked by CloudFlare.", e) { Code = Code.Cloudflare };
 
 			throw new GarminAuthenticationError("MFA: MFA Code rejected by Garmin.", e) { Code = Code.InvalidMfaCode };
 		}
