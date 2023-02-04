@@ -2,6 +2,7 @@
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
+using Garmin.Auth;
 using Prometheus;
 using Serilog;
 using System;
@@ -32,13 +33,15 @@ namespace Garmin
 
 		private readonly ISettingsService _settingsService;
 		private readonly IGarminApiClient _api;
+		private readonly IGarminAuthenticationService _authService;
 		private readonly Random _random;
 
-		public GarminUploader(ISettingsService settingsService, IGarminApiClient api)
+		public GarminUploader(ISettingsService settingsService, IGarminApiClient api, IGarminAuthenticationService authService)
 		{
 			_settingsService = settingsService;
 			_api = api;
 			_random = new Random();
+			_authService = authService;
 		}
 
 		public async Task UploadToGarminAsync()
@@ -90,15 +93,14 @@ namespace Garmin
 										.WithTag(TagKey.Category, "nativeImplV1")
 										.AddTag("workouts.count", files.Count());
 
-			//await _api.InitAuth();
-			await _api.InitMFAAuth();
+			var auth = await _authService.GetGarminAuthentication();
 
 			foreach (var file in files)
 			{
 				try
 				{
 					_logger.Information("Uploading to Garmin: {@file}", file);
-					await _api.UploadActivity(file, settings.Format.Fit ? ".fit" : ".tcx");
+					await _api.UploadActivity(file, settings.Format.Fit ? ".fit" : ".tcx", auth);
 					await RateLimit();
 				} catch (Exception e)
 				{
