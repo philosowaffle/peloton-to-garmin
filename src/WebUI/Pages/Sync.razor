@@ -94,7 +94,16 @@
 		{
 			var error = await e.GetResponseJsonAsync<ErrorResponse>();
 			_toaster.AddError(error.Message);
-			Log.Error("UI - Failed to load Peloton workouts.", e);
+			Log.Error("UI - Failed to sync Peloton workouts.", e);
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status401Unauthorized)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+
+			// todo: move into mfa flow
+
+			Log.Error("UI - Failed to sync Peloton workouts.", e);
 		}
 		catch (Exception e)
 		{
