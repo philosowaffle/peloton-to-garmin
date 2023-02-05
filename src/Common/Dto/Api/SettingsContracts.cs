@@ -57,6 +57,7 @@ public class SettingsGarminPostRequest
 {
 	public string Email { get; set; }
 	public string Password { get; set; }
+	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
 	public UploadStrategy UploadStrategy { get; set; }
@@ -121,6 +122,7 @@ public static class Mapping
 		{
 			Email = request.Email,
 			Password = request.Password,
+			TwoStepVerificationEnabled = request.TwoStepVerificationEnabled,
 			FormatToUpload = request.FormatToUpload,
 			Upload = request.Upload,
 			UploadStrategy = request.UploadStrategy,
