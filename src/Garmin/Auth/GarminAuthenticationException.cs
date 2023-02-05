@@ -12,10 +12,14 @@ public class GarminAuthenticationError : Exception
 public enum Code : byte
 {
 	None = 0,
-	InvalidCredentials = 1,
-	Cloudflare = 2,
-	AuthAppearedSuccessful = 3,
-	FailedPriorToCredentialsUsed = 4,
-	FailedPriorToMfaUsed = 5,
-	InvalidMfaCode = 6
+	Cloudflare = 1,
+
+	FailedPriorToCredentialsUsed = 10,
+	InvalidCredentials = 11,
+
+	UnexpectedMfa = 20,
+	FailedPriorToMfaUsed = 21,
+	InvalidMfaCode = 22,
+
+	AuthAppearedSuccessful = 30,
 }

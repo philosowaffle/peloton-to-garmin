@@ -183,6 +183,9 @@ namespace Garmin
 
 			config.Garmin.EnsureGarminCredentialsAreProvided();
 
+			if (config.App.EnablePolling && config.Garmin.TwoStepVerificationEnabled)
+				throw new ArgumentException("App.EnablePolling cannot be true when Garmin.TwoStepVerificationEnabled is true.");
+
 			if (config.App.PythonAndGUploadInstalled.HasValue)
 			{
 				_logger.Warning("App.PythonAndGuploadInstalledLocally setting is deprecated and will be removed in a future release. Please swith to using Garmin.UploadStrategy config.");
