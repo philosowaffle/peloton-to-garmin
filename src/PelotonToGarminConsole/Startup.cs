@@ -106,6 +106,13 @@ namespace PelotonToGarminConsole
 
 				if (settings.App.EnablePolling)
 				{
+					if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled && settings.App.EnablePolling)
+					{
+						_logger.Error("Polling cannot be enabled when Garmin TwoStepVerification is enabled.");
+						_logger.Information("Sync Service stopped.");
+						return;
+					}
+
 					while (!cancelToken.IsCancellationRequested)
 					{
 						settings = await _settingsService.GetSettingsAsync();

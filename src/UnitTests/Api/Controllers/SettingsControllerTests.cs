@@ -238,6 +238,7 @@ public class SettingsControllerTests
 
 		SettingsGarminPostRequest request = new ()
 		{
+			Upload = true,
 			TwoStepVerificationEnabled = true
 		};
 

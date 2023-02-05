@@ -21,7 +21,6 @@ namespace Sync
 	{
 		Task<SyncResult> SyncAsync(int numWorkouts);
 		Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null);
-		Task<SyncResult> SyncAsync(DateTime sinceDt, ICollection<WorkoutType>? exclude = null);
 	}
 
 	public class SyncService : ISyncService
@@ -54,17 +53,6 @@ namespace Sync
 
 			var settings = await _settingsService.GetSettingsAsync();
 			return await SyncWithWorkoutLoaderAsync(() => _pelotonService.GetRecentWorkoutsAsync(numWorkouts), settings.Peloton.ExcludeWorkoutTypes);
-		}
-
-		public Task<SyncResult> SyncAsync(DateTime sinceDt, ICollection<WorkoutType>? exclude = null)
-		{
-			using var timer = SyncHistogram.NewTimer();
-			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.BySinceDt");
-
-			_logger.Information("Begining sync for workouts since {date}.", sinceDt.ToLocalTime());
-
-			return SyncWithWorkoutLoaderAsync(() => _pelotonService.GetWorkoutsSinceAsync(sinceDt), exclude);
-
 		}
 
 		public async Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null)

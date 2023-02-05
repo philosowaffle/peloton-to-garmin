@@ -180,7 +180,7 @@ public class SettingsController : Controller
 			var settings = await _settingsService.GetSettingsAsync();
 			settings.Garmin = updatedGarminSettings.Map();
 
-			if (settings.Garmin.TwoStepVerificationEnabled && settings.App.EnablePolling)
+			if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled && settings.App.EnablePolling)
 				return new BadRequestObjectResult(new ErrorResponse($"Garmin TwoStepVerification cannot be enabled while Automatic Syncing is enabled. Please disable Automatic Syncing first."));
 
 			await _settingsService.UpdateSettingsAsync(settings);
