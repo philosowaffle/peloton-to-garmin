@@ -30,6 +30,7 @@ public class SettingsGetResponse
 		{
 			Email = settings.Garmin.Email,
 			Password = null,
+			TwoStepVerificationEnabled = settings.Garmin.TwoStepVerificationEnabled,
 			FormatToUpload = settings.Garmin.FormatToUpload,
 			Upload = settings.Garmin.Upload,
 			UploadStrategy = settings.Garmin.UploadStrategy,
@@ -48,6 +49,7 @@ public class SettingsGarminGetResponse
 	public bool IsPasswordSet { get; set; }
 	public string Email { get; set; }
 	public string Password { get; set; }
+	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
 	public UploadStrategy UploadStrategy { get; set; }
@@ -110,6 +112,7 @@ public static class Mapping
 		{
 			Email = response.Email,
 			Password = response.Password,
+			TwoStepVerificationEnabled = response.TwoStepVerificationEnabled,
 			FormatToUpload = response.FormatToUpload,
 			Upload = response.Upload,
 			UploadStrategy = response.UploadStrategy,
