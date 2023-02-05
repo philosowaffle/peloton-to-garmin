@@ -10,7 +10,7 @@ on:
         type: number
         default: "5"
   schedule:
-    - cron: '0 1 * * *'
+    - cron: '0 */12 * * *'
 
 jobs:
   sync:
