@@ -148,6 +148,10 @@
 					</HxInputText>
 					<br />
 					<HxSwitch Label="Two Step Verification Enabled" @bind-Value="garminSettings.TwoStepVerificationEnabled" />
+					@if (garminSettings.IsPasswordSet && !string.IsNullOrWhiteSpace(garminSettings.Email))
+					{
+						<HxButton Text="Test Garmin Signin" Color="ThemeColor.Primary" OnClick="TestGarminSignInAsync" />
+					}
 					<HxAccordion CssClass="accordion-flush">
 						<HxAccordionItem>
 							<HeaderTemplate>Advanced</HeaderTemplate>
@@ -178,6 +182,8 @@
 	</HxTab>
 </HxTabPanel>
 
+<GarminMfaModal @ref="_garminMfaModal" />
+
 @code {
 
 	private static ICollection<PreferredLapType> lapTypes = Enum.GetValues(typeof(PreferredLapType)).Cast<PreferredLapType>().ToList();
@@ -190,6 +196,8 @@
 	private SettingsPelotonGetResponse pelotonSettings;
 	private SettingsGarminGetResponse garminSettings;
 	private string configDocumentation;
+
+	private GarminMfaModal? _garminMfaModal;
 
 	private List<WorkoutType> selectedWorkoutTypes = new List<WorkoutType>();
 
@@ -312,6 +320,35 @@
 		{
 			_toaster.AddError($"Failed to save Garmin Settings - {e.Message} - See logs for details.");
 			Log.Error("UI - Failed to save Garmin settings.", e);
+		}
+	}
+
+	protected async Task TestGarminSignInAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(TestGarminSignInAsync)}", kind: ActivityKind.Client);
+		_toaster.Clear();
+
+		try
+		{
+			var result = await _apiClient.SignInToGarminAsync();
+			if (result?.StatusCode == StatusCodes.Status202Accepted)
+			{
+				await _garminMfaModal!.ShowAsync();
+			}
+			else
+			{
+				_toaster.AddInformation("Garmin Signin Successful!");
+			}
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to test Garmin Signin - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to test Garmin signin.", e);
 		}
 	}
 

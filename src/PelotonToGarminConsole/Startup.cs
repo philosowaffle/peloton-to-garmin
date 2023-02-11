@@ -4,12 +4,14 @@ using Common.Service;
 using Common.Stateful;
 using Core.GitHub;
 using Garmin;
+using Garmin.Auth;
 using Microsoft.Extensions.Hosting;
 using Peloton;
 using Prometheus;
 using Serilog;
 using Sync;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using static Common.Observe.Metrics;
@@ -26,14 +28,16 @@ namespace PelotonToGarminConsole
 		private readonly ISettingsService _settingsService;
 		private readonly ISyncService _syncService;
 		private readonly IGitHubReleaseCheckService _githubService;
+		private readonly IGarminAuthenticationService _garminAuthService;
 
-		public Startup(ISettingsService settingsService, ISyncService syncService, IGitHubReleaseCheckService gitHubService)
+		public Startup(ISettingsService settingsService, ISyncService syncService, IGitHubReleaseCheckService gitHubService, IGarminAuthenticationService garminAuthService)
 		{
 			_settingsService = settingsService;
 			_syncService = syncService;
 			_githubService = gitHubService;
 
 			Logging.LogSystemInformation();
+			_garminAuthService = garminAuthService;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken cancelToken)
@@ -146,6 +150,23 @@ namespace PelotonToGarminConsole
 				} 
 				else
 				{
+					if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled)
+					{
+						await _garminAuthService.RefreshGarminAuthenticationAsync();
+						
+						Console.WriteLine("Detected Garmin Two Factor Enabled. Please check your email or phone for the authenctaion code sent by Garmin.");
+						var mfaCode = string.Empty;
+						var retryCount = 5;
+						while (retryCount > 0 && string.IsNullOrWhiteSpace(mfaCode))
+						{
+							Console.Write("Enter Code: ");
+							mfaCode = Console.ReadLine();
+							retryCount--;
+						}
+
+						await _garminAuthService.CompleteMFAAuthAsync(mfaCode);
+					}
+
 					await _syncService.SyncAsync(settings.Peloton.NumWorkoutsToDownload);
 				}
 

@@ -93,7 +93,7 @@ namespace Garmin
 										.WithTag(TagKey.Category, "nativeImplV1")
 										.AddTag("workouts.count", files.Count());
 
-			var auth = await _authService.GetGarminAuthentication();
+			var auth = await _authService.GetGarminAuthenticationAsync();
 
 			foreach (var file in files)
 			{

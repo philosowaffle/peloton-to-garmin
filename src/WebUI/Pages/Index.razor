@@ -51,10 +51,16 @@
 	else
 	{
 		<div class="col-sm-4">
-			<HxButton Color="ThemeColor.Primary" @onclick="SyncTodaysWorkoutsAsync">Sync todays workouts</HxButton>
+			@if (RequireGarminSignIn)
+			{
+				<HxButton Color="ThemeColor.Primary" @onclick="SignInToGarminAsync">SignIn to Garmin</HxButton> <br /><br />
+			}
+			<HxButton Color="ThemeColor.Primary" @onclick="SyncTodaysWorkoutsAsync" Enabled="@SyncButtonEnabled">Sync todays workouts</HxButton>
 		</div>
 	}
 </div>
+
+<GarminMfaModal @ref="_garminMfaModal" />
 
 
 @code {
@@ -64,6 +70,10 @@
 	private SettingsGetResponse settings;
 	private SystemInfoGetResponse systemInfo;
 	private ICollection<PelotonWorkout> TodaysWorkouts;
+	private bool SyncButtonEnabled = true;
+	private bool RequireGarminSignIn = false;
+
+	private GarminMfaModal? _garminMfaModal;
 
 	public Index() : base(nameof(Index))
 	{
@@ -95,6 +105,16 @@
 				systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = true });
 				if (systemInfo.NewerVersionAvailable.GetValueOrDefault())
 					_toaster.AddInformation(title: "New Version Available!", message: "Head over to the About page to learn more");
+			}
+
+			if (TodaysWorkouts.Any() && settings.Garmin.TwoStepVerificationEnabled)
+			{
+				var garminAuth = await _apiClient.GetGarminAuthenticationAsync();
+				if (!garminAuth.IsAuthenticated)
+				{
+					SyncButtonEnabled = false;
+					RequireGarminSignIn = true;
+				}
 			}
 
 			await getSyncStatusAsync;
@@ -204,6 +224,37 @@
 
 			if (syncResponse?.SyncSuccess ?? false)
 				_toaster.AddInformation("Success! Synced today's workouts.");
+		}
+	}
+
+	protected async Task SignInToGarminAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(SignInToGarminAsync)}", kind: ActivityKind.Client);
+		_toaster.Clear();
+
+		try
+		{
+			var result = await _apiClient.SignInToGarminAsync();
+			if (result?.StatusCode == StatusCodes.Status202Accepted)
+			{
+				var authSuccess = await _garminMfaModal!.ShowAsync();
+				SyncButtonEnabled = true;
+				RequireGarminSignIn = false;
+			}
+			else
+			{
+				_toaster.AddInformation("Garmin Signin Successful!");
+			}
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to signin to Garmin - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to signin to Garmin.", e);
 		}
 	}
 

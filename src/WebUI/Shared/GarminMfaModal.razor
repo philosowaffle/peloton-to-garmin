@@ -1,0 +1,57 @@
+﻿@inject IApiClient _apiClient
+@inject IHxMessengerService _toaster;
+
+<HxModal @ref="MfaModal">
+	<BodyTemplate>
+		<EditForm Model="@mfaTokenRequest">
+			<HxInputText Label="MFA Code" @bind-Value="@mfaTokenRequest.MfaToken" Hint="Hint: Check your email or phone for the one time use Code sent by Garmin." />
+			<HxSubmit Color="ThemeColor.Primary" OnClick="SubmitMfaCodeAsync">Submit</HxSubmit>
+		</EditForm>
+	</BodyTemplate>
+	<FooterTemplate>
+		<HxButton Text="Close" OnClick="CloseAsync" Color="ThemeColor.Primary" />
+	</FooterTemplate>
+</HxModal>
+
+@code {
+
+	private HxModal? MfaModal;
+	private GarminAuthenticationMfaTokenPostRequest mfaTokenRequest = new ();
+	private bool _authSuccess = false;
+
+	public async Task<bool> ShowAsync()
+	{
+		await MfaModal!.ShowAsync();
+		return _authSuccess;
+	}
+
+	protected async Task SubmitMfaCodeAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(GarminMfaModal)}.{nameof(SubmitMfaCodeAsync)}", kind: ActivityKind.Client);
+
+		try
+		{
+			await _apiClient.SendGarminMfaTokenAsync(mfaTokenRequest);
+			await CloseAsync();
+			_toaster.AddInformation("Garmin Signin Successful!");
+			_authSuccess = true;
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to submit Garmin MFA Code - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to submit Garmin MFA Code.", e);
+		}
+	}
+
+	protected Task CloseAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(CloseAsync)}", kind: ActivityKind.Client);
+		return MfaModal!.HideAsync();
+	}
+
+}

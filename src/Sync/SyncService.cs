@@ -7,6 +7,7 @@ using Common.Service;
 using Common.Stateful;
 using Conversion;
 using Garmin;
+using Garmin.Auth;
 using Peloton;
 using Prometheus;
 using Serilog;
@@ -170,6 +171,15 @@ namespace Sync
 				response.Errors.Add(new ErrorResponse() { Message = $"Failed to upload workouts to Garmin Connect. {ae.Message}" });
 				return response;
 			}
+			catch (GarminAuthenticationError gae)
+			{
+				_logger.Error(gae, $"Sync failed to authenticate with Garmin. {gae.Message}");
+
+				response.SyncSuccess = false;
+				response.UploadToGarminSuccess = false;
+				response.Errors.Add(new ErrorResponse() { Message = gae.Message });
+				return response;
+			}
 			catch (Exception e)
 			{
 				_logger.Error(e, "Failed to upload workouts to Garmin Connect. You can find the converted files at {@Path} \\n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", settings.App.OutputDirectory);
@@ -178,7 +188,8 @@ namespace Sync
 				response.UploadToGarminSuccess = false;
 				response.Errors.Add(new ErrorResponse() { Message = $"Failed to upload workouts to Garmin Connect. {e.Message}" });
 				return response;
-			} finally
+			}
+			finally
 			{
 				_fileHandler.Cleanup(settings.App.DownloadDirectory);
 				_fileHandler.Cleanup(settings.App.UploadDirectory);

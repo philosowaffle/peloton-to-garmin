@@ -5,7 +5,14 @@
 
 <PageTitle>Sync</PageTitle>
 
-<HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@selectedItems.Any()">
+<GarminMfaModal @ref="_garminMfaModal" />
+
+@if (RequireGarminSignIn)
+{
+	<HxButton Color="ThemeColor.Primary" @onclick="SignInToGarminAsync">SignIn to Garmin</HxButton>
+}
+
+<HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@IsSyncButtonEnabled()">
 	Sync <span class="badge bg-secondary">@selectedItems.Count()</span>
 </HxButton>
 
@@ -17,7 +24,7 @@
 	</Columns>
 </HxGrid>
 
-<HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@selectedItems.Any()">
+<HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@IsSyncButtonEnabled()">
 	Sync <span class="badge bg-secondary">@selectedItems.Count()</span>
 </HxButton>
 
@@ -26,12 +33,43 @@
 	private HashSet<PelotonWorkout> selectedItems = new();
 	private static int PageSize = 25;
 
+	private bool SyncButtonEnabled = true;
+	private bool RequireGarminSignIn = false;
+
+	private GarminMfaModal? _garminMfaModal;
+
 	public Sync() : base(nameof(Sync)) => _toaster?.Clear();
 
 	public override void Dispose()
 	{
 		_toaster.Clear();
 		base.Dispose();
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Index)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+
+		try
+		{
+			var getSettingsTask = _apiClient.SettingsGetAsync();
+			var settings = await getSettingsTask;
+
+			if (settings.Garmin.TwoStepVerificationEnabled)
+			{
+				var garminAuth = await _apiClient.GetGarminAuthenticationAsync();
+				if (!garminAuth.IsAuthenticated)
+				{
+					SyncButtonEnabled = false;
+					RequireGarminSignIn = true;
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			Log.Error("UI - Failed to fetch data for sync page.", e);
+			_toaster.AddError($"Failed to fetch data from P2G Api - {e.Message} - See logs for details.");
+		}
 	}
 
 	private async Task<GridDataProviderResult<PelotonWorkout>> LoadDataAsync(GridDataProviderRequest<PelotonWorkout> request)
@@ -57,6 +95,37 @@
 		}
 
 		return new GridDataProviderResult<PelotonWorkout>() { Data = new List<PelotonWorkout>(), TotalCount = 0 };
+	}
+
+	protected async Task SignInToGarminAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Sync)}.{nameof(SignInToGarminAsync)}", kind: ActivityKind.Client);
+		_toaster.Clear();
+
+		try
+		{
+			var result = await _apiClient.SignInToGarminAsync();
+			if (result?.StatusCode == StatusCodes.Status202Accepted)
+			{
+				var authSuccess = await _garminMfaModal!.ShowAsync();
+				SyncButtonEnabled = true;
+				RequireGarminSignIn = false;
+			}
+			else
+			{
+				_toaster.AddInformation("Garmin Signin Successful!");
+			}
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to signin to Garmin - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to signin to Garmin.", e);
+		}
 	}
 
 	private async Task SyncAsync()
@@ -110,5 +179,10 @@
 			_toaster.AddError($"Failed to sync - {e.Message} - See logs for details.");
 			Log.Error("UI - Failed to sync.", e);
 		}
+	}
+
+	private bool IsSyncButtonEnabled()
+	{
+		return SyncButtonEnabled && selectedItems.Any();
 	}
 }
