@@ -262,11 +262,11 @@ Because Garmin does not officially support 3rd party uploads by small projects l
 
 If you are just getting started with P2G, I recommend you start with upload strategy `2 - NativeImplV1`.  You can find more details about the strategies below.
 
-| Strategy  | Config Value | Description |
-|:----------|:-------------|:------------|
-| PythonAndGuploadInstalledLocally | 0 | The very first strategy P2G used. This assumes you have Python 3 and the [garmin-uploader](https://github.com/La0/garmin-uploader) python library already installed on your computer.  This strategy uses the `garmin-uploader` python library for handling all uploads to Garmin. |
-| WindowsExeBundledPython | 1 | If you are running the windows executable version of P2G and would like to use the [garmin-uploader](https://github.com/La0/garmin-uploader) python library for uploads then use this strategy. |
-| NativeImplV1 | 2 | **The most current and recommended upload strategy.** P2G preforms the upload to Garmin itself without relying on 3rd party libraries. |
+| Strategy  | Config Value | Supports Garmin Two Step Verification| Description |
+|:----------|:-------------|:-------------------------------------|:------------|
+| PythonAndGuploadInstalledLocally | 0 | maybe | The very first strategy P2G used. This assumes you have Python 3 and the [garmin-uploader](https://github.com/La0/garmin-uploader) python library already installed on your computer.  This strategy uses the `garmin-uploader` python library for handling all uploads to Garmin. |
+| WindowsExeBundledPython | 1 | no | If you are running the windows executable version of P2G and would like to use the [garmin-uploader](https://github.com/La0/garmin-uploader) python library for uploads then use this strategy. |
+| NativeImplV1 | 2 | yes | **The most current and recommended upload strategy.** P2G preforms the upload to Garmin itself without relying on 3rd party libraries. |
 
 ## Observability Config
 
