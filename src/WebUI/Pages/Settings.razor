@@ -4,6 +4,7 @@
 @inject IHxMessengerService _toaster;
 
 <PageTitle>Settings</PageTitle>
+
 <h1>Settings</h1>
 <a href="@configDocumentation">Documentation</a>
 <br /><br />
@@ -22,7 +23,7 @@
 				<br />
 				<HxSwitch Label="Check for new P2G Releases" @bind-Value="appSettings.CheckForUpdates" />
 				<br />
-				<HxAccordion CssClass="accordion-flush">
+				<HxAccordion>
 					<HxAccordionItem>
 						<HeaderTemplate>Advanced</HeaderTemplate>
 						<BodyTemplate>
@@ -68,7 +69,7 @@
 					@bind-Value="formatSettings.Rowing.PreferredLapType" />
 				<br />
 				<br />
-				<HxAccordion CssClass="accordion-flush">
+				<HxAccordion>
 					<HxAccordionItem>
 						<HeaderTemplate>Advanced</HeaderTemplate>
 						<BodyTemplate>
@@ -124,65 +125,82 @@
 	</HxTab>
 	<HxTab Id="tab3" Title="Garmin">
 		<Content>
+			<br />
 			<EditForm Model="@garminSettings">
-				<br />
-				<HxSwitch Label="Automatically upload to Garmin Connect" @bind-Value="garminSettings.Upload" />
-				<br />
-				<HxFormState Enabled="@garminSettings.Upload">
-					<HxInputText @bind-Value="garminSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
-					<br />
-					<HxInputText @bind-Value="garminSettings.Password" Label="Password" Type="InputType.Password" >
-						<LabelTemplate>
-						Password
-						@if (garminSettings.IsPasswordSet)
-						{
-							<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success">Password is set</HxBadge>
-						}
-						</LabelTemplate>
-						<InputGroupEndTemplate>
-							@if (garminSettings.IsPasswordSet)
-							{
-								<HxButton Text="Clear" Color="ThemeColor.Secondary" Outline="true" OnClick="ClearPelotonPassword" />
-							}
-						</InputGroupEndTemplate>
-					</HxInputText>
-					<br />
-					<HxSwitch Label="Two Step Verification Enabled" @bind-Value="garminSettings.TwoStepVerificationEnabled" />
-					@if (garminSettings.IsPasswordSet && !string.IsNullOrWhiteSpace(garminSettings.Email))
-					{
-						<HxButton Text="Test Garmin Signin" Color="ThemeColor.Primary" OnClick="TestGarminSignInAsync" />
-					}
-					<HxAccordion CssClass="accordion-flush">
-						<HxAccordionItem>
-							<HeaderTemplate>Advanced</HeaderTemplate>
-							<BodyTemplate>
-								<br />
-								<HxSelect
-										Label="Format to Upload"
-										Data="@formatTypes"
-										Nullable="false"
-										NullDataText="Loading info..."
-										@bind-Value="garminSettings.FormatToUpload" />
-								<br />
-								<HxSelect
-										Label="Upload Strategy to use"
-										Data="@uploadStrategyTypes"
-										Nullable="false"
-										NullDataText="Loading info..."
-										@bind-Value="garminSettings.UploadStrategy" />
-							</BodyTemplate>
-						</HxAccordionItem>
-					</HxAccordion>
-					<br />
-				</HxFormState>
-				<br />
-				<HxSubmit Color="ThemeColor.Primary" OnClick="SaveGarminSettings">Save</HxSubmit>
+				<div class="row g-3">
+					<div class="col-md-12">
+						<HxSwitch Text="Automatically upload to Garmin Connect" @bind-Value="garminSettings.Upload" Inline="true" />
+					</div>
+
+					<HxFormState Enabled="@garminSettings.Upload">
+						<div class="col-md-12">
+							<HxCard>
+								<HeaderTemplate>Auth</HeaderTemplate>
+								<BodyTemplate>
+									<div class="row">
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Password" Label="Password" Type="InputType.Password">
+												<LabelTemplate>
+													Password
+													@if (garminSettings.IsPasswordSet)
+													{
+														<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success">Password is set</HxBadge>
+													}
+												</LabelTemplate>
+												<InputGroupEndTemplate>
+													@if (garminSettings.IsPasswordSet)
+													{
+														<HxButton Text="Clear" Color="ThemeColor.Secondary" Outline="true" OnClick="ClearPelotonPassword" />
+													}
+												</InputGroupEndTemplate>
+											</HxInputText>
+										</div>
+									</div>
+								</BodyTemplate>
+								<FooterTemplate>
+									<HxSwitch Text="Two Step Verification Enabled" @bind-Value="garminSettings.TwoStepVerificationEnabled" />
+								</FooterTemplate>
+							</HxCard>
+						</div>
+
+						<div class="col-md-12">
+							<HxAccordion>
+								<HxAccordionItem>
+									<HeaderTemplate>Advanced</HeaderTemplate>
+									<BodyTemplate>
+										<div class="row">
+											<div class="col-md-6">
+												<HxSelect Label="Format to Upload"
+														  Data="@formatTypes"
+														  Nullable="false"
+														  NullDataText="Loading info..."
+														  @bind-Value="garminSettings.FormatToUpload" />
+											</div>
+
+											<div class="col-md-6">
+												<HxSelect Label="Upload Strategy to use"
+														  Data="@uploadStrategyTypes"
+														  Nullable="false"
+														  NullDataText="Loading info..."
+														  @bind-Value="garminSettings.UploadStrategy" />
+											</div>
+										</div>
+									</BodyTemplate>
+								</HxAccordionItem>
+							</HxAccordion>
+						</div>
+					</HxFormState>
+					<div class="col-md-3">
+						<HxSubmit Color="ThemeColor.Primary" OnClick="SaveGarminSettings">Save</HxSubmit>
+					</div>
+				</div>
 			</EditForm>
 		</Content>
 	</HxTab>
 </HxTabPanel>
-
-<GarminMfaModal @ref="_garminMfaModal" />
 
 @code {
 
@@ -196,8 +214,6 @@
 	private SettingsPelotonGetResponse pelotonSettings;
 	private SettingsGarminGetResponse garminSettings;
 	private string configDocumentation;
-
-	private GarminMfaModal? _garminMfaModal;
 
 	private List<WorkoutType> selectedWorkoutTypes = new List<WorkoutType>();
 
@@ -320,35 +336,6 @@
 		{
 			_toaster.AddError($"Failed to save Garmin Settings - {e.Message} - See logs for details.");
 			Log.Error("UI - Failed to save Garmin settings.", e);
-		}
-	}
-
-	protected async Task TestGarminSignInAsync()
-	{
-		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(TestGarminSignInAsync)}", kind: ActivityKind.Client);
-		_toaster.Clear();
-
-		try
-		{
-			var result = await _apiClient.SignInToGarminAsync();
-			if (result?.StatusCode == StatusCodes.Status202Accepted)
-			{
-				await _garminMfaModal!.ShowAsync();
-			}
-			else
-			{
-				_toaster.AddInformation("Garmin Signin Successful!");
-			}
-		}
-		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
-		{
-			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			_toaster.AddError(error.Message);
-		}
-		catch (Exception e)
-		{
-			_toaster.AddError($"Failed to test Garmin Signin - {e.Message} - See logs for details.");
-			Log.Error("UI - Failed to test Garmin signin.", e);
 		}
 	}
 

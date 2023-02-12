@@ -133,7 +133,7 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 		if (sendCredentialsResult.WasRedirected && sendCredentialsResult.RedirectedTo.Contains("https://sso.garmin.com/sso/verifyMFA/loginEnterMfaCode"))
 		{
 			if (!settings.Garmin.TwoStepVerificationEnabled)
-				throw new GarminAuthenticationError("Detected Garmin TwoFactorAuthentication but TwoFactorAuthenctication is not enabled in P2G settings. Please enable TwoFactorAuthentication in your Garmin settings.") { Code = Code.UnexpectedMfa };
+				throw new GarminAuthenticationError("Detected Garmin TwoFactorAuthentication but TwoFactorAuthenctication is not enabled in P2G settings. Please enable TwoFactorAuthentication in your P2G Garmin settings.") { Code = Code.UnexpectedMfa };
 
 			SetMFACsrfToken(auth, sendCredentialsResult.RawResponseBody);
 			auth.CookieJar = jar;
