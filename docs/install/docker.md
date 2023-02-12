@@ -11,7 +11,7 @@ The recommended installation method is with Docker. If you're not familiar with 
 
 P2G offers two main flavors of docker images:
 
-| Flavor | Features | Support Garmin 2-Step Verification | Support Automatic Syncing |
+| Flavor | Support Garmin 2-Step Verification | Support Automatic Syncing |
 |:------------------|:-----------------------------------|:--------------------------|
 | [Web UI]({{ site.baseurl }}{% link install/docker-webui.md %}) | yes | only when Garmin 2fa is disabled |
 | [Docker Headless]({{ site.baseurl }}{% link install/docker-headless.md %}) | no | yes |
