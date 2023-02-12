@@ -14,7 +14,7 @@ P2G offers two main flavors of docker images:
 | Flavor | Support Garmin 2-Step Verification | Support Automatic Syncing |
 |:------------------|:-----------------------------------|:--------------------------|
 | [Web UI]({{ site.baseurl }}{% link install/docker-webui.md %}) | yes | only when Garmin 2fa is disabled |
-| [Docker Headless]({{ site.baseurl }}{% link install/docker-headless.md %}) | no | yes |
+| [Docker Headless]({{ site.baseurl }}{% link install/docker-headless.md %}) | partial | only when Garmin 2fa is disabled |
 
 ## Image Repositories
 
@@ -26,9 +26,10 @@ The following tags are provided:
 
 ### Image flavors
 
-1. `stable` / `latest` - By default the base tag points to the headless version of P2G
-1. `api-stable` / `api-latest` - Used in conjunction with the `webui` image, provides the API and server for P2G user interface
-1. `webui-stable` / `webui-latest` - Used in conjunction with the `api` image, provides a P2G web user interface
+1. `stable`- By default the base tag points to the headless version of P2G
+2. `console-latest` - By default points to the latest version of the headless version of P2G
+3. `api-stable` / `api-latest` - Used in conjunction with the `webui` image, provides the API and server for P2G user interface
+4. `webui-stable` / `webui-latest` - Used in conjunction with the `api` image, provides a P2G web user interface
 
 ### Tag versioning
 
