@@ -8,3 +8,7 @@
 	- Console (manual) - New setting added to enable 2FA
 	- Headless (automatic sync) - Does not support 2FA
 	- GitHub Action - Does not support 2FA
+
+## Fixes
+
+- [#430] Fixed where error thrown for classes with `*` in the title 

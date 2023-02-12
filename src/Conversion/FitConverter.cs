@@ -6,7 +6,6 @@ using Common.Helpers;
 using Common.Observe;
 using Common.Service;
 using Dynastream.Fit;
-using Microsoft.AspNetCore.Routing.Constraints;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -18,7 +17,6 @@ namespace Conversion
 {
 	public class FitConverter : Converter<Tuple<string, ICollection<Mesg>>>
 	{
-		private static readonly string _spaceSeparator = "_";
 		private static readonly ILogger _logger = LogContext.ForClass<FitConverter>();
 		public FitConverter(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) 
 		{
@@ -147,7 +145,7 @@ namespace Conversion
 			}	
 
 			var workoutMesg = new WorkoutMesg();
-			workoutMesg.SetWktName(title.Replace(_spaceSeparator, " "));
+			workoutMesg.SetWktName(title.Replace(WorkoutHelper.SpaceSeparator, ' '));
 			workoutMesg.SetCapabilities(32);
 			workoutMesg.SetSport(sport);
 			workoutMesg.SetSubSport(subSport);
