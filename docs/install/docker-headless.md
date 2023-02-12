@@ -7,7 +7,7 @@ nav_order: 2
 
 # Docker Headless
 
-This the original flavor of P2G. It runs without any user interface and relies on configuration from `configuration.local.json` file.
+This the original flavor of P2G. It runs without any user interface and relies on configuration from `configuration.local.json` file.  This method does not support Garmin accounts with Two-Step Verification enabled.
 
 ### [DockerHub](https://hub.docker.com/r/philosowaffle/peloton-to-garmin)
 

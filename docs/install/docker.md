@@ -14,6 +14,11 @@ P2G offers two main flavors of docker images:
 1. [Docker Web UI]({{ site.baseurl }}{% link install/docker-webui.md %})
 1. [Docker Headless]({{ site.baseurl }}{% link install/docker-headless.md %})
 
+| Flavor | Features | Support Garmin 2-Step Verification | Support Automatic Syncing |
+|:------------------|:-----------------------------------|:--------------------------|
+| [Web UI]({{ site.baseurl }}{% link install/docker-webui.md %}) | yes | only when Garmin 2fa is disabled |
+| [Docker Headless]({{ site.baseurl }}{% link install/docker-headless.md %}) | no | yes |
+
 ## Image Repositories
 
 P2G publishes Docker images to both [DockerHub](https://hub.docker.com/r/philosowaffle/peloton-to-garmin) and [GitHub Package](https://github.com/philosowaffle/peloton-to-garmin/pkgs/container/peloton-to-garmin).

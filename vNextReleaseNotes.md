@@ -3,14 +3,8 @@
 
 ## Features
 
-- [#406] WebUI - New page to view more detailed progress towards Annual Challenge Badges
-
-## Fixes
-
-- [#404] Fixed where outdoor Just walk/Just run could be missing GPS data on Garmin Connect
-- [#411] WebUI - Fixed issue where custom DeviceInfo file path could not be saved
-- [#414] Fixed calories missing on Garmin Connect when provided by Apple Watch
-
-## Changes
-
-- [#402] [housekeeping] Dependency bumps
+- [#432] General Support for Garmin accounts protected by Two Step Verification
+	- WebUI - New setting added to enable 2FA
+	- Console (manual) - New setting added to enable 2FA
+	- Headless (automatic sync) - Does not support 2FA
+	- GitHub Action - Does not support 2FA

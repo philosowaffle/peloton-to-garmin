@@ -234,6 +234,7 @@ This section provides settings related to uploading workouts to Garmin.
 "Garmin": {
     "Email": "garmin@gmail.com",
     "Password": "garmin",
+    "TwoStepVerificationEnabled": false,
     "Upload": false,
     "FormatToUpload": "fit",
     "UploadStrategy": 2
@@ -250,6 +251,7 @@ This section provides settings related to uploading workouts to Garmin.
 |:-----------|:---------|:--------|:--------------------|:------------|
 | Email | **yes - if Upload=true** | `null` | `Garmin Tab` | Your Garmin email used to sign in |
 | Password | **yes - if Upload=true** | `null` | `Garmin Tab` | Your Garmin password used to sign in |
+| TwoStepVerificationEnabled | no | `false` | `Garmin Tab` | Whether or not your Garmin account is protected by Two Step Verification |
 | Upload | no | `false` | `Garmin Tab` |  `true` indicates you wish downloaded workouts to be automatically uploaded to Garmin for you. |
 | FormatToUpload | no | `fit` | `Garmin Tab > Advanced` | Valid values are `fit` or `tcx`. Ensure the format you specify here is also enabled in your [Format config](#format-config) |
 | UploadStrategy | **yes if Upload=true** | `null` |  `Garmin Tab > Advanced` |  Allows configuring different upload strategies for syncing with Garmin. Valid values are `[0 - PythonAndGuploadInstalledLocally, 1 - WindowsExeBundledPython, 2 - NativeImplV1]`. See [upload strategies](#upload-strategies) for more info. |
