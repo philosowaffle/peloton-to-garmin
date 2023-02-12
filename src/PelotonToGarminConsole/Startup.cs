@@ -154,7 +154,7 @@ namespace PelotonToGarminConsole
 					{
 						await _garminAuthService.RefreshGarminAuthenticationAsync();
 						
-						Console.WriteLine("Detected Garmin Two Factor Enabled. Please check your email or phone for the authenctaion code sent by Garmin.");
+						Console.WriteLine("Detected Garmin Two Factor Enabled. Please check your email or phone for the Security Passcode sent by Garmin.");
 						var mfaCode = string.Empty;
 						var retryCount = 5;
 						while (retryCount > 0 && string.IsNullOrWhiteSpace(mfaCode))
