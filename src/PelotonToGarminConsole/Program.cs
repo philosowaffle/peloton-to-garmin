@@ -17,6 +17,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Common.Http;
 using Common.Stateful;
 using Philosowaffle.Capability.ReleaseChecks;
+using Garmin.Auth;
 
 Statics.AppType = Constants.ConsoleAppName;
 Statics.MetricPrefix = Constants.ConsoleAppName;
@@ -72,6 +73,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
 			services.AddSingleton<IPelotonService, PelotonService>();
 
 			// GARMIN
+			services.AddSingleton<IGarminAuthenticationService, GarminAuthenticationService>();
 			services.AddSingleton<IGarminUploader, GarminUploader>();
 			services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
 

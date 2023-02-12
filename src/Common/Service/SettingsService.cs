@@ -113,7 +113,7 @@ public class SettingsService : ISettingsService
 		lock (_lock)
 		{
 			var key = $"{GarminApiAuthKey}:{authentication.Email}";
-			_cache.Set(key, authentication, new MemoryCacheEntryOptions() { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15) });
+			_cache.Set(key, authentication, new MemoryCacheEntryOptions() { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(45) });
 		}
 	}
 

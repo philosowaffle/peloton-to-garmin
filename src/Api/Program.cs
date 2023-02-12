@@ -7,6 +7,7 @@ using Common.Service;
 using Common.Stateful;
 using Conversion;
 using Garmin;
+using Garmin.Auth;
 using Microsoft.Extensions.Caching.Memory;
 using Peloton;
 using Peloton.AnnualChallenge;
@@ -78,6 +79,7 @@ builder.Services.AddSingleton<IConverter, TcxConverter>();
 builder.Services.AddSingleton<IConverter, JsonConverter>();
 
 // GARMIN
+builder.Services.AddSingleton<IGarminAuthenticationService, GarminAuthenticationService>();
 builder.Services.AddSingleton<IGarminUploader, GarminUploader>();
 builder.Services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
 

@@ -185,6 +185,7 @@ public class Garmin : ICredentials
 	public EncryptionVersion EncryptionVersion { get; set; }
 	public string Email { get; set; }
 	public string Password { get; set; }
+	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
 	public UploadStrategy UploadStrategy { get; set; }

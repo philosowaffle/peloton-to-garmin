@@ -5,6 +5,8 @@
 
 <PageTitle>Home</PageTitle>
 
+<GarminMfaModal @ref="_garminMfaModal" />
+
 <div class="row">
 	<div class="col">
 		<HxBadge Type="BadgeType.RoundedPill" Color="@GetPillThemeColor(syncStatus.SyncStatus)" TextColor="@GetPillTextThemeColor(syncStatus.SyncStatus)">Periodic syncing is @syncStatus.AutoSyncHealthString</HxBadge>
@@ -64,6 +66,8 @@
 	private SettingsGetResponse settings;
 	private SystemInfoGetResponse systemInfo;
 	private ICollection<PelotonWorkout> TodaysWorkouts;
+
+	private GarminMfaModal? _garminMfaModal;
 
 	public Index() : base(nameof(Index))
 	{
@@ -169,6 +173,12 @@
 			return;
 		}
 
+		await _garminMfaModal!.ShowAsync(ContinueSyncAsync);
+	}
+
+	private async Task ContinueSyncAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Index)}.{nameof(ContinueSyncAsync)}", kind: ActivityKind.Client);
 		SyncPostResponse? syncResponse = null;
 		try
 		{
