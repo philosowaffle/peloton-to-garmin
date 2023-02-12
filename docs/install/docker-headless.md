@@ -7,23 +7,24 @@ nav_order: 2
 
 # Docker Headless
 
-This the original flavor of P2G. It runs without any user interface and relies on configuration from `configuration.local.json` file.  This method does not support Garmin accounts with Two-Step Verification enabled.
+This the original flavor of P2G. It runs without any user interface and relies on configuration from `configuration.local.json` file.
 
 ### [DockerHub](https://hub.docker.com/r/philosowaffle/peloton-to-garmin)
 
 ```bash
-docker run -v /full/path/to/configuration.local.json:/app/configuration.local.json -v /full/path/to/output:/app/output philosowaffle/peloton-to-garmin:stable
+docker run -i -v /full/path/to/configuration.local.json:/app/configuration.local.json -v /full/path/to/output:/app/output philosowaffle/peloton-to-garmin:stable
 ```
 
 ### [GitHub Package](https://github.com/philosowaffle/peloton-to-garmin/pkgs/container/peloton-to-garmin)
 
 ```bash
-docker run -v /full/path/to/configuration.local.json:/app/configuration.local.json -v /full/path/to/output:/app/output ghcr.io/philosowaffle/peloton-to-garmin:stable
+docker run -i -v /full/path/to/configuration.local.json:/app/configuration.local.json -v /full/path/to/output:/app/output ghcr.io/philosowaffle/peloton-to-garmin:stable
 ```
 
 ## docker-compose
 
 *Pre-requisite:* You have either `docker-compose` or `Docker Desktop` installed
+*This method does not work with Garmin accounts protected by Two Step Verification*
 
 1. Create a directory `p2g-headless`
     1. Inside this folder create a [docker-compose.yaml](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/docker-compose.yaml) file in the directory
