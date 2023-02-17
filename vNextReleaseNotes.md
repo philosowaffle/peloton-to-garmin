@@ -14,6 +14,7 @@
 
 - [#430] Fixed where error thrown for classes with `*` in the title 
 
-## Changes
+## Housekeeping
 
 - [#434] Dependency Bumps
+- [#435] More Dependency Bumps
