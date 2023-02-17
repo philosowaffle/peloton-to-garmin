@@ -18,7 +18,7 @@ public static class Guard
 		return false;
 	}
 
-	public static bool CheckIsNullOrEmpty(this string input, string name, out ActionResult result, string errorMessage = null)
+	public static bool CheckIsNullOrEmpty(this string input, string name, out ActionResult? result, string? errorMessage = null)
 	{
 		result = null;
 

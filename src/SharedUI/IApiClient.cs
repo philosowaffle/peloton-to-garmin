@@ -1,5 +1,6 @@
 ﻿using Api.Contract;
 using Common;
+using Flurl.Http;
 
 namespace SharedUI;
 public interface IApiClient
@@ -19,6 +20,10 @@ public interface IApiClient
 	Task<SystemInfoGetResponse> SystemInfoGetAsync(SystemInfoGetRequest systemInfoGetRequest);
 
 	Task<ProgressGetResponse> GetAnnualProgressAsync();
+
+	Task<GarminAuthenticationGetResponse> GetGarminAuthenticationAsync();
+	Task<IFlurlResponse> SignInToGarminAsync();
+	Task SendGarminMfaTokenAsync(GarminAuthenticationMfaTokenPostRequest request);
 }
 
 public class ApiClientException : Exception

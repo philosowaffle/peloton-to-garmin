@@ -4,7 +4,6 @@ using Common.Database;
 using Common.Service;
 using Microsoft.AspNetCore.Mvc;
 using Sync;
-using System.Diagnostics.Contracts;
 
 namespace Api.Controllers;
 
@@ -37,14 +36,14 @@ public class SyncController : Controller
 	[ProducesResponseType(typeof(SyncPostResponse), StatusCodes.Status201Created)]
 	[ProducesResponseType(typeof(SyncPostResponse), StatusCodes.Status200OK)]
 	[ProducesResponseType(typeof(Contract.ErrorResponse), StatusCodes.Status400BadRequest)]
-	[ProducesResponseType(typeof(Contract.ErrorResponse, StatusCodes.Status401Unauthorized))]
+	[ProducesResponseType(typeof(Contract.ErrorResponse), StatusCodes.Status401Unauthorized)]
 	[ProducesResponseType(typeof(Contract.ErrorResponse), StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<SyncPostResponse>> SyncAsync([FromBody] SyncPostRequest request)
 	{
 		var settings = await _settingsService.GetSettingsAsync();
 
 		var (isValid, result) = await IsValidAsync(request);
-		if (!isValid) return result;
+		if (!isValid) return result!;
 
 		SyncResult syncResult = new();
 		try
@@ -100,11 +99,11 @@ public class SyncController : Controller
 		return response;
 	}
 
-	async Task<(bool, ActionResult)> IsValidAsync(SyncPostRequest request)
+	async Task<(bool, ActionResult?)> IsValidAsync(SyncPostRequest request)
 	{
 		ActionResult result = new OkResult();
 
-		if (request.CheckIsNull("PostRequest", out result))
+		if (request.CheckIsNull("PostRequest", out result!))
 			return (false, result);
 
 		var settings = await _settingsService.GetSettingsAsync();
@@ -113,12 +112,12 @@ public class SyncController : Controller
 			var auth = _settingsService.GetGarminAuthentication(settings.Garmin.Email);
 			if (auth is null || !auth.IsValid(settings))
 			{
-				result = new UnauthorizedObjectResult(new ErrorResponse("Must initialize Garmin two factor auth token before sync can be preformed.", ErrorCode.NeedToInitGarminMFAAuth));
+				result = new UnauthorizedObjectResult(new Api.Contract.ErrorResponse("Must initialize Garmin two factor auth token before sync can be preformed.", ErrorCode.NeedToInitGarminMFAAuth));
 				return (false, result);
 			}
 		}
 
-		if (request.WorkoutIds.CheckDoesNotHaveAny(nameof(request.WorkoutIds), out result))
+		if (request.WorkoutIds.CheckDoesNotHaveAny(nameof(request.WorkoutIds), out result!))
 			return (false, result);
 
 		return (true, result);

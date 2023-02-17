@@ -4,9 +4,11 @@
 @inject IHxMessengerService _toaster;
 
 <PageTitle>Settings</PageTitle>
+
 <h1>Settings</h1>
 <a href="@configDocumentation">Documentation</a>
-<br /><br />
+<br />
+<br />
 
 <HxTabPanel InitialActiveTabId="tab0">
 	<HxTab Id="tab0" Title="App">
@@ -22,7 +24,7 @@
 				<br />
 				<HxSwitch Label="Check for new P2G Releases" @bind-Value="appSettings.CheckForUpdates" />
 				<br />
-				<HxAccordion CssClass="accordion-flush">
+				<HxAccordion>
 					<HxAccordionItem>
 						<HeaderTemplate>Advanced</HeaderTemplate>
 						<BodyTemplate>
@@ -46,29 +48,26 @@
 				<HxSwitch Label="Convert to TCX" @bind-Value="formatSettings.Tcx" />
 				<HxSwitch Label="Convert to JSON" @bind-Value="formatSettings.Json" />
 				<br />
-				<HxSelect
-					Label="Cycling Lap Type"
-					Data="@lapTypes"
-					Nullable="false"
-					NullDataText="Loading info..."
-					@bind-Value="formatSettings.Cycling.PreferredLapType" />
+				<HxSelect Label="Cycling Lap Type"
+						  Data="@lapTypes"
+						  Nullable="false"
+						  NullDataText="Loading info..."
+						  @bind-Value="formatSettings.Cycling.PreferredLapType" />
 				<br />
-				<HxSelect
-					Label="Running Lap Type"
-					Data="@lapTypes"
-					Nullable="false"
-					NullDataText="Loading info..."
-					@bind-Value="formatSettings.Running.PreferredLapType" />
+				<HxSelect Label="Running Lap Type"
+						  Data="@lapTypes"
+						  Nullable="false"
+						  NullDataText="Loading info..."
+						  @bind-Value="formatSettings.Running.PreferredLapType" />
 				<br />
-				<HxSelect
-					Label="Rowing Lap Type"
-					Data="@lapTypes"
-					Nullable="false"
-					NullDataText="Loading info..."
-					@bind-Value="formatSettings.Rowing.PreferredLapType" />
+				<HxSelect Label="Rowing Lap Type"
+						  Data="@lapTypes"
+						  Nullable="false"
+						  NullDataText="Loading info..."
+						  @bind-Value="formatSettings.Rowing.PreferredLapType" />
 				<br />
 				<br />
-				<HxAccordion CssClass="accordion-flush">
+				<HxAccordion>
 					<HxAccordionItem>
 						<HeaderTemplate>Advanced</HeaderTemplate>
 						<BodyTemplate>
@@ -109,14 +108,13 @@
 					</InputGroupEndTemplate>
 				</HxInputText>
 				<br />
-				<HxMultiSelect 
-				   Label="Excluded Workout Types"
-				   Data="@workoutTypes"
-				   @bind-Value="@selectedWorkoutTypes"
-				   EmptyText="- none -"
-				   TextSelector="(v) => v.ToString()"
-				   GenerateChip=true
-				   NullDataText="Loading workout types..." />
+				<HxMultiSelect Label="Excluded Workout Types"
+							   Data="@workoutTypes"
+							   @bind-Value="@selectedWorkoutTypes"
+							   EmptyText="- none -"
+							   TextSelector="(v) => v.ToString()"
+							   GenerateChip=true
+							   NullDataText="Loading workout types..." />
 				<br />
 				<HxSubmit Color="ThemeColor.Primary" OnClick="SavePelotonSettings">Save</HxSubmit>
 			</EditForm>
@@ -124,54 +122,78 @@
 	</HxTab>
 	<HxTab Id="tab3" Title="Garmin">
 		<Content>
+			<br />
 			<EditForm Model="@garminSettings">
-				<br />
-				<HxSwitch Label="Automatically upload to Garmin Connect" @bind-Value="garminSettings.Upload" />
-				<br />
-				<HxFormState Enabled="@garminSettings.Upload">
-					<HxInputText @bind-Value="garminSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
-					<br />
-					<HxInputText @bind-Value="garminSettings.Password" Label="Password" Type="InputType.Password" >
-						<LabelTemplate>
-						Password
-						@if (garminSettings.IsPasswordSet)
-						{
-							<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success">Password is set</HxBadge>
-						}
-						</LabelTemplate>
-						<InputGroupEndTemplate>
-							@if (garminSettings.IsPasswordSet)
-							{
-								<HxButton Text="Clear" Color="ThemeColor.Secondary" Outline="true" OnClick="ClearPelotonPassword" />
-							}
-						</InputGroupEndTemplate>
-					</HxInputText>
-					<br />
-					<HxAccordion CssClass="accordion-flush">
-						<HxAccordionItem>
-							<HeaderTemplate>Advanced</HeaderTemplate>
-							<BodyTemplate>
-								<br />
-								<HxSelect
-										Label="Format to Upload"
-										Data="@formatTypes"
-										Nullable="false"
-										NullDataText="Loading info..."
-										@bind-Value="garminSettings.FormatToUpload" />
-								<br />
-								<HxSelect
-										Label="Upload Strategy to use"
-										Data="@uploadStrategyTypes"
-										Nullable="false"
-										NullDataText="Loading info..."
-										@bind-Value="garminSettings.UploadStrategy" />
-							</BodyTemplate>
-						</HxAccordionItem>
-					</HxAccordion>
-					<br />
-				</HxFormState>
-				<br />
-				<HxSubmit Color="ThemeColor.Primary" OnClick="SaveGarminSettings">Save</HxSubmit>
+				<div class="row g-3">
+					<div class="col-md-12">
+						<HxSwitch Text="Automatically upload to Garmin Connect" @bind-Value="garminSettings.Upload" Inline="true" />
+					</div>
+
+					<HxFormState Enabled="@garminSettings.Upload">
+						<div class="col-md-12">
+							<HxCard>
+								<HeaderTemplate>Auth</HeaderTemplate>
+								<BodyTemplate>
+									<div class="row">
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Password" Label="Password" Type="InputType.Password">
+												<LabelTemplate>
+													Password
+													@if (garminSettings.IsPasswordSet)
+													{
+														<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success">Password is set</HxBadge>
+													}
+												</LabelTemplate>
+												<InputGroupEndTemplate>
+													@if (garminSettings.IsPasswordSet)
+													{
+														<HxButton Text="Clear" Color="ThemeColor.Secondary" Outline="true" OnClick="ClearPelotonPassword" />
+													}
+												</InputGroupEndTemplate>
+											</HxInputText>
+										</div>
+									</div>
+								</BodyTemplate>
+								<FooterTemplate>
+									<HxSwitch Text="Two Step Verification Enabled" @bind-Value="garminSettings.TwoStepVerificationEnabled" />
+								</FooterTemplate>
+							</HxCard>
+						</div>
+
+						<div class="col-md-12">
+							<HxAccordion>
+								<HxAccordionItem>
+									<HeaderTemplate>Advanced</HeaderTemplate>
+									<BodyTemplate>
+										<div class="row">
+											<div class="col-md-6">
+												<HxSelect Label="Format to Upload"
+														  Data="@formatTypes"
+														  Nullable="false"
+														  NullDataText="Loading info..."
+														  @bind-Value="garminSettings.FormatToUpload" />
+											</div>
+
+											<div class="col-md-6">
+												<HxSelect Label="Upload Strategy to use"
+														  Data="@uploadStrategyTypes"
+														  Nullable="false"
+														  NullDataText="Loading info..."
+														  @bind-Value="garminSettings.UploadStrategy" />
+											</div>
+										</div>
+									</BodyTemplate>
+								</HxAccordionItem>
+							</HxAccordion>
+						</div>
+					</HxFormState>
+					<div class="col-md-3">
+						<HxSubmit Color="ThemeColor.Primary" OnClick="SaveGarminSettings">Save</HxSubmit>
+					</div>
+				</div>
 			</EditForm>
 		</Content>
 	</HxTab>
@@ -214,14 +236,15 @@
 
 		_toaster.Clear();
 
-		try 
+		try
 		{
 			appSettings = await _apiClient.SettingsAppPostAsync(appSettings);
 			_toaster.AddInformation("App Settings Saved!");
 		}
-		catch (ApiClientException e)
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
 		{
-			_toaster.AddError(e.Message);
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
 		}
 		catch (Exception e)
 		{
@@ -230,7 +253,7 @@
 		}
 	}
 
-	protected async Task SaveFormatSettings() 
+	protected async Task SaveFormatSettings()
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(SaveFormatSettings)}", kind: ActivityKind.Client);
 
@@ -240,9 +263,10 @@
 			formatSettings = await _apiClient.SettingsFormatPostAsync(formatSettings);
 			_toaster.AddInformation("Format Settings Saved!");
 		}
-		catch (ApiClientException e)
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
 		{
-			_toaster.AddError(e.Message);
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
 		}
 		catch (Exception e)
 		{
@@ -270,9 +294,10 @@
 			pelotonSettings = await _apiClient.SettingsPelotonPostAsync(pelotonSettings.Map());
 			_toaster.AddInformation("Peloton Settings Saved!");
 		}
-		catch (ApiClientException e)
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
 		{
-			_toaster.AddError(e.Message);
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
 		}
 		catch (Exception e)
 		{
@@ -288,7 +313,7 @@
 		garminSettings.IsPasswordSet = false;
 	}
 
-	protected async Task SaveGarminSettings() 
+	protected async Task SaveGarminSettings()
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(SaveGarminSettings)}", kind: ActivityKind.Client);
 
@@ -299,9 +324,10 @@
 			garminSettings = await _apiClient.SettingsGarminPostAsync(garminSettings.Map());
 			_toaster.AddInformation("Garmin Settings Saved!");
 		}
-		catch (ApiClientException e)
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
 		{
-			_toaster.AddError(e.Message);
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
 		}
 		catch (Exception e)
 		{

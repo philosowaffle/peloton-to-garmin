@@ -41,11 +41,11 @@ builder.Host.UseSerilog((ctx, logConfig) =>
 	.Enrich.FromLogContext();
 });
 
-builder.Host.ConfigureServices(services => services.AddHostedService<BackgroundSyncJob>());
-
 ///////////////////////////////////////////////////////////
 /// SERVICES
 ///////////////////////////////////////////////////////////
+
+builder.Services.AddHostedService<BackgroundSyncJob>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

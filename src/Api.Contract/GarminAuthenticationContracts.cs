@@ -1,8 +1,8 @@
-﻿namespace Common.Dto.Api;
+﻿namespace Api.Contract;
 
 public record GarminAuthenticationMfaTokenPostRequest
 {
-	public string MfaToken { get; set; }
+	public string? MfaToken { get; set; }
 }
 
 public record GarminAuthenticationGetResponse

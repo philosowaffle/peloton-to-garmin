@@ -60,7 +60,7 @@ public class SettingsController : Controller
 	public async Task<ActionResult<App>> AppPost([FromBody] App updatedAppSettings)
 	{
 		if (updatedAppSettings.CheckIsNull("PostRequest", out var result))
-			return result;
+			return result!;
 
 		if (!string.IsNullOrWhiteSpace(updatedAppSettings.OutputDirectory)
 			&& !_fileHandler.DirExists(updatedAppSettings.OutputDirectory))
@@ -68,7 +68,7 @@ public class SettingsController : Controller
 
 		if (updatedAppSettings.EnablePolling 
 			&& updatedAppSettings.PollingIntervalSeconds.CheckIsLessThanOrEqualTo(0, "PollingIntervalSeconds", out result))
-			return result;
+			return result!;
 
 		try
 		{
@@ -102,7 +102,7 @@ public class SettingsController : Controller
 	public async Task<ActionResult<Format>> FormatPost([FromBody] Format updatedFormatSettings)
 	{
 		if (updatedFormatSettings.CheckIsNull("PostRequest", out var result))
-			return result;
+			return result!;
 
 		if (!string.IsNullOrWhiteSpace(updatedFormatSettings.DeviceInfoPath)
 			&& !_fileHandler.FileExists(updatedFormatSettings.DeviceInfoPath))
@@ -137,10 +137,10 @@ public class SettingsController : Controller
 	public async Task<ActionResult<SettingsPelotonGetResponse>> PelotonPost([FromBody] SettingsPelotonPostRequest updatedPelotonSettings)
 	{
 		if (updatedPelotonSettings.CheckIsNull("PostRequest", out var result))
-			return result;
+			return result!;
 
 		if (updatedPelotonSettings.NumWorkoutsToDownload.CheckIsLessThanOrEqualTo(0, "NumWorkoutsToDownload", out result))
-			return result;
+			return result!;
 
 		try
 		{
@@ -173,7 +173,7 @@ public class SettingsController : Controller
 	public async Task<ActionResult<SettingsGarminGetResponse>> GarminPost([FromBody] SettingsGarminPostRequest updatedGarminSettings)
 	{
 		if (updatedGarminSettings.CheckIsNull("PostRequest", out var result))
-			return result;
+			return result!;
 
 		try
 		{

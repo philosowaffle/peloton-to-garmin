@@ -1,11 +1,14 @@
 ﻿@page "/sync"
+@using SharedUI.Shared;
 @inherits TracingComponentBase
 @inject IApiClient _apiClient;
 @inject IHxMessengerService _toaster;
 
 <PageTitle>Sync</PageTitle>
 
-<HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@selectedItems.Any()">
+<GarminMfaModal @ref="_garminMfaModal" />
+
+<HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@IsSyncButtonEnabled()">
 	Sync <span class="badge bg-secondary">@selectedItems.Count()</span>
 </HxButton>
 
@@ -17,7 +20,7 @@
 	</Columns>
 </HxGrid>
 
-<HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@selectedItems.Any()">
+<HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@IsSyncButtonEnabled()">
 	Sync <span class="badge bg-secondary">@selectedItems.Count()</span>
 </HxButton>
 
@@ -25,6 +28,8 @@
 
 	private HashSet<PelotonWorkout> selectedItems = new();
 	private static int PageSize = 25;
+
+	private GarminMfaModal? _garminMfaModal;
 
 	public Sync() : base(nameof(Sync)) => _toaster?.Clear();
 
@@ -34,23 +39,41 @@
 		base.Dispose();
 	}
 
+	protected override async Task OnInitializedAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Index)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+
+		try
+		{
+			var getSettingsTask = _apiClient.SettingsGetAsync();
+			var settings = await getSettingsTask;
+		}
+		catch (Exception e)
+		{
+			Log.Error("UI - Failed to fetch data for sync page.", e);
+			_toaster.AddError($"Failed to fetch data from P2G Api - {e.Message} - See logs for details.");
+		}
+	}
+
 	private async Task<GridDataProviderResult<PelotonWorkout>> LoadDataAsync(GridDataProviderRequest<PelotonWorkout> request)
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(Sync)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
 
 		_toaster.Clear();
 
-		try 
+		try
 		{
 			var pageIndex = request.StartIndex / PageSize;
-			var recentWorkouts = await _apiClient.PelotonWorkoutsGetAsync(new PelotonWorkoutsGetRequest() { PageSize = PageSize, PageIndex = pageIndex});
+			var recentWorkouts = await _apiClient.PelotonWorkoutsGetAsync(new PelotonWorkoutsGetRequest() { PageSize = PageSize, PageIndex = pageIndex });
 			return new GridDataProviderResult<PelotonWorkout>() { Data = recentWorkouts.Items, TotalCount = recentWorkouts.TotalItems };
 		}
-		catch (ApiClientException e)
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
 		{
-			_toaster.AddError(e.Message);
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
 			Log.Error("UI - Failed to load Peloton workouts.", e);
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			_toaster.AddError($"Failed to load Peloton workouts - {e.Message} - See logs for details.");
 			Log.Error("UI - Failed to load Peloton workouts.", e);
@@ -65,15 +88,23 @@
 
 		_toaster.Clear();
 
+		await _garminMfaModal!.ShowAsync(ContinueSyncAsync);
+	}
+
+	private async Task ContinueSyncAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Sync)}.{nameof(ContinueSyncAsync)}", kind: ActivityKind.Client);
+
 		try
 		{
-			var result = await _apiClient.SyncPostAsync(new SyncPostRequest() { WorkoutIds = selectedItems.Select(i => i.Id).ToList() });
+			var result = await _apiClient.SyncPostAsync(new SyncPostRequest() { WorkoutIds = selectedItems.Select(i => i.Id!).ToList() });
 			selectedItems.Clear();
 
 			if (result.SyncSuccess)
 			{
 				_toaster.AddInformation("Successfully synced selected workouts.");
-			} else
+			}
+			else
 			{
 				if (result.Errors is null || !result.Errors.Any())
 				{
@@ -85,20 +116,27 @@
 					_toaster.AddError(error.Message);
 			}
 
-		} catch(SyncTimeoutException te)
+		}
+		catch (FlurlHttpTimeoutException te)
 		{
 			_toaster.AddInformation("Long running sync will continue running in the background.");
 			Log.Information("UI - Sync timeout reached.", te);
-		} 
-		catch (ApiClientException e)
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
 		{
-			_toaster.AddError(e.Message);
-			Log.Error("UI - Failed to load Peloton workouts.", e);
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+			Log.Error("UI - Failed to sync Peloton workouts.", e);
 		}
 		catch (Exception e)
 		{
 			_toaster.AddError($"Failed to sync - {e.Message} - See logs for details.");
 			Log.Error("UI - Failed to sync.", e);
 		}
+	}
+
+	private bool IsSyncButtonEnabled()
+	{
+		return selectedItems.Any();
 	}
 }

@@ -1,7 +1,6 @@
 ﻿using Api.Contract;
 using Api.Controllers;
 using Common;
-using Common.Dto.Api;
 using Common.Service;
 using Common.Stateful;
 using FluentAssertions;

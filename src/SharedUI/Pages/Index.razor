@@ -1,9 +1,12 @@
 ﻿@page "/"
+@using SharedUI.Shared;
 @inherits TracingComponentBase
 @inject IApiClient _apiClient
 @inject IHxMessengerService _toaster;
 
 <PageTitle>Home</PageTitle>
+
+<GarminMfaModal @ref="_garminMfaModal" />
 
 <div class="row">
 	<div class="col">
@@ -44,7 +47,7 @@
 			<HxPlaceholder Columns="4" />
 		</HxPlaceholderContainer>
 	}
-	else if(!TodaysWorkouts.Any())
+	else if (!TodaysWorkouts.Any())
 	{
 		<HxAlert Color="ThemeColor.Primary">No workouts today.</HxAlert>
 	}
@@ -64,6 +67,8 @@
 	private SettingsGetResponse settings;
 	private SystemInfoGetResponse systemInfo;
 	private ICollection<PelotonWorkout> TodaysWorkouts;
+
+	private GarminMfaModal? _garminMfaModal;
 
 	public Index() : base(nameof(Index))
 	{
@@ -99,7 +104,8 @@
 
 			await getSyncStatusAsync;
 
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			Log.Error("UI - Failed to fetch data for home page.", e);
 			_toaster.AddError($"Failed to fetch data from P2G Api - {e.Message} - See logs for details.");
@@ -119,7 +125,7 @@
 		try
 		{
 			syncStatus = await _apiClient.SyncGetAsync();
-		} 
+		}
 		catch (Exception e)
 		{
 			Log.Error("UI - Failed to fetch Sync status.", e);
@@ -135,18 +141,19 @@
 		{
 			var startOfDayLocalTime = DateTime.Now.Date;
 			var today = startOfDayLocalTime.ToUniversalTime();
-			var todaysWorkouts = await _apiClient.PelotonWorkoutsGetAsync(new PelotonWorkoutsGetAllRequest() 
-			{ 
-				SinceDate = today,
-				WorkoutStatusFilter = WorkoutStatus.Completed, 
-				ExcludeWorkoutTypes = settings.Peloton.ExcludeWorkoutTypes
-			});
+			var todaysWorkouts = await _apiClient.PelotonWorkoutsGetAsync(new PelotonWorkoutsGetAllRequest()
+				{
+					SinceDate = today,
+					WorkoutStatusFilter = WorkoutStatus.Completed,
+					ExcludeWorkoutTypes = settings.Peloton.ExcludeWorkoutTypes
+				});
 
 			return todaysWorkouts.Items;
 		}
-		catch (ApiClientException e)
+		catch (FlurlHttpException e)
 		{
-			_toaster.AddError(e.Message);
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
 			Log.Error("UI - Failed to load Peloton workouts.", e);
 		}
 		catch (Exception e)
@@ -168,17 +175,23 @@
 			return;
 		}
 
+		await _garminMfaModal!.ShowAsync(ContinueSyncAsync);
+	}
+
+	private async Task ContinueSyncAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Index)}.{nameof(ContinueSyncAsync)}", kind: ActivityKind.Client);
 		SyncPostResponse? syncResponse = null;
 		try
 		{
-			syncResponse = await _apiClient.SyncPostAsync(new SyncPostRequest() { WorkoutIds = TodaysWorkouts.Select(w => w.Id).ToList() });
+			syncResponse = await _apiClient.SyncPostAsync(new SyncPostRequest() { WorkoutIds = TodaysWorkouts.Select(w => w!.Id!).ToList() });
 		}
-		catch (SyncTimeoutException te)
+		catch (FlurlHttpTimeoutException te)
 		{
 			_toaster.AddInformation("Long running sync will continue running in the background.");
 			Log.Information("UI - Sync timeout reached.", te);
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			_toaster.AddError($"Failed to sync - {e.Message} - See logs for details.");
 			Log.Error("UI - Failed to sync.", e);
@@ -191,7 +204,7 @@
 				{
 					_toaster.AddWarning($"Errors during sync - {error.Message}");
 				}
-			} 
+			}
 
 			if (syncResponse?.SyncSuccess ?? false)
 				_toaster.AddInformation("Success! Synced today's workouts.");

@@ -3,6 +3,7 @@ using Api.Service.Helpers;
 using Api.Services;
 using Common;
 using Common.Service;
+using Flurl.Http;
 using Peloton.AnnualChallenge;
 using SharedUI;
 
@@ -60,12 +61,22 @@ public class ServiceClient : IApiClient
 		}
 	}
 
+	public Task<GarminAuthenticationGetResponse> GetGarminAuthenticationAsync()
+	{
+		throw new NotImplementedException();
+	}
+
 	public Task<PelotonWorkoutsGetResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetRequest request)
 	{
 		throw new NotImplementedException();
 	}
 
 	public Task<PelotonWorkoutsGetAllResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetAllRequest request)
+	{
+		throw new NotImplementedException();
+	}
+
+	public Task SendGarminMfaTokenAsync(GarminAuthenticationMfaTokenPostRequest request)
 	{
 		throw new NotImplementedException();
 	}
@@ -104,6 +115,11 @@ public class ServiceClient : IApiClient
 	}
 
 	public Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(SettingsPelotonPostRequest pelotonSettings)
+	{
+		throw new NotImplementedException();
+	}
+
+	public Task<IFlurlResponse> SignInToGarminAsync()
 	{
 		throw new NotImplementedException();
 	}
