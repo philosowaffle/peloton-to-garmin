@@ -10,6 +10,7 @@ using Sync;
 using Philosowaffle.Capability.ReleaseChecks;
 using Microsoft.Extensions.DependencyInjection;
 using Api.Services;
+using Garmin.Auth;
 
 namespace SharedStartup;
 
@@ -28,6 +29,7 @@ public static class ApiStartupServices
 		// GARMIN
 		services.AddSingleton<IGarminUploader, GarminUploader>();
 		services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
+		services.AddSingleton<IGarminAuthenticationService, GarminAuthenticationService>();
 
 		// IO
 		services.AddSingleton<IFileHandling, IOWrapper>();
