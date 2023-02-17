@@ -2577,6 +2577,17 @@
             Set DeviceType field</summary>
             <param name="deviceType_">Nullable field value to be set</param>
         </member>
+        <member name="M:Dynastream.Fit.DeviceInfoMesg.GetBleDeviceType">
+            <summary>
+            Retrieves the BleDeviceType subfield</summary>
+            <returns>Nullable byte representing the BleDeviceType subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DeviceInfoMesg.SetBleDeviceType(System.Nullable{System.Byte})">
+             <summary>
+            
+             Set BleDeviceType subfield</summary>
+             <param name="bleDeviceType">Subfield value to be set</param>
+        </member>
         <member name="M:Dynastream.Fit.DeviceInfoMesg.GetAntplusDeviceType">
             <summary>
             Retrieves the AntplusDeviceType subfield</summary>
@@ -2598,6 +2609,17 @@
             
              Set AntDeviceType subfield</summary>
              <param name="antDeviceType">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DeviceInfoMesg.GetLocalDeviceType">
+            <summary>
+            Retrieves the LocalDeviceType subfield</summary>
+            <returns>Nullable byte representing the LocalDeviceType subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DeviceInfoMesg.SetLocalDeviceType(System.Nullable{System.Byte})">
+             <summary>
+            
+             Set LocalDeviceType subfield</summary>
+             <param name="localDeviceType">Subfield value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.DeviceInfoMesg.GetManufacturer">
             <summary>
@@ -7522,6 +7544,50 @@
             Units: m/s</summary>
             <param name="avgVam_">Nullable field value to be set</param>
         </member>
+        <member name="M:Dynastream.Fit.LapMesg.GetEnhancedAvgRespirationRate">
+            <summary>
+             Retrieves the EnhancedAvgRespirationRate field
+             Units: Breaths/min</summary>
+             <returns>Returns nullable float representing the EnhancedAvgRespirationRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.LapMesg.SetEnhancedAvgRespirationRate(System.Nullable{System.Single})">
+            <summary>
+            Set EnhancedAvgRespirationRate field
+            Units: Breaths/min</summary>
+            <param name="enhancedAvgRespirationRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.LapMesg.GetEnhancedMaxRespirationRate">
+            <summary>
+             Retrieves the EnhancedMaxRespirationRate field
+             Units: Breaths/min</summary>
+             <returns>Returns nullable float representing the EnhancedMaxRespirationRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.LapMesg.SetEnhancedMaxRespirationRate(System.Nullable{System.Single})">
+            <summary>
+            Set EnhancedMaxRespirationRate field
+            Units: Breaths/min</summary>
+            <param name="enhancedMaxRespirationRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.LapMesg.GetAvgRespirationRate">
+            <summary>
+             Retrieves the AvgRespirationRate field</summary>
+             <returns>Returns nullable byte representing the AvgRespirationRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.LapMesg.SetAvgRespirationRate(System.Nullable{System.Byte})">
+            <summary>
+            Set AvgRespirationRate field</summary>
+            <param name="avgRespirationRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.LapMesg.GetMaxRespirationRate">
+            <summary>
+             Retrieves the MaxRespirationRate field</summary>
+             <returns>Returns nullable byte representing the MaxRespirationRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.LapMesg.SetMaxRespirationRate(System.Nullable{System.Byte})">
+            <summary>
+            Set MaxRespirationRate field</summary>
+            <param name="maxRespirationRate_">Nullable field value to be set</param>
+        </member>
         <member name="M:Dynastream.Fit.LapMesg.GetTotalGrit">
             <summary>
              Retrieves the TotalGrit field
@@ -7879,6 +7945,50 @@
             Comment: zone number used as the index</summary>
             <param name="index">0 based index of zone_count</param>
             <param name="zoneCount_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.LengthMesg.GetEnhancedAvgRespirationRate">
+            <summary>
+             Retrieves the EnhancedAvgRespirationRate field
+             Units: Breaths/min</summary>
+             <returns>Returns nullable float representing the EnhancedAvgRespirationRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.LengthMesg.SetEnhancedAvgRespirationRate(System.Nullable{System.Single})">
+            <summary>
+            Set EnhancedAvgRespirationRate field
+            Units: Breaths/min</summary>
+            <param name="enhancedAvgRespirationRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.LengthMesg.GetEnhancedMaxRespirationRate">
+            <summary>
+             Retrieves the EnhancedMaxRespirationRate field
+             Units: Breaths/min</summary>
+             <returns>Returns nullable float representing the EnhancedMaxRespirationRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.LengthMesg.SetEnhancedMaxRespirationRate(System.Nullable{System.Single})">
+            <summary>
+            Set EnhancedMaxRespirationRate field
+            Units: Breaths/min</summary>
+            <param name="enhancedMaxRespirationRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.LengthMesg.GetAvgRespirationRate">
+            <summary>
+             Retrieves the AvgRespirationRate field</summary>
+             <returns>Returns nullable byte representing the AvgRespirationRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.LengthMesg.SetAvgRespirationRate(System.Nullable{System.Byte})">
+            <summary>
+            Set AvgRespirationRate field</summary>
+            <param name="avgRespirationRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.LengthMesg.GetMaxRespirationRate">
+            <summary>
+             Retrieves the MaxRespirationRate field</summary>
+             <returns>Returns nullable byte representing the MaxRespirationRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.LengthMesg.SetMaxRespirationRate(System.Nullable{System.Byte})">
+            <summary>
+            Set MaxRespirationRate field</summary>
+            <param name="maxRespirationRate_">Nullable field value to be set</param>
         </member>
         <member name="T:Dynastream.Fit.MagnetometerDataMesg">
             <summary>
@@ -10130,6 +10240,30 @@
             Units: percent</summary>
             <param name="n2Load_">Nullable field value to be set</param>
         </member>
+        <member name="M:Dynastream.Fit.RecordMesg.GetRespirationRate">
+            <summary>
+             Retrieves the RespirationRate field
+             Units: s</summary>
+             <returns>Returns nullable byte representing the RespirationRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.RecordMesg.SetRespirationRate(System.Nullable{System.Byte})">
+            <summary>
+            Set RespirationRate field
+            Units: s</summary>
+            <param name="respirationRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.RecordMesg.GetEnhancedRespirationRate">
+            <summary>
+             Retrieves the EnhancedRespirationRate field
+             Units: Breaths/min</summary>
+             <returns>Returns nullable float representing the EnhancedRespirationRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.RecordMesg.SetEnhancedRespirationRate(System.Nullable{System.Single})">
+            <summary>
+            Set EnhancedRespirationRate field
+            Units: Breaths/min</summary>
+            <param name="enhancedRespirationRate_">Nullable field value to be set</param>
+        </member>
         <member name="M:Dynastream.Fit.RecordMesg.GetGrit">
             <summary>
              Retrieves the Grit field
@@ -12011,6 +12145,42 @@
             Comment: fractional part of total_descent</summary>
             <param name="totalFractionalDescent_">Nullable field value to be set</param>
         </member>
+        <member name="M:Dynastream.Fit.SegmentLapMesg.GetEnhancedAvgAltitude">
+            <summary>
+             Retrieves the EnhancedAvgAltitude field
+             Units: m</summary>
+             <returns>Returns nullable float representing the EnhancedAvgAltitude field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SegmentLapMesg.SetEnhancedAvgAltitude(System.Nullable{System.Single})">
+            <summary>
+            Set EnhancedAvgAltitude field
+            Units: m</summary>
+            <param name="enhancedAvgAltitude_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SegmentLapMesg.GetEnhancedMaxAltitude">
+            <summary>
+             Retrieves the EnhancedMaxAltitude field
+             Units: m</summary>
+             <returns>Returns nullable float representing the EnhancedMaxAltitude field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SegmentLapMesg.SetEnhancedMaxAltitude(System.Nullable{System.Single})">
+            <summary>
+            Set EnhancedMaxAltitude field
+            Units: m</summary>
+            <param name="enhancedMaxAltitude_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SegmentLapMesg.GetEnhancedMinAltitude">
+            <summary>
+             Retrieves the EnhancedMinAltitude field
+             Units: m</summary>
+             <returns>Returns nullable float representing the EnhancedMinAltitude field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SegmentLapMesg.SetEnhancedMinAltitude(System.Nullable{System.Single})">
+            <summary>
+            Set EnhancedMinAltitude field
+            Units: m</summary>
+            <param name="enhancedMinAltitude_">Nullable field value to be set</param>
+        </member>
         <member name="T:Dynastream.Fit.SegmentLeaderboardEntryMesg">
             <summary>
             Implements the SegmentLeaderboardEntry profile message.
@@ -12222,6 +12392,20 @@
             Comment: Accumualted time each leader board member required to reach the described point. This value is zero for all leader board members at the starting point of the segment.</summary>
             <param name="index">0 based index of leader_time</param>
             <param name="leaderTime_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SegmentPointMesg.GetEnhancedAltitude">
+            <summary>
+             Retrieves the EnhancedAltitude field
+             Units: m
+             Comment: Accumulated altitude along the segment at the described point</summary>
+             <returns>Returns nullable float representing the EnhancedAltitude field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SegmentPointMesg.SetEnhancedAltitude(System.Nullable{System.Single})">
+            <summary>
+            Set EnhancedAltitude field
+            Units: m
+            Comment: Accumulated altitude along the segment at the described point</summary>
+            <param name="enhancedAltitude_">Nullable field value to be set</param>
         </member>
         <member name="T:Dynastream.Fit.SessionMesg">
             <summary>
@@ -13941,6 +14125,36 @@
             Units: m/s</summary>
             <param name="avgVam_">Nullable field value to be set</param>
         </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetAvgRespirationRate">
+            <summary>
+             Retrieves the AvgRespirationRate field</summary>
+             <returns>Returns nullable byte representing the AvgRespirationRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetAvgRespirationRate(System.Nullable{System.Byte})">
+            <summary>
+            Set AvgRespirationRate field</summary>
+            <param name="avgRespirationRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetMaxRespirationRate">
+            <summary>
+             Retrieves the MaxRespirationRate field</summary>
+             <returns>Returns nullable byte representing the MaxRespirationRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetMaxRespirationRate(System.Nullable{System.Byte})">
+            <summary>
+            Set MaxRespirationRate field</summary>
+            <param name="maxRespirationRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetMinRespirationRate">
+            <summary>
+             Retrieves the MinRespirationRate field</summary>
+             <returns>Returns nullable byte representing the MinRespirationRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetMinRespirationRate(System.Nullable{System.Byte})">
+            <summary>
+            Set MinRespirationRate field</summary>
+            <param name="minRespirationRate_">Nullable field value to be set</param>
+        </member>
         <member name="M:Dynastream.Fit.SessionMesg.GetTrainingLoadPeak">
             <summary>
              Retrieves the TrainingLoadPeak field</summary>
@@ -13950,6 +14164,40 @@
             <summary>
             Set TrainingLoadPeak field</summary>
             <param name="trainingLoadPeak_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetEnhancedAvgRespirationRate">
+            <summary>
+             Retrieves the EnhancedAvgRespirationRate field
+             Units: Breaths/min</summary>
+             <returns>Returns nullable float representing the EnhancedAvgRespirationRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetEnhancedAvgRespirationRate(System.Nullable{System.Single})">
+            <summary>
+            Set EnhancedAvgRespirationRate field
+            Units: Breaths/min</summary>
+            <param name="enhancedAvgRespirationRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetEnhancedMaxRespirationRate">
+            <summary>
+             Retrieves the EnhancedMaxRespirationRate field
+             Units: Breaths/min</summary>
+             <returns>Returns nullable float representing the EnhancedMaxRespirationRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetEnhancedMaxRespirationRate(System.Nullable{System.Single})">
+            <summary>
+            Set EnhancedMaxRespirationRate field
+            Units: Breaths/min</summary>
+            <param name="enhancedMaxRespirationRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetEnhancedMinRespirationRate">
+            <summary>
+             Retrieves the EnhancedMinRespirationRate field</summary>
+             <returns>Returns nullable float representing the EnhancedMinRespirationRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetEnhancedMinRespirationRate(System.Nullable{System.Single})">
+            <summary>
+            Set EnhancedMinRespirationRate field</summary>
+            <param name="enhancedMinRespirationRate_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.SessionMesg.GetTotalGrit">
             <summary>
@@ -14385,6 +14633,72 @@
             Set Name field</summary>
             <param name="name_">field value to be set</param>
         </member>
+        <member name="T:Dynastream.Fit.SplitMesg">
+            <summary>
+            Implements the Split profile message.
+            </summary>
+        </member>
+        <member name="T:Dynastream.Fit.SplitMesg.FieldDefNum">
+            <summary>
+            Field Numbers for <see cref="T:Dynastream.Fit.SplitMesg"/>
+            </summary>
+        </member>
+        <member name="M:Dynastream.Fit.SplitMesg.GetSplitType">
+            <summary>
+             Retrieves the SplitType field</summary>
+             <returns>Returns nullable SplitType enum representing the SplitType field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SplitMesg.SetSplitType(System.Nullable{Dynastream.Fit.SplitType})">
+            <summary>
+            Set SplitType field</summary>
+            <param name="splitType_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SplitMesg.GetTotalElapsedTime">
+            <summary>
+             Retrieves the TotalElapsedTime field
+             Units: s</summary>
+             <returns>Returns nullable float representing the TotalElapsedTime field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SplitMesg.SetTotalElapsedTime(System.Nullable{System.Single})">
+            <summary>
+            Set TotalElapsedTime field
+            Units: s</summary>
+            <param name="totalElapsedTime_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SplitMesg.GetTotalTimerTime">
+            <summary>
+             Retrieves the TotalTimerTime field
+             Units: s</summary>
+             <returns>Returns nullable float representing the TotalTimerTime field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SplitMesg.SetTotalTimerTime(System.Nullable{System.Single})">
+            <summary>
+            Set TotalTimerTime field
+            Units: s</summary>
+            <param name="totalTimerTime_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SplitMesg.GetTotalDistance">
+            <summary>
+             Retrieves the TotalDistance field
+             Units: m</summary>
+             <returns>Returns nullable float representing the TotalDistance field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SplitMesg.SetTotalDistance(System.Nullable{System.Single})">
+            <summary>
+            Set TotalDistance field
+            Units: m</summary>
+            <param name="totalDistance_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SplitMesg.GetStartTime">
+            <summary>
+             Retrieves the StartTime field</summary>
+             <returns>Returns DateTime representing the StartTime field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SplitMesg.SetStartTime(Dynastream.Fit.DateTime)">
+            <summary>
+            Set StartTime field</summary>
+            <param name="startTime_">Nullable field value to be set</param>
+        </member>
         <member name="T:Dynastream.Fit.SportMesg">
             <summary>
             Implements the Sport profile message.
@@ -14612,6 +14926,268 @@
             Comment: 3 x 3 rotation matrix (row major)</summary>
             <param name="index">0 based index of orientation_matrix</param>
             <param name="orientationMatrix_">Nullable field value to be set</param>
+        </member>
+        <member name="T:Dynastream.Fit.TimeInZoneMesg">
+            <summary>
+            Implements the TimeInZone profile message.
+            </summary>
+        </member>
+        <member name="T:Dynastream.Fit.TimeInZoneMesg.FieldDefNum">
+            <summary>
+            Field Numbers for <see cref="T:Dynastream.Fit.TimeInZoneMesg"/>
+            </summary>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetTimestamp">
+            <summary>
+             Retrieves the Timestamp field
+             Units: s</summary>
+             <returns>Returns DateTime representing the Timestamp field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.SetTimestamp(Dynastream.Fit.DateTime)">
+            <summary>
+            Set Timestamp field
+            Units: s</summary>
+            <param name="timestamp_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetReferenceMesg">
+            <summary>
+             Retrieves the ReferenceMesg field</summary>
+             <returns>Returns nullable ushort representing the ReferenceMesg field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.SetReferenceMesg(System.Nullable{System.UInt16})">
+            <summary>
+            Set ReferenceMesg field</summary>
+            <param name="referenceMesg_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetReferenceIndex">
+            <summary>
+             Retrieves the ReferenceIndex field</summary>
+             <returns>Returns nullable ushort representing the ReferenceIndex field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.SetReferenceIndex(System.Nullable{System.UInt16})">
+            <summary>
+            Set ReferenceIndex field</summary>
+            <param name="referenceIndex_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetNumTimeInHrZone">
+             <summary>
+            
+             </summary>
+             <returns>returns number of elements in field TimeInHrZone</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetTimeInHrZone(System.Int32)">
+            <summary>
+             Retrieves the TimeInHrZone field
+             Units: s</summary>
+             <param name="index">0 based index of TimeInHrZone element to retrieve</param>
+             <returns>Returns nullable float representing the TimeInHrZone field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.SetTimeInHrZone(System.Int32,System.Nullable{System.Single})">
+            <summary>
+            Set TimeInHrZone field
+            Units: s</summary>
+            <param name="index">0 based index of time_in_hr_zone</param>
+            <param name="timeInHrZone_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetNumTimeInSpeedZone">
+             <summary>
+            
+             </summary>
+             <returns>returns number of elements in field TimeInSpeedZone</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetTimeInSpeedZone(System.Int32)">
+            <summary>
+             Retrieves the TimeInSpeedZone field
+             Units: s</summary>
+             <param name="index">0 based index of TimeInSpeedZone element to retrieve</param>
+             <returns>Returns nullable float representing the TimeInSpeedZone field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.SetTimeInSpeedZone(System.Int32,System.Nullable{System.Single})">
+            <summary>
+            Set TimeInSpeedZone field
+            Units: s</summary>
+            <param name="index">0 based index of time_in_speed_zone</param>
+            <param name="timeInSpeedZone_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetNumTimeInCadenceZone">
+             <summary>
+            
+             </summary>
+             <returns>returns number of elements in field TimeInCadenceZone</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetTimeInCadenceZone(System.Int32)">
+            <summary>
+             Retrieves the TimeInCadenceZone field
+             Units: s</summary>
+             <param name="index">0 based index of TimeInCadenceZone element to retrieve</param>
+             <returns>Returns nullable float representing the TimeInCadenceZone field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.SetTimeInCadenceZone(System.Int32,System.Nullable{System.Single})">
+            <summary>
+            Set TimeInCadenceZone field
+            Units: s</summary>
+            <param name="index">0 based index of time_in_cadence_zone</param>
+            <param name="timeInCadenceZone_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetNumTimeInPowerZone">
+             <summary>
+            
+             </summary>
+             <returns>returns number of elements in field TimeInPowerZone</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetTimeInPowerZone(System.Int32)">
+            <summary>
+             Retrieves the TimeInPowerZone field
+             Units: s</summary>
+             <param name="index">0 based index of TimeInPowerZone element to retrieve</param>
+             <returns>Returns nullable float representing the TimeInPowerZone field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.SetTimeInPowerZone(System.Int32,System.Nullable{System.Single})">
+            <summary>
+            Set TimeInPowerZone field
+            Units: s</summary>
+            <param name="index">0 based index of time_in_power_zone</param>
+            <param name="timeInPowerZone_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetNumHrZoneHighBoundary">
+             <summary>
+            
+             </summary>
+             <returns>returns number of elements in field HrZoneHighBoundary</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetHrZoneHighBoundary(System.Int32)">
+            <summary>
+             Retrieves the HrZoneHighBoundary field
+             Units: bpm</summary>
+             <param name="index">0 based index of HrZoneHighBoundary element to retrieve</param>
+             <returns>Returns nullable byte representing the HrZoneHighBoundary field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.SetHrZoneHighBoundary(System.Int32,System.Nullable{System.Byte})">
+            <summary>
+            Set HrZoneHighBoundary field
+            Units: bpm</summary>
+            <param name="index">0 based index of hr_zone_high_boundary</param>
+            <param name="hrZoneHighBoundary_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetNumSpeedZoneHighBoundary">
+             <summary>
+            
+             </summary>
+             <returns>returns number of elements in field SpeedZoneHighBoundary</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetSpeedZoneHighBoundary(System.Int32)">
+            <summary>
+             Retrieves the SpeedZoneHighBoundary field
+             Units: m/s</summary>
+             <param name="index">0 based index of SpeedZoneHighBoundary element to retrieve</param>
+             <returns>Returns nullable float representing the SpeedZoneHighBoundary field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.SetSpeedZoneHighBoundary(System.Int32,System.Nullable{System.Single})">
+            <summary>
+            Set SpeedZoneHighBoundary field
+            Units: m/s</summary>
+            <param name="index">0 based index of speed_zone_high_boundary</param>
+            <param name="speedZoneHighBoundary_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetNumCadenceZoneHighBondary">
+             <summary>
+            
+             </summary>
+             <returns>returns number of elements in field CadenceZoneHighBondary</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetCadenceZoneHighBondary(System.Int32)">
+            <summary>
+             Retrieves the CadenceZoneHighBondary field
+             Units: rpm</summary>
+             <param name="index">0 based index of CadenceZoneHighBondary element to retrieve</param>
+             <returns>Returns nullable byte representing the CadenceZoneHighBondary field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.SetCadenceZoneHighBondary(System.Int32,System.Nullable{System.Byte})">
+            <summary>
+            Set CadenceZoneHighBondary field
+            Units: rpm</summary>
+            <param name="index">0 based index of cadence_zone_high_bondary</param>
+            <param name="cadenceZoneHighBondary_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetNumPowerZoneHighBoundary">
+             <summary>
+            
+             </summary>
+             <returns>returns number of elements in field PowerZoneHighBoundary</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetPowerZoneHighBoundary(System.Int32)">
+            <summary>
+             Retrieves the PowerZoneHighBoundary field
+             Units: watts</summary>
+             <param name="index">0 based index of PowerZoneHighBoundary element to retrieve</param>
+             <returns>Returns nullable ushort representing the PowerZoneHighBoundary field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.SetPowerZoneHighBoundary(System.Int32,System.Nullable{System.UInt16})">
+            <summary>
+            Set PowerZoneHighBoundary field
+            Units: watts</summary>
+            <param name="index">0 based index of power_zone_high_boundary</param>
+            <param name="powerZoneHighBoundary_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetHrCalcType">
+            <summary>
+             Retrieves the HrCalcType field</summary>
+             <returns>Returns nullable HrZoneCalc enum representing the HrCalcType field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.SetHrCalcType(System.Nullable{Dynastream.Fit.HrZoneCalc})">
+            <summary>
+            Set HrCalcType field</summary>
+            <param name="hrCalcType_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetMaxHeartRate">
+            <summary>
+             Retrieves the MaxHeartRate field</summary>
+             <returns>Returns nullable byte representing the MaxHeartRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.SetMaxHeartRate(System.Nullable{System.Byte})">
+            <summary>
+            Set MaxHeartRate field</summary>
+            <param name="maxHeartRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetRestingHeartRate">
+            <summary>
+             Retrieves the RestingHeartRate field</summary>
+             <returns>Returns nullable byte representing the RestingHeartRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.SetRestingHeartRate(System.Nullable{System.Byte})">
+            <summary>
+            Set RestingHeartRate field</summary>
+            <param name="restingHeartRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetThresholdHeartRate">
+            <summary>
+             Retrieves the ThresholdHeartRate field</summary>
+             <returns>Returns nullable byte representing the ThresholdHeartRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.SetThresholdHeartRate(System.Nullable{System.Byte})">
+            <summary>
+            Set ThresholdHeartRate field</summary>
+            <param name="thresholdHeartRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetPwrCalcType">
+            <summary>
+             Retrieves the PwrCalcType field</summary>
+             <returns>Returns nullable PwrZoneCalc enum representing the PwrCalcType field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.SetPwrCalcType(System.Nullable{Dynastream.Fit.PwrZoneCalc})">
+            <summary>
+            Set PwrCalcType field</summary>
+            <param name="pwrCalcType_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.GetFunctionalThresholdPower">
+            <summary>
+             Retrieves the FunctionalThresholdPower field</summary>
+             <returns>Returns nullable ushort representing the FunctionalThresholdPower field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TimeInZoneMesg.SetFunctionalThresholdPower(System.Nullable{System.UInt16})">
+            <summary>
+            Set FunctionalThresholdPower field</summary>
+            <param name="functionalThresholdPower_">Nullable field value to be set</param>
         </member>
         <member name="T:Dynastream.Fit.TimestampCorrelationMesg">
             <summary>
@@ -17180,6 +17756,11 @@
             Implements the profile BikeLightNetworkConfigType type as an enum
             </summary>
         </member>
+        <member name="T:Dynastream.Fit.BleDeviceType">
+            <summary>
+            Implements the profile BleDeviceType type as a class
+            </summary>
+        </member>
         <member name="T:Dynastream.Fit.BodyLocation">
             <summary>
             Implements the profile BodyLocation type as an enum
@@ -17704,6 +18285,11 @@
         <member name="T:Dynastream.Fit.SourceType">
             <summary>
             Implements the profile SourceType type as an enum
+            </summary>
+        </member>
+        <member name="T:Dynastream.Fit.SplitType">
+            <summary>
+            Implements the profile SplitType type as an enum
             </summary>
         </member>
         <member name="T:Dynastream.Fit.Sport">
