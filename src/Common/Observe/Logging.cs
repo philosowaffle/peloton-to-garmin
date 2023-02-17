@@ -20,6 +20,7 @@ public static class Logging
 		Log.Information("OS Version: {@OsVersion}", SystemInformation.OSVersion);
 		Log.Information("DotNet Runtime: {@DotnetRuntime}", SystemInformation.OSVersion);
 		Log.Information("Docker Deployment: {@IsDocker}", SystemInformation.RunningInDocker);
+		Log.Information("Config path: {@ConfigPath}", Statics.ConfigPath);
 		Log.Information("*********************************************");
 	}
 }

@@ -8,7 +8,12 @@
 	- Console (manual) - New setting added to enable 2FA
 	- Headless (automatic sync) - Does not support 2FA
 	- GitHub Action - Does not support 2FA
+- [#438] On startup log path to config file being used
 
 ## Fixes
 
 - [#430] Fixed where error thrown for classes with `*` in the title 
+
+## Changes
+
+- [#434] Dependency Bumps
