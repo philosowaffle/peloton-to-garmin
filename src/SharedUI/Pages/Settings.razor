@@ -13,16 +13,25 @@
 <HxTabPanel InitialActiveTabId="tab0">
 	<HxTab Id="tab0" Title="App">
 		<Content>
+			<br />
 			<EditForm Model="@appSettings">
+				<div class="row g-3">
+					<div class="col-md-12">
+						<HxCard>
+							<HeaderTemplate>
+								<HxSwitch Text="Automatic Syncing" @bind-Value="appSettings.EnablePolling" Inline="true" />
+							</HeaderTemplate>
+							<BodyTemplate>
+								<HxFormState Enabled="@appSettings.EnablePolling">
+									<HxInputNumber Label="Check for new workouts every X (seconds)" TValue="int" @bind-Value="appSettings.PollingIntervalSeconds" />
+								</HxFormState>
+							</BodyTemplate>
+						</HxCard>
+					</div>
+				</div>
 
 				<br />
-				<HxSwitch Label="Automatic Syncing" @bind-Value="appSettings.EnablePolling" />
-				<br />
-				<HxFormState Enabled="@appSettings.EnablePolling">
-					<HxInputNumber Label="Check for new workouts every X (seconds)" TValue="int" @bind-Value="appSettings.PollingIntervalSeconds" />
-				</HxFormState>
-				<br />
-				<HxSwitch Label="Check for new P2G Releases" @bind-Value="appSettings.CheckForUpdates" />
+				<HxSwitch Text="Check for new P2G Releases" @bind-Value="appSettings.CheckForUpdates" />
 				<br />
 				<HxAccordion>
 					<HxAccordionItem>

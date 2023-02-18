@@ -23,6 +23,8 @@ public static class MauiProgram
 		Statics.DefaultOutputDirectory = FileSystem.Current.AppDataDirectory;
 		Statics.DefaultTempDirectory = FileSystem.Current.CacheDirectory;
 
+		Directory.CreateDirectory(Path.Combine(Statics.DefaultOutputDirectory, "output"));
+
 		///////////////////////////////////////////////////////////
 		/// HOST
 		///////////////////////////////////////////////////////////
@@ -60,7 +62,7 @@ public static class MauiProgram
 
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
-	builder.Logging.AddDebug();
+		builder.Logging.AddDebug();
 #endif
 
 		// Setup initial Tracing Source

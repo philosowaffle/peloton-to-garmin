@@ -11,6 +11,7 @@ using Philosowaffle.Capability.ReleaseChecks;
 using Microsoft.Extensions.DependencyInjection;
 using Api.Services;
 using Garmin.Auth;
+using Api.Service;
 
 namespace SharedStartup;
 
@@ -46,6 +47,7 @@ public static class ApiStartupServices
 		services.AddGitHubReleaseChecker();
 
 		// SETTINGS
+		services.AddSingleton<ISettingsUpdaterService, SettingsUpdaterService>();
 		services.AddSingleton<ISettingsDb, SettingsDb>();
 		services.AddSingleton<ISettingsService, SettingsService>();
 

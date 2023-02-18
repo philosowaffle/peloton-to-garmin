@@ -22,10 +22,37 @@
 
 	<ItemGroup>
 	  <Content Remove="wwwroot\favicon.ico" />
+	  <Content Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.css.map" />
+	  <Content Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.min.css.map" />
+	  <Content Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.css.map" />
+	  <Content Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.min.css.map" />
+	  <Content Remove="wwwroot\lib\bootstrap\css\bootstrap-reboot.css.map" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.css" />
+	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.css.map" />
+	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.min.css" />
+	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.min.css.map" />
+	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.css" />
+	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.css.map" />
+	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.min.css" />
+	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.min.css.map" />
+	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-reboot.css" />
+	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-reboot.css.map" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <None Include="wwwroot\favicon.ico" />
+	  <None Include="wwwroot\lib\bootstrap\css\bootstrap-grid.css.map" />
+	  <None Include="wwwroot\lib\bootstrap\css\bootstrap-grid.min.css.map" />
+	  <None Include="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.css.map" />
+	  <None Include="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.min.css.map" />
+	  <None Include="wwwroot\lib\bootstrap\css\bootstrap-reboot.css.map" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="wwwroot\lib\bootstrap\scss\" />
 	</ItemGroup>
 
 </Project>

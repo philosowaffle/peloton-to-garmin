@@ -1,4 +1,5 @@
 ﻿using Api.Contract;
+using Api.Service;
 using Api.Service.Helpers;
 using Common;
 using Common.Service;
@@ -14,11 +15,13 @@ public class SettingsController : Controller
 {
 	private readonly ISettingsService _settingsService;
 	private readonly IFileHandling _fileHandler;
+	private readonly ISettingsUpdaterService _settingsUpdaterService;
 
-	public SettingsController(ISettingsService settingsService, IFileHandling fileHandler)
+	public SettingsController(ISettingsService settingsService, IFileHandling fileHandler, ISettingsUpdaterService settingsUpdaterService)
 	{
 		_settingsService = settingsService;
 		_fileHandler = fileHandler;
+		_settingsUpdaterService = settingsUpdaterService;
 	}
 
 	/// <summary>
@@ -59,29 +62,14 @@ public class SettingsController : Controller
 	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<App>> AppPost([FromBody] App updatedAppSettings)
 	{
-		if (updatedAppSettings.CheckIsNull("PostRequest", out var result))
-			return result!;
-
-		if (!string.IsNullOrWhiteSpace(updatedAppSettings.OutputDirectory)
-			&& !_fileHandler.DirExists(updatedAppSettings.OutputDirectory))
-			return new BadRequestObjectResult(new ErrorResponse($"Output Directory path is either not accessible or does not exist."));
-
-		if (updatedAppSettings.EnablePolling 
-			&& updatedAppSettings.PollingIntervalSeconds.CheckIsLessThanOrEqualTo(0, "PollingIntervalSeconds", out result))
-			return result!;
-
 		try
 		{
-			var settings = await _settingsService.GetSettingsAsync();
-			settings.App = updatedAppSettings;
+			var result = await _settingsUpdaterService.UpdateAppSettingsAsync(updatedAppSettings);
 
-			if (settings.Garmin.TwoStepVerificationEnabled && settings.App.EnablePolling)
-				return new BadRequestObjectResult(new ErrorResponse($"Automatic Syncing cannot be enabled when Garmin TwoStepVerification is enabled."));
+			if (result.IsErrored())
+				return result.GetResultForError();
 
-			await _settingsService.UpdateSettingsAsync(settings);
-			var updatedSettings = await _settingsService.GetSettingsAsync();
-
-			return Ok(updatedSettings.App);
+			return Ok(result.Result);
 		} catch (Exception e)
 		{
 			return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));

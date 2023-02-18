@@ -1,5 +1,7 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
-@import url('../font-awesome/css/all.css');
+@import url('../lib/font-awesome/css/all.css');
+@import url('../lib/bootstrap/css/bootstrap.min.css');
+@import url('_content/Havit.Blazor.Components.Web.Bootstrap/defaults.css');
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
