@@ -41,7 +41,7 @@
 	</HxTab>
 	<HxTab Id="tab1" Title="Conversion">
 		<Content>
-			@*<EditForm Model="@formatSettings">
+			<EditForm Model="@formatSettings">
 
 				<br />
 				<HxSwitch Label="Convert to FIT" @bind-Value="formatSettings.Fit" />
@@ -81,12 +81,12 @@
 				<br />
 				<HxSubmit Color="ThemeColor.Primary" OnClick="SaveFormatSettings">Save</HxSubmit>
 
-			</EditForm>*@
+			</EditForm>
 		</Content>
 	</HxTab>
 	<HxTab Id="tab2" Title="Peloton">
 		<Content>
-			@*<EditForm Model="@pelotonSettings">
+			<EditForm Model="@pelotonSettings">
 				<br />
 				<HxInputNumber Label="Default number of workouts to download" TValue="int" @bind-Value="pelotonSettings.NumWorkoutsToDownload" />
 				<br />
@@ -117,13 +117,13 @@
 							   NullDataText="Loading workout types..." />
 				<br />
 				<HxSubmit Color="ThemeColor.Primary" OnClick="SavePelotonSettings">Save</HxSubmit>
-			</EditForm>*@
+			</EditForm>
 		</Content>
 	</HxTab>
 	<HxTab Id="tab3" Title="Garmin">
 		<Content>
 			<br />
-			@*<EditForm Model="@garminSettings">
+			<EditForm Model="@garminSettings">
 				<div class="row g-3">
 					<div class="col-md-12">
 						<HxSwitch Text="Automatically upload to Garmin Connect" @bind-Value="garminSettings.Upload" Inline="true" />
@@ -194,7 +194,7 @@
 						<HxSubmit Color="ThemeColor.Primary" OnClick="SaveGarminSettings">Save</HxSubmit>
 					</div>
 				</div>
-			</EditForm>*@
+			</EditForm>
 		</Content>
 	</HxTab>
 </HxTabPanel>
