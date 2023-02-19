@@ -14,38 +14,7 @@
 	<HxTab Id="tab0" Title="App">
 		<Content>
 			<br />
-			<EditForm Model="@appSettings">
-				<div class="row g-3">
-					<div class="col-md-12">
-						<HxCard>
-							<HeaderTemplate>
-								<HxSwitch Text="Automatic Syncing" @bind-Value="appSettings.EnablePolling" Inline="true" />
-							</HeaderTemplate>
-							<BodyTemplate>
-								<HxFormState Enabled="@appSettings.EnablePolling">
-									<HxInputNumber Label="Check for new workouts every X (seconds)" TValue="int" @bind-Value="appSettings.PollingIntervalSeconds" />
-								</HxFormState>
-							</BodyTemplate>
-						</HxCard>
-					</div>
-				</div>
-
-				<br />
-				<HxSwitch Text="Check for new P2G Releases" @bind-Value="appSettings.CheckForUpdates" />
-				<br />
-				<HxAccordion>
-					<HxAccordionItem>
-						<HeaderTemplate>Advanced</HeaderTemplate>
-						<BodyTemplate>
-							<br />
-							<HxInputText @bind-Value="appSettings.OutputDirectory" Label="Output Directory" />
-						</BodyTemplate>
-					</HxAccordionItem>
-				</HxAccordion>
-				<br />
-				<HxSubmit Color="ThemeColor.Primary" OnClick="SaveAppSettings">Save</HxSubmit>
-
-			</EditForm>
+			<SharedUI.Shared.AppSettingsForm />
 		</Content>
 	</HxTab>
 	<HxTab Id="tab1" Title="Conversion">
@@ -184,7 +153,6 @@
 	private static ICollection<FileFormat> formatTypes = Enum.GetValues(typeof(FileFormat)).Cast<FileFormat>().ToList();
 	private static ICollection<UploadStrategy> uploadStrategyTypes = Enum.GetValues(typeof(UploadStrategy)).Cast<UploadStrategy>().ToList();
 
-	private Common.App appSettings;
 	private Format formatSettings;
 	private SettingsGarminGetResponse garminSettings;
 	private string configDocumentation;
@@ -192,7 +160,6 @@
 	public Settings() : base(nameof(Settings))
 	{
 		var settings = new SettingsGetResponse();
-		appSettings = settings.App;
 		formatSettings = settings.Format;
 		garminSettings = settings.Garmin;
 		configDocumentation = string.Empty;
@@ -202,29 +169,6 @@
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
 		return LoadDataAsync();
-	}
-
-	protected async Task SaveAppSettings()
-	{
-		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(SaveAppSettings)}", kind: ActivityKind.Client);
-
-		_toaster.Clear();
-
-		try
-		{
-			appSettings = await _apiClient.SettingsAppPostAsync(appSettings);
-			_toaster.AddInformation("App Settings Saved!");
-		}
-		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
-		{
-			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			_toaster.AddError(error.Message);
-		}
-		catch (Exception e)
-		{
-			_toaster.AddError($"Failed to save App Settings - {e.Message} - See logs for details.");
-			Log.Error("UI - Failed to save App settings.", e);
-		}
 	}
 
 	protected async Task SaveFormatSettings()
@@ -292,7 +236,6 @@
 
 		configDocumentation = systemInfo.Documentation + "/configuration/json.html";
 
-		appSettings = settings.App;
 		formatSettings = settings.Format;
 		garminSettings = settings.Garmin;
 	}
