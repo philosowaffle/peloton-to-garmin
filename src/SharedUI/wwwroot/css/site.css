@@ -2,6 +2,7 @@
 @import url('../lib/font-awesome/css/all.css');
 @import url('../lib/bootstrap/css/bootstrap.min.css');
 @import url('_content/Havit.Blazor.Components.Web.Bootstrap/defaults.css');
+@import url('forms.css');
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;

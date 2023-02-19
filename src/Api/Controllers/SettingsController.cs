@@ -124,23 +124,14 @@ public class SettingsController : Controller
 	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<SettingsPelotonGetResponse>> PelotonPost([FromBody] SettingsPelotonPostRequest updatedPelotonSettings)
 	{
-		if (updatedPelotonSettings.CheckIsNull("PostRequest", out var result))
-			return result!;
-
-		if (updatedPelotonSettings.NumWorkoutsToDownload.CheckIsLessThanOrEqualTo(0, "NumWorkoutsToDownload", out result))
-			return result!;
-
 		try
 		{
-			var settings = await _settingsService.GetSettingsAsync();
-			settings.Peloton = updatedPelotonSettings.Map();
+			var result = await _settingsUpdaterService.UpdatePelotonSettingsAsync(updatedPelotonSettings);
 
-			await _settingsService.UpdateSettingsAsync(settings);
-			var updatedSettings = await _settingsService.GetSettingsAsync();
+			if (result.IsErrored())
+				return result.GetResultForError();
 
-			var settingsResponse = new SettingsGetResponse(updatedSettings);
-
-			return Ok(settingsResponse.Peloton);
+			return Ok(result.Result);
 		} catch (Exception e)
 		{
 			return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));

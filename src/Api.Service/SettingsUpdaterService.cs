@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using Api.Contract;
+using Common;
 using Common.Dto;
 using Common.Service;
 
@@ -7,6 +8,7 @@ namespace Api.Service;
 public interface ISettingsUpdaterService
 {
 	Task<ServiceResult<App>> UpdateAppSettingsAsync(App updatedAppSettings);
+	Task<ServiceResult<SettingsPelotonGetResponse>> UpdatePelotonSettingsAsync(SettingsPelotonPostRequest updatedPelotonSettings);
 }
 public class SettingsUpdaterService : ISettingsUpdaterService
 {
@@ -52,6 +54,36 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 		var updatedSettings = await _settingsService.GetSettingsAsync();
 
 		result.Result = updatedSettings.App;
+		return result;
+	}
+
+	public async Task<ServiceResult<SettingsPelotonGetResponse>> UpdatePelotonSettingsAsync(SettingsPelotonPostRequest updatedPelotonSettings)
+	{
+		var result = new ServiceResult<SettingsPelotonGetResponse>();
+
+		if (updatedPelotonSettings is null)
+		{
+			result.Successful = false;
+			result.Error = new ServiceError() { Message = "Updated PelotonSettings must not be null or empty." };
+			return result;
+		}
+
+		var settings = await _settingsService.GetSettingsAsync();
+
+		if (updatedPelotonSettings.NumWorkoutsToDownload <= 0
+			&& settings.App.EnablePolling)
+		{
+			result.Successful = false;
+			result.Error = new ServiceError() { Message = "Number of workouts to download must but greater than 0 when Automatic Polling is enabled." };
+			return result;
+		}
+
+		settings.Peloton = updatedPelotonSettings.Map();
+
+		await _settingsService.UpdateSettingsAsync(settings);
+		var updatedSettings = await _settingsService.GetSettingsAsync();
+
+		result.Result = new SettingsGetResponse(updatedSettings).Peloton;
 		return result;
 	}
 }

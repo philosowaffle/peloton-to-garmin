@@ -1,8 +1,11 @@
-﻿using Api.Service;
+﻿using Api.Contract;
+using Api.Controllers;
+using Api.Service;
 using Api.Service.Helpers;
 using Common;
 using Common.Service;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
@@ -107,5 +110,40 @@ public class SettingsUpdaterServiceTests
 		response.IsErrored().Should().BeTrue();
 		response.Error.Should().NotBeNull();
 		response.Error.Message.Should().Be("Automatic Syncing cannot be enabled when Garmin TwoStepVerification is enabled.");
+	}
+
+	[Test]
+	public async Task UpdatePelotonSettingsAsync_With_NullRequest_ReturnsError()
+	{
+		var autoMocker = new AutoMocker();
+		var service = autoMocker.CreateInstance<SettingsUpdaterService>();
+
+		var response = await service.UpdatePelotonSettingsAsync(null);
+
+		response.IsErrored().Should().BeTrue();
+		response.Error.Should().NotBeNull();
+		response.Error.Message.Should().Be("Updated PelotonSettings must not be null or empty.");
+	}
+
+	[Test]
+	public async Task UpdatePelotonSettingsAsync_With_Invalid_NumWorkoutsToDownload_And_PollingEnabled_ReturnsError()
+	{
+		var autoMocker = new AutoMocker();
+		var service = autoMocker.CreateInstance<SettingsUpdaterService>();
+		var settingService = autoMocker.GetMock<ISettingsService>();
+
+		settingService.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settingService.Object.GetSettingsAsync))
+			.ReturnsAsync(new Settings() { App = new() { EnablePolling = true } });
+
+		var request = new SettingsPelotonPostRequest()
+		{
+			NumWorkoutsToDownload = -1
+		};
+
+		var response = await service.UpdatePelotonSettingsAsync(request);
+
+		response.IsErrored().Should().BeTrue();
+		response.Error.Should().NotBeNull();
+		response.Error.Message.Should().Be("Number of workouts to download must but greater than 0 when Automatic Polling is enabled.");
 	}
 }

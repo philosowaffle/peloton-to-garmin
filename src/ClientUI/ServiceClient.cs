@@ -129,9 +129,21 @@ public class ServiceClient : IApiClient
 		throw new NotImplementedException();
 	}
 
-	public Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(SettingsPelotonPostRequest pelotonSettings)
+	public async Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(SettingsPelotonPostRequest pelotonSettings)
 	{
-		throw new NotImplementedException();
+		try
+		{
+			var result = await _settingsUpdaterService.UpdatePelotonSettingsAsync(pelotonSettings);
+
+			if (result.IsErrored())
+				throw new ApiClientException(result.Error.Message, result.Error.Exception);
+
+			return result.Result;
+		}
+		catch (Exception e)
+		{
+			throw new ApiClientException($"Unexpected error occurred: {e.Message}", e);
+		}
 	}
 
 	public Task<IFlurlResponse> SignInToGarminAsync()
