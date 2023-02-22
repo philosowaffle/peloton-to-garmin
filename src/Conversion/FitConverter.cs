@@ -491,6 +491,65 @@ namespace Conversion
 			return stepsAndLaps;
 		}
 
+		private ICollection<WorkoutStepMesg> GetStrengthWorkoutSteps(Workout workout, Dynastream.Fit.DateTime startTime, Sport sport, SubSport subSport)
+		{
+			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetStrengthWorkoutSteps)}")
+										.WithTag(TagKey.Format, FileFormat.Fit.ToString());
+
+			var steps = new List<WorkoutStepMesg>();
+
+			if (workout is null)
+				return steps;
+
+			// todo: if targets are null => return
+			var trackedMovements = workout.Movement_Tracker_Data;
+			if (trackedMovements is null) return steps;
+
+			var completedMovementSummary = trackedMovements.Completed_Movements_Summary_Data;
+			if (completedMovementSummary is null) return steps;
+
+			var repSummaryData = completedMovementSummary.Repetition_Summary_Data;
+			if (repSummaryData is null) return steps;
+
+			var setMesg = new SetMesg();
+			
+
+			ushort stepIndex = 0;
+			foreach (var repdata in repSummaryData)
+			{
+				setMesg.Set
+
+
+				if (!ExerciseMapping.StrengthExerciseMappings.TryGetValue(repdata.Movement_Id, out var exercise))
+					continue;
+
+				var workoutStepMesg = new WorkoutStepMesg();
+				workoutStepMesg.SetDurationType(repdata.Is_Hold ? WktStepDuration.Time :WktStepDuration.Reps);
+				workoutStepMesg.SetMessageIndex(stepIndex);
+				workoutStepMesg.SetExerciseCategory(exercise.ExerciseCategory);
+				workoutStepMesg.SetExerciseName(exercise.ExerciseName);
+
+				if (repdata.Weight is object && repdata.Weight.FirstOrDefault() is not null)
+				{
+					var weight = repdata.Weight.FirstOrDefault();
+					workoutStepMesg.SetExerciseWeight(weight.Weight_Data.Weight_Value); // TODO: convert to kg
+
+				}
+				
+
+				
+				workoutStepMesg.SetIntensity(Intensity.Active);
+
+				stepIndex++;
+			}
+
+			var index = 0;
+
+			
+
+			return steps;
+		}
+
 		public ICollection<LapMesg> GetLaps(PreferredLapType preferredLapType, WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime, Sport sport, SubSport subSport)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetLaps)}")

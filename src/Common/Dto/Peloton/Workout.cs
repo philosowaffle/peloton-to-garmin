@@ -56,6 +56,8 @@ namespace Common.Dto.Peloton
 		// total hr zones durations
 		// average effort score
 
+		public MovementTrackerData Movement_Tracker_Data { get; init; }
+
 	}
 
 	public class FTPInfo
