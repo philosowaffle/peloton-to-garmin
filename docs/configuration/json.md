@@ -118,6 +118,9 @@ This section provides settings related to conversions and what formats should be
     },
     "Rowing": {
       "PreferredLapType": "Class_Segments"
+    },
+    "Strength": {
+      "DefaultNumSecondsPerRep": 3
     }
   }
 ```
@@ -137,6 +140,8 @@ This section provides settings related to conversions and what formats should be
 | Running.PreferredLapType | no | `Default` | `Conversion Tab` | The preferred [lap type to use](#lap-types). |
 | Rowing | no | `null` | none | Configuration specific to Rowing workouts. |
 | Rowing.PreferredLapType | no | `Default` | `Conversion Tab` | The preferred [lap type to use](#lap-types). |
+| Strength | no | `null` | `Conversion Tab` | Configuration specific to Strength workouts. |
+| Strength.DefaultNumSecondsPerRep | no | `3` | `Conversion Tab` | For exercises that are done for time instead of reps, P2G can estimate how many reps you completed using this value. Ex. If `DefaultNumSecondsPerRep=3` and you do Curls for 15s, P2G will estimate you completed 5 reps. |
 
 ### Understanding Custom Zones
 

@@ -9,6 +9,7 @@
 	- Headless (automatic sync) - Does not support 2FA
 	- GitHub Action - Does not support 2FA
 - [#438] On startup log path to config file being used
+- [#436] Add Exercise mapping for Strength and Core Workouts (including weight & rep data when available)
 
 ## Fixes
 

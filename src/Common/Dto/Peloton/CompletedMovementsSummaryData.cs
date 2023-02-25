@@ -48,7 +48,7 @@ public record Weight
 
 public record WeightData
 {
-	public int Weight_Value { get; init; }
+	public double Weight_Value { get; init; }
 
 	/// <summary>
 	/// lb
