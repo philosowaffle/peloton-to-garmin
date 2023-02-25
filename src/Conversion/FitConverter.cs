@@ -554,7 +554,7 @@ namespace Conversion
 				
 				var reps = repdata.Completed_Number;
 				if (repdata.Is_Hold)
-					reps = repdata.Completed_Number / settings.Format.Strength.DefaultNumSecondsPerRep;
+					reps = repdata.Completed_Number / settings.Format.Strength.DefaultSecondsPerRep;
 
 				setMesg.SetRepetitions((ushort)reps);
 

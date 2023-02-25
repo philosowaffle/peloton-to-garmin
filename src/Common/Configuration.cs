@@ -162,7 +162,7 @@ public record Strength
 	/// and the Exercise duration was 15 seconds, then P2G would credit you with 5 reps for that
 	/// exercise.
 	/// </summary>
-	public int DefaultNumSecondsPerRep { get; set; } = 3;
+	public int DefaultSecondsPerRep { get; set; } = 3;
 }
 
 public enum PreferredLapType
