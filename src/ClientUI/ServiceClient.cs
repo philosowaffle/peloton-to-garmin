@@ -3,10 +3,8 @@ using Api.Service;
 using Api.Service.Helpers;
 using Api.Services;
 using Common;
-using Common.Dto;
 using Common.Service;
 using Flurl.Http;
-using Microsoft.AspNetCore.Http;
 using Peloton.AnnualChallenge;
 using SharedUI;
 
