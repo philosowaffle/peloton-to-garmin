@@ -10,6 +10,7 @@ public interface ISettingsUpdaterService
 	Task<ServiceResult<App>> UpdateAppSettingsAsync(App updatedAppSettings);
 	Task<ServiceResult<SettingsPelotonGetResponse>> UpdatePelotonSettingsAsync(SettingsPelotonPostRequest updatedPelotonSettings);
 	Task<ServiceResult<Format>> UpdateFormatSettingsAsync(Format updatedFormatSettings);
+	Task<ServiceResult<SettingsGarminGetResponse>> UpdateGarminSettingsAsync(SettingsGarminPostRequest updatedGarminSettings);
 }
 public class SettingsUpdaterService : ISettingsUpdaterService
 {
@@ -84,6 +85,34 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 		var updatedSettings = await _settingsService.GetSettingsAsync();
 
 		result.Result = updatedSettings.Format;
+		return result;
+	}
+
+	public async Task<ServiceResult<SettingsGarminGetResponse>> UpdateGarminSettingsAsync(SettingsGarminPostRequest updatedGarminSettings)
+	{
+		var result = new ServiceResult<SettingsGarminGetResponse>();
+
+		if (updatedGarminSettings is null)
+		{
+			result.Successful = false;
+			result.Error = new ServiceError() { Message = "Updated Garmin Settings must not be null or empty." };
+			return result;
+		}
+
+		var settings = await _settingsService.GetSettingsAsync();
+		settings.Garmin = updatedGarminSettings.Map();
+
+		if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled && settings.App.EnablePolling)
+		{
+			result.Successful = false;
+			result.Error = new ServiceError() { Message = "Garmin TwoStepVerification cannot be enabled while Automatic Syncing is enabled. Please disable Automatic Syncing first." };
+			return result;
+		}
+
+		await _settingsService.UpdateSettingsAsync(settings);
+		var updatedSettings = await _settingsService.GetSettingsAsync();
+
+		result.Result = new SettingsGetResponse(updatedSettings).Garmin;
 		return result;
 	}
 

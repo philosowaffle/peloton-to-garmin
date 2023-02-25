@@ -143,23 +143,14 @@ public class SettingsController : Controller
 	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<SettingsGarminGetResponse>> GarminPost([FromBody] SettingsGarminPostRequest updatedGarminSettings)
 	{
-		if (updatedGarminSettings.CheckIsNull("PostRequest", out var result))
-			return result!;
-
 		try
 		{
-			var settings = await _settingsService.GetSettingsAsync();
-			settings.Garmin = updatedGarminSettings.Map();
+			var result = await _settingsUpdaterService.UpdateGarminSettingsAsync(updatedGarminSettings);
 
-			if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled && settings.App.EnablePolling)
-				return new BadRequestObjectResult(new ErrorResponse($"Garmin TwoStepVerification cannot be enabled while Automatic Syncing is enabled. Please disable Automatic Syncing first."));
+			if (result.IsErrored())
+				return result.GetResultForError();
 
-			await _settingsService.UpdateSettingsAsync(settings);
-			var updatedSettings = await _settingsService.GetSettingsAsync();
-
-			var settingsResponse = new SettingsGetResponse(updatedSettings);
-
-			return Ok(settingsResponse.Garmin);
+			return Ok(result.Result);
 		} catch (Exception e)
 		{
 			return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));

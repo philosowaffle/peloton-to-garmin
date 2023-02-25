@@ -208,4 +208,40 @@ public class SettingsUpdaterServiceTests
 
 		fileHandler.Verify(f => f.DirExists(It.IsAny<string>()), Times.Never);
 	}
+
+	[Test]
+	public async Task GarminPost_With_NullRequest_Returns400()
+	{
+		var autoMocker = new AutoMocker();
+		var service = autoMocker.CreateInstance<SettingsUpdaterService>();
+
+		var response = await service.UpdateGarminSettingsAsync(null);
+
+		response.IsErrored().Should().BeTrue();
+		response.Error.Should().NotBeNull();
+		response.Error.Message.Should().Be("Updated Garmin Settings must not be null or empty.");
+	}
+
+	[Test]
+	public async Task GarminPost_With_EnableGarminMFAWhenPollingEnabled_Throws()
+	{
+		var autoMocker = new AutoMocker();
+		var service = autoMocker.CreateInstance<SettingsUpdaterService>();
+		var settingService = autoMocker.GetMock<ISettingsService>();
+
+		settingService.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settingService.Object.GetSettingsAsync))
+			.ReturnsAsync(new Settings() { App = new() { EnablePolling = true } });
+
+		SettingsGarminPostRequest request = new()
+		{
+			Upload = true,
+			TwoStepVerificationEnabled = true
+		};
+
+		var response = await service.UpdateGarminSettingsAsync(request);
+
+		response.IsErrored().Should().BeTrue();
+		response.Error.Should().NotBeNull();
+		response.Error.Message.Should().Be("Garmin TwoStepVerification cannot be enabled while Automatic Syncing is enabled. Please disable Automatic Syncing first.");
+	}
 }
