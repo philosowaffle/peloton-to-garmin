@@ -9,6 +9,7 @@ public interface ISettingsUpdaterService
 {
 	Task<ServiceResult<App>> UpdateAppSettingsAsync(App updatedAppSettings);
 	Task<ServiceResult<SettingsPelotonGetResponse>> UpdatePelotonSettingsAsync(SettingsPelotonPostRequest updatedPelotonSettings);
+	Task<ServiceResult<Format>> UpdateFormatSettingsAsync(Format updatedFormatSettings);
 }
 public class SettingsUpdaterService : ISettingsUpdaterService
 {
@@ -28,7 +29,7 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 		if (updatedAppSettings is null)
 		{
 			result.Successful = false;
-			result.Error = new ServiceError() { Message = "Update AppSettings must not be null or empty." };
+			result.Error = new ServiceError() { Message = "Updated AppSettings must not be null or empty." };
 			return result;
 		}
 
@@ -54,6 +55,35 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 		var updatedSettings = await _settingsService.GetSettingsAsync();
 
 		result.Result = updatedSettings.App;
+		return result;
+	}
+
+	public async Task<ServiceResult<Format>> UpdateFormatSettingsAsync(Format updatedFormatSettings)
+	{
+		var result = new ServiceResult<Format>();
+
+		if (updatedFormatSettings is null)
+		{
+			result.Successful = false;
+			result.Error = new ServiceError() { Message = "Updated Format Settings must not be null or empty." };
+			return result;
+		}
+
+		if (!string.IsNullOrWhiteSpace(updatedFormatSettings.DeviceInfoPath)
+			&& !_fileHandler.FileExists(updatedFormatSettings.DeviceInfoPath))
+		{
+			result.Successful = false;
+			result.Error = new ServiceError() { Message = "The DeviceInfo path is either not accessible or does not exist." };
+			return result;
+		}
+
+		var settings = await _settingsService.GetSettingsAsync();
+		settings.Format = updatedFormatSettings;
+
+		await _settingsService.UpdateSettingsAsync(settings);
+		var updatedSettings = await _settingsService.GetSettingsAsync();
+
+		result.Result = updatedSettings.Format;
 		return result;
 	}
 

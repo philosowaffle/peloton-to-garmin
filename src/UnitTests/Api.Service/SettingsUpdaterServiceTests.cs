@@ -1,11 +1,9 @@
 ﻿using Api.Contract;
-using Api.Controllers;
 using Api.Service;
 using Api.Service.Helpers;
 using Common;
 using Common.Service;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
@@ -25,7 +23,7 @@ public class SettingsUpdaterServiceTests
 
 		response.IsErrored().Should().BeTrue();
 		response.Error.Should().NotBeNull();
-		response.Error.Message.Should().Be("Update AppSettings must not be null or empty.");
+		response.Error.Message.Should().Be("Updated AppSettings must not be null or empty.");
 	}
 
 	[Test]
@@ -145,5 +143,69 @@ public class SettingsUpdaterServiceTests
 		response.IsErrored().Should().BeTrue();
 		response.Error.Should().NotBeNull();
 		response.Error.Message.Should().Be("Number of workouts to download must but greater than 0 when Automatic Polling is enabled.");
+	}
+
+	[Test]
+	public async Task FormatPost_With_NullRequest_Returns400()
+	{
+		var autoMocker = new AutoMocker();
+		var service = autoMocker.CreateInstance<SettingsUpdaterService>();
+
+		var response = await service.UpdateFormatSettingsAsync(null);
+
+		response.IsErrored().Should().BeTrue();
+		response.Error.Should().NotBeNull();
+		response.Error.Message.Should().Be("Updated Format Settings must not be null or empty.");
+	}
+
+	[Test]
+	public async Task FormatPost_With_InvalidDeviceInfoPath_Returns400()
+	{
+		var autoMocker = new AutoMocker();
+		var service = autoMocker.CreateInstance<SettingsUpdaterService>();
+		var fileHandler = autoMocker.GetMock<IFileHandling>();
+
+		fileHandler
+			.Setup(f => f.FileExists("blah"))
+			.Returns(false)
+			.Verifiable();
+
+		var request = new Format()
+		{
+			DeviceInfoPath = "blah"
+		};
+
+		var response = await service.UpdateFormatSettingsAsync(request);
+
+		response.IsErrored().Should().BeTrue();
+		response.Error.Should().NotBeNull();
+		response.Error.Message.Should().Be("The DeviceInfo path is either not accessible or does not exist.");
+
+		fileHandler.Verify();
+	}
+
+	[Test]
+	public async Task FormatPost_With_EmptyDeviceInfoDir_DoesNotValidateIt()
+	{
+		var autoMocker = new AutoMocker();
+		var service = autoMocker.CreateInstance<SettingsUpdaterService>();
+		var fileHandler = autoMocker.GetMock<IFileHandling>();
+		var settingService = autoMocker.GetMock<ISettingsService>();
+
+		var request = new Format()
+		{
+			DeviceInfoPath = string.Empty
+		};
+
+		settingService
+			.Setup(s => s.GetSettingsAsync())
+			.ReturnsAsync(new Settings());
+
+		var response = await service.UpdateFormatSettingsAsync(request);
+
+		response.IsErrored().Should().BeFalse();
+		response.Result.Should().NotBeNull();
+
+		fileHandler.Verify(f => f.DirExists(It.IsAny<string>()), Times.Never);
 	}
 }

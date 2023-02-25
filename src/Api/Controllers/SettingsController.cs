@@ -89,22 +89,14 @@ public class SettingsController : Controller
 	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<Format>> FormatPost([FromBody] Format updatedFormatSettings)
 	{
-		if (updatedFormatSettings.CheckIsNull("PostRequest", out var result))
-			return result!;
-
-		if (!string.IsNullOrWhiteSpace(updatedFormatSettings.DeviceInfoPath)
-			&& !_fileHandler.FileExists(updatedFormatSettings.DeviceInfoPath))
-			return new BadRequestObjectResult(new ErrorResponse($"DeviceInfo path is either not accessible or does not exist."));
-
 		try
 		{
-			var settings = await _settingsService.GetSettingsAsync();
-			settings.Format = updatedFormatSettings;
+			var result = await _settingsUpdaterService.UpdateFormatSettingsAsync(updatedFormatSettings);
 
-			await _settingsService.UpdateSettingsAsync(settings);
-			var updatedSettings = await _settingsService.GetSettingsAsync();
+			if (result.IsErrored())
+				return result.GetResultForError();
 
-			return Ok(updatedSettings.Format);
+			return Ok(result.Result);
 		} catch (Exception e)
 		{
 			return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));

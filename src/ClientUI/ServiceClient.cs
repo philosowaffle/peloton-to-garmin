@@ -119,9 +119,21 @@ public class ServiceClient : IApiClient
 		}
 	}
 
-	public Task<Format> SettingsFormatPostAsync(Format formatSettings)
+	public async Task<Format> SettingsFormatPostAsync(Format formatSettings)
 	{
-		throw new NotImplementedException();
+		try
+		{
+			var result = await _settingsUpdaterService.UpdateFormatSettingsAsync(formatSettings);
+
+			if (result.IsErrored())
+				throw new ApiClientException(result.Error.Message, result.Error.Exception);
+
+			return result.Result;
+		}
+		catch (Exception e)
+		{
+			throw new ApiClientException($"Unexpected error occurred: {e.Message}", e);
+		}
 	}
 
 	public Task<SettingsGarminGetResponse> SettingsGarminPostAsync(SettingsGarminPostRequest garminSettings)
