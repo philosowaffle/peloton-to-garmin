@@ -41,8 +41,8 @@ public record RepetitionSummaryData
 
 public record Weight
 {
-	[JsonConverter(typeof(JsonStringEnumConverter))] 
-	public WeightCategory Weight_Category { get; init; }
+	//[JsonConverter(typeof(JsonStringEnumConverter))] 
+	//public WeightCategory Weight_Category { get; init; }
 	public WeightData Weight_Data { get; init; }
 }
 
@@ -56,9 +56,10 @@ public record WeightData
 	public string Weight_Unit { get; init; }
 }
 
-public enum WeightCategory : byte
-{
-	Light = 1,
-	Medium = 2,
-	Heavy = 3
-}
+//public enum WeightCategory : byte
+//{
+//	Light = 1,
+//	Medium = 2,
+//	Heavy = 3,
+//	Body_Weight = 4,
+//}
