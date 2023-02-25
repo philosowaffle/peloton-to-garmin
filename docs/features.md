@@ -17,6 +17,7 @@ Convert, Backup, and Sync.
 1. Syncs laps and target cadence
 1. Synced workouts count towards Garmin Badges and Challenges
 1. Synced workouts count towards VO2 Max [1]({{ site.baseurl }}{% link faq.md %}) and Training Stress Scores
+1. Syncs Exercise information (including reps and weight) for Strength and Core workouts (when available)
 1. Syncs on demand or on a schedule
 1. Highly Configurable
 1. Docker-ized

@@ -17,6 +17,7 @@ Sync workouts from Peloton to Garmin.
 * Earn Badges and credit for Garmin Challenges
 * Counts towards VO2 Max [1]({{ site.baseurl }}{% link faq.md %}) and Training Stress Scores
 * Supports Garmin accounts protected by Two Step Verification
+* Supports mapping Exercises from Strength workouts
 
 Head on over to the [Wiki](https://philosowaffle.github.io/peloton-to-garmin) to get started!
 

@@ -58,7 +58,7 @@ namespace UnitTests
 		//[Test]
 		//public void DecodeFitFile()
 		//{
-		//	var output = Path.Join(FitDirectory, "p2g_cycle_workout.fit");
+		//	var output = Path.Join(FitDirectory, "strength_with_exercises.fit");
 		//	FitDecoder.Decode(output);
 		//}
 
@@ -138,7 +138,7 @@ namespace UnitTests
 		//[Test]
 		//public async Task Convert_From_File()
 		//{
-		//	var file = Path.Join(DataDirectory, "just_walk_outdoor.json");
+		//	var file = Path.Join(DataDirectory, "strength_with_exercises.json");
 		//	//var file = Path.Join(DataDirectory, "cycling_target_metrics.json");
 		//	//var file = Path.Join(DataDirectory, "tread_run_workout.json");
 

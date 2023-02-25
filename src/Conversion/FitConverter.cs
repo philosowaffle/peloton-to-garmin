@@ -122,45 +122,63 @@ namespace Conversion
 
 			AddMetrics(messages, workoutSamples, sport, startTime);
 
-			var workoutSteps = new List<WorkoutStepMesg>();
-			var laps = new List<LapMesg>();
-			var preferredLapType = PreferredLapType.Default;
-
-			if (sport == Sport.Cycling)
-				preferredLapType = settings.Format.Cycling.PreferredLapType;
-			if (sport == Sport.Running)
-				preferredLapType = settings.Format.Running.PreferredLapType;
-			if (sport == Sport.Rowing)
-				preferredLapType = settings.Format.Rowing.PreferredLapType;
-
-			if ((preferredLapType == PreferredLapType.Class_Targets || preferredLapType == PreferredLapType.Default) 
-				&& workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "cadence")?.Graph_Data is object)
-			{
-				var stepsAndLaps = GetWorkoutStepsAndLaps(workoutSamples, startTime, sport, subSport);
-				workoutSteps = stepsAndLaps.Values.Select(v => v.Item1).ToList();
-				laps = stepsAndLaps.Values.Select(v => v.Item2).ToList();
-			} else
-			{
-				laps = GetLaps(preferredLapType, workoutSamples, startTime, sport, subSport).ToList();
-			}	
-
 			var workoutMesg = new WorkoutMesg();
 			workoutMesg.SetWktName(title.Replace(WorkoutHelper.SpaceSeparator, ' '));
 			workoutMesg.SetCapabilities(32);
 			workoutMesg.SetSport(sport);
 			workoutMesg.SetSubSport(subSport);
-			workoutMesg.SetNumValidSteps((ushort)workoutSteps.Count);
+
+			var lapCount = 0;
+
+			if (subSport == SubSport.StrengthTraining)
+			{
+				var sets = GetStrengthWorkoutSteps(workout, startTime, settings);
+
+				// Add sets in order
+				foreach (var set in sets)
+					messages.Add(set);
+
+			} else
+			{
+				var workoutSteps = new List<WorkoutStepMesg>();
+				var laps = new List<LapMesg>();
+				var preferredLapType = PreferredLapType.Default;
+
+				if (sport == Sport.Cycling)
+					preferredLapType = settings.Format.Cycling.PreferredLapType;
+				if (sport == Sport.Running)
+					preferredLapType = settings.Format.Running.PreferredLapType;
+				if (sport == Sport.Rowing)
+					preferredLapType = settings.Format.Rowing.PreferredLapType;
+
+				if ((preferredLapType == PreferredLapType.Class_Targets || preferredLapType == PreferredLapType.Default)
+					&& workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "cadence")?.Graph_Data is object)
+				{
+					var stepsAndLaps = GetWorkoutStepsAndLaps(workoutSamples, startTime, sport, subSport);
+					workoutSteps = stepsAndLaps.Values.Select(v => v.Item1).ToList();
+					laps = stepsAndLaps.Values.Select(v => v.Item2).ToList();
+				}
+				else
+				{
+					laps = GetLaps(preferredLapType, workoutSamples, startTime, sport, subSport).ToList();
+				}
+
+				workoutMesg.SetNumValidSteps((ushort)workoutSteps.Count);
+
+				// add steps in order
+				foreach (var step in workoutSteps)
+					messages.Add(step);
+
+				// Add laps in order
+				foreach (var lap in laps)
+					messages.Add(lap);
+
+				lapCount = laps.Count; 
+			}
+			
 			messages.Add(workoutMesg);
 
-			// add steps in order
-			foreach (var step in workoutSteps)
-				messages.Add(step);
-
-			// Add laps in order
-			foreach (var lap in laps)
-				messages.Add(lap);
-
-			messages.Add(GetSessionMesg(workout, workoutSamples, userData, settings, sport, startTime, endTime, (ushort)laps.Count));
+			messages.Add(GetSessionMesg(workout, workoutSamples, userData, settings, sport, startTime, endTime, (ushort)lapCount));
 
 			var activityMesg = new ActivityMesg();
 			activityMesg.SetTimestamp(endTime);
@@ -489,6 +507,68 @@ namespace Conversion
 			}
 
 			return stepsAndLaps;
+		}
+
+		private ICollection<SetMesg> GetStrengthWorkoutSteps(Workout workout, Dynastream.Fit.DateTime startTime, Settings settings)
+		{
+			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetStrengthWorkoutSteps)}")
+										.WithTag(TagKey.Format, FileFormat.Fit.ToString());
+
+			var steps = new List<SetMesg>();
+
+			if (workout is null)
+				return steps;
+
+			var trackedMovements = workout.Movement_Tracker_Data;
+			if (trackedMovements is null) return steps;
+
+			var completedMovementSummary = trackedMovements.Completed_Movements_Summary_Data;
+			if (completedMovementSummary is null) return steps;
+
+			var repSummaryData = completedMovementSummary.Repetition_Summary_Data;
+			if (repSummaryData is null) return steps;
+
+			ushort stepIndex = 0;
+			foreach (var repdata in repSummaryData)
+			{
+				if (!ExerciseMapping.StrengthExerciseMappings.TryGetValue(repdata.Movement_Id, out var exercise))
+				{
+					_logger.Error($"Found Peloton Strength exercise with no Garmin mapping: {repdata.Movement_Name} {repdata.Movement_Id}");
+					continue;
+				}
+
+				if (exercise.ExerciseCategory == ExerciseCategory.Invalid) continue; // AMRAP -- no details provided for these segments
+
+				var setMesg = new SetMesg();
+				var setStartTime = new Dynastream.Fit.DateTime(startTime);
+				setStartTime.Add(repdata.Offset);
+				setMesg.SetStartTime(setStartTime);
+				setMesg.SetDuration(repdata.Length);
+
+				setMesg.SetCategory(0, exercise.ExerciseCategory);
+				setMesg.SetCategorySubtype(0, exercise.ExerciseName);
+
+				setMesg.SetMessageIndex(stepIndex);
+				setMesg.SetSetType(SetType.Active);
+				setMesg.SetWktStepIndex(stepIndex);
+				
+				var reps = repdata.Completed_Number;
+				if (repdata.Is_Hold)
+					reps = repdata.Completed_Number / settings.Format.Strength.DefaultSecondsPerRep;
+
+				setMesg.SetRepetitions((ushort)reps);
+
+				if (repdata.Weight is object && repdata.Weight.FirstOrDefault() is not null)
+				{
+					var weight = repdata.Weight.FirstOrDefault();
+					setMesg.SetWeight(ConvertWeightToKilograms(weight.Weight_Data.Weight_Value, weight.Weight_Data.Weight_Unit));
+				}
+
+				stepIndex++;
+				steps.Add(setMesg);
+			}
+
+			return steps;
 		}
 
 		public ICollection<LapMesg> GetLaps(PreferredLapType preferredLapType, WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime, Sport sport, SubSport subSport)

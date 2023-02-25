@@ -240,6 +240,19 @@ namespace Conversion
 			}
 		}
 
+		public static float ConvertWeightToKilograms(double value, string unit)
+		{
+			var weightUnit = UnitHelpers.GetWeightUnit(unit);
+			switch (weightUnit)
+			{
+				case WeightUnit.Pounds:
+					return (float)(value * 0.453592);
+				case WeightUnit.Kilograms:
+				default:
+					return (float)value;
+			}
+		}
+
 		public static float GetTotalDistance(WorkoutSamples workoutSamples)
 		{
 			var distanceSummary = GetDistanceSummary(workoutSamples);
