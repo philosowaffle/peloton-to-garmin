@@ -8,7 +8,7 @@ public static class ExerciseMapping
 	public static readonly Dictionary<string, GarminExercise> StrengthExerciseMappings = new()
 	{
 		// A
-		///* AMRAP */ { "98cde50f696746ff98727d5362229cfb", new (ExerciseCategory.Invalid, 0) },
+		/* AMRAP */ { "98cde50f696746ff98727d5362229cfb", new (ExerciseCategory.Invalid, 0) },
 
 		// B
 		/* Bent Over Row */ { "d60a1dd8824a49a4926f826b24f3b061", new (ExerciseCategory.Row, RowExerciseName.OneArmBentOverRow) },
