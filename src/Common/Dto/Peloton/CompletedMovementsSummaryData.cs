@@ -22,7 +22,6 @@ public record RepetitionSummaryData
 	/// True when doing the exercise for Time instead of for Reps
 	/// </summary>
 	public bool Is_Hold { get; init; }
-	public int Target_Number { get; init; }
 	public int Completed_Number { get; init; }
 	/// <summary>
 	/// Seconds offset from start.... I think?
@@ -32,10 +31,6 @@ public record RepetitionSummaryData
 	/// Length in seconds to complete exercise
 	/// </summary>
 	public int Length { get; init; }
-	/// <summary>
-	/// Total load of the weight lifted and number of reps
-	/// </summary>
-	public int? Total_Volume { get; init; }
 	public ICollection<Weight> Weight { get; init; }
 }
 
