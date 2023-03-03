@@ -525,14 +525,67 @@ namespace Conversion
 			return GetMetric("cadence", workoutSamples);
 		}
 
-		public static GraphData GetCadenceTargets(WorkoutSamples workoutSamples)
+		public static TargetGraphMetrics GetCadenceTargets(WorkoutSamples workoutSamples)
 		{
-			var targets = workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "cadence")?.Graph_Data;
+			var targets = workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "cadence");
 
 			if (targets is null)
-				targets = workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "stroke_rate")?.Graph_Data;
+				targets = workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "stroke_rate");
 
 			return targets;
+		}
+
+		public static TargetGraphMetrics GetRideTargets(WorkoutSamples workoutSamples, RideDetails rideDetails)
+		{
+			var targets = rideDetails.Target_Metrics_Data.Target_Metrics.GetEnumerator();
+			if (!targets.MoveNext())
+			{
+				return null;
+			}
+			var data = new GraphData
+			{
+				Lower = new int[workoutSamples.Seconds_Since_Pedaling_Start.Count],
+				Upper = new int[workoutSamples.Seconds_Since_Pedaling_Start.Count],
+				Average = new int[workoutSamples.Seconds_Since_Pedaling_Start.Count],
+			};
+			string targetType = null;
+			var defaultTarget = (0, 0, 0);
+			var currentTarget = defaultTarget;
+			var pedalingStartOffset = rideDetails.Ride.Pedaling_Start_Offset;
+
+			foreach (var (secondsSinceStart, index) in workoutSamples.Seconds_Since_Pedaling_Start.Select((s, i) => (s, i)))
+			{
+				int offset = secondsSinceStart - 1 + pedalingStartOffset;
+				if (targets.Current is not null && offset > targets.Current.Offsets.End)
+				{
+					currentTarget = defaultTarget;
+					targets.MoveNext();
+				}
+				if (targets.Current is not null && offset == targets.Current.Offsets.Start)
+				{
+					var metric = targets.Current.Metrics.First(m => targetType is null || m.Name == targetType);
+					if (metric is not null)
+					{
+						if (targetType is null) targetType = metric.Name;
+						currentTarget = ((int)metric.Lower, (int)metric.Upper, (int)((metric.Lower + metric.Upper) / 2));
+					}
+					else
+					{
+						throw new Exception("Mismatched target metric types");
+					}
+				}
+				data.Lower[index] = currentTarget.Item1;
+				data.Upper[index] = currentTarget.Item2;
+				data.Average[index] = currentTarget.Item3;
+			}
+			return new TargetGraphMetrics
+			{
+				Graph_Data = data,
+				Max = data.Upper.Max(),
+				Min = data.Lower.Min(),
+				Average = (int)data.Average.Average(),
+				Type = targetType,
+			};
 		}
 
 		protected Metric GetResistanceSummary(WorkoutSamples workoutSamples)

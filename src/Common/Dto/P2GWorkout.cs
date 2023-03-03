@@ -11,6 +11,7 @@ namespace Common.Dto
 		public UserData UserData { get; set; }
 		public Workout Workout { get; set; }
 		public WorkoutSamples WorkoutSamples { get; set; }
+		public RideDetails RideDetails { get; set; }
 		public ICollection<P2GExercise> Exercises { get; set; }
 
 		public dynamic Raw { get; set; }

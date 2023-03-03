@@ -21,6 +21,7 @@ namespace Peloton
 		Task<PelotonResponse<Workout>> GetWorkoutsAsync(DateTime fromUtc, DateTime toUtc);
 		Task<JObject> GetWorkoutByIdAsync(string id);
 		Task<JObject> GetWorkoutSamplesByIdAsync(string id);
+		Task<JObject> GetRideDetailsByIdAsync(string id);
 		Task<UserData> GetUserDataAsync();
 		Task<PelotonChallenges> GetJoinedChallengesAsync(int userId);
 		Task<PelotonUserChallengeDetail> GetUserChallengeDetailsAsync(int userId, string challengeId);
@@ -176,6 +177,16 @@ namespace Peloton
 				{
 					every_n=1
 				})
+				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
+				.GetJsonAsync<JObject>();
+		}
+
+		public async Task<JObject> GetRideDetailsByIdAsync(string id)
+		{
+			var auth = await GetAuthAsync();
+			return await $"{BaseUrl}/ride/{id}/details"
+				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithCommonHeaders()
 				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 				.GetJsonAsync<JObject>();
 		}

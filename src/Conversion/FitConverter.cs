@@ -53,6 +53,7 @@ namespace Conversion
 
 			var workout = workoutData.Workout;
 			var workoutSamples = workoutData.WorkoutSamples;
+			var rideDetails = workoutData.RideDetails;
 			var userData = workoutData.UserData;
 
 			// MESSAGE ORDER MATTERS
@@ -156,9 +157,10 @@ namespace Conversion
 					preferredLapType = settings.Format.Rowing.PreferredLapType;
 
 				if ((preferredLapType == PreferredLapType.Class_Targets || preferredLapType == PreferredLapType.Default)
-					&& workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "cadence")?.Graph_Data is object)
+					&& (workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "cadence")?.Graph_Data is object
+						|| rideDetails?.Target_Metrics_Data?.Target_Metrics?.Count > 0))
 				{
-					var stepsAndLaps = GetWorkoutStepsAndLaps(workoutSamples, startTime, sport, subSport);
+					var stepsAndLaps = GetWorkoutStepsAndLaps(workoutSamples, rideDetails, startTime, sport, subSport);
 					workoutSteps = stepsAndLaps.Values.Select(v => v.Item1).ToList();
 					laps = stepsAndLaps.Values.Select(v => v.Item2).ToList();
 				}
@@ -427,7 +429,7 @@ namespace Conversion
 			return sessionMesg;
 		}
 
-		private Dictionary<int, Tuple<WorkoutStepMesg, LapMesg>> GetWorkoutStepsAndLaps(WorkoutSamples workoutSamples, Dynastream.Fit.DateTime startTime, Sport sport, SubSport subSport)
+		private Dictionary<int, Tuple<WorkoutStepMesg, LapMesg>> GetWorkoutStepsAndLaps(WorkoutSamples workoutSamples, RideDetails rideDetails, Dynastream.Fit.DateTime startTime, Sport sport, SubSport subSport)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetWorkoutStepsAndLaps)}")
 										.WithTag(TagKey.Format, FileFormat.Fit.ToString());
@@ -437,13 +439,47 @@ namespace Conversion
 			if (workoutSamples is null)
 				return stepsAndLaps;
 
-			var cadenceTargets = GetCadenceTargets(workoutSamples);
+			var targets = GetCadenceTargets(workoutSamples);
+			targets = (targets is not null) ? targets : GetRideTargets(workoutSamples, rideDetails);
 
-			if (cadenceTargets is null)
+			if (targets is null)
+				return stepsAndLaps;
+			var (lowerTargets, upperTargets) = (targets.Graph_Data.Lower, targets.Graph_Data.Upper);
+
+			Func<string, WktStepTarget> parseTargetType = type => {
+				switch (type) {
+				case "resistance":
+					return WktStepTarget.Cadence;
+				case "cadence":
+					return WktStepTarget.Cadence;
+				case "power_zone":
+					return WktStepTarget.Power;
+				default:
+					return WktStepTarget.Invalid;
+				}
+			};
+			var targetType = parseTargetType(targets.Type);
+			if (targetType == WktStepTarget.Invalid)
 				return stepsAndLaps;
 
-			uint previousCadenceLower = 0;
-			uint previousCadenceUpper = 0;
+			Func<uint, Intensity> intensity = targetUpper => {
+				switch (targetType) {
+				case WktStepTarget.Resistance:
+					if (targetUpper > 20) return Intensity.Active;
+					else return Intensity.Rest;
+				case WktStepTarget.Cadence:
+					if (targetUpper > 60) return Intensity.Active;
+					else return Intensity.Rest;
+				case WktStepTarget.Power:
+					if (targetUpper == 1) return Intensity.Rest;
+					else return Intensity.Active;
+				default:
+					return Intensity.Active;
+				}
+			};
+
+			uint previousTargetLower = 0;
+			uint previousTargetUpper = 0;
 			ushort stepIndex = 0;
 			var duration = 0;
 			float lapDistanceInMeters = 0;
@@ -454,7 +490,6 @@ namespace Conversion
 			foreach (var secondSinceStart in workoutSamples.Seconds_Since_Pedaling_Start)
 			{
 				var index = secondSinceStart <= 0 ? 0 : secondSinceStart - 1;
-				duration++;
 
 				if (speedMetrics is object && index < speedMetrics.Values.Length)
 				{
@@ -462,11 +497,11 @@ namespace Conversion
 					lapDistanceInMeters += 1 * currentSpeedInMPS;
 				}
 
-				var currentCadenceLower = index < cadenceTargets.Lower.Length ? (uint)cadenceTargets.Lower[index] : 0;
-				var currentCadenceUpper = index < cadenceTargets.Upper.Length ? (uint)cadenceTargets.Upper[index] : 0;
+				var currentTargetLower = index < lowerTargets.Length ? (uint)lowerTargets[index] : 0;
+				var currentTargetUpper = index < upperTargets.Length ? (uint)upperTargets[index] : 0;
 
-				if (currentCadenceLower != previousCadenceLower
-					|| currentCadenceUpper != previousCadenceUpper)
+				if (currentTargetLower != previousTargetLower
+					|| currentTargetUpper != previousTargetUpper)
 				{
 					if (workoutStep != null && lapMesg != null)
 					{
@@ -489,10 +524,10 @@ namespace Conversion
 					workoutStep = new WorkoutStepMesg();
 					workoutStep.SetDurationType(WktStepDuration.Time);
 					workoutStep.SetMessageIndex(stepIndex);
-					workoutStep.SetTargetType(WktStepTarget.Cadence);
-					workoutStep.SetCustomTargetValueHigh(currentCadenceUpper);
-					workoutStep.SetCustomTargetValueLow(currentCadenceLower);
-					workoutStep.SetIntensity(currentCadenceUpper > 60 ? Intensity.Active : Intensity.Rest);
+					workoutStep.SetTargetType(targetType);
+					workoutStep.SetCustomTargetValueHigh(currentTargetUpper);
+					workoutStep.SetCustomTargetValueLow(currentTargetLower);
+					workoutStep.SetIntensity(intensity(currentTargetUpper));
 
 					lapMesg = new LapMesg();
 					var lapStartTime = new Dynastream.Fit.DateTime(startTime);
@@ -505,9 +540,25 @@ namespace Conversion
 					lapMesg.SetSport(sport);
 					lapMesg.SetSubSport(subSport);
 
-					previousCadenceLower = currentCadenceLower;
-					previousCadenceUpper = currentCadenceUpper;
+					previousTargetLower = currentTargetLower;
+					previousTargetUpper = currentTargetUpper;
 				}
+				duration++;
+			}
+
+			if (workoutStep != null && lapMesg != null)
+			{
+				workoutStep.SetDurationValue((uint)duration * 1000); // milliseconds
+
+				var lapEndTime = new Dynastream.Fit.DateTime(startTime);
+				lapEndTime.Add(workoutSamples.Seconds_Since_Pedaling_Start.Count);
+				lapMesg.SetTotalElapsedTime(duration);
+				lapMesg.SetTotalTimerTime(duration);
+				lapMesg.SetTimestamp(lapEndTime);
+				lapMesg.SetEventType(EventType.Stop);
+				lapMesg.SetTotalDistance(lapDistanceInMeters);
+
+				stepsAndLaps.Add(stepIndex, new Tuple<WorkoutStepMesg, LapMesg>(workoutStep, lapMesg));
 			}
 
 			return stepsAndLaps;
