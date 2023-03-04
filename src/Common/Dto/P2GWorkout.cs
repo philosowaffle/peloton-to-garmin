@@ -11,7 +11,7 @@ namespace Common.Dto
 		public UserData UserData { get; set; }
 		public Workout Workout { get; set; }
 		public WorkoutSamples WorkoutSamples { get; set; }
-		public ICollection<P2GMovement> Movements { get; set; }
+		public ICollection<P2GExercise> Exercises { get; set; }
 
 		public dynamic Raw { get; set; }
 
@@ -47,16 +47,16 @@ namespace Common.Dto
 			};
 		}
 
-		public static ICollection<P2GMovement> GetMovementData(Workout workout, RideSegments rideSegments)
+		public static ICollection<P2GExercise> GetClassPlanExercises(Workout workout, RideSegments rideSegments)
 		{
-			var movements = new List<P2GMovement>();
+			var movements = new List<P2GExercise>();
 
 			var trackedRepData = workout?.Movement_Tracker_Data?.Completed_Movements_Summary_Data?.Repetition_Summary_Data;
 			if (trackedRepData is not null && trackedRepData.Count > 0)
 			{
 				foreach (var repData in trackedRepData)
 				{
-					var movement = new P2GMovement()
+					var movement = new P2GExercise()
 					{
 						Id = repData.Movement_Id,
 						Name = repData.Movement_Name,
@@ -73,35 +73,35 @@ namespace Common.Dto
 					movements.Add(movement);
 				}
 
-				var segments = rideSegments?.Segments?.Segment_List;
-				if (segments is null || segments.Count <= 0) return movements;
-
-				foreach (var segment in segments)
-				{
-					foreach (var subSegment in segment.SubSegments_V2)
-					{
-						var mov = subSegment.Movements.FirstOrDefault();
-						var movement = new P2GMovement()
-						{
-							Id = mov.Id,
-							Name = mov.Name,
-							Type = MovementTargetType.Time,
-							StartOffsetSeconds = subSegment.Offset.GetValueOrDefault(),
-							DurationSeconds = subSegment.Length.GetValueOrDefault(),
-							Reps = subSegment.Rounds
-						};
-						movements.Add(movement);
-					}
-				}
-
 				return movements;
+			}
+
+			var segments = rideSegments?.Segments?.Segment_List;
+			if (segments is null || segments.Count <= 0) return movements;
+
+			foreach (var segment in segments)
+			{
+				foreach (var subSegment in segment.SubSegments_V2)
+				{
+					var mov = subSegment.Movements.FirstOrDefault();
+					var movement = new P2GExercise()
+					{
+						Id = mov.Id,
+						Name = mov.Name,
+						Type = MovementTargetType.Time,
+						StartOffsetSeconds = subSegment.Offset.GetValueOrDefault(),
+						DurationSeconds = subSegment.Length.GetValueOrDefault(),
+						Reps = subSegment.Rounds
+					};
+					movements.Add(movement);
+				}
 			}
 
 			return movements;
 		}
 	}
 
-	public record P2GMovement
+	public record P2GExercise
 	{
 		public string Id { get; init; }
 		public string Name { get; init; }

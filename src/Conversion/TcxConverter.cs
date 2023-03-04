@@ -36,7 +36,7 @@ public class TcxConverter : Converter<XElement>
 							.WithWorkoutId(workoutData.Workout.Id);
 
 		var workout = workoutData.Workout;
-		var workoutSamples = workoutData.WorkoutSamples;
+		var samples = workoutData.WorkoutSamples;
 		var userData = workoutData.UserData;
 
 		XNamespace ns1 = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2";

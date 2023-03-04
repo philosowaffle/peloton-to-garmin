@@ -134,9 +134,9 @@ namespace Conversion
 
 			var lapCount = 0;
 
-			if (subSport == SubSport.StrengthTraining || subSport == SubSport.Yoga || subSport == SubSport.FlexibilityTraining)
+			if (subSport == SubSport.StrengthTraining)
 			{
-				var sets = GetExerciseBasedSteps(workoutData.Movements, startTime, settings);
+				var sets = GetExerciseBasedSteps(workoutData.Exercises, startTime, settings);
 
 				// Add sets in order
 				foreach (var set in sets)
@@ -513,7 +513,7 @@ namespace Conversion
 			return stepsAndLaps;
 		}
 
-		private ICollection<SetMesg> GetExerciseBasedSteps(ICollection<P2GMovement> exercises, Dynastream.Fit.DateTime startTime, Settings settings)
+		private ICollection<SetMesg> GetExerciseBasedSteps(ICollection<P2GExercise> exercises, Dynastream.Fit.DateTime startTime, Settings settings)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetExerciseBasedSteps)}")
 										.WithTag(TagKey.Format, FileFormat.Fit.ToString());
@@ -526,13 +526,18 @@ namespace Conversion
 			ushort stepIndex = 0;
 			foreach (var p2gExercise in exercises)
 			{
-				if (!ExerciseMapping.StrengthExerciseMappings.TryGetValue(p2gExercise.Id, out var exercise))
+				var isRest = p2gExercise.Id.IsRest();
+				GarminExercise exercise = null;
+				if (!isRest)
 				{
-					_logger.Error($"Found Peloton Strength exercise with no Garmin mapping: {p2gExercise.Name} {p2gExercise.Id}");
-					continue;
-				}
+					if (!ExerciseMapping.StrengthExerciseMappings.TryGetValue(p2gExercise.Id, out exercise))
+					{
+						_logger.Information($"Found Peloton Strength exercise with no Garmin mapping: {p2gExercise.Name} {p2gExercise.Id}");
+						continue;
+					}
 
-				if (exercise.ExerciseCategory == ExerciseCategory.Invalid) continue; // AMRAP -- no details provided for these segments
+					if (exercise.ExerciseCategory == ExerciseCategory.Invalid) continue; // AMRAP -- no details provided for these segments
+				}
 
 				var setMesg = new SetMesg();
 				var setStartTime = new Dynastream.Fit.DateTime(startTime);
@@ -540,16 +545,26 @@ namespace Conversion
 				setMesg.SetStartTime(setStartTime);
 				setMesg.SetDuration(p2gExercise.DurationSeconds);
 
-				setMesg.SetCategory(0, exercise.ExerciseCategory);
-				setMesg.SetCategorySubtype(0, exercise.ExerciseName);
+				if (!isRest)
+				{
+					setMesg.SetCategory(0, exercise.ExerciseCategory);
+					setMesg.SetCategorySubtype(0, exercise.ExerciseName);
+				}
 
 				setMesg.SetMessageIndex(stepIndex);
-				setMesg.SetSetType(SetType.Active);
+				setMesg.SetSetType(isRest ? SetType.Rest : SetType.Active);
 				setMesg.SetWktStepIndex(stepIndex);
 				
 				var reps = p2gExercise.Reps;
 				if (p2gExercise.Type == MovementTargetType.Time)
-					reps = p2gExercise.Reps / settings.Format.Strength.DefaultSecondsPerRep;
+				{
+					if (reps > 0)
+						reps = reps / settings.Format.Strength.DefaultSecondsPerRep;
+
+					if (reps is null)
+						reps = p2gExercise.DurationSeconds / settings.Format.Strength.DefaultSecondsPerRep;
+				}
+					
 
 				setMesg.SetRepetitions((ushort)reps);
 

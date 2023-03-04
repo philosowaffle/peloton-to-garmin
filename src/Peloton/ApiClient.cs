@@ -24,7 +24,7 @@ namespace Peloton
 		Task<UserData> GetUserDataAsync();
 		Task<PelotonChallenges> GetJoinedChallengesAsync(int userId);
 		Task<PelotonUserChallengeDetail> GetUserChallengeDetailsAsync(int userId, string challengeId);
-		Task<RideSegments> GetRidSegmentsAsync(string rideId);
+		Task<RideSegments> GetClassSegmentsAsync(string rideId);
 	}
 
 	public class ApiClient : IPelotonApi
@@ -204,7 +204,7 @@ namespace Peloton
 				.GetJsonAsync<PelotonUserChallengeDetail>();
 		}
 
-		public async Task<RideSegments> GetRidSegmentsAsync(string rideId)
+		public async Task<RideSegments> GetClassSegmentsAsync(string rideId)
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/ride/{rideId}/details"
