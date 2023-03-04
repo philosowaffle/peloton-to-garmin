@@ -45,11 +45,15 @@ namespace Conversion
 			}
 		}
 
-		protected override async Task<Tuple<string, ICollection<Mesg>>> ConvertInternalAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
+		protected override async Task<Tuple<string, ICollection<Mesg>>> ConvertInternalAsync(P2GWorkout workoutData, Settings settings)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(ConvertAsync)}")
 										.WithTag(TagKey.Format, FileFormat.Fit.ToString())
-										.WithWorkoutId(workout.Id);
+										.WithWorkoutId(workoutData.Workout.Id);
+
+			var workout = workoutData.Workout;
+			var workoutSamples = workoutData.WorkoutSamples;
+			var userData = workoutData.UserData;
 
 			// MESSAGE ORDER MATTERS
 			var messages = new List<Mesg>();
@@ -132,7 +136,7 @@ namespace Conversion
 
 			if (subSport == SubSport.StrengthTraining)
 			{
-				var sets = GetStrengthWorkoutSteps(workout, startTime, settings);
+				var sets = GetExerciseBasedSteps(workoutData.Exercises, startTime, settings);
 
 				// Add sets in order
 				foreach (var set in sets)
@@ -509,59 +513,64 @@ namespace Conversion
 			return stepsAndLaps;
 		}
 
-		private ICollection<SetMesg> GetStrengthWorkoutSteps(Workout workout, Dynastream.Fit.DateTime startTime, Settings settings)
+		private ICollection<SetMesg> GetExerciseBasedSteps(ICollection<P2GExercise> exercises, Dynastream.Fit.DateTime startTime, Settings settings)
 		{
-			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetStrengthWorkoutSteps)}")
+			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetExerciseBasedSteps)}")
 										.WithTag(TagKey.Format, FileFormat.Fit.ToString());
 
 			var steps = new List<SetMesg>();
 
-			if (workout is null)
+			if (exercises is null || exercises.Count <= 0)
 				return steps;
 
-			var trackedMovements = workout.Movement_Tracker_Data;
-			if (trackedMovements is null) return steps;
-
-			var completedMovementSummary = trackedMovements.Completed_Movements_Summary_Data;
-			if (completedMovementSummary is null) return steps;
-
-			var repSummaryData = completedMovementSummary.Repetition_Summary_Data;
-			if (repSummaryData is null) return steps;
-
 			ushort stepIndex = 0;
-			foreach (var repdata in repSummaryData)
+			foreach (var p2gExercise in exercises)
 			{
-				if (!ExerciseMapping.StrengthExerciseMappings.TryGetValue(repdata.Movement_Id, out var exercise))
+				var isRest = p2gExercise.Id.IsRest();
+				GarminExercise exercise = null;
+				if (!isRest)
 				{
-					_logger.Error($"Found Peloton Strength exercise with no Garmin mapping: {repdata.Movement_Name} {repdata.Movement_Id}");
-					continue;
-				}
+					if (!ExerciseMapping.StrengthExerciseMappings.TryGetValue(p2gExercise.Id, out exercise))
+					{
+						_logger.Information($"Found Peloton Strength exercise with no Garmin mapping: {p2gExercise.Name} {p2gExercise.Id}");
+						continue;
+					}
 
-				if (exercise.ExerciseCategory == ExerciseCategory.Invalid) continue; // AMRAP -- no details provided for these segments
+					if (exercise.ExerciseCategory == ExerciseCategory.Invalid) continue; // AMRAP -- no details provided for these segments
+				}
 
 				var setMesg = new SetMesg();
 				var setStartTime = new Dynastream.Fit.DateTime(startTime);
-				setStartTime.Add(repdata.Offset);
+				setStartTime.Add(p2gExercise.StartOffsetSeconds);
 				setMesg.SetStartTime(setStartTime);
-				setMesg.SetDuration(repdata.Length);
+				setMesg.SetDuration(p2gExercise.DurationSeconds);
 
-				setMesg.SetCategory(0, exercise.ExerciseCategory);
-				setMesg.SetCategorySubtype(0, exercise.ExerciseName);
+				if (!isRest)
+				{
+					setMesg.SetCategory(0, exercise.ExerciseCategory);
+					setMesg.SetCategorySubtype(0, exercise.ExerciseName);
+				}
 
 				setMesg.SetMessageIndex(stepIndex);
-				setMesg.SetSetType(SetType.Active);
+				setMesg.SetSetType(isRest ? SetType.Rest : SetType.Active);
 				setMesg.SetWktStepIndex(stepIndex);
 				
-				var reps = repdata.Completed_Number;
-				if (repdata.Is_Hold)
-					reps = repdata.Completed_Number / settings.Format.Strength.DefaultSecondsPerRep;
+				var reps = p2gExercise.Reps;
+				if (p2gExercise.Type == MovementTargetType.Time)
+				{
+					if (reps > 0)
+						reps = reps / settings.Format.Strength.DefaultSecondsPerRep;
+
+					if (reps is null)
+						reps = p2gExercise.DurationSeconds / settings.Format.Strength.DefaultSecondsPerRep;
+				}
+					
 
 				setMesg.SetRepetitions((ushort)reps);
 
-				if (repdata.Weight is object && repdata.Weight.FirstOrDefault() is not null)
+				if (p2gExercise.Weight is object)
 				{
-					var weight = repdata.Weight.FirstOrDefault();
-					setMesg.SetWeight(ConvertWeightToKilograms(weight.Weight_Data.Weight_Value, weight.Weight_Data.Weight_Unit));
+					setMesg.SetWeight(ConvertWeightToKilograms(p2gExercise.Weight.Value, p2gExercise.Weight.Unit));
 				}
 
 				stepIndex++;

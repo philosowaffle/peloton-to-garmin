@@ -1,10 +1,8 @@
 ﻿using Common;
 using Common.Dto;
-using Common.Dto.Peloton;
 using Common.Observe;
 using Common.Service;
 using Serilog;
-using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -21,10 +19,9 @@ namespace Conversion
 
 		protected override bool ShouldConvert(Format settings) => settings.Json;
 
-		protected override Task<P2GWorkout> ConvertInternalAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
+		protected override Task<P2GWorkout> ConvertInternalAsync(P2GWorkout workoutData, Settings settings)
 		{
-			var result = new P2GWorkout() { UserData = userData, Workout = workout, WorkoutSamples = workoutSamples };
-			return Task.FromResult(result);
+			return Task.FromResult(workoutData);
 		}
 
 		protected override void Save(P2GWorkout data, string path)

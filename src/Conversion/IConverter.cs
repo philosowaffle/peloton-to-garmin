@@ -92,7 +92,7 @@ namespace Conversion
 
 		protected abstract bool ShouldConvert(Format settings);
 
-		protected abstract Task<T> ConvertInternalAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings);
+		protected abstract Task<T> ConvertInternalAsync(P2GWorkout workoutData, Settings settings);
 
 		protected abstract void Save(T data, string path);
 
@@ -116,14 +116,14 @@ namespace Conversion
 			var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout);
 			try
 			{
-				converted = await ConvertInternalAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
+				converted = await ConvertInternalAsync(workoutData, settings);
 			}
 			catch (Exception e)
 			{
 				_logger.Error(e, "Failed to convert workout data to format {@Format} {@Workout}", Format, workoutTitle);
 				status.Result = ConversionResult.Failed;
 				status.ErrorMessage = $"Unknown error while trying to convert workout data for {workoutTitle} - {e.Message}";
-				tracing?.AddTag("excetpion.message", e.Message);
+				tracing?.AddTag("exception.message", e.Message);
 				tracing?.AddTag("exception.stacktrace", e.StackTrace);
 				tracing?.AddTag("convert.success", false);
 				tracing?.AddTag("convert.errormessage", status.ErrorMessage);
