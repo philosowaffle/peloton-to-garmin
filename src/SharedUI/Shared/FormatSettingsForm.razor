@@ -8,19 +8,25 @@
 			<HxSwitch Text="Convert to TCX" @bind-Value="formatSettings.Tcx" />
 			<HxSwitch Text="Convert to JSON" @bind-Value="formatSettings.Json" />
 		</div>
-		<div class="col-md-12">
+		<div class="col-md-4">
+			<HxInputNumber Label="Strength: Estimated seconds per rep" TValue="int" @bind-Value="formatSettings.Strength.DefaultSecondsPerRep" />
+		</div>
+		<div class="col-md-8"></div>
+		<div class="col-md-4">
 			<HxSelect Label="Cycling Lap Type"
 					  Data="@lapTypes"
 					  Nullable="false"
 					  NullDataText="Loading info..."
 					  @bind-Value="formatSettings.Cycling.PreferredLapType" />
-			<br />
+		</div>
+		<div class="col-md-4">
 			<HxSelect Label="Running Lap Type"
 					  Data="@lapTypes"
 					  Nullable="false"
 					  NullDataText="Loading info..."
 					  @bind-Value="formatSettings.Running.PreferredLapType" />
-			<br />
+		</div>
+		<div class="col-md-4">
 			<HxSelect Label="Rowing Lap Type"
 					  Data="@lapTypes"
 					  Nullable="false"

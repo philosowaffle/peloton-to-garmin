@@ -11,8 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.0" />
-	  <PackageReference Include="Havit.Blazor.Components.Web.Bootstrap" Version="3.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.3" />
+	<PackageReference Include="Havit.Blazor.Components.Web.Bootstrap" Version="3.2.7" />
+	<PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
   </ItemGroup>
 
   <ItemGroup>
