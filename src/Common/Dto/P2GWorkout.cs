@@ -81,9 +81,11 @@ namespace Common.Dto
 
 			foreach (var segment in segments)
 			{
+				if (segment.SubSegments_V2 is null || segment.SubSegments_V2.Count <= 0) continue;
 				foreach (var subSegment in segment.SubSegments_V2)
 				{
-					var mov = subSegment.Movements.FirstOrDefault();
+					var mov = subSegment.Movements?.FirstOrDefault();
+					if (mov is null) continue;
 					var movement = new P2GExercise()
 					{
 						Id = mov.Id,

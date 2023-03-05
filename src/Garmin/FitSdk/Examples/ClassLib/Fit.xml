@@ -3287,6 +3287,260 @@
             <param name="index">0 based index of dive_types</param>
             <param name="diveTypes_">Nullable field value to be set</param>
         </member>
+        <member name="M:Dynastream.Fit.DiveAlarmMesg.GetId">
+            <summary>
+             Retrieves the Id field
+             Comment: Alarm ID</summary>
+             <returns>Returns nullable uint representing the Id field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveAlarmMesg.SetId(System.Nullable{System.UInt32})">
+            <summary>
+            Set Id field
+            Comment: Alarm ID</summary>
+            <param name="id_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveAlarmMesg.GetPopupEnabled">
+            <summary>
+             Retrieves the PopupEnabled field
+             Comment: Show a visible pop-up for this alarm</summary>
+             <returns>Returns nullable Bool enum representing the PopupEnabled field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveAlarmMesg.SetPopupEnabled(System.Nullable{Dynastream.Fit.Bool})">
+            <summary>
+            Set PopupEnabled field
+            Comment: Show a visible pop-up for this alarm</summary>
+            <param name="popupEnabled_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveAlarmMesg.GetTriggerOnDescent">
+            <summary>
+             Retrieves the TriggerOnDescent field
+             Comment: Trigger the alarm on descent</summary>
+             <returns>Returns nullable Bool enum representing the TriggerOnDescent field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveAlarmMesg.SetTriggerOnDescent(System.Nullable{Dynastream.Fit.Bool})">
+            <summary>
+            Set TriggerOnDescent field
+            Comment: Trigger the alarm on descent</summary>
+            <param name="triggerOnDescent_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveAlarmMesg.GetTriggerOnAscent">
+            <summary>
+             Retrieves the TriggerOnAscent field
+             Comment: Trigger the alarm on ascent</summary>
+             <returns>Returns nullable Bool enum representing the TriggerOnAscent field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveAlarmMesg.SetTriggerOnAscent(System.Nullable{Dynastream.Fit.Bool})">
+            <summary>
+            Set TriggerOnAscent field
+            Comment: Trigger the alarm on ascent</summary>
+            <param name="triggerOnAscent_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveAlarmMesg.GetRepeating">
+            <summary>
+             Retrieves the Repeating field
+             Comment: Repeat alarm each time threshold is crossed?</summary>
+             <returns>Returns nullable Bool enum representing the Repeating field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveAlarmMesg.SetRepeating(System.Nullable{Dynastream.Fit.Bool})">
+            <summary>
+            Set Repeating field
+            Comment: Repeat alarm each time threshold is crossed?</summary>
+            <param name="repeating_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveAlarmMesg.GetSpeed">
+            <summary>
+             Retrieves the Speed field
+             Units: mps
+             Comment: Ascent/descent rate (mps) setting for speed type alarms</summary>
+             <returns>Returns nullable float representing the Speed field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveAlarmMesg.SetSpeed(System.Nullable{System.Single})">
+            <summary>
+            Set Speed field
+            Units: mps
+            Comment: Ascent/descent rate (mps) setting for speed type alarms</summary>
+            <param name="speed_">Nullable field value to be set</param>
+        </member>
+        <member name="T:Dynastream.Fit.DiveApneaAlarmMesg">
+            <summary>
+            Implements the DiveApneaAlarm profile message.
+            </summary>
+        </member>
+        <member name="T:Dynastream.Fit.DiveApneaAlarmMesg.FieldDefNum">
+            <summary>
+            Field Numbers for <see cref="T:Dynastream.Fit.DiveApneaAlarmMesg"/>
+            </summary>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.GetMessageIndex">
+            <summary>
+             Retrieves the MessageIndex field
+             Comment: Index of the alarm</summary>
+             <returns>Returns nullable ushort representing the MessageIndex field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.SetMessageIndex(System.Nullable{System.UInt16})">
+            <summary>
+            Set MessageIndex field
+            Comment: Index of the alarm</summary>
+            <param name="messageIndex_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.GetDepth">
+            <summary>
+             Retrieves the Depth field
+             Units: m
+             Comment: Depth setting (m) for depth type alarms</summary>
+             <returns>Returns nullable float representing the Depth field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.SetDepth(System.Nullable{System.Single})">
+            <summary>
+            Set Depth field
+            Units: m
+            Comment: Depth setting (m) for depth type alarms</summary>
+            <param name="depth_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.GetTime">
+            <summary>
+             Retrieves the Time field
+             Units: s
+             Comment: Time setting (s) for time type alarms</summary>
+             <returns>Returns nullable int representing the Time field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.SetTime(System.Nullable{System.Int32})">
+            <summary>
+            Set Time field
+            Units: s
+            Comment: Time setting (s) for time type alarms</summary>
+            <param name="time_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.GetEnabled">
+            <summary>
+             Retrieves the Enabled field
+             Comment: Enablement flag</summary>
+             <returns>Returns nullable Bool enum representing the Enabled field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.SetEnabled(System.Nullable{Dynastream.Fit.Bool})">
+            <summary>
+            Set Enabled field
+            Comment: Enablement flag</summary>
+            <param name="enabled_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.GetAlarmType">
+            <summary>
+             Retrieves the AlarmType field
+             Comment: Alarm type setting</summary>
+             <returns>Returns nullable DiveAlarmType enum representing the AlarmType field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.SetAlarmType(System.Nullable{Dynastream.Fit.DiveAlarmType})">
+            <summary>
+            Set AlarmType field
+            Comment: Alarm type setting</summary>
+            <param name="alarmType_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.GetSound">
+            <summary>
+             Retrieves the Sound field
+             Comment: Tone and Vibe setting for the alarm.</summary>
+             <returns>Returns nullable Tone enum representing the Sound field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.SetSound(System.Nullable{Dynastream.Fit.Tone})">
+            <summary>
+            Set Sound field
+            Comment: Tone and Vibe setting for the alarm.</summary>
+            <param name="sound_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.GetNumDiveTypes">
+             <summary>
+            
+             </summary>
+             <returns>returns number of elements in field DiveTypes</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.GetDiveTypes(System.Int32)">
+            <summary>
+             Retrieves the DiveTypes field
+             Comment: Dive types the alarm will trigger on</summary>
+             <param name="index">0 based index of DiveTypes element to retrieve</param>
+             <returns>Returns nullable SubSport enum representing the DiveTypes field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.SetDiveTypes(System.Int32,System.Nullable{Dynastream.Fit.SubSport})">
+            <summary>
+            Set DiveTypes field
+            Comment: Dive types the alarm will trigger on</summary>
+            <param name="index">0 based index of dive_types</param>
+            <param name="diveTypes_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.GetId">
+            <summary>
+             Retrieves the Id field
+             Comment: Alarm ID</summary>
+             <returns>Returns nullable uint representing the Id field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.SetId(System.Nullable{System.UInt32})">
+            <summary>
+            Set Id field
+            Comment: Alarm ID</summary>
+            <param name="id_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.GetPopupEnabled">
+            <summary>
+             Retrieves the PopupEnabled field
+             Comment: Show a visible pop-up for this alarm</summary>
+             <returns>Returns nullable Bool enum representing the PopupEnabled field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.SetPopupEnabled(System.Nullable{Dynastream.Fit.Bool})">
+            <summary>
+            Set PopupEnabled field
+            Comment: Show a visible pop-up for this alarm</summary>
+            <param name="popupEnabled_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.GetTriggerOnDescent">
+            <summary>
+             Retrieves the TriggerOnDescent field
+             Comment: Trigger the alarm on descent</summary>
+             <returns>Returns nullable Bool enum representing the TriggerOnDescent field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.SetTriggerOnDescent(System.Nullable{Dynastream.Fit.Bool})">
+            <summary>
+            Set TriggerOnDescent field
+            Comment: Trigger the alarm on descent</summary>
+            <param name="triggerOnDescent_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.GetTriggerOnAscent">
+            <summary>
+             Retrieves the TriggerOnAscent field
+             Comment: Trigger the alarm on ascent</summary>
+             <returns>Returns nullable Bool enum representing the TriggerOnAscent field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.SetTriggerOnAscent(System.Nullable{Dynastream.Fit.Bool})">
+            <summary>
+            Set TriggerOnAscent field
+            Comment: Trigger the alarm on ascent</summary>
+            <param name="triggerOnAscent_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.GetRepeating">
+            <summary>
+             Retrieves the Repeating field
+             Comment: Repeat alarm each time threshold is crossed?</summary>
+             <returns>Returns nullable Bool enum representing the Repeating field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.SetRepeating(System.Nullable{Dynastream.Fit.Bool})">
+            <summary>
+            Set Repeating field
+            Comment: Repeat alarm each time threshold is crossed?</summary>
+            <param name="repeating_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.GetSpeed">
+            <summary>
+             Retrieves the Speed field
+             Units: mps
+             Comment: Ascent/descent rate (mps) setting for speed type alarms</summary>
+             <returns>Returns nullable float representing the Speed field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveApneaAlarmMesg.SetSpeed(System.Nullable{System.Single})">
+            <summary>
+            Set Speed field
+            Units: mps
+            Comment: Ascent/descent rate (mps) setting for speed type alarms</summary>
+            <param name="speed_">Nullable field value to be set</param>
+        </member>
         <member name="T:Dynastream.Fit.DiveGasMesg">
             <summary>
             Implements the DiveGas profile message.
@@ -3341,6 +3595,16 @@
             Set Status field</summary>
             <param name="status_">Nullable field value to be set</param>
         </member>
+        <member name="M:Dynastream.Fit.DiveGasMesg.GetMode">
+            <summary>
+             Retrieves the Mode field</summary>
+             <returns>Returns nullable DiveGasMode enum representing the Mode field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveGasMesg.SetMode(System.Nullable{Dynastream.Fit.DiveGasMode})">
+            <summary>
+            Set Mode field</summary>
+            <param name="mode_">Nullable field value to be set</param>
+        </member>
         <member name="T:Dynastream.Fit.DiveSettingsMesg">
             <summary>
             Implements the DiveSettings profile message.
@@ -3350,6 +3614,16 @@
             <summary>
             Field Numbers for <see cref="T:Dynastream.Fit.DiveSettingsMesg"/>
             </summary>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.GetTimestamp">
+            <summary>
+             Retrieves the Timestamp field</summary>
+             <returns>Returns DateTime representing the Timestamp field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.SetTimestamp(Dynastream.Fit.DateTime)">
+            <summary>
+            Set Timestamp field</summary>
+            <param name="timestamp_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.DiveSettingsMesg.GetMessageIndex">
             <summary>
@@ -3629,6 +3903,158 @@
              Set HeartRateLocalDeviceType subfield</summary>
              <param name="heartRateLocalDeviceType">Subfield value to be set</param>
         </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.GetTravelGas">
+            <summary>
+             Retrieves the TravelGas field
+             Comment: Index of travel dive_gas message</summary>
+             <returns>Returns nullable ushort representing the TravelGas field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.SetTravelGas(System.Nullable{System.UInt16})">
+            <summary>
+            Set TravelGas field
+            Comment: Index of travel dive_gas message</summary>
+            <param name="travelGas_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.GetCcrLowSetpointSwitchMode">
+            <summary>
+             Retrieves the CcrLowSetpointSwitchMode field
+             Comment: If low PO2 should be switched to automatically</summary>
+             <returns>Returns nullable CcrSetpointSwitchMode enum representing the CcrLowSetpointSwitchMode field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.SetCcrLowSetpointSwitchMode(System.Nullable{Dynastream.Fit.CcrSetpointSwitchMode})">
+            <summary>
+            Set CcrLowSetpointSwitchMode field
+            Comment: If low PO2 should be switched to automatically</summary>
+            <param name="ccrLowSetpointSwitchMode_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.GetCcrLowSetpoint">
+            <summary>
+             Retrieves the CcrLowSetpoint field
+             Units: percent
+             Comment: Target PO2 when using low setpoint</summary>
+             <returns>Returns nullable float representing the CcrLowSetpoint field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.SetCcrLowSetpoint(System.Nullable{System.Single})">
+            <summary>
+            Set CcrLowSetpoint field
+            Units: percent
+            Comment: Target PO2 when using low setpoint</summary>
+            <param name="ccrLowSetpoint_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.GetCcrLowSetpointDepth">
+            <summary>
+             Retrieves the CcrLowSetpointDepth field
+             Units: m
+             Comment: Depth to switch to low setpoint in automatic mode</summary>
+             <returns>Returns nullable float representing the CcrLowSetpointDepth field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.SetCcrLowSetpointDepth(System.Nullable{System.Single})">
+            <summary>
+            Set CcrLowSetpointDepth field
+            Units: m
+            Comment: Depth to switch to low setpoint in automatic mode</summary>
+            <param name="ccrLowSetpointDepth_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.GetCcrHighSetpointSwitchMode">
+            <summary>
+             Retrieves the CcrHighSetpointSwitchMode field
+             Comment: If high PO2 should be switched to automatically</summary>
+             <returns>Returns nullable CcrSetpointSwitchMode enum representing the CcrHighSetpointSwitchMode field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.SetCcrHighSetpointSwitchMode(System.Nullable{Dynastream.Fit.CcrSetpointSwitchMode})">
+            <summary>
+            Set CcrHighSetpointSwitchMode field
+            Comment: If high PO2 should be switched to automatically</summary>
+            <param name="ccrHighSetpointSwitchMode_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.GetCcrHighSetpoint">
+            <summary>
+             Retrieves the CcrHighSetpoint field
+             Units: percent
+             Comment: Target PO2 when using high setpoint</summary>
+             <returns>Returns nullable float representing the CcrHighSetpoint field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.SetCcrHighSetpoint(System.Nullable{System.Single})">
+            <summary>
+            Set CcrHighSetpoint field
+            Units: percent
+            Comment: Target PO2 when using high setpoint</summary>
+            <param name="ccrHighSetpoint_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.GetCcrHighSetpointDepth">
+            <summary>
+             Retrieves the CcrHighSetpointDepth field
+             Units: m
+             Comment: Depth to switch to high setpoint in automatic mode</summary>
+             <returns>Returns nullable float representing the CcrHighSetpointDepth field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.SetCcrHighSetpointDepth(System.Nullable{System.Single})">
+            <summary>
+            Set CcrHighSetpointDepth field
+            Units: m
+            Comment: Depth to switch to high setpoint in automatic mode</summary>
+            <param name="ccrHighSetpointDepth_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.GetGasConsumptionDisplay">
+            <summary>
+             Retrieves the GasConsumptionDisplay field
+             Comment: Type of gas consumption rate to display. Some values are only valid if tank volume is known.</summary>
+             <returns>Returns nullable GasConsumptionRateType enum representing the GasConsumptionDisplay field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.SetGasConsumptionDisplay(System.Nullable{Dynastream.Fit.GasConsumptionRateType})">
+            <summary>
+            Set GasConsumptionDisplay field
+            Comment: Type of gas consumption rate to display. Some values are only valid if tank volume is known.</summary>
+            <param name="gasConsumptionDisplay_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.GetUpKeyEnabled">
+            <summary>
+             Retrieves the UpKeyEnabled field
+             Comment: Indicates whether the up key is enabled during dives</summary>
+             <returns>Returns nullable Bool enum representing the UpKeyEnabled field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.SetUpKeyEnabled(System.Nullable{Dynastream.Fit.Bool})">
+            <summary>
+            Set UpKeyEnabled field
+            Comment: Indicates whether the up key is enabled during dives</summary>
+            <param name="upKeyEnabled_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.GetDiveSounds">
+            <summary>
+             Retrieves the DiveSounds field
+             Comment: Sounds and vibration enabled or disabled in-dive</summary>
+             <returns>Returns nullable Tone enum representing the DiveSounds field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.SetDiveSounds(System.Nullable{Dynastream.Fit.Tone})">
+            <summary>
+            Set DiveSounds field
+            Comment: Sounds and vibration enabled or disabled in-dive</summary>
+            <param name="diveSounds_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.GetLastStopMultiple">
+            <summary>
+             Retrieves the LastStopMultiple field
+             Comment: Usually 1.0/1.5/2.0 representing 3/4.5/6m or 10/15/20ft</summary>
+             <returns>Returns nullable float representing the LastStopMultiple field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.SetLastStopMultiple(System.Nullable{System.Single})">
+            <summary>
+            Set LastStopMultiple field
+            Comment: Usually 1.0/1.5/2.0 representing 3/4.5/6m or 10/15/20ft</summary>
+            <param name="lastStopMultiple_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.GetNoFlyTimeMode">
+            <summary>
+             Retrieves the NoFlyTimeMode field
+             Comment: Indicates which guidelines to use for no-fly surface interval.</summary>
+             <returns>Returns nullable NoFlyTimeMode enum representing the NoFlyTimeMode field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSettingsMesg.SetNoFlyTimeMode(System.Nullable{Dynastream.Fit.NoFlyTimeMode})">
+            <summary>
+            Set NoFlyTimeMode field
+            Comment: Indicates which guidelines to use for no-fly surface interval.</summary>
+            <param name="noFlyTimeMode_">Nullable field value to be set</param>
+        </member>
         <member name="T:Dynastream.Fit.DiveSummaryMesg">
             <summary>
             Implements the DiveSummary profile message.
@@ -3794,6 +4220,76 @@
             Set BottomTime field
             Units: s</summary>
             <param name="bottomTime_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.GetAvgPressureSac">
+            <summary>
+             Retrieves the AvgPressureSac field
+             Units: bar/min
+             Comment: Average pressure-based surface air consumption</summary>
+             <returns>Returns nullable float representing the AvgPressureSac field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.SetAvgPressureSac(System.Nullable{System.Single})">
+            <summary>
+            Set AvgPressureSac field
+            Units: bar/min
+            Comment: Average pressure-based surface air consumption</summary>
+            <param name="avgPressureSac_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.GetAvgVolumeSac">
+            <summary>
+             Retrieves the AvgVolumeSac field
+             Units: L/min
+             Comment: Average volumetric surface air consumption</summary>
+             <returns>Returns nullable float representing the AvgVolumeSac field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.SetAvgVolumeSac(System.Nullable{System.Single})">
+            <summary>
+            Set AvgVolumeSac field
+            Units: L/min
+            Comment: Average volumetric surface air consumption</summary>
+            <param name="avgVolumeSac_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.GetAvgRmv">
+            <summary>
+             Retrieves the AvgRmv field
+             Units: L/min
+             Comment: Average respiratory minute volume</summary>
+             <returns>Returns nullable float representing the AvgRmv field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.SetAvgRmv(System.Nullable{System.Single})">
+            <summary>
+            Set AvgRmv field
+            Units: L/min
+            Comment: Average respiratory minute volume</summary>
+            <param name="avgRmv_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.GetDescentTime">
+            <summary>
+             Retrieves the DescentTime field
+             Units: s
+             Comment: Time to reach deepest level stop</summary>
+             <returns>Returns nullable float representing the DescentTime field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.SetDescentTime(System.Nullable{System.Single})">
+            <summary>
+            Set DescentTime field
+            Units: s
+            Comment: Time to reach deepest level stop</summary>
+            <param name="descentTime_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.GetAscentTime">
+            <summary>
+             Retrieves the AscentTime field
+             Units: s
+             Comment: Time after leaving bottom until reaching surface</summary>
+             <returns>Returns nullable float representing the AscentTime field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.DiveSummaryMesg.SetAscentTime(System.Nullable{System.Single})">
+            <summary>
+            Set AscentTime field
+            Units: s
+            Comment: Time after leaving bottom until reaching surface</summary>
+            <param name="ascentTime_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.DiveSummaryMesg.GetAvgAscentRate">
             <summary>
@@ -4174,6 +4670,17 @@
             
              Set CommTimeout subfield</summary>
              <param name="commTimeout">Subfield value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.EventMesg.GetDiveAlert">
+            <summary>
+            Retrieves the DiveAlert subfield</summary>
+            <returns>Nullable DiveAlert enum representing the DiveAlert subfield</returns>
+        </member>
+        <member name="M:Dynastream.Fit.EventMesg.SetDiveAlert(System.Nullable{System.Byte})">
+             <summary>
+            
+             Set DiveAlert subfield</summary>
+             <param name="diveAlert">Subfield value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.EventMesg.GetRadarThreatAlert">
             <summary>
@@ -7544,6 +8051,46 @@
             Units: m/s</summary>
             <param name="avgVam_">Nullable field value to be set</param>
         </member>
+        <member name="M:Dynastream.Fit.LapMesg.GetAvgDepth">
+            <summary>
+             Retrieves the AvgDepth field
+             Units: m
+             Comment: 0 if above water</summary>
+             <returns>Returns nullable float representing the AvgDepth field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.LapMesg.SetAvgDepth(System.Nullable{System.Single})">
+            <summary>
+            Set AvgDepth field
+            Units: m
+            Comment: 0 if above water</summary>
+            <param name="avgDepth_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.LapMesg.GetMaxDepth">
+            <summary>
+             Retrieves the MaxDepth field
+             Units: m
+             Comment: 0 if above water</summary>
+             <returns>Returns nullable float representing the MaxDepth field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.LapMesg.SetMaxDepth(System.Nullable{System.Single})">
+            <summary>
+            Set MaxDepth field
+            Units: m
+            Comment: 0 if above water</summary>
+            <param name="maxDepth_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.LapMesg.GetMinTemperature">
+            <summary>
+             Retrieves the MinTemperature field
+             Units: C</summary>
+             <returns>Returns nullable sbyte representing the MinTemperature field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.LapMesg.SetMinTemperature(System.Nullable{System.SByte})">
+            <summary>
+            Set MinTemperature field
+            Units: C</summary>
+            <param name="minTemperature_">Nullable field value to be set</param>
+        </member>
         <member name="M:Dynastream.Fit.LapMesg.GetEnhancedAvgRespirationRate">
             <summary>
              Retrieves the EnhancedAvgRespirationRate field
@@ -10335,6 +10882,86 @@
             Set EbikeAssistLevelPercent field
             Units: percent</summary>
             <param name="ebikeAssistLevelPercent_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.RecordMesg.GetAirTimeRemaining">
+            <summary>
+             Retrieves the AirTimeRemaining field
+             Units: s</summary>
+             <returns>Returns nullable uint representing the AirTimeRemaining field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.RecordMesg.SetAirTimeRemaining(System.Nullable{System.UInt32})">
+            <summary>
+            Set AirTimeRemaining field
+            Units: s</summary>
+            <param name="airTimeRemaining_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.RecordMesg.GetPressureSac">
+            <summary>
+             Retrieves the PressureSac field
+             Units: bar/min
+             Comment: Pressure-based surface air consumption</summary>
+             <returns>Returns nullable float representing the PressureSac field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.RecordMesg.SetPressureSac(System.Nullable{System.Single})">
+            <summary>
+            Set PressureSac field
+            Units: bar/min
+            Comment: Pressure-based surface air consumption</summary>
+            <param name="pressureSac_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.RecordMesg.GetVolumeSac">
+            <summary>
+             Retrieves the VolumeSac field
+             Units: L/min
+             Comment: Volumetric surface air consumption</summary>
+             <returns>Returns nullable float representing the VolumeSac field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.RecordMesg.SetVolumeSac(System.Nullable{System.Single})">
+            <summary>
+            Set VolumeSac field
+            Units: L/min
+            Comment: Volumetric surface air consumption</summary>
+            <param name="volumeSac_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.RecordMesg.GetRmv">
+            <summary>
+             Retrieves the Rmv field
+             Units: L/min
+             Comment: Respiratory minute volume</summary>
+             <returns>Returns nullable float representing the Rmv field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.RecordMesg.SetRmv(System.Nullable{System.Single})">
+            <summary>
+            Set Rmv field
+            Units: L/min
+            Comment: Respiratory minute volume</summary>
+            <param name="rmv_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.RecordMesg.GetAscentRate">
+            <summary>
+             Retrieves the AscentRate field
+             Units: m/s</summary>
+             <returns>Returns nullable float representing the AscentRate field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.RecordMesg.SetAscentRate(System.Nullable{System.Single})">
+            <summary>
+            Set AscentRate field
+            Units: m/s</summary>
+            <param name="ascentRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.RecordMesg.GetPo2">
+            <summary>
+             Retrieves the Po2 field
+             Units: percent
+             Comment: Current partial pressure of oxygen</summary>
+             <returns>Returns nullable float representing the Po2 field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.RecordMesg.SetPo2(System.Nullable{System.Single})">
+            <summary>
+            Set Po2 field
+            Units: percent
+            Comment: Current partial pressure of oxygen</summary>
+            <param name="po2_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.RecordMesg.GetCoreTemperature">
             <summary>
@@ -14125,6 +14752,96 @@
             Units: m/s</summary>
             <param name="avgVam_">Nullable field value to be set</param>
         </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetAvgDepth">
+            <summary>
+             Retrieves the AvgDepth field
+             Units: m
+             Comment: 0 if above water</summary>
+             <returns>Returns nullable float representing the AvgDepth field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetAvgDepth(System.Nullable{System.Single})">
+            <summary>
+            Set AvgDepth field
+            Units: m
+            Comment: 0 if above water</summary>
+            <param name="avgDepth_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetMaxDepth">
+            <summary>
+             Retrieves the MaxDepth field
+             Units: m
+             Comment: 0 if above water</summary>
+             <returns>Returns nullable float representing the MaxDepth field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetMaxDepth(System.Nullable{System.Single})">
+            <summary>
+            Set MaxDepth field
+            Units: m
+            Comment: 0 if above water</summary>
+            <param name="maxDepth_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetSurfaceInterval">
+            <summary>
+             Retrieves the SurfaceInterval field
+             Units: s
+             Comment: Time since end of last dive</summary>
+             <returns>Returns nullable uint representing the SurfaceInterval field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetSurfaceInterval(System.Nullable{System.UInt32})">
+            <summary>
+            Set SurfaceInterval field
+            Units: s
+            Comment: Time since end of last dive</summary>
+            <param name="surfaceInterval_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetStartCns">
+            <summary>
+             Retrieves the StartCns field
+             Units: percent</summary>
+             <returns>Returns nullable byte representing the StartCns field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetStartCns(System.Nullable{System.Byte})">
+            <summary>
+            Set StartCns field
+            Units: percent</summary>
+            <param name="startCns_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetEndCns">
+            <summary>
+             Retrieves the EndCns field
+             Units: percent</summary>
+             <returns>Returns nullable byte representing the EndCns field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetEndCns(System.Nullable{System.Byte})">
+            <summary>
+            Set EndCns field
+            Units: percent</summary>
+            <param name="endCns_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetStartN2">
+            <summary>
+             Retrieves the StartN2 field
+             Units: percent</summary>
+             <returns>Returns nullable ushort representing the StartN2 field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetStartN2(System.Nullable{System.UInt16})">
+            <summary>
+            Set StartN2 field
+            Units: percent</summary>
+            <param name="startN2_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetEndN2">
+            <summary>
+             Retrieves the EndN2 field
+             Units: percent</summary>
+             <returns>Returns nullable ushort representing the EndN2 field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetEndN2(System.Nullable{System.UInt16})">
+            <summary>
+            Set EndN2 field
+            Units: percent</summary>
+            <param name="endN2_">Nullable field value to be set</param>
+        </member>
         <member name="M:Dynastream.Fit.SessionMesg.GetAvgRespirationRate">
             <summary>
              Retrieves the AvgRespirationRate field</summary>
@@ -14154,6 +14871,40 @@
             <summary>
             Set MinRespirationRate field</summary>
             <param name="minRespirationRate_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetMinTemperature">
+            <summary>
+             Retrieves the MinTemperature field
+             Units: C</summary>
+             <returns>Returns nullable sbyte representing the MinTemperature field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetMinTemperature(System.Nullable{System.SByte})">
+            <summary>
+            Set MinTemperature field
+            Units: C</summary>
+            <param name="minTemperature_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetO2Toxicity">
+            <summary>
+             Retrieves the O2Toxicity field
+             Units: OTUs</summary>
+             <returns>Returns nullable ushort representing the O2Toxicity field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetO2Toxicity(System.Nullable{System.UInt16})">
+            <summary>
+            Set O2Toxicity field
+            Units: OTUs</summary>
+            <param name="o2Toxicity_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.GetDiveNumber">
+            <summary>
+             Retrieves the DiveNumber field</summary>
+             <returns>Returns nullable uint representing the DiveNumber field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.SessionMesg.SetDiveNumber(System.Nullable{System.UInt32})">
+            <summary>
+            Set DiveNumber field</summary>
+            <param name="diveNumber_">Nullable field value to be set</param>
         </member>
         <member name="M:Dynastream.Fit.SessionMesg.GetTrainingLoadPeak">
             <summary>
@@ -14782,6 +15533,118 @@
             Units: s
             Comment: Time stress score was calculated</summary>
             <param name="stressLevelTime_">Nullable field value to be set</param>
+        </member>
+        <member name="T:Dynastream.Fit.TankSummaryMesg">
+            <summary>
+            Implements the TankSummary profile message.
+            </summary>
+        </member>
+        <member name="T:Dynastream.Fit.TankSummaryMesg.FieldDefNum">
+            <summary>
+            Field Numbers for <see cref="T:Dynastream.Fit.TankSummaryMesg"/>
+            </summary>
+        </member>
+        <member name="M:Dynastream.Fit.TankSummaryMesg.GetTimestamp">
+            <summary>
+             Retrieves the Timestamp field
+             Units: s</summary>
+             <returns>Returns DateTime representing the Timestamp field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TankSummaryMesg.SetTimestamp(Dynastream.Fit.DateTime)">
+            <summary>
+            Set Timestamp field
+            Units: s</summary>
+            <param name="timestamp_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TankSummaryMesg.GetSensor">
+            <summary>
+             Retrieves the Sensor field</summary>
+             <returns>Returns nullable uint representing the Sensor field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TankSummaryMesg.SetSensor(System.Nullable{System.UInt32})">
+            <summary>
+            Set Sensor field</summary>
+            <param name="sensor_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TankSummaryMesg.GetStartPressure">
+            <summary>
+             Retrieves the StartPressure field
+             Units: bar</summary>
+             <returns>Returns nullable float representing the StartPressure field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TankSummaryMesg.SetStartPressure(System.Nullable{System.Single})">
+            <summary>
+            Set StartPressure field
+            Units: bar</summary>
+            <param name="startPressure_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TankSummaryMesg.GetEndPressure">
+            <summary>
+             Retrieves the EndPressure field
+             Units: bar</summary>
+             <returns>Returns nullable float representing the EndPressure field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TankSummaryMesg.SetEndPressure(System.Nullable{System.Single})">
+            <summary>
+            Set EndPressure field
+            Units: bar</summary>
+            <param name="endPressure_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TankSummaryMesg.GetVolumeUsed">
+            <summary>
+             Retrieves the VolumeUsed field
+             Units: L</summary>
+             <returns>Returns nullable float representing the VolumeUsed field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TankSummaryMesg.SetVolumeUsed(System.Nullable{System.Single})">
+            <summary>
+            Set VolumeUsed field
+            Units: L</summary>
+            <param name="volumeUsed_">Nullable field value to be set</param>
+        </member>
+        <member name="T:Dynastream.Fit.TankUpdateMesg">
+            <summary>
+            Implements the TankUpdate profile message.
+            </summary>
+        </member>
+        <member name="T:Dynastream.Fit.TankUpdateMesg.FieldDefNum">
+            <summary>
+            Field Numbers for <see cref="T:Dynastream.Fit.TankUpdateMesg"/>
+            </summary>
+        </member>
+        <member name="M:Dynastream.Fit.TankUpdateMesg.GetTimestamp">
+            <summary>
+             Retrieves the Timestamp field
+             Units: s</summary>
+             <returns>Returns DateTime representing the Timestamp field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TankUpdateMesg.SetTimestamp(Dynastream.Fit.DateTime)">
+            <summary>
+            Set Timestamp field
+            Units: s</summary>
+            <param name="timestamp_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TankUpdateMesg.GetSensor">
+            <summary>
+             Retrieves the Sensor field</summary>
+             <returns>Returns nullable uint representing the Sensor field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TankUpdateMesg.SetSensor(System.Nullable{System.UInt32})">
+            <summary>
+            Set Sensor field</summary>
+            <param name="sensor_">Nullable field value to be set</param>
+        </member>
+        <member name="M:Dynastream.Fit.TankUpdateMesg.GetPressure">
+            <summary>
+             Retrieves the Pressure field
+             Units: bar</summary>
+             <returns>Returns nullable float representing the Pressure field</returns>
+        </member>
+        <member name="M:Dynastream.Fit.TankUpdateMesg.SetPressure(System.Nullable{System.Single})">
+            <summary>
+            Set Pressure field
+            Units: bar</summary>
+            <param name="pressure_">Nullable field value to be set</param>
         </member>
         <member name="T:Dynastream.Fit.ThreeDSensorCalibrationMesg">
             <summary>
@@ -17686,6 +18549,11 @@
             Implements the profile AnalogWatchfaceLayout type as an enum
             </summary>
         </member>
+        <member name="T:Dynastream.Fit.AntChannelId">
+            <summary>
+            Implements the profile AntChannelId type as a class
+            </summary>
+        </member>
         <member name="T:Dynastream.Fit.AntNetwork">
             <summary>
             Implements the profile AntNetwork type as an enum
@@ -17801,6 +18669,11 @@
             Implements the profile CarryExerciseName type as a class
             </summary>
         </member>
+        <member name="T:Dynastream.Fit.CcrSetpointSwitchMode">
+            <summary>
+            Implements the profile CcrSetpointSwitchMode type as an enum
+            </summary>
+        </member>
         <member name="T:Dynastream.Fit.Checksum">
             <summary>
             Implements the profile Checksum type as a class
@@ -17912,9 +18785,19 @@
             Implements the profile DiveAlarmType type as an enum
             </summary>
         </member>
+        <member name="T:Dynastream.Fit.DiveAlert">
+            <summary>
+            Implements the profile DiveAlert type as an enum
+            </summary>
+        </member>
         <member name="T:Dynastream.Fit.DiveBacklightMode">
             <summary>
             Implements the profile DiveBacklightMode type as an enum
+            </summary>
+        </member>
+        <member name="T:Dynastream.Fit.DiveGasMode">
+            <summary>
+            Implements the profile DiveGasMode type as an enum
             </summary>
         </member>
         <member name="T:Dynastream.Fit.DiveGasStatus">
@@ -18000,6 +18883,11 @@
         <member name="T:Dynastream.Fit.GarminProduct">
             <summary>
             Implements the profile GarminProduct type as a class
+            </summary>
+        </member>
+        <member name="T:Dynastream.Fit.GasConsumptionRateType">
+            <summary>
+            Implements the profile GasConsumptionRateType type as an enum
             </summary>
         </member>
         <member name="T:Dynastream.Fit.Gender">
@@ -18160,6 +19048,11 @@
         <member name="T:Dynastream.Fit.MessageIndex">
             <summary>
             Implements the profile MessageIndex type as a class
+            </summary>
+        </member>
+        <member name="T:Dynastream.Fit.NoFlyTimeMode">
+            <summary>
+            Implements the profile NoFlyTimeMode type as an enum
             </summary>
         </member>
         <member name="T:Dynastream.Fit.OlympicLiftExerciseName">

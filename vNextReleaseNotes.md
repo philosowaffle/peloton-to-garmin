@@ -4,4 +4,8 @@
 ## Features
 
 - [#447] Map Exercises for Strength and Core classes when Class Plan information is available
-- Added support for mapping 6 more Exercises from Peloton to Garmin
+- Added support for mapping several more Exercises from Peloton to Garmin
+
+## Housekeeping
+
+- [#448] Dependency Bumps and pulled in latest Garmin SDK

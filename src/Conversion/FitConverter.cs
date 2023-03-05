@@ -530,13 +530,14 @@ namespace Conversion
 				GarminExercise exercise = null;
 				if (!isRest)
 				{
+					if (ExerciseMapping.IgnoredPelotonExercises.Contains(p2gExercise.Id))
+						continue;
+
 					if (!ExerciseMapping.StrengthExerciseMappings.TryGetValue(p2gExercise.Id, out exercise))
 					{
 						_logger.Information($"Found Peloton Strength exercise with no Garmin mapping: {p2gExercise.Name} {p2gExercise.Id}");
 						continue;
 					}
-
-					if (exercise.ExerciseCategory == ExerciseCategory.Invalid) continue; // AMRAP -- no details provided for these segments
 				}
 
 				var setMesg = new SetMesg();
