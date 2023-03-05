@@ -18,13 +18,13 @@ public static class Guard
 		return false;
 	}
 
-	public static bool CheckIsNullOrEmpty(this string input, string name, out ActionResult? result, string? errorMessage = null)
+	public static bool CheckIsNullOrEmpty(this string input, string name, out ErrorResponse? result, string? errorMessage = null)
 	{
 		result = null;
 
 		if (string.IsNullOrEmpty(input))
 		{
-			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must not be null or empty."));
+			result = new ErrorResponse(errorMessage ?? $"{name} must not be null or empty.");
 			return true;
 		}
 
@@ -57,26 +57,26 @@ public static class Guard
 		return false;
 	}
 
-	public static bool CheckIsLessThanOrEqualTo(this int input, int limit, string name, out ActionResult? result, string? errorMessage = null)
+	public static bool CheckIsLessThanOrEqualTo(this int input, int limit, string name, out ErrorResponse? result, string? errorMessage = null)
 	{
 		result = null;
 
 		if (input <= limit)
 		{
-			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must be greater than {limit}."));
+			result = new ErrorResponse(errorMessage ?? $"{name} must be greater than {limit}.");
 			return true;
 		}
 
 		return false;
 	}
 
-	public static bool CheckIsLessThan(this int input, int limit, string name, out ActionResult? result, string? errorMessage = null)
+	public static bool CheckIsLessThan(this int input, int limit, string name, out ErrorResponse? result, string? errorMessage = null)
 	{
 		result = null;
 
 		if (input < limit)
 		{
-			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must be greater than or equal to {limit}."));
+			result = new ErrorResponse(errorMessage ?? $"{name} must be greater than or equal to {limit}.");
 			return true;
 		}
 

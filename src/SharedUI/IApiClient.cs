@@ -29,6 +29,7 @@ public interface IApiClient
 public class ApiClientException : Exception
 {
 	public ApiClientException(string message, Exception innerException) : base(message, innerException) { }
+	public ApiClientException(ErrorResponse error) : base(error.Message, error.Exception) { }
 }
 
 public class SyncTimeoutException : Exception

@@ -1,11 +1,17 @@
 ﻿using Api.Contract;
 using Api.Service;
 using Api.Service.Helpers;
+using Api.Service.Mappers;
 using Api.Services;
 using Common;
+using Common.Dto.Peloton;
 using Common.Service;
 using Flurl.Http;
+using Garmin.Auth;
+using Microsoft.AspNetCore.Http;
+using Peloton;
 using Peloton.AnnualChallenge;
+using Peloton.Dto;
 using SharedUI;
 
 namespace ClientUI;
@@ -16,13 +22,17 @@ public class ServiceClient : IApiClient
 	private readonly ISettingsService _settingsService;
 	private readonly ISettingsUpdaterService _settingsUpdaterService;
 	private readonly IAnnualChallengeService _annualChallengeService;
+	private readonly IPelotonService _pelotonService;
+	private readonly IGarminAuthenticationService _garminAuthService;
 
-	public ServiceClient(ISystemInfoService systemInfoService, ISettingsService settingsService, IAnnualChallengeService annualChallengeService, ISettingsUpdaterService settingsUpdaterService)
+	public ServiceClient(ISystemInfoService systemInfoService, ISettingsService settingsService, IAnnualChallengeService annualChallengeService, ISettingsUpdaterService settingsUpdaterService, IPelotonService pelotonService, IGarminAuthenticationService garminAuthService)
 	{
 		_systemInfoService = systemInfoService;
 		_settingsService = settingsService;
 		_annualChallengeService = annualChallengeService;
 		_settingsUpdaterService = settingsUpdaterService;
+		_pelotonService = pelotonService;
+		_garminAuthService = garminAuthService;
 	}
 
 	public async Task<ProgressGetResponse> GetAnnualProgressAsync()
@@ -36,19 +46,7 @@ public class ServiceClient : IApiClient
 				throw new ApiClientException(serviceResult.Error.Message, serviceResult.Error.Exception);
 
 			var data = serviceResult.Result;
-			var tiers = data.Tiers?.Select(t => new Api.Contract.Tier()
-			{
-				BadgeUrl = t.BadgeUrl,
-				Title = t.Title,
-				RequiredMinutes = t.RequiredMinutes,
-				HasEarned = t.HasEarned,
-				PercentComplete = Convert.ToSingle(t.PercentComplete * 100),
-				IsOnTrackToEarndByEndOfYear = t.IsOnTrackToEarndByEndOfYear,
-				MinutesBehindPace = t.MinutesBehindPace,
-				MinutesAheadOfPace = t.MinutesAheadOfPace,
-				MinutesNeededPerDay = t.MinutesNeededPerDay,
-				MinutesNeededPerWeek = t.MinutesNeededPerWeek,
-			}).ToList();
+			var tiers = data.Tiers?.Select(t => t.Map()).ToList();
 
 			return new ProgressGetResponse()
 			{
@@ -62,14 +60,50 @@ public class ServiceClient : IApiClient
 		}
 	}
 
-	public Task<GarminAuthenticationGetResponse> GetGarminAuthenticationAsync()
+	public async Task<GarminAuthenticationGetResponse> GetGarminAuthenticationAsync()
 	{
-		throw new NotImplementedException();
+		var settings = await _settingsService.GetSettingsAsync();
+		var auth = _settingsService.GetGarminAuthentication(settings.Garmin.Email);
+
+		var result = new GarminAuthenticationGetResponse() { IsAuthenticated = auth?.IsValid(settings) ?? false };
+		return result;
 	}
 
-	public Task<PelotonWorkoutsGetResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetRequest request)
+	public async Task<PelotonWorkoutsGetResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetRequest request)
 	{
-		throw new NotImplementedException();
+		if (!request.IsValid(out var result))
+			throw new ApiClientException(result);
+
+		PagedPelotonResponse<Workout> recentWorkouts = null;
+
+		try
+		{
+			recentWorkouts = await _pelotonService.GetPelotonWorkoutsAsync(request.PageSize, request.PageIndex);
+		}
+		catch (ArgumentException ae)
+		{
+			throw new ApiClientException(new ErrorResponse(ae.Message, ae));
+		}
+		catch (PelotonAuthenticationError pe)
+		{
+			throw new ApiClientException(new ErrorResponse(pe.Message, pe));
+		}
+		catch (Exception e)
+		{
+			throw new ApiClientException(new ErrorResponse($"Unexpected error occurred: {e.Message}", e));
+		}
+
+		return new PelotonWorkoutsGetResponse()
+		{
+			PageSize = recentWorkouts.Limit,
+			PageIndex = recentWorkouts.Page,
+			PageCount = recentWorkouts.Page_Count,
+			TotalItems = recentWorkouts.Total,
+			Items = recentWorkouts.data
+					.OrderByDescending(i => i.Created_At)
+					.Select(w => new PelotonWorkout(w))
+					.ToList()
+		};
 	}
 
 	public Task<PelotonWorkoutsGetAllResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetAllRequest request)
@@ -77,9 +111,22 @@ public class ServiceClient : IApiClient
 		throw new NotImplementedException();
 	}
 
-	public Task SendGarminMfaTokenAsync(GarminAuthenticationMfaTokenPostRequest request)
+	public async Task SendGarminMfaTokenAsync(GarminAuthenticationMfaTokenPostRequest request)
 	{
-		throw new NotImplementedException();
+		var settings = await _settingsService.GetSettingsAsync();
+
+		if (!settings.Garmin.TwoStepVerificationEnabled)
+			throw new ApiClientException(new ErrorResponse("Garmin two step verification is not enabled in Settings."));
+
+		try
+		{
+			await _garminAuthService.CompleteMFAAuthAsync(request.MfaToken);
+			return;
+		}
+		catch (Exception e)
+		{
+			throw new ApiClientException(new ErrorResponse($"Unexpected error occurred: {e.Message}", e));
+		}
 	}
 
 	public async Task<SettingsGetResponse> SettingsGetAsync()
@@ -168,9 +215,42 @@ public class ServiceClient : IApiClient
 		}
 	}
 
-	public Task<IFlurlResponse> SignInToGarminAsync()
+	public async Task<IFlurlResponse> SignInToGarminAsync()
 	{
-		throw new NotImplementedException();
+		var settings = await _settingsService.GetSettingsAsync();
+
+		if (settings.Garmin.Password.CheckIsNullOrEmpty("Garmin Password", out var result)) throw new ApiClientException(result);
+		if (settings.Garmin.Email.CheckIsNullOrEmpty("Garmin Email", out result)) throw new ApiClientException(result);
+
+		try
+		{
+			if (!settings.Garmin.TwoStepVerificationEnabled)
+			{
+				await _garminAuthService.RefreshGarminAuthenticationAsync();
+				return new FlurlResponse(new HttpResponseMessage() { StatusCode = System.Net.HttpStatusCode.Created });
+			}
+			else
+			{
+				var auth = await _garminAuthService.RefreshGarminAuthenticationAsync();
+
+				if (auth.AuthStage == Common.Stateful.AuthStage.NeedMfaToken)
+					return new FlurlResponse(new HttpResponseMessage() { StatusCode = System.Net.HttpStatusCode.Accepted });
+
+				return new FlurlResponse(new HttpResponseMessage() { StatusCode = System.Net.HttpStatusCode.Created });
+			}
+		}
+		catch (GarminAuthenticationError gae) when (gae.Code == Code.UnexpectedMfa)
+		{
+			throw new ApiClientException(new ErrorResponse("It looks like your account is protected by two step verification. Please enable the Two Step verification setting.", ErrorCode.UnexpectedGarminMFA, gae));
+		}
+		catch (GarminAuthenticationError gae) when (gae.Code == Code.InvalidCredentials)
+		{
+			throw new ApiClientException(new ErrorResponse("Garmin authentication failed. Invalid Garmin credentials.", ErrorCode.InvalidGarminCredentials, gae));
+		}
+		catch (Exception e)
+		{
+			throw new ApiClientException(new ErrorResponse($"Unexpected error occurred: {e.Message}", e));
+		}
 	}
 
 	public Task<SyncGetResponse> SyncGetAsync()

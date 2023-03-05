@@ -13,6 +13,8 @@ public record ProgressGetResponse
 
 public record Tier
 {
+	public Tier() { }
+
 	public string? BadgeUrl { get; init; }
 	public string? Title { get; init; }
 	public double RequiredMinutes { get; init; }

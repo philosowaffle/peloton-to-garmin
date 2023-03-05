@@ -35,7 +35,7 @@ namespace Api.Controllers
 		public async Task<ActionResult<PelotonWorkoutsGetResponse>> GetAsync([FromQuery]PelotonWorkoutsGetRequest request)
 		{
 			if (!request.IsValid(out var result))
-				return result!;
+				return new BadRequestObjectResult(result);
 
 			PagedPelotonResponse<Workout>? recentWorkouts = null;
 
