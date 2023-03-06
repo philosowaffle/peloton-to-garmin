@@ -10,6 +10,7 @@ using Dynastream.Fit;
 using Prometheus;
 using Serilog;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -535,22 +536,15 @@ namespace Conversion
 			return targets;
 		}
 
-		public static TargetGraphMetrics GetRideTargets(WorkoutSamples workoutSamples, RideDetails rideDetails)
+		public static List<TargetGraphMetrics> GetRideTargets(WorkoutSamples workoutSamples, RideDetails rideDetails)
 		{
 			var targets = rideDetails.Target_Metrics_Data.Target_Metrics.GetEnumerator();
 			if (!targets.MoveNext())
 			{
-				return null;
+				return new List<TargetGraphMetrics>();
 			}
-			var data = new GraphData
-			{
-				Lower = new int[workoutSamples.Seconds_Since_Pedaling_Start.Count],
-				Upper = new int[workoutSamples.Seconds_Since_Pedaling_Start.Count],
-				Average = new int[workoutSamples.Seconds_Since_Pedaling_Start.Count],
-			};
-			string targetType = null;
+			var targetsMap = new Dictionary<string, (GraphData, (int, int, int))>();
 			var defaultTarget = (0, 0, 0);
-			var currentTarget = defaultTarget;
 			var pedalingStartOffset = rideDetails.Ride.Pedaling_Start_Offset;
 
 			foreach (var (secondsSinceStart, index) in workoutSamples.Seconds_Since_Pedaling_Start.Select((s, i) => (s, i)))
@@ -558,34 +552,45 @@ namespace Conversion
 				int offset = secondsSinceStart - 1 + pedalingStartOffset;
 				if (targets.Current is not null && offset > targets.Current.Offsets.End)
 				{
-					currentTarget = defaultTarget;
+					foreach (var (type, (data, _)) in targetsMap)
+						targetsMap[type] = (data, defaultTarget);
 					targets.MoveNext();
 				}
 				if (targets.Current is not null && offset == targets.Current.Offsets.Start)
 				{
-					var metric = targets.Current.Metrics.First(m => targetType is null || m.Name == targetType);
-					if (metric is not null)
+					foreach (var metric in targets.Current.Metrics)
 					{
-						if (targetType is null) targetType = metric.Name;
-						currentTarget = ((int)metric.Lower, (int)metric.Upper, (int)((metric.Lower + metric.Upper) / 2));
-					}
-					else
-					{
-						throw new Exception("Mismatched target metric types");
+						if (!targetsMap.ContainsKey(metric.Name))
+						{
+							var defaultTargetData = new GraphData
+							{
+								Lower = new int[workoutSamples.Seconds_Since_Pedaling_Start.Count],
+								Upper = new int[workoutSamples.Seconds_Since_Pedaling_Start.Count],
+								Average = new int[workoutSamples.Seconds_Since_Pedaling_Start.Count],
+							};
+							targetsMap[metric.Name] = (defaultTargetData, defaultTarget);
+						}
+						var (data, _) = targetsMap[metric.Name];
+						var currentTarget = ((int)metric.Lower, (int)metric.Upper, (int)((metric.Lower + metric.Upper) / 2));
+						targetsMap[metric.Name] = (data, currentTarget);
+						data.Lower[index] = currentTarget.Item1;
+						data.Upper[index] = currentTarget.Item2;
+						data.Average[index] = currentTarget.Item3;
 					}
 				}
-				data.Lower[index] = currentTarget.Item1;
-				data.Upper[index] = currentTarget.Item2;
-				data.Average[index] = currentTarget.Item3;
 			}
-			return new TargetGraphMetrics
+			return targetsMap.Select(target =>
 			{
-				Graph_Data = data,
-				Max = data.Upper.Max(),
-				Min = data.Lower.Min(),
-				Average = (int)data.Average.Average(),
-				Type = targetType,
-			};
+				var data = target.Value.Item1;
+				return new TargetGraphMetrics
+				{
+					Graph_Data = data,
+					Max = data.Upper.Max(),
+					Min = data.Lower.Min(),
+					Average = (int)data.Average.Average(),
+					Type = target.Key,
+				};
+			}).ToList();
 		}
 
 		protected Metric GetResistanceSummary(WorkoutSamples workoutSamples)
