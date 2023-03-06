@@ -272,20 +272,20 @@ namespace Peloton
 
 			var workout = await workoutTask;
 			var workoutSamples = await workoutSamplesTask;
-			var rideDetails = await _pelotonApi.GetRideDetailsByIdAsync((string)workout?["ride"]?["id"]);
 
-			var p2gWorkoutData = await BuildP2GWorkoutAsync(workoutId, workout, workoutSamples, rideDetails);
+			var p2gWorkoutData = await BuildP2GWorkoutAsync(workoutId, workout, workoutSamples);
 
 			if (p2gWorkoutData is object)
 			{
-				var workoutSegments = await _pelotonApi.GetClassSegmentsAsync(p2gWorkoutData.Workout.Ride.Id);
-				p2gWorkoutData.Exercises = Common.Dto.Extensions.GetClassPlanExercises(p2gWorkoutData.Workout, workoutSegments);
+				var rideDetails = await _pelotonApi.GetRideDetailsAsync(p2gWorkoutData.Workout.Ride.Id);
+				p2gWorkoutData.RideDetails = rideDetails;
+				p2gWorkoutData.Exercises = Common.Dto.Extensions.GetClassPlanExercises(p2gWorkoutData.Workout, rideDetails?.Segments);
 			}
 
 			return p2gWorkoutData;
 		}
 
-		private async Task<P2GWorkout> BuildP2GWorkoutAsync(string workoutId, JObject workout, JObject workoutSamples, JObject rideDetails)
+		private async Task<P2GWorkout> BuildP2GWorkoutAsync(string workoutId, JObject workout, JObject workoutSamples)
 		{
 			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(BuildP2GWorkoutAsync)}")
 										.WithWorkoutId(workoutId);
@@ -293,7 +293,6 @@ namespace Peloton
 			dynamic data = new JObject();
 			data.Workout = workout;
 			data.WorkoutSamples = workoutSamples;
-			data.RideDetails = rideDetails;
 
 			P2GWorkout deSerializedData = null;
 			try

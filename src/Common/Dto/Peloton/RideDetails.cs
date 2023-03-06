@@ -1,35 +1,40 @@
 ﻿using System.Collections.Generic;
 
-namespace Common.Dto.Peloton
+namespace Common.Dto.Peloton;
+
+public record RideDetails
 {
-	public class RideDetails
-	{
-		public Ride Ride { get; set; }
-		public TargetMetricsData Target_Metrics_Data { get; set; }
-	}
-
-	public class TargetMetricsData
-	{
-		public ICollection<TargetMetric> Target_Metrics { get; set; }
-	}
-
-	public class TargetMetric
-	{
-		public Offsets Offsets { get; set; }
-		public string Segment_Type { get; set; }
-		public ICollection<MetricData> Metrics { get; set; }
-	}
+	public Ride Ride { get; init; }
+	public TargetMetricsData Target_Metrics_Data { get; init; }
+	public Segments Segments { get; init; }
 }
 
-public class Offsets
+public record Segments
 {
-	public int Start { get; set; }
-	public int End { get; set; }
+	public ICollection<Segment> Segment_List { get; init; }
 }
 
-public class MetricData
+public record TargetMetricsData
 {
-	public string Name { get; set; }
-	public float Upper { get; set; }
-	public float Lower { get; set; }
+	public ICollection<TargetMetric> Target_Metrics { get; init; }
+}
+
+public record TargetMetric
+{
+	public Offsets Offsets { get; init; }
+	public string Segment_Type { get; init; }
+	public ICollection<MetricData> Metrics { get; init; }
+}
+
+public record Offsets
+{
+	public int Start { get; init; }
+	public int End { get; init; }
+}
+
+public record MetricData
+{
+	public string Name { get; init; }
+	public float Upper { get; init; }
+	public float Lower { get; init; }
 }
