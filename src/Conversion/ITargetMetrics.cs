@@ -51,19 +51,16 @@ public abstract class Target
             break;
         case WktStepTarget.HeartRate:
             step.SetTargetHrZone(targetValue);
-            if (high > 0)
-            {
-                step.SetCustomTargetHeartRateLow(low+100);
-                step.SetCustomTargetHeartRateHigh(high+100);
-            }
+            step.SetCustomTargetHeartRateLow(low);
+            step.SetCustomTargetHeartRateHigh(high);
             break;
         case WktStepTarget.Power:
             step.SetTargetPowerZone(targetValue);
             if (high > 0)
             {
-                // FIXME: maybe need values above zero?
-                step.SetCustomTargetPowerLow(low+1);
-                step.SetCustomTargetPowerHigh(high+1);
+                // Target values need to be non-zero or Garmin ignores them
+                step.SetCustomTargetPowerLow(Math.Max(low, 1));
+                step.SetCustomTargetPowerHigh(high);
             }
             break;
         case WktStepTarget.Speed:
