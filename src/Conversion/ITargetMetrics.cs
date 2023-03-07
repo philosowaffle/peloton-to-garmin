@@ -212,14 +212,15 @@ public class TargetMetrics : ITargetMetrics
         var offset = 0;
         while (targets.MoveNext())
         {
-            if (offset > targets.Current.offsets.End)
-                if (!targets.MoveNext()) break;
-
-            if (offset >= targets.Current.offsets.Start)
-                yield return targets.Current.target;
-            else
-                yield return null;
-            offset++;
+            while (offset <= targets.Current.offsets.End)
+            {
+                if (offset >= targets.Current.offsets.Start)
+                    yield return targets.Current.target;
+                else
+                    yield return null;
+                offset++;
+            }
+            if (!targets.MoveNext()) break;
         }
 	}
 }

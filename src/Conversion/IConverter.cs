@@ -533,6 +533,9 @@ namespace Conversion
 			if (targets is null)
 				targets = workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "stroke_rate");
 
+			if (targets is null)
+				return null;
+
 			return new TargetGraphMetrics(targets);
 		}
 

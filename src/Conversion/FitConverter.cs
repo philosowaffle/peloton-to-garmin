@@ -505,27 +505,38 @@ namespace Conversion
 			WorkoutStepMesg workoutStep = null;
 			LapMesg lapMesg = null;
 			var speedMetrics = GetSpeedSummary(workoutSamples);
+			var speedMetricsEnumerator = speedMetrics?.Values.GetEnumerator();
+			int? prevSecondSinceStart = null;
 
 			foreach (var secondSinceStart in workoutSamples.Seconds_Since_Pedaling_Start)
 			{
-				var index = secondSinceStart <= 0 ? 0 : secondSinceStart - 1;
+				var secondsSincePrevIter = (secondSinceStart - prevSecondSinceStart).GetValueOrDefault(1);
+				if (secondsSincePrevIter > 1)
+					_logger.Debug("skip");
+				prevSecondSinceStart = secondSinceStart;
 
-				if (speedMetrics is object && index < speedMetrics.Values.Length)
+				speedMetricsEnumerator?.MoveNext();
+				var speed = (double?)speedMetricsEnumerator?.Current;
+				if (speed is not null)
 				{
-					var currentSpeedInMPS = ConvertToMetersPerSecond(speedMetrics.GetValue(index), speedMetrics.Display_Unit);
-					lapDistanceInMeters += 1 * currentSpeedInMPS;
+					var currentSpeedInMPS = ConvertToMetersPerSecond(speed, speedMetrics.Display_Unit);
+					lapDistanceInMeters += secondsSincePrevIter * currentSpeedInMPS;
 				}
 
 				var targetsChanged = targets.Aggregate(false, (changed, target) =>
 				{
-					var prev = target.Current;
-					var moved = target.MoveNext();
-					if (prev is null ^ target.Current is null)
-						return true;
-					else if (prev is null && target.Current is null)
-						return changed;
-					else
-						return changed || !target.Current.Equals(prev);
+					Target prev = target.Current;
+					var moved = false;
+					for (int i = 0; i < secondsSincePrevIter; i++)
+					{
+						prev = target.Current;
+						moved |= target.MoveNext();
+						if (prev is null ^ target.Current is null)
+							changed = true;
+						else if (prev is not null && target.Current is not null)
+							changed |= !target.Current.Equals(prev);
+					}
+					return changed;
 				});
 
 				if (targetsChanged)
@@ -565,7 +576,7 @@ namespace Conversion
 					lapMesg.SetSport(sport);
 					lapMesg.SetSubSport(subSport);
 				}
-				duration++;
+				duration += secondsSincePrevIter;
 			}
 
 			if (workoutStep != null && lapMesg != null)
