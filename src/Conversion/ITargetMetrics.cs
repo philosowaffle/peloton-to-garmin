@@ -39,6 +39,8 @@ public abstract class Target
     {
         var targetValue = TargetValue();
         var (low, high) = (CustomTargetValueLow(), CustomTargetValueHigh());
+        step.SetTargetType(TargetType);
+        step.SetIntensity(GetIntensity());
         switch (TargetType) {
         case WktStepTarget.Cadence:
             step.SetTargetCadenceZone(targetValue);

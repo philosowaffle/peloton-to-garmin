@@ -511,8 +511,6 @@ namespace Conversion
 			foreach (var secondSinceStart in workoutSamples.Seconds_Since_Pedaling_Start)
 			{
 				var secondsSincePrevIter = (secondSinceStart - prevSecondSinceStart).GetValueOrDefault(1);
-				if (secondsSincePrevIter > 1)
-					_logger.Debug("skip");
 				prevSecondSinceStart = secondSinceStart;
 
 				speedMetricsEnumerator?.MoveNext();
