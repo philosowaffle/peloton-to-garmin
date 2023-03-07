@@ -257,7 +257,6 @@ public class TargetMetrics : ITargetMetrics
                     yield return null;
                 offset++;
             }
-            if (!targets.MoveNext()) break;
         }
 	}
 }
