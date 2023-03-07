@@ -526,71 +526,19 @@ namespace Conversion
 			return GetMetric("cadence", workoutSamples);
 		}
 
-		public static TargetGraphMetrics GetCadenceTargets(WorkoutSamples workoutSamples)
+		public static ITargetMetrics GetCadenceTargets(WorkoutSamples workoutSamples)
 		{
 			var targets = workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "cadence");
 
 			if (targets is null)
 				targets = workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "stroke_rate");
 
-			return targets;
+			return new TargetGraphMetrics(targets);
 		}
 
-		public static List<TargetGraphMetrics> GetRideTargets(WorkoutSamples workoutSamples, RideDetails rideDetails)
+		public static List<ITargetMetrics> GetRideTargets(WorkoutSamples workoutSamples, RideDetails rideDetails)
 		{
-			var targets = rideDetails.Target_Metrics_Data.Target_Metrics.GetEnumerator();
-			if (!targets.MoveNext())
-			{
-				return new List<TargetGraphMetrics>();
-			}
-			var targetsMap = new Dictionary<string, (GraphData, (int, int, int))>();
-			var defaultTarget = (0, 0, 0);
-			var pedalingStartOffset = rideDetails.Ride.Pedaling_Start_Offset;
-
-			foreach (var (secondsSinceStart, index) in workoutSamples.Seconds_Since_Pedaling_Start.Select((s, i) => (s, i)))
-			{
-				int offset = secondsSinceStart - 1 + pedalingStartOffset;
-				if (targets.Current is not null && offset > targets.Current.Offsets.End)
-				{
-					foreach (var (type, (data, _)) in targetsMap)
-						targetsMap[type] = (data, defaultTarget);
-					targets.MoveNext();
-				}
-				if (targets.Current is not null && offset == targets.Current.Offsets.Start)
-				{
-					foreach (var metric in targets.Current.Metrics)
-					{
-						if (!targetsMap.ContainsKey(metric.Name))
-						{
-							var defaultTargetData = new GraphData
-							{
-								Lower = new int[workoutSamples.Seconds_Since_Pedaling_Start.Count],
-								Upper = new int[workoutSamples.Seconds_Since_Pedaling_Start.Count],
-								Average = new int[workoutSamples.Seconds_Since_Pedaling_Start.Count],
-							};
-							targetsMap[metric.Name] = (defaultTargetData, defaultTarget);
-						}
-						var (data, _) = targetsMap[metric.Name];
-						var currentTarget = ((int)metric.Lower, (int)metric.Upper, (int)((metric.Lower + metric.Upper) / 2));
-						targetsMap[metric.Name] = (data, currentTarget);
-						data.Lower[index] = currentTarget.Item1;
-						data.Upper[index] = currentTarget.Item2;
-						data.Average[index] = currentTarget.Item3;
-					}
-				}
-			}
-			return targetsMap.Select(target =>
-			{
-				var data = target.Value.Item1;
-				return new TargetGraphMetrics
-				{
-					Graph_Data = data,
-					Max = data.Upper.Max(),
-					Min = data.Lower.Min(),
-					Average = (int)data.Average.Average(),
-					Type = target.Key,
-				};
-			}).ToList();
+			return Conversion.TargetMetrics.Extract(rideDetails).ToList();
 		}
 
 		protected Metric GetResistanceSummary(WorkoutSamples workoutSamples)

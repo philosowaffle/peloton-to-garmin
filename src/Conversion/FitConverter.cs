@@ -439,94 +439,66 @@ namespace Conversion
 			if (workoutSamples is null)
 				return stepsAndLaps;
 
-			var targets = GetRideTargets(workoutSamples, rideDetails);
+			var targetMetrics = GetRideTargets(workoutSamples, rideDetails);
 			var cadenceTargets = GetCadenceTargets(workoutSamples);
-			if (cadenceTargets is not null) targets.Append(cadenceTargets);
+			if (cadenceTargets is not null) targetMetrics.Append(cadenceTargets);
+
+			var targets = targetMetrics.Select(target => target.Get1sTargets()).ToList();
 
 			if (targets.Count == 0)
 				return stepsAndLaps;
 
-			Func<string, WktStepTarget> parseTargetType = type => {
-				switch (type) {
-				case "resistance":
-					return WktStepTarget.Cadence;
-				case "cadence":
-					return WktStepTarget.Cadence;
-				case "power_zone":
-					return WktStepTarget.Power;
-				default:
-					return WktStepTarget.Invalid;
-				}
-			};
+			// var updateStepFuncs = targets.Select<TargetGraphMetrics, Action<WorkoutStepMesg, (uint, uint)>>(target =>
+			// {
+			// 	var type = parseTargetType(target.Type);
 
-			Func<WktStepTarget, uint, Intensity> intensity = (type, target) => {
-				switch (type) {
-				case WktStepTarget.Resistance:
-					if (target > 20) return Intensity.Active;
-					else return Intensity.Rest;
-				case WktStepTarget.Cadence:
-					if (target > 60) return Intensity.Active;
-					else return Intensity.Rest;
-				case WktStepTarget.Power:
-					if (target == 1) return Intensity.Rest;
-					else return Intensity.Active;
-				default:
-					return Intensity.Active;
-				}
-			};
+			// 	Func<(uint, uint), (uint, uint)> targetRange = range => range;
+			// 	switch (type) {
+			// 	case WktStepTarget.Power:
+			// 		var zones = CalculatePowerZones(workout);
+			// 		targetRange = target =>
+			// 		{
+			// 			Func<uint, Zone> zone = zone =>
+			// 			{
+			// 				switch (zone) {
+			// 				case 1: return zones.Zone1;
+			// 				case 2: return zones.Zone2;
+			// 				case 3: return zones.Zone3;
+			// 				case 4: return zones.Zone4;
+			// 				case 5: return zones.Zone5;
+			// 				case 6: return zones.Zone6;
+			// 				case 7: return zones.Zone7;
+			// 				default: return new Zone();
+			// 				}
+			// 			};
+			// 			var (low, high) = target;
+			// 			return ((uint)zone(low).Min_Value, (uint)zone(high).Max_Value);
+			// 		};
+			// 		break;
+			// 	}
 
-			var updateStepFuncs = targets.Select<TargetGraphMetrics, Action<WorkoutStepMesg, (uint, uint)>>(target =>
-			{
-				var type = parseTargetType(target.Type);
+			// 	return (step, target) =>
+			// 	{
+			// 		var (low, high) = targetRange(target);
+			// 		step.SetTargetType(type);
+			// 		step.SetIntensity(intensity(type, target.Item2));
+			// 		switch (type) {
+			// 		case WktStepTarget.Cadence:
+			// 			step.SetCustomTargetCadenceLow(low);
+			// 			step.SetCustomTargetCadenceHigh(high);
+			// 			break;
+			// 		case WktStepTarget.Power:
+			// 			step.SetCustomTargetPowerLow(low);
+			// 			step.SetCustomTargetPowerHigh(high);
+			// 			break;
+			// 		default:
+			// 			step.SetCustomTargetValueLow(low);
+			// 			step.SetCustomTargetValueHigh(high);
+			// 			break;
+			// 		}
+			// 	};
+			// }).ToList();
 
-				Func<(uint, uint), (uint, uint)> targetRange = range => range;
-				switch (type) {
-				case WktStepTarget.Power:
-					var zones = CalculatePowerZones(workout);
-					targetRange = target =>
-					{
-						Func<uint, Zone> zone = zone =>
-						{
-							switch (zone) {
-							case 1: return zones.Zone1;
-							case 2: return zones.Zone2;
-							case 3: return zones.Zone3;
-							case 4: return zones.Zone4;
-							case 5: return zones.Zone5;
-							case 6: return zones.Zone6;
-							case 7: return zones.Zone7;
-							default: return new Zone();
-							}
-						};
-						var (low, high) = target;
-						return ((uint)zone(low).Min_Value, (uint)zone(high).Max_Value);
-					};
-					break;
-				}
-
-				return (step, target) =>
-				{
-					var (low, high) = targetRange(target);
-					step.SetTargetType(type);
-					step.SetIntensity(intensity(type, target.Item2));
-					switch (type) {
-					case WktStepTarget.Cadence:
-						step.SetCustomTargetCadenceLow(low);
-						step.SetCustomTargetCadenceHigh(high);
-						break;
-					case WktStepTarget.Power:
-						step.SetCustomTargetPowerLow(low);
-						step.SetCustomTargetPowerHigh(high);
-						break;
-					default:
-						step.SetCustomTargetValueLow(low);
-						step.SetCustomTargetValueHigh(high);
-						break;
-					}
-				};
-			}).ToList();
-
-			List<(uint, uint)> previousTargets = null;
 			ushort stepIndex = 0;
 			var duration = 0;
 			float lapDistanceInMeters = 0;
@@ -544,16 +516,19 @@ namespace Conversion
 					lapDistanceInMeters += 1 * currentSpeedInMPS;
 				}
 
-				var currentTargets = targets.Select(target =>
+				var targetsChanged = targets.Aggregate(false, (changed, target) =>
 				{
-					var (lowerTargets, upperTargets) = (target.Graph_Data.Lower, target.Graph_Data.Upper);
-					var lower = index < lowerTargets.Length ? (uint)lowerTargets[index] : 0;
-					var upper = index < upperTargets.Length ? (uint)upperTargets[index] : 0;
-					return (lower, upper);
-				}).ToList();
+					var prev = target.Current;
+					var moved = target.MoveNext();
+					if (prev is null ^ target.Current is null)
+						return true;
+					else if (prev is null && target.Current is null)
+						return changed;
+					else
+						return changed || !target.Current.Equals(prev);
+				});
 
-				if (previousTargets is null
-				    || currentTargets.Select((x, i) => (x, i)).Any(current => current.x != previousTargets[current.i])) // TODO: ugly list equality check
+				if (targetsChanged)
 				{
 					if (workoutStep != null && lapMesg != null)
 					{
@@ -576,10 +551,8 @@ namespace Conversion
 					workoutStep = new WorkoutStepMesg();
 					workoutStep.SetDurationType(WktStepDuration.Time);
 					workoutStep.SetMessageIndex(stepIndex);
-					foreach (var (target, updateStep) in currentTargets.Zip(updateStepFuncs))
-					{
-						updateStep(workoutStep, target);
-					}
+					foreach (var target in targets)
+						target.Current?.ApplyToWorkoutStep(workoutStep);
 
 					lapMesg = new LapMesg();
 					var lapStartTime = new Dynastream.Fit.DateTime(startTime);
@@ -591,8 +564,6 @@ namespace Conversion
 					lapMesg.SetLapTrigger(LapTrigger.Time);
 					lapMesg.SetSport(sport);
 					lapMesg.SetSubSport(subSport);
-
-					previousTargets = currentTargets;
 				}
 				duration++;
 			}
