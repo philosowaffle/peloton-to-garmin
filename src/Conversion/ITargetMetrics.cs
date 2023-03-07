@@ -35,6 +35,8 @@ public abstract class Target
         }
     }
 
+    public abstract TargetRange ToRange(Common.Dto.Peloton.PowerZones powerZones);
+
     public void ApplyToWorkoutStep(WorkoutStepMesg step)
     {
         var targetValue = TargetValue();
@@ -49,13 +51,20 @@ public abstract class Target
             break;
         case WktStepTarget.HeartRate:
             step.SetTargetHrZone(targetValue);
-            step.SetCustomTargetHeartRateLow(low);
-            step.SetCustomTargetHeartRateHigh(high);
+            if (high > 0)
+            {
+                step.SetCustomTargetHeartRateLow(low+100);
+                step.SetCustomTargetHeartRateHigh(high+100);
+            }
             break;
         case WktStepTarget.Power:
             step.SetTargetPowerZone(targetValue);
-            step.SetCustomTargetPowerLow(low);
-            step.SetCustomTargetPowerHigh(high);
+            if (high > 0)
+            {
+                // FIXME: maybe need values above zero?
+                step.SetCustomTargetPowerLow(low+1);
+                step.SetCustomTargetPowerHigh(high+1);
+            }
             break;
         case WktStepTarget.Speed:
             step.SetTargetSpeedZone(targetValue);
@@ -110,6 +119,31 @@ public class TargetZone : Target
     public override uint CustomTargetValueLow() { return 0; }
     public override uint CustomTargetValueHigh() { return 0; }
 
+    public override TargetRange ToRange(Common.Dto.Peloton.PowerZones powerZones)
+    {
+        switch (TargetType) {
+        case WktStepTarget.Power:
+            Func<Common.Dto.Peloton.Zone, TargetRange> range = zone => new TargetRange
+            {
+                TargetType = TargetType,
+                Low = (uint)zone.Min_Value,
+                High = (uint)zone.Max_Value,
+            };
+            switch (Zone) {
+            case 1: return range(powerZones.Zone1);
+            case 2: return range(powerZones.Zone2);
+            case 3: return range(powerZones.Zone3);
+            case 4: return range(powerZones.Zone4);
+            case 5: return range(powerZones.Zone5);
+            case 6: return range(powerZones.Zone6);
+            case 7: return range(powerZones.Zone7);
+            default: throw new Exception("Invalid power zone: " + Zone);
+            }
+        default:
+            throw new Exception("Unhandled zone type");
+        }
+    }
+
     public override Intensity GetIntensity()
     {
         switch (TargetType) {
@@ -132,6 +166,7 @@ public class TargetRange : Target
     public override uint TargetValue() { return 0; }
     public override uint CustomTargetValueLow() { return Low; }
     public override uint CustomTargetValueHigh() { return High; }
+    public override TargetRange ToRange(Common.Dto.Peloton.PowerZones powerZones) { return this; }
 
     public override Intensity GetIntensity()
     {

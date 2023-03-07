@@ -444,60 +444,10 @@ namespace Conversion
 			if (cadenceTargets is not null) targetMetrics.Append(cadenceTargets);
 
 			var targets = targetMetrics.Select(target => target.Get1sTargets()).ToList();
+			var powerZones = CalculatePowerZones(workout);
 
 			if (targets.Count == 0)
 				return stepsAndLaps;
-
-			// var updateStepFuncs = targets.Select<TargetGraphMetrics, Action<WorkoutStepMesg, (uint, uint)>>(target =>
-			// {
-			// 	var type = parseTargetType(target.Type);
-
-			// 	Func<(uint, uint), (uint, uint)> targetRange = range => range;
-			// 	switch (type) {
-			// 	case WktStepTarget.Power:
-			// 		var zones = CalculatePowerZones(workout);
-			// 		targetRange = target =>
-			// 		{
-			// 			Func<uint, Zone> zone = zone =>
-			// 			{
-			// 				switch (zone) {
-			// 				case 1: return zones.Zone1;
-			// 				case 2: return zones.Zone2;
-			// 				case 3: return zones.Zone3;
-			// 				case 4: return zones.Zone4;
-			// 				case 5: return zones.Zone5;
-			// 				case 6: return zones.Zone6;
-			// 				case 7: return zones.Zone7;
-			// 				default: return new Zone();
-			// 				}
-			// 			};
-			// 			var (low, high) = target;
-			// 			return ((uint)zone(low).Min_Value, (uint)zone(high).Max_Value);
-			// 		};
-			// 		break;
-			// 	}
-
-			// 	return (step, target) =>
-			// 	{
-			// 		var (low, high) = targetRange(target);
-			// 		step.SetTargetType(type);
-			// 		step.SetIntensity(intensity(type, target.Item2));
-			// 		switch (type) {
-			// 		case WktStepTarget.Cadence:
-			// 			step.SetCustomTargetCadenceLow(low);
-			// 			step.SetCustomTargetCadenceHigh(high);
-			// 			break;
-			// 		case WktStepTarget.Power:
-			// 			step.SetCustomTargetPowerLow(low);
-			// 			step.SetCustomTargetPowerHigh(high);
-			// 			break;
-			// 		default:
-			// 			step.SetCustomTargetValueLow(low);
-			// 			step.SetCustomTargetValueHigh(high);
-			// 			break;
-			// 		}
-			// 	};
-			// }).ToList();
 
 			ushort stepIndex = 0;
 			var duration = 0;
@@ -561,7 +511,8 @@ namespace Conversion
 					workoutStep.SetDurationType(WktStepDuration.Time);
 					workoutStep.SetMessageIndex(stepIndex);
 					foreach (var target in targets)
-						target.Current?.ApplyToWorkoutStep(workoutStep);
+						// Convert to range targets because Garmin doesn't visualize zone targets
+						target.Current?.ToRange(powerZones).ApplyToWorkoutStep(workoutStep);
 
 					lapMesg = new LapMesg();
 					var lapStartTime = new Dynastream.Fit.DateTime(startTime);
