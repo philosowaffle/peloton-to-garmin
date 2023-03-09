@@ -10,6 +10,7 @@ using Dynastream.Fit;
 using Prometheus;
 using Serilog;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -525,14 +526,14 @@ namespace Conversion
 			return GetMetric("cadence", workoutSamples);
 		}
 
-		public static GraphData GetCadenceTargets(WorkoutSamples workoutSamples)
+		public static IEnumerable<ITargetMetrics> GetWorkoutTargets(WorkoutSamples workoutSamples)
 		{
-			var targets = workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "cadence")?.Graph_Data;
+			return TargetGraphMetrics.Extract(workoutSamples);
+		}
 
-			if (targets is null)
-				targets = workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "stroke_rate")?.Graph_Data;
-
-			return targets;
+		public static IEnumerable<ITargetMetrics> GetRideTargets(RideDetails rideDetails, WorkoutSamples workoutSamples)
+		{
+			return Conversion.TargetMetrics.Extract(rideDetails, workoutSamples);
 		}
 
 		protected Metric GetResistanceSummary(WorkoutSamples workoutSamples)

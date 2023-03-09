@@ -11,6 +11,7 @@ namespace Common.Dto
 		public UserData UserData { get; set; }
 		public Workout Workout { get; set; }
 		public WorkoutSamples WorkoutSamples { get; set; }
+		public RideDetails RideDetails { get; set; }
 		public ICollection<P2GExercise> Exercises { get; set; }
 
 		public dynamic Raw { get; set; }
@@ -47,7 +48,7 @@ namespace Common.Dto
 			};
 		}
 
-		public static ICollection<P2GExercise> GetClassPlanExercises(Workout workout, RideSegments rideSegments)
+		public static ICollection<P2GExercise> GetClassPlanExercises(Workout workout, Segments rideSegments)
 		{
 			var movements = new List<P2GExercise>();
 
@@ -76,7 +77,7 @@ namespace Common.Dto
 				return movements;
 			}
 
-			var segments = rideSegments?.Segments?.Segment_List;
+			var segments = rideSegments?.Segment_List;
 			if (segments is null || segments.Count <= 0) return movements;
 
 			foreach (var segment in segments)

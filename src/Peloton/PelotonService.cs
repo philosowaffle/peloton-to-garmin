@@ -277,8 +277,9 @@ namespace Peloton
 
 			if (p2gWorkoutData is object)
 			{
-				var workoutSegments = await _pelotonApi.GetClassSegmentsAsync(p2gWorkoutData.Workout.Ride.Id);
-				p2gWorkoutData.Exercises = Common.Dto.Extensions.GetClassPlanExercises(p2gWorkoutData.Workout, workoutSegments);
+				var rideDetails = await _pelotonApi.GetRideDetailsAsync(p2gWorkoutData.Workout.Ride.Id);
+				p2gWorkoutData.RideDetails = rideDetails;
+				p2gWorkoutData.Exercises = Common.Dto.Extensions.GetClassPlanExercises(p2gWorkoutData.Workout, rideDetails?.Segments);
 			}
 
 			return p2gWorkoutData;
