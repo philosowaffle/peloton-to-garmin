@@ -526,22 +526,14 @@ namespace Conversion
 			return GetMetric("cadence", workoutSamples);
 		}
 
-		public static ITargetMetrics GetCadenceTargets(WorkoutSamples workoutSamples)
+		public static IEnumerable<ITargetMetrics> GetWorkoutTargets(WorkoutSamples workoutSamples)
 		{
-			var targets = workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "cadence");
-
-			if (targets is null)
-				targets = workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "stroke_rate");
-
-			if (targets is null)
-				return null;
-
-			return new TargetGraphMetrics(targets);
+			return TargetGraphMetrics.Extract(workoutSamples);
 		}
 
-		public static List<ITargetMetrics> GetRideTargets(WorkoutSamples workoutSamples, RideDetails rideDetails)
+		public static IEnumerable<ITargetMetrics> GetRideTargets(RideDetails rideDetails, WorkoutSamples workoutSamples)
 		{
-			return Conversion.TargetMetrics.Extract(rideDetails).ToList();
+			return Conversion.TargetMetrics.Extract(rideDetails, workoutSamples);
 		}
 
 		protected Metric GetResistanceSummary(WorkoutSamples workoutSamples)

@@ -156,13 +156,16 @@ namespace Conversion
 				if (sport == Sport.Rowing)
 					preferredLapType = settings.Format.Rowing.PreferredLapType;
 
-				if ((preferredLapType == PreferredLapType.Class_Targets || preferredLapType == PreferredLapType.Default)
-					&& (workoutSamples.Target_Performance_Metrics?.Target_Graph_Metrics?.FirstOrDefault(w => w.Type == "cadence")?.Graph_Data is object
-						|| rideDetails?.Target_Metrics_Data?.Target_Metrics?.Count > 0))
+				if (preferredLapType == PreferredLapType.Class_Targets || preferredLapType == PreferredLapType.Default)
 				{
 					var stepsAndLaps = GetWorkoutStepsAndLaps(workout, workoutSamples, rideDetails, startTime, sport, subSport);
-					workoutSteps = stepsAndLaps.Values.Select(v => v.Item1).ToList();
-					laps = stepsAndLaps.Values.Select(v => v.Item2).ToList();
+					if (stepsAndLaps.Count > 0)
+					{
+						workoutSteps = stepsAndLaps.Values.Select(v => v.Item1).ToList();
+						laps = stepsAndLaps.Values.Select(v => v.Item2).ToList();
+					}
+					else
+						laps = GetLaps(preferredLapType, workoutSamples, startTime, sport, subSport).ToList();
 				}
 				else
 				{
@@ -439,9 +442,8 @@ namespace Conversion
 			if (workoutSamples is null)
 				return stepsAndLaps;
 
-			var targetMetrics = GetRideTargets(workoutSamples, rideDetails);
-			var cadenceTargets = GetCadenceTargets(workoutSamples);
-			if (cadenceTargets is not null) targetMetrics.Append(cadenceTargets);
+			var targetMetrics = GetRideTargets(rideDetails, workoutSamples).ToList();
+			targetMetrics.AddRange(GetWorkoutTargets(workoutSamples));
 
 			var targets = targetMetrics.Select(target => target.Get1sTargets()).ToList();
 			var powerZones = CalculatePowerZones(workout);
@@ -474,17 +476,13 @@ namespace Conversion
 				var targetsChanged = targets.Aggregate(false, (changed, target) =>
 				{
 					Target prev = target.Current;
-					var moved = false;
-					for (int i = 0; i < secondsSincePrevIter; i++)
-					{
-						prev = target.Current;
-						moved |= target.MoveNext();
-						if (prev is null ^ target.Current is null)
-							changed = true;
-						else if (prev is not null && target.Current is not null)
-							changed |= !target.Current.Equals(prev);
-					}
-					return changed;
+					var moved = target.MoveNext();
+					if (prev is null ^ target.Current is null)
+						return true;
+					else if (prev is not null && target.Current is not null)
+						return changed || !target.Current.Equals(prev);
+					else
+						return changed;
 				});
 
 				if (targetsChanged)

@@ -82,6 +82,8 @@ public abstract class Target
             return (WktStepTarget.Cadence, false);
         case "cadence":
             return (WktStepTarget.Cadence, false);
+        case "stroke_rate":
+            return (WktStepTarget.Cadence, false);
         case "power_zone":
             return (WktStepTarget.Power, true);
         default:
@@ -190,10 +192,13 @@ public class TargetGraphMetrics : ITargetMetrics
     Common.Dto.Peloton.TargetGraphMetrics metrics;
     (WktStepTarget, bool isZone) targetType;
 
-    public TargetGraphMetrics(Common.Dto.Peloton.TargetGraphMetrics metrics)
+    public static IEnumerable<TargetGraphMetrics> Extract(Common.Dto.Peloton.WorkoutSamples workoutSamples)
     {
-        this.metrics = metrics;
-        targetType = Target.ParseTargetType(metrics.Type);
+        if (workoutSamples?.Target_Performance_Metrics?.Target_Graph_Metrics is null)
+            return Enumerable.Empty<TargetGraphMetrics>();
+
+        return workoutSamples.Target_Performance_Metrics.Target_Graph_Metrics
+            .Select(metrics => new TargetGraphMetrics { metrics = metrics, targetType = Target.ParseTargetType(metrics.Type) });
     }
 
     public IEnumerator<Target> Get1sTargets()
@@ -211,10 +216,14 @@ struct Offsets
 
 public class TargetMetrics : ITargetMetrics
 {
+    ICollection<int> secondsSincePedalingStart;
     ICollection<(Offsets offsets, Target target)> targets;
 
-    public static IEnumerable<ITargetMetrics> Extract(Common.Dto.Peloton.RideDetails rideDetails)
+    public static IEnumerable<TargetMetrics> Extract(Common.Dto.Peloton.RideDetails rideDetails, Common.Dto.Peloton.WorkoutSamples workoutSamples)
     {
+        if (rideDetails?.Ride is null || rideDetails?.Target_Metrics_Data?.Target_Metrics is null)
+            return Enumerable.Empty<TargetMetrics>();
+
         var pedalingStartOffset = rideDetails.Ride.Pedaling_Start_Offset;
         return rideDetails.Target_Metrics_Data.Target_Metrics
             .SelectMany(metric => metric.Metrics.Select(target => (target, metric)))
@@ -224,6 +233,7 @@ public class TargetMetrics : ITargetMetrics
                 var (type, isZone) = Target.ParseTargetType(group.Key);
                 return new TargetMetrics
                 {
+                    secondsSincePedalingStart = workoutSamples.Seconds_Since_Pedaling_Start,
                     targets = group.Select(x =>
                     {
                         var offsets = x.metric.Offsets;
@@ -242,6 +252,7 @@ public class TargetMetrics : ITargetMetrics
 	public IEnumerator<Target> Get1sTargets()
 	{
         var targets = this.targets.GetEnumerator();
+        var offsets = secondsSincePedalingStart.Zip(secondsSincePedalingStart.Skip(1), (x, y) => y - x).GetEnumerator();
 
         var offset = 0;
         while (targets.MoveNext())
@@ -252,7 +263,11 @@ public class TargetMetrics : ITargetMetrics
                     yield return targets.Current.target;
                 else
                     yield return null;
-                offset++;
+
+                if (offsets.MoveNext())
+                    offset += offsets.Current;
+                else
+                    yield break;
             }
         }
 	}
