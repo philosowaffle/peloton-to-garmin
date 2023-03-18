@@ -6,6 +6,10 @@
 - [#447] Map Exercises for Strength and Core classes when Class Plan information is available
 - Added support for mapping several more Exercises from Peloton to Garmin
 
+## Fixes
+
+- [#457] P2G fails with Ride Id is null (Just Run/Just Ride workouts)
+
 ## Housekeeping
 
 - [#448] Dependency Bumps and pulled in latest Garmin SDK

@@ -110,6 +110,24 @@ namespace UnitTests.Peloton
 
 			pelotonApi.Verify(x => x.GetWorkoutsAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(3));
 		}
+
+		[TestCase("")]
+		[TestCase("   ")]
+		[TestCase(null)]
+		[TestCase("00000000000000000000000000000000")]
+		public async Task GetWorkoutDetailsAsync_Should_Only_Enrich_ValidRideIds(string rideId)
+		{
+			var autoMocker = new AutoMocker();
+			var pelotonService = autoMocker.CreateInstance<PelotonService>();
+
+			var pelotonApi = autoMocker.GetMock<IPelotonApi>();
+			pelotonApi.Setup(x => x.GetWorkoutByIdAsync("someWorkoutId"))
+				.ReturnsAsync(JObject.FromObject(new Workout() { Ride = new Ride() { Id = rideId } }));
+
+			var workouts = await pelotonService.GetWorkoutDetailsAsync("someWorkoutId");
+
+			pelotonApi.Verify(x => x.GetClassSegmentsAsync(It.IsAny<string>()), Times.Never);
+		}
 	}
 
 	public class InternalPelotonService : PelotonService
