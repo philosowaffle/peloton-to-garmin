@@ -280,7 +280,7 @@ namespace Peloton
 				&& classId != "00000000000000000000000000000000")
 			{
 				var workoutSegments = await _pelotonApi.GetClassSegmentsAsync(classId);
-				p2gWorkoutData.Exercises = Common.Dto.Extensions.GetClassPlanExercises(p2gWorkoutData.Workout, workoutSegments);
+				p2gWorkoutData.Exercises = P2GWorkoutExerciseMapper.GetWorkoutExercises(p2gWorkoutData.Workout, workoutSegments);
 			}
 
 			return p2gWorkoutData;
