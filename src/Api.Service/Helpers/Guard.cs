@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Api.Contract;
+﻿using Api.Contract;
 
 namespace Api.Service.Helpers;
 
@@ -25,32 +24,6 @@ public static class Guard
 		if (string.IsNullOrEmpty(input))
 		{
 			result = new ErrorResponse(errorMessage ?? $"{name} must not be null or empty.");
-			return true;
-		}
-
-		return false;
-	}
-
-	public static bool CheckIsNotNull<T>(this T input, string name, out ActionResult? result, string? errorMessage = null)
-	{
-		result = null;
-
-		if (input is not null)
-		{
-			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must be null."));
-			return true;
-		}
-
-		return false;
-	}
-
-	public static bool CheckIsGreaterThan(this int input, int limit, string name, out ActionResult? result, string? errorMessage = null)
-	{
-		result = null;
-
-		if (input > limit)
-		{
-			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must not be greater than {limit}."));
 			return true;
 		}
 
@@ -83,19 +56,6 @@ public static class Guard
 		return false;
 	}
 
-	public static bool CheckHasAny<T>(this ICollection<T> input, string name, out ActionResult? result, string? errorMessage = null)
-	{
-		result = null;
-
-		if (input is not null && input.Any())
-		{
-			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must be empty."));
-			return true;
-		}
-
-		return false;
-	}
-
 	public static bool DoesNotHaveAny<T>(this ICollection<T> input, string name, out ErrorResponse? result, string? errorMessage = null)
 	{
 		result = null;
@@ -109,13 +69,13 @@ public static class Guard
 		return false;
 	}
 
-	public static bool IsAfter(this DateTime input, DateTime limit, string name, out ActionResult? result, string? errorMessage = null)
+	public static bool IsAfter(this DateTime input, DateTime limit, string name, out ErrorResponse? result, string? errorMessage = null)
 	{
 		result = null;
 
 		if (input > limit)
 		{
-			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must be before {limit}."));
+			result = new ErrorResponse(errorMessage ?? $"{name} must be before {limit}.");
 			return true;
 		}
 

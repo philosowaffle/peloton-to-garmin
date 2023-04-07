@@ -7,6 +7,7 @@ using Api.Services;
 using Common;
 using Common.Database;
 using Common.Dto.Peloton;
+using Common.Dto;
 using Common.Service;
 using Flurl.Http;
 using Garmin.Auth;
@@ -112,9 +113,45 @@ public class ServiceClient : IApiClient
 		};
 	}
 
-	public Task<PelotonWorkoutsGetAllResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetAllRequest request)
+	public async Task<PelotonWorkoutsGetAllResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetAllRequest request)
 	{
-		throw new NotImplementedException();
+		if (request.SinceDate.IsAfter(DateTime.UtcNow, nameof(request.SinceDate), out var result))
+			throw new ApiClientException(result!);
+
+		ICollection<Workout> workoutsToReturn = new List<Workout>();
+		var completedOnly = request.WorkoutStatusFilter == WorkoutStatus.Completed;
+
+		try
+		{
+			var serviceResult = await _pelotonService.GetWorkoutsSinceAsync(request.SinceDate);
+
+			if (serviceResult.IsErrored())
+				throw new ApiClientException(new ErrorResponse(serviceResult.Error.Message));
+
+			foreach (var w in serviceResult.Result)
+			{
+				if (completedOnly && w.Status != "COMPLETE")
+					continue;
+
+				if (request.ExcludeWorkoutTypes.Contains(w.GetWorkoutType()))
+					continue;
+
+				workoutsToReturn.Add(w);
+			}
+		}
+		catch (Exception e)
+		{
+			throw new ApiClientException(new ErrorResponse($"Unexpected error occurred: {e.Message}", e));
+		}
+
+		return new PelotonWorkoutsGetAllResponse()
+		{
+			SinceDate = request.SinceDate,
+			Items = workoutsToReturn
+					.OrderByDescending(i => i.Created_At)
+					.Select(w => new PelotonWorkout(w))
+					.ToList()
+		};
 	}
 
 	public async Task SendGarminMfaTokenAsync(GarminAuthenticationMfaTokenPostRequest request)

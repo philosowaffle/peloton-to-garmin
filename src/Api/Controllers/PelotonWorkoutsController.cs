@@ -82,7 +82,7 @@ namespace Api.Controllers
 		public async Task<ActionResult<PelotonWorkoutsGetAllResponse>> GetAsync([FromQuery] PelotonWorkoutsGetAllRequest request)
 		{
 			if (request.SinceDate.IsAfter(DateTime.UtcNow, nameof(request.SinceDate), out var result))
-				return result!;
+				return new BadRequestObjectResult(result!);
 
 			ICollection<Workout> workoutsToReturn = new List<Workout>();
 			var completedOnly = request.WorkoutStatusFilter == WorkoutStatus.Completed;
