@@ -12,12 +12,12 @@ public class ErrorResponse : IErrorResponse
 	public ErrorCode Code { get; set; }
 	public Exception? Exception { get; set; }
 
-	public ErrorResponse(string message, Exception ex = null)
+	public ErrorResponse(string message, Exception? ex = null)
 	{
 		Message = message;
 	}
 
-	public ErrorResponse(string message, ErrorCode code, Exception ex = null)
+	public ErrorResponse(string message, ErrorCode code, Exception? ex = null)
 	{
 		Message = message;
 		Code = code;
