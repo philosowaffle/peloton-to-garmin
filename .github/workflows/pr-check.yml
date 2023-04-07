@@ -58,10 +58,10 @@ jobs:
         dotnet-version: ${{ matrix.dotnet }}
     
     - name: Clean
-      run: dotnet clean ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --configuration Release && dotnet nuget locals all --clear
+      run: dotnet clean ${{ github.workspace }}/src/ConsoleClient/ConsoleClient.csproj --configuration Release && dotnet nuget locals all --clear
     
     - name: Restore
-      run: dotnet restore ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj
+      run: dotnet restore ${{ github.workspace }}/src/ConsoleClient/ConsoleClient.csproj
 
     - name: Prepare env
       run: |
@@ -69,7 +69,7 @@ jobs:
           echo "RUNNER_TOOL_CACHE=$Env:RUNNER_TOOL_CACHE" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
         
     - name: Publish ${{matrix.os}}
-      run: dotnet publish ${{ github.workspace }}/src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --no-restore -c Release -r ${{ matrix.os }} -o ${{ github.workspace }}/dist/${{ matrix.os }} --version-suffix ${{ env.BUILD_VERSION }} --self-contained true
+      run: dotnet publish ${{ github.workspace }}/src/ConsoleClient/ConsoleClient.csproj --no-restore -c Release -r ${{ matrix.os }} -o ${{ github.workspace }}/dist/${{ matrix.os }} --version-suffix ${{ env.BUILD_VERSION }} --self-contained true
 
     - name: Copy Config to Distro
       run: cp ${{ github.workspace }}/configuration.example.json ${{ github.workspace }}/dist/${{ matrix.os }}/configuration.local.json

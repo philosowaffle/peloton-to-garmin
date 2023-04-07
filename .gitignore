@@ -115,8 +115,8 @@ syncHistory.json
 configuration.local.json
 /.vs/PelotonToGarmin
 /src/Api/data
-/src/PelotonToGarminConsole/data
-/src/PelotonToGarminConsole/python/**
+/src/ConsoleClient/data
+/src/ConsoleClient/python/**
 /src/WebUI/wwwroot/lib
 */**/output/**
 /Output

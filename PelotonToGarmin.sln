@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PelotonToGarminConsole", "src\PelotonToGarminConsole\PelotonToGarminConsole.csproj", "{808B1164-D94D-456F-B0AF-E5DDE4B82B4A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleClient", "src\ConsoleClient\ConsoleClient.csproj", "{808B1164-D94D-456F-B0AF-E5DDE4B82B4A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Garmin", "src\Garmin\Garmin.csproj", "{3E0E0007-E67A-44BA-B819-40C6E2C2EC8C}"
 EndProject
