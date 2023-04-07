@@ -57,7 +57,7 @@ namespace Common.Dto
 		public int DurationSeconds { get; init; }
 		public MovementTargetType Type { get; init; }
 		public int? Reps { get; init; }
-		public P2GWeight? Weight { get; init; }
+		public P2GWeight Weight { get; init; }
 	}
 
 	public record P2GWeight

@@ -16,9 +16,12 @@ public static class P2GWorkoutExerciseMapper
 
 		foreach (var segment in segments)
 		{
-			if (segment.SubSegments_V2 is null || segment.SubSegments_V2.Count <= 0) continue;
+			if (segment?.SubSegments_V2 is null || segment.SubSegments_V2.Count <= 0) continue;
+
 			foreach (var subSegment in segment.SubSegments_V2)
 			{
+				if (subSegment?.Movements is null || subSegment.Movements.Count <= 0) continue;
+
 				foreach (var movement in subSegment.Movements)
 				{
 					if (movement is null) continue;
@@ -40,7 +43,8 @@ public static class P2GWorkoutExerciseMapper
 			}
 		}
 
-		return exercises;
+		var sorted = exercises.OrderBy(e => e.StartOffsetSeconds).ToList();
+		return sorted;
 	}
 
 	public static ICollection<P2GExercise> GetExercisesTrackedByMovementTracker(Workout workout)
@@ -63,7 +67,7 @@ public static class P2GWorkoutExerciseMapper
 					Weight = new P2GWeight()
 					{
 						Unit = repData?.Weight?.FirstOrDefault()?.Weight_Data?.Weight_Unit,
-						Value = repData?.Weight?.FirstOrDefault().Weight_Data?.Weight_Value ?? 0
+						Value = repData?.Weight?.FirstOrDefault()?.Weight_Data?.Weight_Value ?? 0
 					}
 				};
 				movements.Add(movement);

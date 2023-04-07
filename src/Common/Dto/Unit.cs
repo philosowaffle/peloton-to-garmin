@@ -74,6 +74,8 @@ public static class UnitHelpers
 		{
 			case "lb": return WeightUnit.Pounds;
 			case "kg": return WeightUnit.Kilograms;
+			case "":
+			case null:
 			case "null": return WeightUnit.None;
 			default:
 				Log.Error("Found unknown weight unit {@Unit}", unit);
