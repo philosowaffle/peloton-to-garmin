@@ -14,10 +14,10 @@
         <EnableDefaultCssItems>false</EnableDefaultCssItems>
 
         <!-- Display name -->
-        <ApplicationTitle>ClientUI</ApplicationTitle>
+        <ApplicationTitle>PelotonToGarmin</ApplicationTitle>
 
         <!-- App Identifier -->
-        <ApplicationId>com.companyname.clientui</ApplicationId>
+        <ApplicationId>com.philosowaffle.pelotontogarmin.clientui</ApplicationId>
         <ApplicationIdGuid>B01486E7-1F8D-4350-B68E-874A02A96694</ApplicationIdGuid>
 
         <!-- Versions -->
