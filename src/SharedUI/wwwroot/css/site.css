@@ -1,6 +1,7 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 @import url('../lib/font-awesome/css/all.css');
 @import url('../lib/bootstrap/css/bootstrap.min.css');
+@import url('../lib/bootstrap-icons/font/bootstrap-icons.css');
 @import url('_content/Havit.Blazor.Components.Web.Bootstrap/defaults.css');
 @import url('forms.css');
 

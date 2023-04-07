@@ -1,5 +1,5 @@
 ﻿using Api.Contract;
-using Api.Service.Helpers;
+using Api.Service.Validators;
 using Common.Database;
 using Common.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -41,8 +41,9 @@ public class SyncController : Controller
 	public async Task<ActionResult<SyncPostResponse>> SyncAsync([FromBody] SyncPostRequest request)
 	{
 		var settings = await _settingsService.GetSettingsAsync();
+		var auth = _settingsService.GetGarminAuthentication(settings.Garmin.Email);
 
-		var (isValid, result) = await IsValidAsync(request);
+		var (isValid, result) = request.IsValidHttp(settings, auth);
 		if (!isValid) return result!;
 
 		SyncResult syncResult = new();
@@ -97,29 +98,5 @@ public class SyncController : Controller
 		};
 
 		return response;
-	}
-
-	async Task<(bool, ActionResult?)> IsValidAsync(SyncPostRequest request)
-	{
-		ActionResult result = new OkResult();
-
-		if (request.CheckIsNull("PostRequest", out result!))
-			return (false, result);
-
-		var settings = await _settingsService.GetSettingsAsync();
-		if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled)
-		{
-			var auth = _settingsService.GetGarminAuthentication(settings.Garmin.Email);
-			if (auth is null || !auth.IsValid(settings))
-			{
-				result = new UnauthorizedObjectResult(new Api.Contract.ErrorResponse("Must initialize Garmin two factor auth token before sync can be preformed.", ErrorCode.NeedToInitGarminMFAAuth));
-				return (false, result);
-			}
-		}
-
-		if (request.WorkoutIds.CheckDoesNotHaveAny(nameof(request.WorkoutIds), out result!))
-			return (false, result);
-
-		return (true, result);
 	}
 }

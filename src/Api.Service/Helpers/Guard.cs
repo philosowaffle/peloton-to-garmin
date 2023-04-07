@@ -5,13 +5,13 @@ namespace Api.Service.Helpers;
 
 public static class Guard
 {
-	public static bool CheckIsNull<T>(this T input, string name, out ActionResult? result, string? errorMessage = null)
+	public static bool IsNull<T>(this T input, string name, out ErrorResponse? result, string? errorMessage = null)
 	{
 		result = null;
 
 		if (input is null)
 		{
-			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must not be null."));
+			result = new ErrorResponse(errorMessage ?? $"{name} must not be null.");
 			return true;
 		}
 
@@ -96,13 +96,13 @@ public static class Guard
 		return false;
 	}
 
-	public static bool CheckDoesNotHaveAny<T>(this ICollection<T> input, string name, out ActionResult? result, string? errorMessage = null)
+	public static bool DoesNotHaveAny<T>(this ICollection<T> input, string name, out ErrorResponse? result, string? errorMessage = null)
 	{
 		result = null;
 
 		if (input is null || !input.Any())
 		{
-			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must not be empty."));
+			result = new ErrorResponse(errorMessage ?? $"{name} must not be empty.");
 			return true;
 		}
 

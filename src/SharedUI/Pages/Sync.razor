@@ -39,22 +39,6 @@
 		base.Dispose();
 	}
 
-	protected override async Task OnInitializedAsync()
-	{
-		using var tracing = Tracing.ClientTrace($"{nameof(Index)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
-
-		try
-		{
-			var getSettingsTask = _apiClient.SettingsGetAsync();
-			var settings = await getSettingsTask;
-		}
-		catch (Exception e)
-		{
-			Log.Error("UI - Failed to fetch data for sync page.", e);
-			_toaster.AddError($"Failed to fetch data from P2G Api - {e.Message} - See logs for details.");
-		}
-	}
-
 	private async Task<GridDataProviderResult<PelotonWorkout>> LoadDataAsync(GridDataProviderRequest<PelotonWorkout> request)
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(Sync)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
@@ -116,15 +100,14 @@
 			}
 
 		}
-		catch (FlurlHttpTimeoutException te)
+		catch (SyncTimeoutException te)
 		{
 			_toaster.AddInformation("Long running sync will continue running in the background.");
 			Log.Information("UI - Sync timeout reached.", te);
 		}
-		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		catch (ApiClientException e)
 		{
-			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			_toaster.AddError(error.Message);
+			_toaster.AddError(e.Message);
 			Log.Error("UI - Failed to sync Peloton workouts.", e);
 		}
 		catch (Exception e)

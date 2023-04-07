@@ -2,17 +2,19 @@
 using Api.Service;
 using Api.Service.Helpers;
 using Api.Service.Mappers;
+using Api.Service.Validators;
 using Api.Services;
 using Common;
+using Common.Database;
 using Common.Dto.Peloton;
 using Common.Service;
 using Flurl.Http;
 using Garmin.Auth;
-using Microsoft.AspNetCore.Http;
 using Peloton;
 using Peloton.AnnualChallenge;
 using Peloton.Dto;
 using SharedUI;
+using Sync;
 
 namespace ClientUI;
 
@@ -24,8 +26,10 @@ public class ServiceClient : IApiClient
 	private readonly IAnnualChallengeService _annualChallengeService;
 	private readonly IPelotonService _pelotonService;
 	private readonly IGarminAuthenticationService _garminAuthService;
+	private readonly ISyncService _syncService;
+	private readonly ISyncStatusDb _syncStatusDb;
 
-	public ServiceClient(ISystemInfoService systemInfoService, ISettingsService settingsService, IAnnualChallengeService annualChallengeService, ISettingsUpdaterService settingsUpdaterService, IPelotonService pelotonService, IGarminAuthenticationService garminAuthService)
+	public ServiceClient(ISystemInfoService systemInfoService, ISettingsService settingsService, IAnnualChallengeService annualChallengeService, ISettingsUpdaterService settingsUpdaterService, IPelotonService pelotonService, IGarminAuthenticationService garminAuthService, ISyncService syncService, ISyncStatusDb syncStatusDb)
 	{
 		_systemInfoService = systemInfoService;
 		_settingsService = settingsService;
@@ -33,6 +37,8 @@ public class ServiceClient : IApiClient
 		_settingsUpdaterService = settingsUpdaterService;
 		_pelotonService = pelotonService;
 		_garminAuthService = garminAuthService;
+		_syncService = syncService;
+		_syncStatusDb = syncStatusDb;
 	}
 
 	public async Task<ProgressGetResponse> GetAnnualProgressAsync()
@@ -253,14 +259,53 @@ public class ServiceClient : IApiClient
 		}
 	}
 
-	public Task<SyncGetResponse> SyncGetAsync()
+	public async Task<SyncGetResponse> SyncGetAsync()
 	{
-		throw new NotImplementedException();
+		var syncTimeTask = _syncStatusDb.GetSyncStatusAsync();
+		var settingsTask = _settingsService.GetSettingsAsync();
+
+		await Task.WhenAll(syncTimeTask, settingsTask);
+
+		var syncTime = await syncTimeTask;
+		var settings = await settingsTask;
+
+		return new SyncGetResponse()
+		{
+			SyncEnabled = settings.App.EnablePolling,
+			SyncStatus = syncTime.SyncStatus,
+			LastSuccessfulSyncTime = syncTime.LastSuccessfulSyncTime,
+			LastSyncTime = syncTime.LastSyncTime,
+			NextSyncTime = syncTime.NextSyncTime
+		};
 	}
 
-	public Task<SyncPostResponse> SyncPostAsync(SyncPostRequest syncPostRequest)
+	public async Task<SyncPostResponse> SyncPostAsync(SyncPostRequest syncPostRequest)
 	{
-		throw new NotImplementedException();
+		var settings = await _settingsService.GetSettingsAsync();
+		var auth = _settingsService.GetGarminAuthentication(settings.Garmin.Email);
+
+		var (isValid, result) = syncPostRequest.IsValid(settings, auth);
+		if (!isValid)
+			throw new ApiClientException(result);
+
+		SyncResult syncResult = new();
+		try
+		{
+			syncResult = await _syncService.SyncAsync(syncPostRequest.WorkoutIds, exclude: null);
+		}
+		catch (Exception e)
+		{
+			throw new ApiClientException(new ErrorResponse($"Unexpected error occurred: {e.Message}", e));
+		}
+
+		return new SyncPostResponse()
+		{
+			SyncSuccess = syncResult.SyncSuccess,
+			PelotonDownloadSuccess = syncResult.PelotonDownloadSuccess,
+			ConverToFitSuccess = syncResult.ConversionSuccess,
+			UploadToGarminSuccess = syncResult.UploadToGarminSuccess,
+			Errors = syncResult.Errors.Select(e => new ErrorResponse(e.Message)).ToList()
+		};
 	}
 
 	public async Task<SystemInfoGetResponse> SystemInfoGetAsync(SystemInfoGetRequest systemInfoGetRequest)

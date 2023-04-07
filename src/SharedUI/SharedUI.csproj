@@ -20,16 +20,7 @@
     <ProjectReference Include="..\Api.Contract\Api.Contract.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
-
-	<ItemGroup>
-	  <Content Remove="wwwroot\favicon.ico" />
-	  <Content Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.css.map" />
-	  <Content Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.min.css.map" />
-	  <Content Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.css.map" />
-	  <Content Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.min.css.map" />
-	  <Content Remove="wwwroot\lib\bootstrap\css\bootstrap-reboot.css.map" />
-	</ItemGroup>
-
+	
 	<ItemGroup>
 	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.css" />
 	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.css.map" />
@@ -51,7 +42,7 @@
 	  <None Include="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.min.css.map" />
 	  <None Include="wwwroot\lib\bootstrap\css\bootstrap-reboot.css.map" />
 	</ItemGroup>
-
+	
 	<ItemGroup>
 	  <Folder Include="wwwroot\lib\bootstrap\scss\" />
 	</ItemGroup>
