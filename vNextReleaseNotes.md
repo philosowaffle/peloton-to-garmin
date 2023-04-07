@@ -4,11 +4,13 @@
 ## Features
 
 - [#447] Map Exercises for Strength and Core classes when Class Plan information is available
+- [#453] Map Exercises from Movement Tracker + untracked movements in Class Plan
 - Added support for mapping several more Exercises from Peloton to Garmin
 
 ## Fixes
 
 - [#457] P2G fails with Ride Id is null (Just Run/Just Ride workouts)
+- [#463] Null reference exception when parsing some strength exercises (fixed in #453)
 
 ## Housekeeping
 

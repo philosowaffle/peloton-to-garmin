@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Common.Dto.Peloton;
 
@@ -23,5 +22,5 @@ public record Movement
 {
 	public string Id { get; init; }
 	public string Name { get; init; }
-
+	public string Weight_Level { get; init; } // enum { heavy, medium, ??? }
 }

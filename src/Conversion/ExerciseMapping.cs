@@ -1,6 +1,5 @@
 ﻿using Dynastream.Fit;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace Conversion;
 
@@ -10,6 +9,9 @@ public static class ExerciseMapping
 	{
 		// A
 		/* AMRAP */ "98cde50f696746ff98727d5362229cfb",
+
+		// D
+		/* Demo */ "e54412161b594e54a86d6ef23ea3d017",
 
 		// T
 		/* Transition */ "a76c5edc0641475189442ecad456057a",
@@ -35,12 +37,17 @@ public static class ExerciseMapping
 		/* Clean */ { "f2a28d3ebf3c4844a704d2b94e283099", new (ExerciseCategory.OlympicLift, OlympicLiftExerciseName.DumbbellClean) },
 		/* Concentrated Curl */ { "3695ef0ec2ce484faedc8ce2bfa2819d", new (ExerciseCategory.Curl, CurlExerciseName.SeatedDumbbellBicepsCurl) },
 		/* Crunch */ { "61ac0d64602c48fba25af7e5e5dc1f97", new (ExerciseCategory.Crunch, CrunchExerciseName.Crunch) },
+		/* Cursh Press */ { "4899db2664ce47da8ec14282282d3b0d", new (ExerciseCategory.BenchPress, BenchPressExerciseName.CloseGripBarbellBenchPress) },
 		/* Cross Body Curl */ { "a66b797fc2014b799cc0cb114d9c5079", new (ExerciseCategory.Curl, CurlExerciseName.CrossBodyDumbbellHammerCurl) },
 
 		// D
 		/* Dead Bug */ { "3001f790c7ca471e8ba6d1b57a3a842d", new (ExerciseCategory.HipStability, HipStabilityExerciseName.DeadBug) },
 		/* Deadlift */ { "cd6046306b2c4c4a8f40e169ec924eb9", new (ExerciseCategory.Deadlift, DeadliftExerciseName.DumbbellDeadlift) },
+		/* Dumbbell Pushup */ { "ce8c746fb5224e9dbc401fef0013a54f", new (ExerciseCategory.PushUp, PushUpExerciseName.PushUp) },
+		/* Dumbbell Single Leg Deadlift */ { "6dd608bcc9394b49a68a918359839202", new (ExerciseCategory.Deadlift, DeadliftExerciseName.SingleLegRomanianDeadliftWithDumbbell) },
 		/* Dumbbell Squat */ { "7d82b59462a54e61926077ded0becae5", new (ExerciseCategory.Squat, SquatExerciseName.DumbbellSquat) },
+		/* Dumbbell Sumo Deadlisft */ { "cd25b61809884d60adb1d97cd646f4fd", new (ExerciseCategory.Deadlift, DeadliftExerciseName.SumoDeadlift) },
+		/* Dumbbell Swing */ { "4460e019d86c4e4ebe7284bb16d128d2", new (ExerciseCategory.HipSwing, HipSwingExerciseName.SingleArmDumbbellSwing) },
 		/* Dumbbell Thruster */ { "5ab0baeebee94d3995cb7f2b0332f430", new (ExerciseCategory.Squat, SquatExerciseName.Thrusters) },
 
 		// F
@@ -48,6 +55,7 @@ public static class ExerciseMapping
 		/* Forearm Side Plank */ { "1c0403c4d7264d83b1c75d18c8cdac4f", new (ExerciseCategory.Plank, PlankExerciseName.SidePlank) },
 		/* ForeArm Plank */ { "feb44f24e2b8487b870a35f4501069be", new (ExerciseCategory.Plank, PlankExerciseName.Plank) },
 		/* Front to Back Lunge */ { "ed18d837c14746c5af38d4fa03b56918", new (ExerciseCategory.Lunge, LungeExerciseName.DumbbellLunge) },
+		/* Front Lunge */ { "8ef53816dc414bed800e8bf0cee3c484", new (ExerciseCategory.Lunge, LungeExerciseName.DumbbellLunge) },
 		/* Front Raise */ { "a9cefac3b8234bc0bc0ee8deb62d67d3", new (ExerciseCategory.LateralRaise, LateralRaiseExerciseName.FrontRaise) },
 
 		// G

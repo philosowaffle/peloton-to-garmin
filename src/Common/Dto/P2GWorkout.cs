@@ -47,60 +47,6 @@ namespace Common.Dto
 			};
 		}
 
-		public static ICollection<P2GExercise> GetClassPlanExercises(Workout workout, RideSegments rideSegments)
-		{
-			var movements = new List<P2GExercise>();
-
-			var trackedRepData = workout?.Movement_Tracker_Data?.Completed_Movements_Summary_Data?.Repetition_Summary_Data;
-			if (trackedRepData is not null && trackedRepData.Count > 0)
-			{
-				foreach (var repData in trackedRepData)
-				{
-					var movement = new P2GExercise()
-					{
-						Id = repData.Movement_Id,
-						Name = repData.Movement_Name,
-						Type = repData.Is_Hold ? MovementTargetType.Time : MovementTargetType.Reps,
-						StartOffsetSeconds = repData.Offset,
-						DurationSeconds = repData.Length,
-						Reps = repData.Completed_Number,
-						Weight = new P2GWeight()
-						{
-							Unit = repData?.Weight?.FirstOrDefault()?.Weight_Data?.Weight_Unit,
-							Value = repData?.Weight?.FirstOrDefault().Weight_Data?.Weight_Value ?? 0
-						}
-					};
-					movements.Add(movement);
-				}
-
-				return movements;
-			}
-
-			var segments = rideSegments?.Segments?.Segment_List;
-			if (segments is null || segments.Count <= 0) return movements;
-
-			foreach (var segment in segments)
-			{
-				if (segment.SubSegments_V2 is null || segment.SubSegments_V2.Count <= 0) continue;
-				foreach (var subSegment in segment.SubSegments_V2)
-				{
-					var mov = subSegment.Movements?.FirstOrDefault();
-					if (mov is null) continue;
-					var movement = new P2GExercise()
-					{
-						Id = mov.Id,
-						Name = mov.Name,
-						Type = MovementTargetType.Time,
-						StartOffsetSeconds = subSegment.Offset.GetValueOrDefault(),
-						DurationSeconds = subSegment.Length.GetValueOrDefault(),
-						Reps = subSegment.Rounds
-					};
-					movements.Add(movement);
-				}
-			}
-
-			return movements;
-		}
 	}
 
 	public record P2GExercise
@@ -111,7 +57,7 @@ namespace Common.Dto
 		public int DurationSeconds { get; init; }
 		public MovementTargetType Type { get; init; }
 		public int? Reps { get; init; }
-		public P2GWeight? Weight { get; init; }
+		public P2GWeight Weight { get; init; }
 	}
 
 	public record P2GWeight
