@@ -115,6 +115,7 @@ public static class ExerciseMapping
 
 		// W
 		/* Woodchop */ { "05d60a7d022f41dd8d3a8da07bca6041", new (ExerciseCategory.Chop, ChopExerciseName.DumbbellChop) },
+		/* Wide Grip Chest Press */ { "94e3c37e0cb245f78e195b115a400112", new (ExerciseCategory.BenchPress, BenchPressExerciseName.WideGripBarbellBenchPress) },
 		/* Wide Grip Bent Over Row */ { "d861cb497fcc4e1cba994b7a949a3bac", new (ExerciseCategory.Row, RowExerciseName.WideGripSeatedCableRow) },
 		/* Wide Grip Overhead Press */ { "258884d9586b45b3973228147a6b0c48", new (ExerciseCategory.ShoulderPress, ShoulderPressExerciseName.OverheadDumbbellPress) },
 
