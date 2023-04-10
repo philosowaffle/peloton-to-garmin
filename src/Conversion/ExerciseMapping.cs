@@ -29,7 +29,8 @@ public static class ExerciseMapping
 		/* Bent Over Row */ { "d60a1dd8824a49a4926f826b24f3b061", new (ExerciseCategory.Row, RowExerciseName.OneArmBentOverRow) },
 		/* Bicep Curl */ { "43d404595338443baab306a6589ae7fc", new (ExerciseCategory.Curl, CurlExerciseName.StandingDumbbellBicepsCurl) },
 		/* Bicycle */ { "550b2c852a9547b18ca8e6240c5c6750", new (ExerciseCategory.Crunch, CrunchExerciseName.BicycleCrunch) },
-		/* Bird Dog */ { "df8e18c5082f408b8490c4adcb0678b5", new (ExerciseCategory.Plank, PlankExerciseName.PlankWithKneeToElbow) }, 
+		/* Bird Dog */ { "df8e18c5082f408b8490c4adcb0678b5", new (ExerciseCategory.Plank, PlankExerciseName.PlankWithKneeToElbow) },
+		/* Body Weight Squat */ { "46d30aa1a4a245ada8a5e5ff8f3e7662", new (ExerciseCategory.Squat, SquatExerciseName.Squat) },
 
 		// C
 		/* Chest Fly */ { "45207949aa384783b5d71451f7fe1c3d", new (ExerciseCategory.Flye, FlyeExerciseName.DumbbellFlye) },
@@ -105,6 +106,7 @@ public static class ExerciseMapping
 
 		// T
 		/* Table Top Lateral Leg Lift */ { "5bb2d37f052e4d2faf1b0f1de4489531", new (ExerciseCategory.Plank, PlankExerciseName.KneelingSidePlankWithLegLift) },
+		/* Tall Kneeling Side Bend */ { "6be91da1de1c49f4b34bf358bdbf3bbc", new (ExerciseCategory.Crunch, CrunchExerciseName.StandingSideCrunch) },
 		/* Tricep Kickback */ { "da89d743904640d58e8b3f667f08783c", new (ExerciseCategory.TricepsExtension, TricepsExtensionExerciseName.DumbbellKickback) },
 		/* Tuck up */ { "3069e7ba28b84005b71c16a3781dda8d", new (ExerciseCategory.SitUp, SitUpExerciseName.BentKneeVUp) },
 		/* Tricep Push Up */ { "d463a4dc0cf640e0a58f3aa058c5b1a0", new (ExerciseCategory.PushUp, PushUpExerciseName.PushUp) },
