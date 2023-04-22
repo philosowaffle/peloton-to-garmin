@@ -34,7 +34,7 @@
   <ItemGroup>
     <PackageReference Include="Flurl" Version="3.0.7" />
     <PackageReference Include="Flurl.Http" Version="3.2.4" />
-    <PackageReference Include="Havit.Blazor.Components.Web.Bootstrap" Version="3.2.7" />
+    <PackageReference Include="Havit.Blazor.Components.Web.Bootstrap" Version="3.2.14" />
 	<PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
 	<PackageReference Include="prometheus-net" Version="8.0.0" />
 	<PackageReference Include="prometheus-net.DotNetRuntime" Version="4.4.0" />

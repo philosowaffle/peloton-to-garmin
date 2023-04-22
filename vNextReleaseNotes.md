@@ -4,3 +4,8 @@
 ## Features
 
 - Added support for mapping several more Exercises from Peloton to Garmin
+    - #466, #472
+
+## Housekeeping
+
+- [#461] Bump dependencies
