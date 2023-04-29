@@ -128,10 +128,10 @@ namespace Garmin
 		//private const string URL_SSO_SIGNIN = "https://sso.garmin.com/sso/signin";
 		//private const string URL_ACTIVITY_BASE = "https://connect.garmin.com/modern/proxy/activity-service/activity";
 		//private const string URL_ACTIVITY_TYPES = "https://connect.garmin.com/modern/proxy/activity-service/activity/activityTypes";
-		/// <summary>
-		/// This is where the magic happens!
-		/// Straight from  https://github.com/La0/garmin-uploader
-		/// </summary>
+		// <summary>
+		// This is where the magic happens!
+		// Straight from  https://github.com/La0/garmin-uploader
+		// </summary>
 		//public async Task InitAuth2()
 		//{
 		//	dynamic ssoHostResponse = null;
@@ -318,9 +318,9 @@ namespace Garmin
 		// TODO: I bet we can do multiple files at once
 		// https://github.com/tmenier/Flurl/issues/608
 
-		/// <summary>
-		/// Not quite working. Only uploads the first activity added.
-		/// </summary>
+		// <summary>
+		// Not quite working. Only uploads the first activity added.
+		// </summary>
 		//public async Task<string> UploadActivities(ICollection<string> filePaths, string format)
 		//{
 		//	var auth = await InitAuth();

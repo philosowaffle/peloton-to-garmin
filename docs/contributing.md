@@ -24,12 +24,12 @@ Ensure that your code:
 ```
 > dotnet restore
 > dotnet build
-> dotnet run ./src/PelotonToGarminConsole/PelotonToGarminConsole.csproj
+> dotnet run ./src/ConsoleClient/ConsoleClient.csproj
 ```
 
 ## Package Windows exe
 ```
-> dotnet publish ./src/PelotonToGarminConsole/PelotonToGarminConsole.csproj --no-restore -c Release -r win10-x64 -o ./dist --version-suffix local
+> dotnet publish ./src/ConsoleClient/ConsoleClient.csproj --no-restore -c Release -r win10-x64 -o ./dist --version-suffix local
 ```
 
 ## Developing against garmin-upload python library

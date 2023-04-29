@@ -1,0 +1,101 @@
+﻿@inject IApiClient _apiClient
+@inject IHxMessengerService _toaster;
+
+<EditForm Model="@pelotonSettings">
+	<div class="row gy-5">
+		<div class="col-md-6">
+			<HxInputText @bind-Value="pelotonSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
+		</div>
+		<div class="col-md-6">
+			<HxInputText @bind-Value="pelotonSettings.Password" Label="Password" Type="InputType.Password">
+				<LabelTemplate>
+					Password
+					@if (pelotonSettings.IsPasswordSet)
+					{
+						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success">Password is set</HxBadge>
+					}
+				</LabelTemplate>
+				<InputGroupEndTemplate>
+					@if (pelotonSettings.IsPasswordSet)
+					{
+						<HxButton Text="Clear" Color="ThemeColor.Secondary" Outline="true" OnClick="ClearPelotonPassword" />
+					}
+				</InputGroupEndTemplate>
+			</HxInputText>
+		</div>
+		<div class="col-md-6">
+			<HxInputNumber Label="Default number of workouts to download" TValue="int" @bind-Value="pelotonSettings.NumWorkoutsToDownload" />
+		</div>
+		<div class="col-md-6">
+			<HxMultiSelect Label="Excluded Workout Types"
+						   Data="@workoutTypes"
+						   @bind-Value="@selectedWorkoutTypes"
+						   EmptyText="- none -"
+						   TextSelector="(v) => v.ToString()"
+						   GenerateChip=true
+						   NullDataText="Loading workout types..." />
+		</div>
+	</div>
+	<br />
+	<HxSubmit Color="ThemeColor.Primary" OnClick="SavePelotonSettings">Save</HxSubmit>
+</EditForm>
+
+@code {
+	private static ICollection<WorkoutType> workoutTypes = Enum.GetValues(typeof(WorkoutType)).Cast<WorkoutType>().ToList();
+
+	private SettingsPelotonGetResponse pelotonSettings;
+
+	private List<WorkoutType> selectedWorkoutTypes = new List<WorkoutType>();
+
+	public PelotonSettingsForm()
+	{
+		var settings = new SettingsGetResponse();
+		pelotonSettings = settings.Peloton;
+	}
+
+	protected override Task OnInitializedAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(PelotonSettingsForm)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+		return LoadDataAsync();
+	}
+
+	private async Task LoadDataAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(PelotonSettingsForm)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
+		var settings = await _apiClient.SettingsGetAsync();
+
+		pelotonSettings = settings.Peloton;
+		selectedWorkoutTypes = pelotonSettings.ExcludeWorkoutTypes.ToList();
+	}
+
+	protected void ClearPelotonPassword()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(PelotonSettingsForm)}.{nameof(ClearPelotonPassword)}", kind: ActivityKind.Client);
+		pelotonSettings.Password = string.Empty;
+		pelotonSettings.IsPasswordSet = false;
+	}
+
+	protected async Task SavePelotonSettings()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(PelotonSettingsForm)}.{nameof(SavePelotonSettings)}", kind: ActivityKind.Client);
+
+		_toaster.Clear();
+
+		try
+		{
+			pelotonSettings.ExcludeWorkoutTypes = selectedWorkoutTypes;
+			pelotonSettings = await _apiClient.SettingsPelotonPostAsync(pelotonSettings.Map());
+			_toaster.AddInformation("Peloton Settings Saved!");
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to save Peloton Settings - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to save Peloton settings.", e);
+		}
+	}
+}

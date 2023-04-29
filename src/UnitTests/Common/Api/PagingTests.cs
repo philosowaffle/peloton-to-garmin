@@ -1,4 +1,4 @@
-﻿using Common.Dto.Api;
+﻿using Api.Contract;
 using NUnit.Framework;
 using System.Collections.Generic;
 
@@ -11,7 +11,7 @@ namespace UnitTests.Common.Api
 		[TestCase(-1, 0, ExpectedResult = false)]
 		[TestCase(5, 100, ExpectedResult = false)]
 		[TestCase(1, 0, ExpectedResult = true)]
-		[TestCase(100, 5, ExpectedResult = true)]		
+		[TestCase(100, 5, ExpectedResult = true)]
 		public bool PagingResponseBase_Calculates_HasNext_Correctly(int pageCount, int pageIndex)
 		{
 			var pagedResponse = new TestPagingContract()
