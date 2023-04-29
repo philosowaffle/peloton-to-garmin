@@ -13,7 +13,7 @@ For convenience a compiled windows executable is provided. This can easily be do
 1. In the unzipped directory find the `configuration.local.json` and open it in a text editor of your choice
     1. Be sure to set your usernames and passwords in Garmin and Peloton config sections respectively.
     1. Save and close the file
-1. Find the `PelotonToGarminConsole.exe`
+1. Find the `ConsoleClient.exe`
 1. Double click to run it!
 
 You can learn more about customizing your configuration file over in the [Configuration Section]({{ site.baseurl }}{% link configuration/index.md %}).
@@ -22,7 +22,7 @@ You can learn more about customizing your configuration file over in the [Config
 
 1. Download and unzip the [latest stable release](https://github.com/philosowaffle/peloton-to-garmin/releases)
 1. In the unzipped directory replace the `configuration.local.json` with your previous `configuration.local.json` file
-1. Find the `PelotonToGarminConsole.exe`
+1. Find the `ConsoleClient.exe`
 1. Double click to run it!
 
 ## Rolling back to a previous version
@@ -30,7 +30,7 @@ You can learn more about customizing your configuration file over in the [Config
 1. Find the release you want from the [releases page](https://github.com/philosowaffle/peloton-to-garmin/releases)
 1. Download and unzip the Windows exe from that relase (found in the `Assets` section)
 1. In the unzipped directory replace the `configuration.local.json` with your previous `configuration.local.json` file
-1. Find the `PelotonToGarminConsole.exe`
+1. Find the `ConsoleClient.exe`
 1. Double click to run it!
 
 ## Available Versions

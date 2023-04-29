@@ -21,7 +21,7 @@
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Conversion\Conversion.csproj" />
     <ProjectReference Include="..\Garmin\Garmin.csproj" />
-    <ProjectReference Include="..\PelotonToGarminConsole\PelotonToGarminConsole.csproj" />
+    <ProjectReference Include="..\ConsoleClient\ConsoleClient.csproj" />
     <ProjectReference Include="..\Peloton\Peloton.csproj" />
   </ItemGroup>
 
