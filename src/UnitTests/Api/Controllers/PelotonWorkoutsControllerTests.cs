@@ -1,6 +1,6 @@
-﻿using Api.Controllers;
+﻿using Api.Contract;
+using Api.Controllers;
 using Common.Dto;
-using Common.Dto.Api;
 using Common.Dto.Peloton;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;

@@ -1,5 +1,4 @@
 using Common;
-using Havit.Blazor.Components.Web;
 using WebUI;
 using Serilog;
 using Serilog.Enrichers.Span;
@@ -7,7 +6,7 @@ using Serilog.Events;
 using Prometheus;
 using Common.Observe;
 using Common.Stateful;
-using Common.Http;
+using SharedUI;
 
 ///////////////////////////////////////////////////////////
 /// STATICS
@@ -44,22 +43,13 @@ builder.Host.UseSerilog((ctx, logConfig) =>
 ///////////////////////////////////////////////////////////
 
 builder.Services.AddScoped<IApiClient>(sp => new ApiClient(config.Api.HostUrl));
-builder.Services.AddHxServices();
-builder.Services.AddHxMessenger();
+builder.Services.ConfigureSharedUIServices();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-FlurlConfiguration.Configure(config.Observability, 30);
-Tracing.EnableWebUITracing(builder.Services, config.Observability.Jaeger);
-
-Log.Logger = new LoggerConfiguration()
-				.ReadFrom.Configuration(builder.Configuration, sectionName: $"{nameof(Observability)}:Serilog")
-				.Enrich.FromLogContext()
-				.CreateLogger();
-
-Logging.LogSystemInformation();
+ObservabilityStartup.Configure(builder.Services, builder.Configuration, config);
 Common.Observe.Metrics.CreateAppInfo();
 
 ///////////////////////////////////////////////////////////

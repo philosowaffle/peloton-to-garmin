@@ -1,5 +1,5 @@
-﻿using Common.Dto.Api;
-using Common.Helpers;
+﻿using Api.Contract;
+using Api.Service.Helpers;
 using Common.Service;
 using Garmin.Auth;
 using Microsoft.AspNetCore.Mvc;
@@ -47,8 +47,8 @@ namespace Api.Controllers
 		{
 			var settings = await _settingsService.GetSettingsAsync();
 
-			if (settings.Garmin.Password.CheckIsNullOrEmpty("Garmin Password", out var result)) return result;
-			if (settings.Garmin.Email.CheckIsNullOrEmpty("Garmin Email", out result)) return result;
+			if (settings.Garmin.Password.CheckIsNullOrEmpty("Garmin Password", out var result)) return BadRequest(result);
+			if (settings.Garmin.Email.CheckIsNullOrEmpty("Garmin Email", out result)) return BadRequest(result);
 
 			try
 			{ 
