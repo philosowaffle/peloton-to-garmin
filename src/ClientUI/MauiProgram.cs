@@ -36,7 +36,11 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 			});
 
-		var configProvider = builder.Configuration.AddJsonFile(Path.Join(Environment.CurrentDirectory, "configuration.local.json"), optional: true, reloadOnChange: true)
+		var observabilityConfigFilePath = Path.Join(Statics.DefaultDataDirectory, "configuration.local.json");
+		if (!File.Exists(observabilityConfigFilePath))
+			InitObservabilityConfigFile("configuration.local.json", observabilityConfigFilePath);
+
+		var configProvider = builder.Configuration.AddJsonFile(observabilityConfigFilePath, optional: true, reloadOnChange: true)
 				.AddEnvironmentVariables(prefix: "P2G_");
 
 		var config = new AppConfiguration();
@@ -52,7 +56,7 @@ public static class MauiProgram
 		builder.Services.ConfigureSharedUIServices();
 		builder.Services.ConfigureP2GApiServices();
 
-		ObservabilityStartup.Configure(builder.Services, builder.Configuration, config);
+		ObservabilityStartup.Configure(builder.Services, builder.Configuration, config, hardcodeFileLogging: true);
 
 		///////////////////////////////////////////////////////////
 		/// APP
@@ -69,5 +73,31 @@ public static class MauiProgram
 		Tracing.Source = new(Statics.TracingService);
 
 		return builder.Build();
+	}
+
+	private static void InitObservabilityConfigFile(string sourceFileName, string destinationPath)
+	{
+		using FileStream outputStream = File.OpenWrite(destinationPath);
+		using Stream fs = FileSystem.Current.OpenAppPackageFileAsync(sourceFileName).GetAwaiter().GetResult();
+		using BinaryWriter writer = new BinaryWriter(outputStream);
+		using (BinaryReader reader = new BinaryReader(fs))
+		{
+			var bytesRead = 0;
+
+			int bufferSize = 1024;
+			var buffer = new byte[bufferSize];
+			using (fs)
+			{
+				do
+				{
+					buffer = reader.ReadBytes(bufferSize);
+					bytesRead = buffer.Count();
+					writer.Write(buffer);
+				}
+
+				while (bytesRead > 0);
+
+			}
+		}
 	}
 }

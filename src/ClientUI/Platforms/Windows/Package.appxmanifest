@@ -6,7 +6,7 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap rescap">
 
-  <Identity Name="com-philosowaffle-p2g-maui-win" Publisher="CN=Philosowaffle" Version="4.0.2.0" />
+  <Identity Name="com-philosowaffle-p2g-maui-win" Publisher="CN=Philosowaffle" Version="4.0.3.0" />
 
   <mp:PhoneIdentity PhoneProductId="49B29A07-7F5E-48A4-9587-2F44557B2958" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

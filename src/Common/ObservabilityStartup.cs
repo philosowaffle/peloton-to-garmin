@@ -1,27 +1,28 @@
 ﻿using Common.Http;
 using Common.Observe;
+using Common.Stateful;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace Common;
 
 public static class ObservabilityStartup
 {
-	public static void Configure(IServiceCollection services, ConfigurationManager configManager, AppConfiguration config)
+	public static void Configure(IServiceCollection services, ConfigurationManager configManager, AppConfiguration config, bool hardcodeFileLogging = false)
 	{
 		FlurlConfiguration.Configure(config.Observability);
 		Tracing.EnableWebUITracing(services, config.Observability.Jaeger);
 
-		Log.Logger = new LoggerConfiguration()
-						.ReadFrom.Configuration(configManager, sectionName: $"{nameof(Observability)}:Serilog")
-						.Enrich.FromLogContext()
-						.CreateLogger();
+		var loggingConfig = new LoggerConfiguration()
+						.ReadFrom.Configuration(configManager, sectionName: $"{nameof(Observability)}:Serilog");
+
+		if (hardcodeFileLogging)
+			loggingConfig.WriteTo.File(Path.Join(Statics.DefaultOutputDirectory, "log.txt"), rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7);
+
+		Log.Logger = loggingConfig.CreateLogger();
+
 
 		Logging.LogSystemInformation();
 	}
