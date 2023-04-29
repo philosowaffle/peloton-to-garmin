@@ -100,7 +100,7 @@ jobs:
         path: ${{ github.workspace }}/dist/${{ matrix.os }}
 
   compile-distro-ui:
-    name: Compile Distro
+    name: Compile Distro UI
     runs-on: 'windows-latest'
     needs: build-and-test
     strategy:
@@ -133,7 +133,7 @@ jobs:
           echo "RUNNER_TOOL_CACHE=$Env:RUNNER_TOOL_CACHE" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
         
     - name: Publish ${{matrix.os}}
-      run: dotnet publish ${{ github.workspace }}/src/ClientUI/ClientUI.csproj --no-restore -c Release -f ${{ matrix.framework }} -p:RuntimeIdentifierOverride=${{ matrix.os }}-o ${{ github.workspace }}/dist/${{ matrix.os }}-ui
+      run: dotnet publish ${{ github.workspace }}/src/ClientUI/ClientUI.csproj --no-restore -c Release -f ${{ matrix.framework }} -p:RuntimeIdentifierOverride=${{ matrix.os }} -o ${{ github.workspace }}/dist/${{ matrix.os }}-ui
 
     # Create Build Artifact
     - name: Upload Artifact ${{ matrix.os }}_${{ env.BUILD_VERSION }}
