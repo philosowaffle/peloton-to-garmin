@@ -124,3 +124,4 @@ configuration.local.json
 .vs/
 /.vscode/settings.json
 /src/SharedUI/wwwroot/lib
+/src/ClientUI/ClientUI.csproj.user
