@@ -12,6 +12,7 @@
         <SingleProject>true</SingleProject>
         <ImplicitUsings>enable</ImplicitUsings>
         <EnableDefaultCssItems>false</EnableDefaultCssItems>
+		<PublishReadyToRun>true</PublishReadyToRun>
 
         <!-- Display name -->
         <ApplicationTitle>PelotonToGarmin</ApplicationTitle>
