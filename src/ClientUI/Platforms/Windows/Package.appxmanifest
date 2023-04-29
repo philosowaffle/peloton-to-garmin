@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap rescap">
+
+  <Identity Name="com-philosowaffle-p2g-maui-win" Publisher="CN=Philosowaffle" Version="4.0.0.0" />
+
+  <mp:PhoneIdentity PhoneProductId="49B29A07-7F5E-48A4-9587-2F44557B2958" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+
+  <Properties>
+    <DisplayName>P2G</DisplayName>
+    <PublisherDisplayName>Philosowaffle</PublisherDisplayName>
+    <Logo>Resources\Logo\P2G-Package-Logo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
+      <uap:VisualElements
+        DisplayName="P2G"
+        Description="Convert workout data from Peloton into JSON/TCX/FIT files and automatically upload to Garmin Connect."
+        Square150x150Logo="P2G-M.png"
+        Square44x44Logo="Resources\AppIcon\P2G-Icon.png"
+        BackgroundColor="transparent">
+        <uap:DefaultTile Wide310x150Logo="P2G-W.png" Square310x310Logo="P2G-L.png"  ShortName="P2G" Square71x71Logo="Resources\AppIcon\P2G-S.png"/>
+        <uap:SplashScreen Image="Resources\Splash\P2G-Splash.png" />
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+    <Capability Name="internetClient"/>
+  </Capabilities>
+
+</Package>

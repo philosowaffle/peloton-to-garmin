@@ -9,5 +9,5 @@ if [[ "$1" == "api" ]]; then
 elif [[ "$1" == "webui" ]]; then
     exec runuser -u p2g ./WebUI
 else
-   exec runuser -u p2g ./PelotonToGarminConsole
+   exec runuser -u p2g ./ConsoleClient
 fi

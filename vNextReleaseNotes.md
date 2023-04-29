@@ -3,6 +3,7 @@
 
 ## Features
 
+- [#352] Created Windows GUI application
 - [#421] Uplift to dotnet 7
 
 ## Changes
