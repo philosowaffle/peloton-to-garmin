@@ -1,5 +1,4 @@
 # This workflow will:
-# - Build python package for os
 # - Publish latest all-in-one windows exe
 
 name: Publish Distro Latest
@@ -53,29 +52,6 @@ jobs:
 
     - name: Copy Config to Distro
       run: cp ${{ github.workspace }}/configuration.example.json ${{ github.workspace }}/dist/${{ matrix.os }}/configuration.local.json
-
-    # Package all-in-one python and add to distro
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r ${{ github.workspace }}/python/requirements.txt
-        pip install pyinstaller
-
-    - name: Package Python - Windows
-      if: ${{ matrix.os == 'win10-x64' }}
-      working-directory: ${{ github.workspace }}/python
-      run: |
-        pyinstaller -n upload --distpath ${{ github.workspace }}/dist/${{ matrix.os }}/python/ --console --clean --onefile --noconfirm --add-data "${{ env.RUNNER_TOOL_CACHE }}/python/3.9.6/x64/lib/site-packages/cloudscraper;./cloudscraper" ${{ github.workspace }}/python/upload.py
-    
-    - name: Package Python - MacOS
-      if: ${{ matrix.os == 'osx-x64' }}
-      run: |
-        pyinstaller -n upload --distpath ${{ github.workspace }}/dist/${{ matrix.os }}/python/ --console --clean --onefile --noconfirm --add-data "${{ env.RUNNER_TOOL_CACHE }}/python/3.9.6/x64/lib/site-packages/cloudscraper;./cloudscraper" ${{ github.workspace }}/python/upload.py
 
     # Create Artifact
     - name: Upload Artifact ${{ matrix.os }}_${{ env.BUILD_VERSION }}

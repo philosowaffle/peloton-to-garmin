@@ -63,7 +63,6 @@ namespace UnitTests.Common
 			config.Garmin.Password.Should().BeNull();
 			config.Garmin.FormatToUpload.Should().Be(FileFormat.Fit);
 			config.Garmin.Upload.Should().BeFalse();
-			config.Garmin.UploadStrategy.Should().Be(UploadStrategy.NativeImplV1);
 		}
 
 		[Test]
