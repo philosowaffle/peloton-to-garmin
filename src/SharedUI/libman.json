@@ -3,7 +3,7 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "font-awesome@6.2.0",
+      "library": "font-awesome@6.4.0",
       "destination": "wwwroot/lib/font-awesome/"
     },
     {
@@ -12,12 +12,12 @@
     },
     {
       "provider": "cdnjs",
-      "library": "popper.js@2.11.6",
+      "library": "popper.js@2.11.7",
       "destination": "wwwroot/lib/popperjs/"
     },
     {
       "provider": "jsdelivr",
-      "library": "bootstrap-icons@1.9.1",
+      "library": "bootstrap-icons@1.10.5",
       "destination": "wwwroot/lib/bootstrap-icons/"
     }
 ]
