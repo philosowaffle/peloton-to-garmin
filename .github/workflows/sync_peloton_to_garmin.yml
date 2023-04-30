@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     # The type of runner that the job will run on
     container: 
-      image:  philosowaffle/peloton-to-garmin:stable
+      image:  philosowaffle/peloton-to-garmin:console-stable
     steps:
     - name: Set env
       run: echo "OUTPUT_DIR=/app/output" >> $GITHUB_ENV
@@ -54,12 +54,10 @@ jobs:
           },
           "Peloton": {
             "NumWorkoutsToDownload": ${{ github.event.inputs.workoutsToDownload || env.DEFAULT_WORKOUT_NUM }},
-            "ExcludeWorkoutTypes": [ "meditation" ],
           },
           "Garmin": {
             "Upload": true,
-            "FormatToUpload": "fit",
-            "UploadStrategy": 2
+            "FormatToUpload": "fit"
           },
           "Observability": {
             "Prometheus": {

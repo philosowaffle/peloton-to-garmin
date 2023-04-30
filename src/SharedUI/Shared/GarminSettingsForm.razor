@@ -54,14 +54,6 @@
 											  NullDataText="Loading info..."
 											  @bind-Value="garminSettings.FormatToUpload" />
 								</div>
-
-								<div class="col-md-6">
-									<HxSelect Label="Upload Strategy to use"
-											  Data="@uploadStrategyTypes"
-											  Nullable="false"
-											  NullDataText="Loading info..."
-											  @bind-Value="garminSettings.UploadStrategy" />
-								</div>
 							</div>
 						</BodyTemplate>
 					</HxAccordionItem>
@@ -76,7 +68,6 @@
 
 @code {
 	private static ICollection<FileFormat> formatTypes = Enum.GetValues(typeof(FileFormat)).Cast<FileFormat>().ToList();
-	private static ICollection<UploadStrategy> uploadStrategyTypes = Enum.GetValues(typeof(UploadStrategy)).Cast<UploadStrategy>().ToList();
 
 	private SettingsGarminGetResponse garminSettings;
 

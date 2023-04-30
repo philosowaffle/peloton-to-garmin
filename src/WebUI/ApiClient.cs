@@ -27,7 +27,7 @@ public class ApiClient : IApiClient
 		catch (FlurlHttpException e)
 		{
 			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			throw new ApiClientException(error.Message, e);
+			throw new ApiClientException(error?.Message, e);
 		}
 	}
 
@@ -41,7 +41,7 @@ public class ApiClient : IApiClient
 		catch (FlurlHttpException e)
 		{
 			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			throw new ApiClientException(error.Message, e);
+			throw new ApiClientException(error?.Message, e);
 		}
 	}
 
@@ -56,7 +56,7 @@ public class ApiClient : IApiClient
 		catch (FlurlHttpException e)
 		{
 			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			throw new ApiClientException(error.Message, e);
+			throw new ApiClientException(error?.Message, e);
 		}
 	}
 
@@ -71,7 +71,7 @@ public class ApiClient : IApiClient
 		catch (FlurlHttpException e)
 		{
 			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			throw new ApiClientException(error.Message, e);
+			throw new ApiClientException(error?.Message, e);
 		}
 	}
 
@@ -86,7 +86,7 @@ public class ApiClient : IApiClient
 		catch (FlurlHttpException e)
 		{
 			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			throw new ApiClientException(error.Message, e);
+			throw new ApiClientException(error?.Message, e);
 		}
 	}
 
@@ -101,7 +101,7 @@ public class ApiClient : IApiClient
 		catch (FlurlHttpException e)
 		{
 			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			throw new ApiClientException(error.Message, e);
+			throw new ApiClientException(error?.Message, e);
 		}
 	}
 
@@ -119,7 +119,7 @@ public class ApiClient : IApiClient
 		catch (FlurlHttpException e)
 		{
 			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			throw new ApiClientException(error.Message, e);
+			throw new ApiClientException(error?.Message, e);
 		}
 	}
 
@@ -131,10 +131,14 @@ public class ApiClient : IApiClient
 				.PostJsonAsync(syncPostRequest)
 				.ReceiveJson<SyncPostResponse>();
 		}
+		catch (FlurlHttpTimeoutException te)
+		{
+			throw new SyncTimeoutException(te.Message, te);
+		}
 		catch (FlurlHttpException e)
 		{
 			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			throw new ApiClientException(error.Message, e);
+			throw new ApiClientException(error?.Message, e);
 		}
 	}
 
@@ -149,7 +153,7 @@ public class ApiClient : IApiClient
 		catch (FlurlHttpException e)
 		{
 			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			throw new ApiClientException(error.Message, e);
+			throw new ApiClientException(error?.Message, e);
 		}
 	}
 
@@ -164,7 +168,7 @@ public class ApiClient : IApiClient
 		catch (FlurlHttpException e)
 		{
 			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			throw new ApiClientException(error.Message, e);
+			throw new ApiClientException(error?.Message, e);
 		}
 	}
 
@@ -178,7 +182,7 @@ public class ApiClient : IApiClient
 		catch (FlurlHttpException e)
 		{
 			var error = await e.GetResponseJsonAsync<ErrorResponse>();
-			throw new ApiClientException(error.Message, e);
+			throw new ApiClientException(error?.Message, e);
 		}
 	}
 
