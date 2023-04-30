@@ -238,8 +238,7 @@ This section provides settings related to uploading workouts to Garmin.
     "Password": "garmin",
     "TwoStepVerificationEnabled": false,
     "Upload": false,
-    "FormatToUpload": "fit",
-    "UploadStrategy": 2
+    "FormatToUpload": "fit"
   }
 ```
 
@@ -256,19 +255,6 @@ This section provides settings related to uploading workouts to Garmin.
 | TwoStepVerificationEnabled | no | `false` | `Garmin Tab` | Whether or not your Garmin account is protected by Two Step Verification |
 | Upload | no | `false` | `Garmin Tab` |  `true` indicates you wish downloaded workouts to be automatically uploaded to Garmin for you. |
 | FormatToUpload | no | `fit` | `Garmin Tab > Advanced` | Valid values are `fit` or `tcx`. Ensure the format you specify here is also enabled in your [Format config](#format-config) |
-| UploadStrategy | **yes if Upload=true** | `null` |  `Garmin Tab > Advanced` |  Allows configuring different upload strategies for syncing with Garmin. Valid values are `[0 - PythonAndGuploadInstalledLocally, 1 - WindowsExeBundledPython, 2 - NativeImplV1]`. See [upload strategies](#upload-strategies) for more info. |
-
-### Upload Strategies
-
-Because Garmin does not officially support 3rd party uploads by small projects like P2G, over time we have occassionally encountered upload issues.  This has caused P2G's upload strategy to evolve.  Based on your installation method and or geo location, different upload strategies have worked for different people at different times.
-
-If you are just getting started with P2G, I recommend you start with upload strategy `2 - NativeImplV1`.  You can find more details about the strategies below.
-
-| Strategy  | Config Value | Supports Garmin Two Step Verification| Description |
-|:----------|:-------------|:-------------------------------------|:------------|
-| PythonAndGuploadInstalledLocally | 0 | maybe | The very first strategy P2G used. This assumes you have Python 3 and the [garmin-uploader](https://github.com/La0/garmin-uploader) python library already installed on your computer.  This strategy uses the `garmin-uploader` python library for handling all uploads to Garmin. |
-| WindowsExeBundledPython | 1 | no | If you are running the windows executable version of P2G and would like to use the [garmin-uploader](https://github.com/La0/garmin-uploader) python library for uploads then use this strategy. |
-| NativeImplV1 | 2 | yes | **The most current and recommended upload strategy.** P2G preforms the upload to Garmin itself without relying on 3rd party libraries. |
 
 ## Observability Config
 
