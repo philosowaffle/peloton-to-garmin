@@ -9,3 +9,22 @@
 ## Changes
 
 - [#302] Removed deprecated settings `PythonAndGUploadInstalled` and `CloseWindowOnFinish`
+- [#465] Remove support for uploading to Garmin via Python - `UploadStrategy`
+
+## Docker Tags
+
+- Console
+    - `console-stable`
+    - `console-latest`
+    - `console-v4.0.0`
+    - `console-v4`
+- Api
+    - `api-stable`
+    - `api-latest`
+    - `api-v4.0.0`
+    - `api-v4`
+- WebUI
+    - `webui-stable`
+    - `webui-latest`
+    - `webui-v4.0.0`
+    - `webui-v4`
