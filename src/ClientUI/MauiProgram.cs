@@ -1,5 +1,4 @@
-﻿using Common.Observe;
-using Common;
+﻿using Common;
 using Microsoft.Extensions.Logging;
 using SharedUI;
 using Common.Stateful;
@@ -56,7 +55,7 @@ public static class MauiProgram
 		builder.Services.ConfigureSharedUIServices();
 		builder.Services.ConfigureP2GApiServices();
 
-		ObservabilityStartup.Configure(builder.Services, builder.Configuration, config, hardcodeFileLogging: true);
+		ObservabilityStartup.ConfigureClientUI(builder.Services, builder.Configuration, config);
 
 		///////////////////////////////////////////////////////////
 		/// APP
@@ -68,9 +67,6 @@ public static class MauiProgram
 		builder.Services.AddBlazorWebViewDeveloperTools();
 		builder.Logging.AddDebug();
 #endif
-
-		// Setup initial Tracing Source
-		Tracing.Source = new(Statics.TracingService);
 
 		return builder.Build();
 	}
