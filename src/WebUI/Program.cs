@@ -1,10 +1,8 @@
 using Common;
 using WebUI;
 using Serilog;
-using Serilog.Enrichers.Span;
 using Serilog.Events;
 using Prometheus;
-using Common.Observe;
 using Common.Stateful;
 using SharedUI;
 
@@ -30,14 +28,6 @@ ConfigurationSetup.LoadConfigValues(builder.Configuration, config);
 
 builder.WebHost.UseUrls(config.WebUI.HostUrl);
 
-builder.Host.UseSerilog((ctx, logConfig) =>
-{
-	logConfig
-	.ReadFrom.Configuration(ctx.Configuration, sectionName: $"{nameof(Observability)}:Serilog")
-	.Enrich.WithSpan()
-	.Enrich.FromLogContext();
-});
-
 ///////////////////////////////////////////////////////////
 /// SERVICES
 ///////////////////////////////////////////////////////////
@@ -49,7 +39,7 @@ builder.Services.ConfigureSharedUIServices();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-ObservabilityStartup.Configure(builder.Services, builder.Configuration, config);
+ObservabilityStartup.ConfigureWebUI(builder.Services, builder.Configuration, config);
 Common.Observe.Metrics.CreateAppInfo();
 
 ///////////////////////////////////////////////////////////
@@ -58,16 +48,8 @@ Common.Observe.Metrics.CreateAppInfo();
 
 var app = builder.Build();
 
-// Setup initial Tracing Source
-Tracing.Source = new(Statics.TracingService);
-
 if (Log.IsEnabled(LogEventLevel.Verbose))
 	app.UseSerilogRequestLogging();
-
-app.Use((context, next) =>
-{
-	return next.Invoke();
-});
 
 if (config.Observability.Prometheus.Enabled)
 {
@@ -77,6 +59,11 @@ if (config.Observability.Prometheus.Enabled)
 	app.MapMetrics();
 	app.UseHttpMetrics();
 }
+
+app.Use((context, next) =>
+{
+	return next.Invoke();
+});
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

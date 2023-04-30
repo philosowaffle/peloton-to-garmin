@@ -1,11 +1,9 @@
 using Api.Services;
 using Common;
 using Common.Database;
-using Common.Observe;
 using Common.Stateful;
 using Prometheus;
 using Serilog;
-using Serilog.Enrichers.Span;
 using Serilog.Events;
 using SharedStartup;
 using System.Reflection;
@@ -21,8 +19,7 @@ Statics.ConfigPath = Path.Join(Environment.CurrentDirectory, "configuration.loca
 ///////////////////////////////////////////////////////////
 /// HOST
 ///////////////////////////////////////////////////////////
-var builder = WebApplication
-				.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
 var configProvider = builder.Configuration.AddJsonFile(Statics.ConfigPath, optional: true, reloadOnChange: true)
 				.AddEnvironmentVariables(prefix: "P2G_")
@@ -32,14 +29,6 @@ var config = new AppConfiguration();
 ConfigurationSetup.LoadConfigValues(builder.Configuration, config);
 
 builder.WebHost.UseUrls(config.Api.HostUrl);
-
-builder.Host.UseSerilog((ctx, logConfig) =>
-{
-	logConfig
-	.ReadFrom.Configuration(ctx.Configuration, sectionName: $"{nameof(Observability)}:Serilog")
-	.Enrich.WithSpan()
-	.Enrich.FromLogContext();
-});
 
 ///////////////////////////////////////////////////////////
 /// SERVICES
@@ -64,7 +53,7 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.ConfigureP2GApiServices();
 
-ObservabilityStartup.Configure(builder.Services, builder.Configuration, config);
+ObservabilityStartup.ConfigureApi(builder.Services, builder.Configuration, config);
 Common.Observe.Metrics.CreateAppInfo();
 
 ///////////////////////////////////////////////////////////
@@ -73,8 +62,17 @@ Common.Observe.Metrics.CreateAppInfo();
 
 var app = builder.Build();
 
-// Setup initial Tracing Source
-Tracing.Source = new(Statics.TracingService);
+if (Log.IsEnabled(LogEventLevel.Verbose))
+	app.UseSerilogRequestLogging();
+
+if (config.Observability.Prometheus.Enabled)
+{
+	Log.Information("Metrics Enabled");
+	Common.Observe.Metrics.EnableCollector(config.Observability.Prometheus);
+
+	app.MapMetrics();
+	app.UseHttpMetrics();
+}
 
 app.UseCors(options =>
 {
@@ -86,22 +84,11 @@ app.UseCors(options =>
 app.UseSwagger();
 app.UseSwaggerUI();
 
-if (Log.IsEnabled(LogEventLevel.Verbose))
-	app.UseSerilogRequestLogging();
-
 app.Use((context, next) =>
 {
 	return next.Invoke();
 });
 
-if (config.Observability.Prometheus.Enabled)
-{
-	Log.Information("Metrics Enabled");
-	Common.Observe.Metrics.EnableCollector(config.Observability.Prometheus);
-
-	app.MapMetrics();
-	app.UseHttpMetrics();
-}
 
 //app.UseHttpsRedirection();
 app.UseAuthorization();
