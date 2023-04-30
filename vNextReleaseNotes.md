@@ -8,7 +8,7 @@
 
 ## Fixes
 
-- [#491] - Fix case where a Garmin MFA code has a leading 0 causing p2g to send incorrect code to Garmin
+- [#491] - Fix case where a Garmin MFA code has a leading 0 causing p2g to send incorrect code to Garmin - @jheizer
 
 ## Housekeeping
 
