@@ -4,12 +4,11 @@
 
 <HxModal @ref="MfaModal" Title="Garmin Two Factor Verification" Backdrop="ModalBackdrop.Static" CloseOnEscape="true" OnClosed="OnClosed">
 	<BodyTemplate>
-		<HxInputNumber 
+		<HxInputText 
 			Label="Security Passcode"
 			@bind-Value="@_mfaCode"
 			Hint="Hint: Check your email or phone for the one time use code sent by Garmin."
-			Decimals="0"
-			TValue="int" />
+			InputMode="InputMode.Numeric" />
 			<br />
 	</BodyTemplate>
 	<FooterTemplate>
@@ -21,7 +20,7 @@
 
 	private HxModal? MfaModal;
 
-	private int _mfaCode;
+	private string _mfaCode = "";
 	private bool _isAuthenticated = false;
 	private bool _mfaEnabled = false;
 	private bool _isErrored = false;
