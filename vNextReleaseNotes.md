@@ -6,6 +6,10 @@
 - Added support for mapping several more Exercises from Peloton to Garmin
     - #466, #472
 
+## Fixes
+
+- [#491] - Fix case where a Garmin MFA code has a leading 0 causing p2g to send incorrect code to Garmin
+
 ## Housekeeping
 
 - [#461] Bump dependencies
