@@ -1,6 +1,5 @@
 ﻿using Common;
 using Common.Dto;
-using System.Collections.Generic;
 
 namespace Api.Contract;
 
@@ -35,7 +34,6 @@ public class SettingsGetResponse
 			TwoStepVerificationEnabled = settings.Garmin.TwoStepVerificationEnabled,
 			FormatToUpload = settings.Garmin.FormatToUpload,
 			Upload = settings.Garmin.Upload,
-			UploadStrategy = settings.Garmin.UploadStrategy,
 			IsPasswordSet = !string.IsNullOrEmpty(settings.Garmin.Password)
 		};
 	}
@@ -54,7 +52,6 @@ public class SettingsGarminGetResponse
 	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
-	public UploadStrategy UploadStrategy { get; set; }
 }
 
 public class SettingsGarminPostRequest
@@ -64,7 +61,6 @@ public class SettingsGarminPostRequest
 	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
-	public UploadStrategy UploadStrategy { get; set; }
 }
 
 public class SettingsPelotonGetResponse
@@ -122,7 +118,6 @@ public static class Mapping
 			TwoStepVerificationEnabled = response.TwoStepVerificationEnabled,
 			FormatToUpload = response.FormatToUpload,
 			Upload = response.Upload,
-			UploadStrategy = response.UploadStrategy,
 		};
 	}
 
@@ -135,7 +130,6 @@ public static class Mapping
 			TwoStepVerificationEnabled = request.TwoStepVerificationEnabled,
 			FormatToUpload = request.FormatToUpload,
 			Upload = request.Upload,
-			UploadStrategy = request.UploadStrategy,
 		};
 	}
 }

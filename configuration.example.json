@@ -28,8 +28,7 @@
     "Password": "",
     "TwoStepVerificationEnabled": false,
     "Upload": false,
-    "FormatToUpload": "fit",
-    "UploadStrategy": 2
+    "FormatToUpload": "fit"
   },
 
   "Observability": {

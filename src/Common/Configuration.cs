@@ -164,18 +164,12 @@ public class Peloton : ICredentials
 
 public class Garmin : ICredentials
 {
-	public Garmin()
-	{
-		UploadStrategy = UploadStrategy.NativeImplV1;
-	}
-
 	public EncryptionVersion EncryptionVersion { get; set; }
 	public string Email { get; set; }
 	public string Password { get; set; }
 	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
-	public UploadStrategy UploadStrategy { get; set; }
 }
 
 public class ApiSettings
@@ -226,13 +220,6 @@ public class Prometheus
 public class Developer
 {
 	public string UserAgent { get; set; }
-}
-
-public enum UploadStrategy : byte
-{
-	PythonAndGuploadInstalledLocally = 0,
-	WindowsExeBundledPython = 1,
-	NativeImplV1 = 2
 }
 
 public enum FileFormat : byte
