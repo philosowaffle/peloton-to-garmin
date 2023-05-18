@@ -86,6 +86,7 @@ namespace Common.Dto.Peloton
 		Stretching = 8,
 		Yoga = 9,
 		Meditation = 10,
-		Caesar = 11, // Project Caesar = Rower
+		Caesar = 11, // Project Caesar = Rower,
+		Caesar_Bootcamp = 12,
 	}
 }
