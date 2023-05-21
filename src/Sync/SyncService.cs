@@ -109,6 +109,14 @@ namespace Sync
 			activity?.AddTag("workouts.filtered", filteredWorkoutsCount);
 			_logger.Information("Found {@NumWorkouts} workouts remaining after filtering ExcludedWorkoutTypes.", filteredWorkoutsCount);
 
+			if (!filteredWorkouts.Any())
+			{
+				_logger.Information("No workouts to sync. Sync complete.");
+				response.ConversionSuccess = true;
+				response.SyncSuccess = true;
+				return response;
+			}
+
 			var convertStatuses = new List<ConvertStatus>();
 			try
 			{

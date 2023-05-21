@@ -4,3 +4,8 @@
 ## Features
 
 - [#497] Add support for Rowing Bootcamp
+- More exercise mappings
+	- [#495] Open Lateral Raise, Pike Push Up, Dolphin
+
+## Fixes
+- `All converters were skipped.` - confusing log message when no workouts needed to be synced

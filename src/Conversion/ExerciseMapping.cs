@@ -51,6 +51,7 @@ public static class ExerciseMapping
 		/* Dumbbell Sumo Deadlisft */ { "cd25b61809884d60adb1d97cd646f4fd", new (ExerciseCategory.Deadlift, DeadliftExerciseName.SumoDeadlift) },
 		/* Dumbbell Swing */ { "4460e019d86c4e4ebe7284bb16d128d2", new (ExerciseCategory.HipSwing, HipSwingExerciseName.SingleArmDumbbellSwing) },
 		/* Dumbbell Thruster */ { "5ab0baeebee94d3995cb7f2b0332f430", new (ExerciseCategory.Squat, SquatExerciseName.Thrusters) },
+		/* Dolphin */ { "843d434f59f941c0826fc0fe15eb0236", new (ExerciseCategory.Plank, PlankExerciseName.PlankPikes) },
 
 		// F
 		/* Flutter Kick */ { "6091566fa0674afd96a22fcec3ab18ce", new (ExerciseCategory.Crunch, CrunchExerciseName.FlutterKicks) },
@@ -82,11 +83,13 @@ public static class ExerciseMapping
 		/* Neutral Grip Chest Press */ { "802f10996b5048d08f320d8661f13ee1", new (ExerciseCategory.BenchPress, BenchPressExerciseName.NeutralGripDumbbellBenchPress) },
 
 		// O
+		/* Open Lateral Raise */ { " 00046ee377554425866b0a1963b98589", new (ExerciseCategory.LateralRaise, LateralRaiseExerciseName.SeatedLateralRaise) },
 		/* Overhead Carry */ { "12057d5f9e144913a824bcae5706966c", new (ExerciseCategory.Carry, CarryExerciseName.OverheadCarry) },
 		/* Overhead Extension */ { "f260623343e74d37b165071ee5903199", new (ExerciseCategory.TricepsExtension, TricepsExtensionExerciseName.OverheadDumbbellTricepsExtension) },
 		/* Overhead Press */ { "ef0279948228409298cd6bf62c5b122c", new (ExerciseCategory.ShoulderPress, ShoulderPressExerciseName.OverheadDumbbellPress) },
 
 		// P
+		/* Pike Push Up */ { "8af39d3485224ac19f7d8659d30524e7", new (ExerciseCategory.PushUp, PushUpExerciseName.ShoulderPushUp) },
 		/* Push Up */ { "1c4d81ad487849a6995f93e1a6a4b1e4", new (ExerciseCategory.PushUp, PushUpExerciseName.PushUp) },
 		/* Plank Hand Tap */ { "ad8e4f16bf5a450db7d3b72b8ff7b014", new (ExerciseCategory.Plank, PlankExerciseName.StraightArmPlankWithShoulderTouch) },
 		/* Plank Pike Reach */ { "67c956e4da6542d1bbfa0625d569f018", new (ExerciseCategory.Plank, PlankExerciseName.PlankPikes) },
