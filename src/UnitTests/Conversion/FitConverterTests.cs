@@ -50,6 +50,7 @@ namespace UnitTests.Conversion
 		[TestCase("running_workout_no_metrics", PreferredLapType.Default)]
 		[TestCase("ride_based_on_distance", PreferredLapType.Default)]
 		[TestCase("rower_workout", PreferredLapType.Default)]
+		[TestCase("row_bootcamp", PreferredLapType.Default)]
 
 		[TestCase("cycling_workout", PreferredLapType.Distance)]
 		[TestCase("cycling_just_ride", PreferredLapType.Distance)]

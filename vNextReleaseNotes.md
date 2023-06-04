@@ -3,7 +3,7 @@
 
 ## Features
 
-- [#497] Add support for Rowing Bootcamp
+- [#497] Add minimal support for Rowing Bootcamp
 - More exercise mappings
 	- [#495] Open Lateral Raise, Pike Push Up, Dolphin
 
