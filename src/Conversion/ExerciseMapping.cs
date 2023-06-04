@@ -56,6 +56,7 @@ public static class ExerciseMapping
 		// F
 		/* Flutter Kick */ { "6091566fa0674afd96a22fcec3ab18ce", new (ExerciseCategory.Crunch, CrunchExerciseName.FlutterKicks) },
 		/* Forearm Side Plank */ { "1c0403c4d7264d83b1c75d18c8cdac4f", new (ExerciseCategory.Plank, PlankExerciseName.SidePlank) },
+		/* Forearm Side Plank Rotation */ { "223e8e6918d64d9097064d34e3b17e77", new (ExerciseCategory.Plank, PlankExerciseName.SidePlankWithReachUnder) },
 		/* ForeArm Plank */ { "feb44f24e2b8487b870a35f4501069be", new (ExerciseCategory.Plank, PlankExerciseName.Plank) },
 		/* French Door */ { "78b0a09ce8274e9c8beac6aadd50454b", new (ExerciseCategory.TricepsExtension, TricepsExtensionExerciseName.DumbbellLyingTricepsExtension) },
 		/* Front to Back Lunge */ { "ed18d837c14746c5af38d4fa03b56918", new (ExerciseCategory.Lunge, LungeExerciseName.DumbbellLunge) },
@@ -111,6 +112,7 @@ public static class ExerciseMapping
 		/* Snatch */ { "0ddf8f94acfe4c2289aef5a9bf59e8d9", new (ExerciseCategory.OlympicLift, OlympicLiftExerciseName.SingleArmDumbbellSnatch) },
 		/* Split Squat */ { "28833fd99466476ea273d6b94747e3db", new (ExerciseCategory.Squat, SquatExerciseName.DumbbellSplitSquat) },
 		/* Standing Chest Fly */ { "021047bf0cff470bb2d11f94d3539cfe", new (ExerciseCategory.Flye, FlyeExerciseName.DumbbellFlye) },
+		/* Straight Leg Bicycle */ { "b617914877c24dac85df81621872e056", new (ExerciseCategory.Core, CoreExerciseName.Bicycle) },
 		/* Supinated Row */ { "34dd5f694fd44d15bb0eead604dfebae", new (ExerciseCategory.Row, RowExerciseName.ReverseGripBarbellRow) },
 
 		// T

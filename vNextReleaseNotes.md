@@ -7,6 +7,7 @@
 - [#497] Add minimal support for Rowing Bootcamp
 - More exercise mappings
 	- [#495] Open Lateral Raise, Pike Push Up, Dolphin
+	- [#499] Forearm Side Plank Rotation, Straight Leg Bicycle
 
 ## Fixes
 - `All converters were skipped.` - confusing log message when no workouts needed to be synced
