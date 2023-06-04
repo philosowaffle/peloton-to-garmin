@@ -626,6 +626,7 @@ namespace Conversion
 				case FitnessDiscipline.Meditation:
 					return Sport.Training;
 				case FitnessDiscipline.Caesar:
+				case FitnessDiscipline.Caesar_Bootcamp:
 					return Sport.Rowing;
 				default:
 					return Sport.Invalid;
