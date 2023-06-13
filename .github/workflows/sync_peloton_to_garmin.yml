@@ -13,7 +13,7 @@ on:
         type: boolean
         default: false
   schedule:
-    - cron: '0 18 * * *'
+    - cron: '0 15,23 * * *'
 
 jobs:
   sync:
