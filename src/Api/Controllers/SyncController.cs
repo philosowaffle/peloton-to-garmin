@@ -31,16 +31,20 @@ public class SyncController : Controller
 	/// <response code="201">The sync was successful. Returns the sync status information.</response>
 	/// <response code="200">This request completed, but the Sync may not have been successful. Returns the sync status information.</response>
 	/// <response code="400">If the request fields are invalid.</response>
+	/// <response code="401">ErrorCode.NeedToInitGarminMFAAuth - Garmin Two Factor is enabled, you must manually initialize Garmin auth prior to syncing.</response>
 	/// <response code="500">Unhandled exception.</response>
 	[HttpPost]
 	[ProducesResponseType(typeof(SyncPostResponse), StatusCodes.Status201Created)]
 	[ProducesResponseType(typeof(SyncPostResponse), StatusCodes.Status200OK)]
 	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
 	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<SyncPostResponse>> SyncAsync([FromBody] SyncPostRequest request)
 	{
-		if (!IsValid(request, out var result))
-			return result;
+		var settings = await _settingsService.GetSettingsAsync();
+
+		var (isValid, result) = await IsValidAsync(request);
+		if (!isValid) return result;
 
 		SyncResult syncResult = new();
 		try
@@ -96,16 +100,27 @@ public class SyncController : Controller
 		return response;
 	}
 
-	bool IsValid(SyncPostRequest request, out ActionResult result)
+	async Task<(bool, ActionResult)> IsValidAsync(SyncPostRequest request)
 	{
-		result = new OkResult();
+		ActionResult result = new OkResult();
 
 		if (request.CheckIsNull("PostRequest", out result))
-			return false;
+			return (false, result);
+
+		var settings = await _settingsService.GetSettingsAsync();
+		if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled)
+		{
+			var auth = _settingsService.GetGarminAuthentication(settings.Garmin.Email);
+			if (auth is null || !auth.IsValid(settings))
+			{
+				result = new UnauthorizedObjectResult(new ErrorResponse("Must initialize Garmin two factor auth token before sync can be preformed.", ErrorCode.NeedToInitGarminMFAAuth));
+				return (false, result);
+			}
+		}
 
 		if (request.WorkoutIds.CheckDoesNotHaveAny(nameof(request.WorkoutIds), out result))
-			return false;
+			return (false, result);
 
-		return true;
+		return (true, result);
 	}
 }

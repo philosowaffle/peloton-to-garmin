@@ -27,6 +27,7 @@
   "Garmin": {
     "Email": "",
     "Password": "",
+    "TwoStepVerificationEnabled": false,
     "Upload": false,
     "FormatToUpload": "fit",
     "UploadStrategy": 2

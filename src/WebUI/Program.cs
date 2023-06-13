@@ -15,13 +15,14 @@ using Common.Http;
 Statics.AppType = Constants.WebUIName;
 Statics.MetricPrefix = Constants.WebUIName;
 Statics.TracingService = Constants.WebUIName;
+Statics.ConfigPath = Path.Join(Environment.CurrentDirectory, "configuration.local.json");
 
 ///////////////////////////////////////////////////////////
 /// HOST
 ///////////////////////////////////////////////////////////
 var builder = WebApplication.CreateBuilder(args);
 
-var configProvider = builder.Configuration.AddJsonFile(Path.Join(Environment.CurrentDirectory, "configuration.local.json"), optional: true, reloadOnChange: true)
+var configProvider = builder.Configuration.AddJsonFile(Statics.ConfigPath, optional: true, reloadOnChange: true)
 				.AddEnvironmentVariables(prefix: "P2G_")
 				.AddCommandLine(args);
 

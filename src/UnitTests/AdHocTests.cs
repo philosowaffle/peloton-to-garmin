@@ -56,15 +56,9 @@ namespace UnitTests
 		//}
 
 		//[Test]
-		//public async Task AA()
-		//{
-
-		//}
-
-		//[Test]
 		//public void DecodeFitFile()
 		//{
-		//	var output = Path.Join(FitDirectory, "p2g_cycle_workout.fit");
+		//	var output = Path.Join(FitDirectory, "strength_with_exercises.fit");
 		//	FitDecoder.Decode(output);
 		//}
 
@@ -108,8 +102,7 @@ namespace UnitTests
 		//	var email = "";
 		//	var password = "";
 
-		//	var workoutId = "13afceebe0f74a338f60bf9d70f657ef";
-		//	var userId = "";
+		//	var workoutId = "631fe107823048708d4c9f18a2888c6e";
 
 		//	var settings = new Settings()
 		//	{
@@ -144,7 +137,7 @@ namespace UnitTests
 		//[Test]
 		//public async Task Convert_From_File()
 		//{
-		//	var file = Path.Join(DataDirectory, "just_walk_outdoor.json");
+		//	var file = Path.Join(DataDirectory, "631fe107823048708d4c9f18a2888c6e_workout.json");
 		//	//var file = Path.Join(DataDirectory, "cycling_target_metrics.json");
 		//	//var file = Path.Join(DataDirectory, "tread_run_workout.json");
 
@@ -199,7 +192,7 @@ namespace UnitTests
 			public async Task<ICollection<Mesg>> ConvertForTest(string path, Settings settings)
 			{
 				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
-				var converted = await this.ConvertInternalAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
+				var converted = await this.ConvertInternalAsync(workoutData, settings);
 
 				return converted.Item2;
 			}
@@ -207,7 +200,7 @@ namespace UnitTests
 			public async Task<Tuple<string, ICollection<Mesg>>> Convert(string path, Settings settings)
 			{
 				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
-				var converted = await this.ConvertInternalAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
+				var converted = await this.ConvertInternalAsync(workoutData, settings);
 
 				return converted;
 			}

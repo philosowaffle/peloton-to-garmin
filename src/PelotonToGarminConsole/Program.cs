@@ -17,6 +17,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Common.Http;
 using Common.Stateful;
 using Philosowaffle.Capability.ReleaseChecks;
+using Garmin.Auth;
 
 Statics.AppType = Constants.ConsoleAppName;
 Statics.MetricPrefix = Constants.ConsoleAppName;
@@ -35,8 +36,10 @@ static IHostBuilder CreateHostBuilder(string[] args)
 			var configPath = Environment.CurrentDirectory;
 			if (args.Length > 0) configPath = args[0];
 
+			Statics.ConfigPath = Path.Join(configPath, "configuration.local.json");
+
 			configBuilder
-				.AddJsonFile(Path.Join(configPath, "configuration.local.json"), optional: true, reloadOnChange: true)
+				.AddJsonFile(Statics.ConfigPath, optional: true, reloadOnChange: true)
 				.AddEnvironmentVariables(prefix: $"{Constants.EnvironmentVariablePrefix}_")
 				.AddCommandLine(args)
 				.Build();
@@ -72,6 +75,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
 			services.AddSingleton<IPelotonService, PelotonService>();
 
 			// GARMIN
+			services.AddSingleton<IGarminAuthenticationService, GarminAuthenticationService>();
 			services.AddSingleton<IGarminUploader, GarminUploader>();
 			services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
 

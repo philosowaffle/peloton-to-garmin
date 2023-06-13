@@ -5,6 +5,7 @@ using Common.Service;
 using Common.Stateful;
 using Flurl.Http;
 using Newtonsoft.Json.Linq;
+using Peloton.AnnualChallenge;
 using Peloton.Dto;
 using Serilog;
 using System;
@@ -21,6 +22,9 @@ namespace Peloton
 		Task<JObject> GetWorkoutByIdAsync(string id);
 		Task<JObject> GetWorkoutSamplesByIdAsync(string id);
 		Task<UserData> GetUserDataAsync();
+		Task<PelotonChallenges> GetJoinedChallengesAsync(int userId);
+		Task<PelotonUserChallengeDetail> GetUserChallengeDetailsAsync(int userId, string challengeId);
+		Task<RideSegments> GetClassSegmentsAsync(string rideId);
 	}
 
 	public class ApiClient : IPelotonApi
@@ -174,6 +178,40 @@ namespace Peloton
 				})
 				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 				.GetJsonAsync<JObject>();
+		}
+
+		public async Task<PelotonChallenges> GetJoinedChallengesAsync(int userId)
+		{
+			var auth = await GetAuthAsync();
+			return await $"{BaseUrl}/user/{auth.UserId}/challenges/current"
+				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithCommonHeaders()
+				.SetQueryParams(new
+				{
+					has_joined = true
+				})
+				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
+				.GetJsonAsync<PelotonChallenges>();
+		}
+
+		public async Task<PelotonUserChallengeDetail> GetUserChallengeDetailsAsync(int userId, string challengeId)
+		{
+			var auth = await GetAuthAsync();
+			return await $"{BaseUrl}/user/{auth.UserId}/challenge/{challengeId}"
+				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithCommonHeaders()
+				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
+				.GetJsonAsync<PelotonUserChallengeDetail>();
+		}
+
+		public async Task<RideSegments> GetClassSegmentsAsync(string rideId)
+		{
+			var auth = await GetAuthAsync();
+			return await $"{BaseUrl}/ride/{rideId}/details"
+				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithCommonHeaders()
+				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
+				.GetJsonAsync<RideSegments>();
 		}
 	}
 }
