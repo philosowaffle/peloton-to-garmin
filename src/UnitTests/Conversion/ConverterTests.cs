@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Dto;
 using Common.Dto.Garmin;
 using Common.Dto.Peloton;
 using Common.Service;
@@ -655,7 +656,7 @@ namespace UnitTests.Conversion
 				Format = FileFormat.Fit;
 			}
 
-			protected override Task<string> ConvertInternalAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings)
+			protected override Task<string> ConvertInternalAsync(P2GWorkout workout, Settings settings)
 			{
 				throw new NotImplementedException();
 			}

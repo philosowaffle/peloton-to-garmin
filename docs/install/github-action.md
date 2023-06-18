@@ -8,7 +8,7 @@ has_children: false
 
 # Github Actions
 
-A Github Actions workflow exists that can be used to automatically sync your rides on a schedule (by default once a day)
+A Github Actions workflow exists that can be used to automatically sync your rides on a schedule (by default once a day). This option does not support Garmin accounts protected by Two Step Verification.
 
 ## Getting started
 

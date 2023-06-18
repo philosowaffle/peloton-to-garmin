@@ -56,6 +56,8 @@ namespace Common.Dto.Peloton
 		// total hr zones durations
 		// average effort score
 
+		public MovementTrackerData Movement_Tracker_Data { get; init; }
+
 	}
 
 	public class FTPInfo
@@ -84,6 +86,7 @@ namespace Common.Dto.Peloton
 		Stretching = 8,
 		Yoga = 9,
 		Meditation = 10,
-		Caesar = 11, // Project Caesar = Rower
+		Caesar = 11, // Project Caesar = Rower,
+		Caesar_Bootcamp = 12,
 	}
 }

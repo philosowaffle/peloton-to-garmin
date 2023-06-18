@@ -45,4 +45,4 @@ P2G provides two different versions of the executable you can choose between:
 ## Limitations
 
 1. Does not truly run in the background, the program must be minimized to the the task bar if using it to automatically sync, and you must manually restart it if your computer reboots
-1. No GUI - yet ;)
+1. No GUI....yet ;)

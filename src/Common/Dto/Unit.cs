@@ -20,6 +20,14 @@ public enum SpeedUnit : byte
 	MinutesPer500Meters = 3,
 }
 
+public enum WeightUnit : byte
+{
+	None = 0,
+	Pounds = 1,
+	Kilograms = 2,
+	Unknown = 100
+}
+
 public static class UnitHelpers
 {
 	public static DistanceUnit GetDistanceUnit(string unit)
@@ -55,8 +63,23 @@ public static class UnitHelpers
 			case "min/500m":
 				return SpeedUnit.MinutesPer500Meters;
 			default:
-				Log.Error("Found unknown distance unit {@Unit}", unit);
+				Log.Error("Found unknown speed unit {@Unit}", unit);
 				return SpeedUnit.Unknown;
+		}
+	}
+
+	public static WeightUnit GetWeightUnit(string unit)
+	{
+		switch(unit?.ToLower())
+		{
+			case "lb": return WeightUnit.Pounds;
+			case "kg": return WeightUnit.Kilograms;
+			case "":
+			case null:
+			case "null": return WeightUnit.None;
+			default:
+				Log.Error("Found unknown weight unit {@Unit}", unit);
+				return WeightUnit.Unknown;
 		}
 	}
 }
