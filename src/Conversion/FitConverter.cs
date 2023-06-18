@@ -30,6 +30,8 @@ namespace Conversion
 			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(Save)}")
 										.WithTag(TagKey.Format, FileFormat.Fit.ToString());
 
+			if (data is null) return;
+
 			using (FileStream fitDest = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
 			{
 				Encode encoder = new Encode(ProtocolVersion.V20);
@@ -68,7 +70,7 @@ namespace Conversion
 			if (sport == Sport.Invalid)
 			{
 				_logger.Warning("Unsupported Sport Type - Skipping {@Sport}", workout.Fitness_Discipline);
-				return new Tuple<string, ICollection<Mesg>>(string.Empty, null);
+				return null;
 			}
 
 			var fileIdMesg = new FileIdMesg();

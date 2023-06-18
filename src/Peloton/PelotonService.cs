@@ -279,8 +279,17 @@ namespace Peloton
 			if (!string.IsNullOrWhiteSpace(classId)
 				&& classId != "00000000000000000000000000000000")
 			{
-				var workoutSegments = await _pelotonApi.GetClassSegmentsAsync(classId);
-				p2gWorkoutData.Exercises = P2GWorkoutExerciseMapper.GetWorkoutExercises(p2gWorkoutData.Workout, workoutSegments);
+				try
+				{
+					var workoutSegments = await _pelotonApi.GetClassSegmentsAsync(classId);
+					p2gWorkoutData.Exercises = P2GWorkoutExerciseMapper.GetWorkoutExercises(p2gWorkoutData.Workout, workoutSegments);
+				} catch (Exception ex)
+				{
+					// Known issue: Peloton Gym Segment data doesn't live at the same route as the other workout data
+					// have not yet been able to find where this data lives, may need to wait until Peloton adds a better
+					// web experience for viewing these workout details
+					_logger.Error(ex, "Failed to load class segment data for classId: {@classId}", classId);
+				}
 			}
 
 			return p2gWorkoutData;
