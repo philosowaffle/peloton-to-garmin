@@ -26,6 +26,7 @@ public static class ExerciseMapping
 		/* Arnold Press */ { "01251235527748368069f9dc898aadf3", new (ExerciseCategory.ShoulderPress, ShoulderPressExerciseName.ArnoldPress) },
 
 		// B
+		/* Bear Crawl */ { "46112d47abe24b53ad1fa8e75edcf545", new (ExerciseCategory.Plank, PlankExerciseName.BearCrawl) },
 		/* Bent Over Row */ { "d60a1dd8824a49a4926f826b24f3b061", new (ExerciseCategory.Row, RowExerciseName.OneArmBentOverRow) },
 		/* Bicep Curl */ { "43d404595338443baab306a6589ae7fc", new (ExerciseCategory.Curl, CurlExerciseName.StandingDumbbellBicepsCurl) },
 		/* Bicycle */ { "550b2c852a9547b18ca8e6240c5c6750", new (ExerciseCategory.Crunch, CrunchExerciseName.BicycleCrunch) },
