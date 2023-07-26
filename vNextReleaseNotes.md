@@ -11,4 +11,9 @@
 	- [#510] Bear Crawl
 
 ## Fixes
+
 - `All converters were skipped.` - confusing log message when no workouts needed to be synced
+
+## Housekeeping
+
+- [#509] Various dependency bumps

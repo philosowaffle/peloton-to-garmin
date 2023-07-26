@@ -8,6 +8,7 @@ using Prometheus;
 using Common.Observe;
 using Common.Stateful;
 using Common.Http;
+using Serilog.Settings.Configuration;
 
 ///////////////////////////////////////////////////////////
 /// STATICS
@@ -34,7 +35,7 @@ builder.WebHost.UseUrls(config.WebUI.HostUrl);
 builder.Host.UseSerilog((ctx, logConfig) =>
 {
 	logConfig
-	.ReadFrom.Configuration(ctx.Configuration, sectionName: $"{nameof(Observability)}:Serilog")
+	.ReadFrom.Configuration(ctx.Configuration, new ConfigurationReaderOptions() { SectionName = $"{nameof(Observability)}:Serilog" })
 	.Enrich.WithSpan()
 	.Enrich.FromLogContext();
 });
@@ -55,7 +56,7 @@ FlurlConfiguration.Configure(config.Observability, 30);
 Tracing.EnableWebUITracing(builder.Services, config.Observability.Jaeger);
 
 Log.Logger = new LoggerConfiguration()
-				.ReadFrom.Configuration(builder.Configuration, sectionName: $"{nameof(Observability)}:Serilog")
+				.ReadFrom.Configuration(builder.Configuration, new ConfigurationReaderOptions() { SectionName = $"{nameof(Observability)}:Serilog" })
 				.Enrich.FromLogContext()
 				.CreateLogger();
 

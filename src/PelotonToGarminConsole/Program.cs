@@ -18,6 +18,7 @@ using Common.Http;
 using Common.Stateful;
 using Philosowaffle.Capability.ReleaseChecks;
 using Garmin.Auth;
+using Serilog.Settings.Configuration;
 
 Statics.AppType = Constants.ConsoleAppName;
 Statics.MetricPrefix = Constants.ConsoleAppName;
@@ -48,7 +49,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
 		.UseSerilog((ctx, logConfig) =>
 		{
 			logConfig
-				.ReadFrom.Configuration(ctx.Configuration, sectionName: "Observability:Serilog")
+				.ReadFrom.Configuration(ctx.Configuration, new ConfigurationReaderOptions() { SectionName = "Observability:Serilog" })
 				.Enrich.WithSpan()
 				.Enrich.FromLogContext();
 		})
