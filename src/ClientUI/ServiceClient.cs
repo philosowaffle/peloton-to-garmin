@@ -351,4 +351,21 @@ public class ServiceClient : IApiClient
 		result.Api = null;
 		return result;
 	}
+
+	public async Task<SystemInfoLogsGetResponse> SystemInfoGetLogsAsync()
+	{
+		try
+		{
+			var result = await _systemInfoService.GetLogsAsync();
+
+			if (result.IsErrored())
+				throw new ApiClientException(result.Error.Message, result.Error.Exception);
+
+			return result.Result;
+		}
+		catch (Exception e)
+		{
+			throw new ApiClientException($"Unexpected error occurred: {e.Message}", e);
+		}
+	}
 }

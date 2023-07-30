@@ -1,5 +1,6 @@
 ﻿using Api.Contract;
 using Api.Services;
+using Api.Service.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers
@@ -27,6 +28,27 @@ namespace WebApp.Controllers
 		{
 			var result = await _systemInfoService.GetAsync(request, this.Request.Scheme, this.Request.Host.ToString());
 			return Ok(result);
+		}
+
+		[HttpGet]
+		[Route("/api/systeminfo/logs")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
+		public async Task<ActionResult> LogsGetAsync()
+		{
+			try
+			{
+				var result = await _systemInfoService.GetLogsAsync();
+
+				if (result.IsErrored())
+					return result.GetResultForError();
+
+				return Ok(result.Result);
+
+			} catch (Exception e)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));
+			}
 		}
 	}
 }

@@ -56,3 +56,9 @@ public class LatestVersionInformation
 	public string? ReleaseUrl { get; set; }
 	public string? Description { get; set; }
 }
+
+
+public class SystemInfoLogsGetResponse
+{
+	public string? LogText { get; set; }
+}
