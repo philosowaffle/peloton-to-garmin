@@ -1,6 +1,7 @@
 ﻿using Api.Contract;
 using Common;
 using Common.Dto;
+using Common.Observe;
 using Core.GitHub;
 using Philosowaffle.Capability.ReleaseChecks.Model;
 
@@ -9,6 +10,7 @@ namespace Api.Services;
 public interface ISystemInfoService
 {
 	Task<SystemInfoGetResponse> GetAsync(SystemInfoGetRequest request, string? scheme = null, string? host = null);
+	Task<ServiceResult<SystemInfoLogsGetResponse>> GetLogsAsync();
 }
 
 public class SystemInfoService : ISystemInfoService
@@ -51,5 +53,35 @@ public class SystemInfoService : ISystemInfoService
 			Issues = "https://github.com/philosowaffle/peloton-to-garmin/issues",
 			Api = $"{scheme}://{host}/swagger"
 		};
+	}
+
+	public async Task<ServiceResult<SystemInfoLogsGetResponse>> GetLogsAsync()
+	{
+		var result = new ServiceResult<SystemInfoLogsGetResponse>();
+
+		if (string.IsNullOrWhiteSpace(Logging.CurrentFilePath))
+		{
+			result.Error = new ServiceError() { Message = "No log file path found." };
+			return result;
+		}
+
+		var text = string.Empty;
+		try
+		{
+			using (var sr = new StreamReader(Logging.CurrentFilePath, new FileStreamOptions () { Access = FileAccess.Read, Share = FileShare.ReadWrite }))
+			{
+				text = await sr.ReadToEndAsync();
+
+				result.Result = new SystemInfoLogsGetResponse() { LogText = text };
+				result.Successful = true;
+				return result;
+			}
+		}
+		catch (FileNotFoundException ex)
+		{
+			result.Error = new ServiceError() { Message = "Failed to read logs", Exception = ex, IsServerException = true };
+		}
+
+		return result;
 	}
 }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Enrichers.Span;
+using Serilog.Settings.Configuration;
 using System.IO;
 
 namespace Common;
@@ -14,7 +15,7 @@ public static class ObservabilityStartup
 	public static void ConfigureClientUI(IServiceCollection services, ConfigurationManager configManager, AppConfiguration config)
 	{
 		FlurlConfiguration.Configure(config.Observability);
-		ConfigureLogging(configManager, hardcodeFileLogging:true);
+		ConfigureLogging(configManager);
 
 		// Setup initial Tracing Source
 		Tracing.Source = new(Statics.TracingService);
@@ -40,15 +41,20 @@ public static class ObservabilityStartup
 		Tracing.Source = new(Statics.TracingService);
 	}
 
-	private static void ConfigureLogging(ConfigurationManager configManager, bool hardcodeFileLogging = false)
+	private static void ConfigureLogging(ConfigurationManager configManager)
 	{
 		var loggingConfig = new LoggerConfiguration()
-						.ReadFrom.Configuration(configManager, sectionName: $"{nameof(Observability)}:Serilog")
+						.ReadFrom.Configuration(configManager, new ConfigurationReaderOptions() { SectionName = $"{nameof(Observability)}:Serilog" })
 						.Enrich.WithSpan()
 						.Enrich.FromLogContext();
 
-		if (hardcodeFileLogging)
-			loggingConfig.WriteTo.File(Path.Join(Statics.DefaultOutputDirectory, "log.txt"), rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7);
+		// Always write to app defined log file
+		loggingConfig.WriteTo.File(
+				Path.Join(Statics.DefaultOutputDirectory, "log.txt"), 
+				rollingInterval: RollingInterval.Day,
+				retainedFileCountLimit: 2,
+				shared: false,
+				hooks: new CaptureFilePathHook());
 
 		Log.Logger = loggingConfig.CreateLogger();
 
