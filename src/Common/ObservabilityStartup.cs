@@ -51,8 +51,8 @@ public static class ObservabilityStartup
 		// Always write to app defined log file
 		loggingConfig.WriteTo.File(
 				Path.Join(Statics.DefaultOutputDirectory, "log.txt"), 
-				rollingInterval: RollingInterval.Day, 
-				retainedFileCountLimit: 7,
+				rollingInterval: RollingInterval.Day,
+				retainedFileCountLimit: 2,
 				shared: false,
 				hooks: new CaptureFilePathHook());
 
