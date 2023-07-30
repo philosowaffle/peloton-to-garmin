@@ -203,4 +203,18 @@ public class ApiClient : IApiClient
 		return $"{_apiUrl}/api/garminauthentication/mfaToken"
 			.PostJsonAsync(request);
 	}
+
+	public async Task<SystemInfoLogsGetResponse> SystemInfoGetLogsAsync()
+	{
+		try
+		{
+			return await $"{_apiUrl}/api/systemInfo/logs"
+				.GetJsonAsync<SystemInfoLogsGetResponse>();
+		}
+		catch (FlurlHttpException e)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
+	}
 }
