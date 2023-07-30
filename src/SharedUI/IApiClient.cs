@@ -18,6 +18,7 @@ public interface IApiClient
 	Task<SyncPostResponse> SyncPostAsync(SyncPostRequest syncPostRequest);
 
 	Task<SystemInfoGetResponse> SystemInfoGetAsync(SystemInfoGetRequest systemInfoGetRequest);
+	Task<SystemInfoLogsGetResponse> SystemInfoGetLogsAsync();
 
 	Task<ProgressGetResponse> GetAnnualProgressAsync();
 

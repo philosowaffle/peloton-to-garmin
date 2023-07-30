@@ -1,6 +1,9 @@
 ﻿using Common.Dto;
 using Common.Stateful;
 using Serilog;
+using Serilog.Sinks.File;
+using System.IO;
+using System.Text;
 
 namespace Common.Observe;
 
@@ -12,6 +15,8 @@ public class LogContext
 
 public static class Logging
 {
+	public static string CurrentFilePath { get; set; }
+
 	public static void LogSystemInformation()
 	{
 		Log.Information("*********************************************");
@@ -22,5 +27,14 @@ public static class Logging
 		Log.Information("Docker Deployment: {@IsDocker}", SystemInformation.RunningInDocker);
 		Log.Information("Config path: {@ConfigPath}", Statics.ConfigPath);
 		Log.Information("*********************************************");
+	}
+}
+
+public class CaptureFilePathHook : FileLifecycleHooks
+{
+	public override Stream OnFileOpened(string path, Stream underlyingStream, Encoding encoding)
+	{
+		Logging.CurrentFilePath = path;
+		return base.OnFileOpened(path, underlyingStream, encoding);
 	}
 }
