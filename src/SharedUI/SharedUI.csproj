@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.3" />
-	<PackageReference Include="Havit.Blazor.Components.Web.Bootstrap" Version="3.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.9" />
+	<PackageReference Include="Havit.Blazor.Components.Web.Bootstrap" Version="4.0.4" />
 	<PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
   </ItemGroup>
 
@@ -20,27 +20,9 @@
     <ProjectReference Include="..\Api.Contract\Api.Contract.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
-	
-	<ItemGroup>
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.css" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.css.map" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.min.css" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.min.css.map" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.css" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.css.map" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.min.css" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.min.css.map" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-reboot.css" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\css\bootstrap-reboot.css.map" />
-	</ItemGroup>
 
 	<ItemGroup>
 	  <None Include="wwwroot\favicon.ico" />
-	  <None Include="wwwroot\lib\bootstrap\css\bootstrap-grid.css.map" />
-	  <None Include="wwwroot\lib\bootstrap\css\bootstrap-grid.min.css.map" />
-	  <None Include="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.css.map" />
-	  <None Include="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.min.css.map" />
-	  <None Include="wwwroot\lib\bootstrap\css\bootstrap-reboot.css.map" />
 	</ItemGroup>
 	
 	<ItemGroup>
