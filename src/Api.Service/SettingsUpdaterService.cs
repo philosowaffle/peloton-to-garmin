@@ -2,6 +2,7 @@
 using Common;
 using Common.Dto;
 using Common.Service;
+using Common.Stateful;
 
 namespace Api.Service;
 
@@ -31,14 +32,6 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 		{
 			result.Successful = false;
 			result.Error = new ServiceError() { Message = "Updated AppSettings must not be null or empty." };
-			return result;
-		}
-
-		if (!string.IsNullOrWhiteSpace(updatedAppSettings.OutputDirectory)
-			&& !_fileHandler.DirExists(updatedAppSettings.OutputDirectory))
-		{
-			result.Successful = false;
-			result.Error = new ServiceError() { Message = "Output Directory path is either not accessible or does not exist." };
 			return result;
 		}
 

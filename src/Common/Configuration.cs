@@ -67,26 +67,23 @@ public class App
 {
 	public App()
 	{
-		OutputDirectory = Path.Join(Statics.DefaultDataDirectory, "output");
-		WorkingDirectory = Path.Join(Statics.DefaultTempDirectory, "working");
-
 		CheckForUpdates = true;
 		EnablePolling = false;
 		PollingIntervalSeconds = 86400; // 1 day
 	}
 
-	public string OutputDirectory { get; set; }
-	public string WorkingDirectory { get; set; }
-
 	public bool EnablePolling { get; set; }
 	public int PollingIntervalSeconds { get; set; }
 	public bool CheckForUpdates { get; set; }
 
+	public static string DataDirectory => Path.GetFullPath(Path.Join(Statics.DefaultDataDirectory, "data"));
 
-	public static string DataDirectory = Path.GetFullPath(Path.Join(Statics.DefaultDataDirectory, "data"));
+	public string WorkingDirectory => Path.Join(Statics.DefaultTempDirectory, "working");
+	public string OutputDirectory => Path.Join(Statics.DefaultDataDirectory, "output");
 	public string FailedDirectory => Path.GetFullPath(Path.Join(OutputDirectory, "failed"));
 	public string DownloadDirectory => Path.GetFullPath(Path.Join(WorkingDirectory, "downloaded"));
 	public string UploadDirectory => Path.GetFullPath(Path.Join(WorkingDirectory, "upload"));
+	
 
 }
 
