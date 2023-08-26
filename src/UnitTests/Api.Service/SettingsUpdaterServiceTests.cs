@@ -27,61 +27,6 @@ public class SettingsUpdaterServiceTests
 	}
 
 	[Test]
-	public async Task UpdateAppSettingsAsync_With_InvalidOutPutDir_Returns400()
-	{
-		var autoMocker = new AutoMocker();
-		var service = autoMocker.CreateInstance<SettingsUpdaterService>();
-		var fileHandler = autoMocker.GetMock<IFileHandling>();
-
-		fileHandler
-			.Setup(f => f.DirExists("blah"))
-			.Returns(false)
-			.Verifiable();
-
-		var request = new App()
-		{
-			OutputDirectory = "blah"
-		};
-
-		var response = await service.UpdateAppSettingsAsync(request);
-
-		response.IsErrored().Should().BeTrue();
-		response.Error.Should().NotBeNull();
-		response.Error.Message.Should().Be("Output Directory path is either not accessible or does not exist.");
-
-		fileHandler.Verify();
-	}
-
-	[Test]
-	public async Task UpdateAppSettingsAsync_With_EmptyOutPutDir_DoesNotValidateIt()
-	{
-		var autoMocker = new AutoMocker();
-		var service = autoMocker.CreateInstance<SettingsUpdaterService>();
-		var fileHandler = autoMocker.GetMock<IFileHandling>();
-		var settingService = autoMocker.GetMock<ISettingsService>();
-
-		fileHandler
-			.Setup(f => f.DirExists(It.IsAny<string>()))
-			.Returns(false);
-
-		var request = new App()
-		{
-			OutputDirectory = string.Empty
-		};
-
-		settingService
-			.Setup(s => s.GetSettingsAsync())
-			.ReturnsAsync(new Settings());
-
-		var response = await service.UpdateAppSettingsAsync(request);
-
-		response.IsErrored().Should().BeFalse();
-		response.Result.Should().NotBeNull();
-
-		fileHandler.Verify(f => f.DirExists(It.IsAny<string>()), Times.Never);
-	}
-
-	[Test]
 	public async Task UpdateAppSettingsAsync_With_EnablePollingWhenGarminMFAEnabled_Throws()
 	{
 		var autoMocker = new AutoMocker();
@@ -100,7 +45,6 @@ public class SettingsUpdaterServiceTests
 		var request = new App()
 		{
 			EnablePolling = true,
-			OutputDirectory = "blah",
 		};
 
 		var response = await service.UpdateAppSettingsAsync(request);

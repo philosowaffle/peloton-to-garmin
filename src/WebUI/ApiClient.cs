@@ -186,10 +186,18 @@ public class ApiClient : IApiClient
 		}
 	}
 
-	public Task<GarminAuthenticationGetResponse> GetGarminAuthenticationAsync()
+	public async Task<GarminAuthenticationGetResponse> GetGarminAuthenticationAsync()
 	{
-		return $"{_apiUrl}/api/garminauthentication"
+		try
+		{
+			return await $"{_apiUrl}/api/garminauthentication"
 				.GetJsonAsync<GarminAuthenticationGetResponse>();
+		}
+		catch (FlurlHttpException e)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
 	}
 
 	public Task<IFlurlResponse> SignInToGarminAsync()
@@ -198,10 +206,22 @@ public class ApiClient : IApiClient
 			.PostAsync();
 	}
 
-	public Task SendGarminMfaTokenAsync(GarminAuthenticationMfaTokenPostRequest request)
+	public async Task SendGarminMfaTokenAsync(GarminAuthenticationMfaTokenPostRequest request)
 	{
-		return $"{_apiUrl}/api/garminauthentication/mfaToken"
+		try
+		{
+			await $"{_apiUrl}/api/garminauthentication/mfaToken"
 			.PostJsonAsync(request);
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
+		catch (Exception e)
+		{
+			throw new ApiClientException($"Failed to submit Garmin MFA Code - {e.Message} - See logs for details.", e);
+		}
 	}
 
 	public async Task<SystemInfoLogsGetResponse> SystemInfoGetLogsAsync()
