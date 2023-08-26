@@ -1,8 +1,4 @@
 {
-  "Api": {
-    "HostUrl": "http://*:8080"
-  },
-
   "Observability": {
 
     "Prometheus": {
