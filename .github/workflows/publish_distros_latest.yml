@@ -10,7 +10,6 @@ on:
     - master
     paths:
     - 'src/**'
-    - 'python/**'
     - 'PelotonToGarmin.sln'
     - 'configuration.example.json'
     - '.github/workflows/publish_distros_latest.yml'
