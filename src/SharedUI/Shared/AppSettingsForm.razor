@@ -20,16 +20,6 @@
 	<br />
 	<HxSwitch Text="Check for new P2G Releases" @bind-Value="appSettings.CheckForUpdates" />
 	<br />
-	<HxAccordion>
-		<HxAccordionItem>
-			<HeaderTemplate>Advanced</HeaderTemplate>
-			<BodyTemplate>
-				<br />
-				<HxInputText @bind-Value="appSettings.OutputDirectory" Label="Output Directory" />
-			</BodyTemplate>
-		</HxAccordionItem>
-	</HxAccordion>
-	<br />
 	<HxSubmit Color="ThemeColor.Primary" OnClick="SaveAppSettings">Save</HxSubmit>
 
 </EditForm>
