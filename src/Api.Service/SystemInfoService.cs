@@ -58,8 +58,8 @@ public class SystemInfoService : ISystemInfoService
 			Issues = "https://github.com/philosowaffle/peloton-to-garmin/issues",
 			Api = $"{scheme}://{host}/swagger",
 
-			OutputDirectory = settings.App.OutputDirectory,
-			TempDirectory = settings.App.WorkingDirectory
+			OutputDirectory = settings?.App?.OutputDirectory ?? string.Empty,
+			TempDirectory = settings?.App?.WorkingDirectory ?? string.Empty,
 		};
 	}
 
