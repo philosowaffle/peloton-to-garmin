@@ -119,7 +119,7 @@ jobs:
         certutil -decode cert.pfx.asc cert.pfx
   
    - name: Add cert to Store
-     run: certutil -user -q -p ${{ secrets.MAUI_PFX_PASSWORD }} -importpfx cert.pfx NoRoot
+     run: certutil -user -q -p "${{ secrets.MAUI_PFX_PASSWORD }}" -importpfx cert.pfx NoRoot
         
    - name: Publish ${{matrix.os}}
      run: dotnet publish ${{ github.workspace }}/src/ClientUI/ClientUI.csproj --no-restore -c Release -f ${{ matrix.framework }} -p:RuntimeIdentifierOverride=${{ matrix.os }} -o ${{ github.workspace }}/dist/${{ matrix.os }}-ui
