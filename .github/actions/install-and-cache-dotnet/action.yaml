@@ -29,7 +29,7 @@ runs:
       if: ${{ steps.cache-dotnet.outputs.cache-hit != 'true' }}
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: ${{ inputes.dotnet-version }}
+        dotnet-version: ${{ inputs.dotnet-version }}
 
     - name: Check default dotnet version
       run: dotnet --version
