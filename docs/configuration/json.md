@@ -80,7 +80,6 @@ This section provides global settings for the P2G application.
 
 ```json
  "App": {
-    "OutputDirectory": "./output",
     "EnablePolling": true,
     "PollingIntervalSeconds": 86400,
     "CheckForUpdates": true
@@ -89,7 +88,6 @@ This section provides global settings for the P2G application.
 
 | Field      | Required | Default | UI Setting Location | Description |
 |:-----------|:---------|:--------|:--------------------|:------------|
-| OutputDirectory | no | `$PWD/output` | `App > Advanced` | Where downloaded and converted files should be saved to. |
 | EnablePolling  | no | `true` | `App Tab` | `true` if you wish P2G to run continuously and poll Peloton for new workouts. |
 | PollingIntervalSeconds | no | 86400 | `App Tab` | The polling interval in seconds determines how frequently P2G should check for new workouts. Be warned, that setting this to a frequency of hourly or less may get you flagged by Peloton as a bad actor and they may reset your password. The default is set to Daily. |
 | CheckForUpdates | no | `true` | `App Tab` | `true` if P2G should check for updates and write a log message if a new release is available. If using the UI this message will display there as well. |
