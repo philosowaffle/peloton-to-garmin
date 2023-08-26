@@ -12,6 +12,7 @@
 - [#302] Removed deprecated settings `PythonAndGUploadInstalled` and `CloseWindowOnFinish`
 - [#465] Remove support for uploading to Garmin via Python - `UploadStrategy`
 - [#483] Removed setting for configuring `OutputDirectory`
+- [#348] P2G API and WebUI now binds to port `8080` by default
 
 ## Docker Tags
 

@@ -173,7 +173,7 @@ public class ApiSettings
 {
 	public ApiSettings()
 	{
-		HostUrl = "http://localhost";
+		HostUrl = "http://*:8080";
 	}
 
 	public string HostUrl { get; set; }
@@ -183,7 +183,7 @@ public class WebUISettings
 {
 	public WebUISettings()
 	{
-		HostUrl = "http://localhost";
+		HostUrl = "http://*:8080";
 	}
 
 	public string HostUrl { get; set; }
