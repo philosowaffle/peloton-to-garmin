@@ -14,7 +14,7 @@ outputs:
 runs:
   using: "composite"
   env:
-      DOTNET_INSTALL_DIR: '.\.dotnet'
+    DOTNET_INSTALL_DIR: '.\.dotnet'
   steps:
     - name: Cache dotnet
       id: cache-dotnet
