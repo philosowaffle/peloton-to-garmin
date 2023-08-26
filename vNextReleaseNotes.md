@@ -5,11 +5,13 @@
 
 - [#352] Created Windows GUI application
 - [#421] Uplift to dotnet 7
+- [#486] View logs from UI
 
-## Changes
+## Breaking Changes
 
 - [#302] Removed deprecated settings `PythonAndGUploadInstalled` and `CloseWindowOnFinish`
 - [#465] Remove support for uploading to Garmin via Python - `UploadStrategy`
+- [#483] Removed setting for configuring `OutputDirectory`
 
 ## Docker Tags
 

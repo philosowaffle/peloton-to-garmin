@@ -1,6 +1,6 @@
 ﻿namespace Api.Contract;
 
-public class SystemInfoGetRequest
+public record SystemInfoGetRequest
 {
 	/// <summary>
 	/// Whether or not to check if a new P2G update is available.
@@ -9,7 +9,7 @@ public class SystemInfoGetRequest
 	public bool CheckForUpdate { get; set; }
 }
 
-public class SystemInfoGetResponse
+public record SystemInfoGetResponse
 {
 	public SystemInfoGetResponse()
 	{
@@ -23,6 +23,8 @@ public class SystemInfoGetResponse
 		Donate = string.Empty;
 		Issues = string.Empty;
 		Api = string.Empty;
+		OutputDirectory = string.Empty;
+		TempDirectory = string.Empty;
 
 		LatestVersionInformation = new ();
 	}
@@ -39,6 +41,8 @@ public class SystemInfoGetResponse
 	public string Api { get; set; }
 	public bool? NewerVersionAvailable { get; set; }
 	public LatestVersionInformation? LatestVersionInformation { get; set; }
+	public string OutputDirectory { get; set; }
+	public string TempDirectory { get; set; }
 }
 
 public class LatestVersionInformation

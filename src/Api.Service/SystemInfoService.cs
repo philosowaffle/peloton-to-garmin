@@ -2,6 +2,7 @@
 using Common;
 using Common.Dto;
 using Common.Observe;
+using Common.Service;
 using Core.GitHub;
 using Philosowaffle.Capability.ReleaseChecks.Model;
 
@@ -16,10 +17,12 @@ public interface ISystemInfoService
 public class SystemInfoService : ISystemInfoService
 {
 	private readonly IGitHubReleaseCheckService _gitHubService;
+	private readonly ISettingsService _settingsService;
 
-	public SystemInfoService(IGitHubReleaseCheckService gitHubService)
+	public SystemInfoService(IGitHubReleaseCheckService gitHubService, ISettingsService settingsService)
 	{
 		_gitHubService = gitHubService;
+		_settingsService = settingsService;
 	}
 
 	public async Task<SystemInfoGetResponse> GetAsync(SystemInfoGetRequest request, string? scheme = null, string? host = null)
@@ -28,6 +31,8 @@ public class SystemInfoService : ISystemInfoService
 
 		if (request.CheckForUpdate)
 			versionInformation = await _gitHubService.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion);
+
+		var settings = await _settingsService.GetSettingsAsync();
 
 		return new SystemInfoGetResponse()
 		{
@@ -51,7 +56,10 @@ public class SystemInfoService : ISystemInfoService
 			Forums = "https://github.com/philosowaffle/peloton-to-garmin/discussions",
 			Donate = "https://www.buymeacoffee.com/philosowaffle",
 			Issues = "https://github.com/philosowaffle/peloton-to-garmin/issues",
-			Api = $"{scheme}://{host}/swagger"
+			Api = $"{scheme}://{host}/swagger",
+
+			OutputDirectory = settings?.App?.OutputDirectory ?? string.Empty,
+			TempDirectory = settings?.App?.WorkingDirectory ?? string.Empty,
 		};
 	}
 

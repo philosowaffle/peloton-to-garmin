@@ -1,6 +1,5 @@
 {
   "App": {
-    "OutputDirectory": "./output",
     "EnablePolling": true,
     "PollingIntervalSeconds": 86400,
     "CheckForUpdates": true
