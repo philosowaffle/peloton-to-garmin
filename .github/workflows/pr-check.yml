@@ -30,7 +30,7 @@ jobs:
         os: ${{ matrix.os }}
     
     - name: Check version
-      run: ${{ env.DOTNET_ROOT}} dotnet version
+      run: ${{ env.DOTNET_ROOT}}\dotnet version
 
   #   - name: Install MAUI Workloads
   #     run: dotnet workload install maui --ignore-failed-sources
