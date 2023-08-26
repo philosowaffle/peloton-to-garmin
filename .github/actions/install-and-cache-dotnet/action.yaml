@@ -37,7 +37,7 @@ runs:
 
     - name: Set installed/cached dotnet path [${{ inputs.dotnet-install-dir }}]
       run: echo "${{ inputs.dotnet-install-dir }}" | Out-File -FilePath $ENV:GITHUB_PATH -Encoding utf8 -Append
-      shell: cmd
+      shell: pwsh
 
     # - name: Check installed/cached dotnet version
     #   run: dotnet --version
