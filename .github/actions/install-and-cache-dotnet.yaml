@@ -1,0 +1,40 @@
+name: 'Installs and Cache DotNet'
+description: 'Tries to fetch dotnet from cache, if not found, installs, then caches'
+inputs:
+  dotnet-version:
+    description: 'Version of dotnet to install'
+    required: true
+  os:
+    description: 'The OS we are running on'
+    required: true
+outputs:
+  dotnet-path:
+    description: "Path to dotnet install"
+    value: ${{ env.DOTNET_INSTALL_DIR }}
+runs:
+  using: "composite"
+  env:
+      DOTNET_INSTALL_DIR: '.\.dotnet'
+  steps:
+    - name: Cache dotnet
+      id: cache-dotnet
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.DOTNET_INSTALL_DIR }}
+        key: ${{ matrix.os }}-${{ matrix.dotnet }}
+        restore-keys: ${{ inputs.os }}-${{ inputs.dotnet-version }}
+
+    - name: Install dotnet
+      if: ${{ steps.cache-dotnet.outputs.cache-hit != 'true' }}
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ inputes.dotnet-version }}
+
+    - name: Check default dotnet version
+      run: dotnet --version
+
+    - name: Set installed/cached dotnet path [${{ env.DOTNET_INSTALL_DIR }}]
+      run: echo "${{ env.DOTNET_INSTALL_DIR }}" | Out-File -FilePath $ENV:GITHUB_PATH -Encoding utf8 -Append
+
+    - name: Check installed/cached dotnet version
+      run: dotnet --version
