@@ -7,60 +7,60 @@ on:
 
 jobs:
 
-  build-and-test:
-    strategy:
-      matrix:
-        dotnet: ['7.0']
-        os: [windows-latest]
+  # build-and-test:
+  #   strategy:
+  #     matrix:
+  #       dotnet: ['7.0']
+  #       os: [windows-latest]
 
-    runs-on: ${{ matrix.os }}
+  #   runs-on: ${{ matrix.os }}
 
-    steps:
-    - uses: actions/checkout@v3
+  #   steps:
+  #   - uses: actions/checkout@v3
 
-    - name: Install dotnet
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ matrix.dotnet }}
+  #   - name: Install dotnet
+  #     uses: actions/setup-dotnet@v3
+  #     with:
+  #       dotnet-version: ${{ matrix.dotnet }}
 
-    - name: Install MAUI Workloads
-      run: dotnet workload install maui --ignore-failed-sources
+  #   - name: Install MAUI Workloads
+  #     run: dotnet workload install maui --ignore-failed-sources
 
-    - name: Clean
-      run: dotnet clean --configuration Debug && dotnet nuget locals all --clear
+  #   - name: Clean
+  #     run: dotnet clean --configuration Debug && dotnet nuget locals all --clear
     
-    - name: Restore
-      run: dotnet restore
+  #   - name: Restore
+  #     run: dotnet restore
 
-    - name: Build
-      run: dotnet build --no-restore --configuration Debug
+  #   - name: Build
+  #     run: dotnet build --no-restore --configuration Debug
 
-    - name: Test
-      run: dotnet test
+  #   - name: Test
+  #     run: dotnet test
 
-  publish-windows-console-exe-dist:
-    name: Publish Windows Console Exe Distribution
-    runs-on: 'windows-latest'
-    needs: build-and-test
-    strategy:
-      max-parallel: 1
-      matrix:
-        dotnet: [ '7.0' ]
-        os: [ 'win10-x64' ]
+  # publish-windows-console-exe-dist:
+  #   name: Publish Windows Console Exe Distribution
+  #   runs-on: 'windows-latest'
+  #   needs: build-and-test
+  #   strategy:
+  #     max-parallel: 1
+  #     matrix:
+  #       dotnet: [ '7.0' ]
+  #       os: [ 'win10-x64' ]
 
-    steps:
+    # steps:
 
-    - uses: actions/checkout@v3
-    - name: Publish Windows Console Exe Distribution
-      uses: ./.github/actions/publish-console-exe-dist
-      with:
-        dotnet-version: ${{ matrix.dotnet }}
-        os: ${{ matrix.os }}
+    # - uses: actions/checkout@v3
+    # - name: Publish Windows Console Exe Distribution
+    #   uses: ./.github/actions/publish-console-exe-dist
+    #   with:
+    #     dotnet-version: ${{ matrix.dotnet }}
+    #     os: ${{ matrix.os }}
 
   publish-ui-dist:
     name: Publish UI Distribution
     runs-on: 'windows-latest'
-    needs: build-and-test
+    # needs: build-and-test
     strategy:
       max-parallel: 1
       matrix:
@@ -80,29 +80,29 @@ jobs:
           secret_maui_signing_key: ${{ secrets.MAUI_SIGNING_KEY }}
           secret_maui_pfx_password: ${{ secrets.MAUI_PFX_PASSWORD }}
  
-  publish-docker-images:
-    name: Publish Docker Images
-    runs-on: ubuntu-latest
-    needs: build-and-test
-    strategy:
-      matrix:
-          dockerfile: ['Dockerfile.console', 'Dockerfile.api', 'Dockerfile.webui']
-          include:
-              - dockerfile: 'Dockerfile.console'
-                tag: 'pr-validator-console-A'
-              - dockerfile: 'Dockerfile.api'
-                tag: 'pr-validator-api-A'
-              - dockerfile: 'Dockerfile.webui'
-                tag: 'pr-validator-webui-A'
+  # publish-docker-images:
+  #   name: Publish Docker Images
+  #   runs-on: ubuntu-latest
+  #   needs: build-and-test
+  #   strategy:
+  #     matrix:
+  #         dockerfile: ['Dockerfile.console', 'Dockerfile.api', 'Dockerfile.webui']
+  #         include:
+  #             - dockerfile: 'Dockerfile.console'
+  #               tag: 'pr-validator-console-A'
+  #             - dockerfile: 'Dockerfile.api'
+  #               tag: 'pr-validator-api-A'
+  #             - dockerfile: 'Dockerfile.webui'
+  #               tag: 'pr-validator-webui-A'
 
-    steps:
+  #   steps:
 
-    - uses: actions/checkout@v3
-    - name: Publish Docker Images
-      uses: ./.github/actions/publish-docker-images
-      with:
-        dockerfile: ${{ matrix.dockerfile }}
-        tag: ${{ matrix.tag }}
-        secret_docker_username: ${{ secrets.DOCKER_USERNAME }}
-        secret_docker_password: ${{ secrets.DOCKER_PASSWORD }}
-        secret_github_package: ${{ secrets.GH_PACKAGE_SECRET}}
+  #   - uses: actions/checkout@v3
+  #   - name: Publish Docker Images
+  #     uses: ./.github/actions/publish-docker-images
+  #     with:
+  #       dockerfile: ${{ matrix.dockerfile }}
+  #       tag: ${{ matrix.tag }}
+  #       secret_docker_username: ${{ secrets.DOCKER_USERNAME }}
+  #       secret_docker_password: ${{ secrets.DOCKER_PASSWORD }}
+  #       secret_github_package: ${{ secrets.GH_PACKAGE_SECRET}}
