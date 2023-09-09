@@ -46,7 +46,7 @@ runs:
       run: |
         echo "${{ inputs.secret_maui_signing_key }}" > cert.pfx.asc
         certutil -decode cert.pfx.asc cert.pfx
-      shell: cmd
+      shell: pwsh
     
     - name: Add cert to Store
       run: certutil -user -q -p "${{ inputs.secret_maui_pfx_password }}" -importpfx cert.pfx NoRoot
