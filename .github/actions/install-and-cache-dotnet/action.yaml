@@ -4,16 +4,16 @@ inputs:
   dotnet-version:
     description: 'Version of dotnet to install'
     required: true
-  os:
-    description: 'The OS we are running on'
-    required: true
-  dotnet-install-dir:
-    required: false
-    default: '.\.dotnet'
-outputs:
-  dotnet-path:
-    description: "Path to dotnet install"
-    value: ${{ inputs.dotnet-install-dir }}
+  # os:
+  #   description: 'The OS we are running on'
+  #   required: true
+  # dotnet-install-dir:
+  #   required: false
+  #   default: '.\.dotnet'
+# outputs:
+#   dotnet-path:
+#     description: "Path to dotnet install"
+#     value: ${{ inputs.dotnet-install-dir }}
 runs:
   using: "composite"
   steps:
