@@ -38,52 +38,24 @@ jobs:
     # - name: Test
     #   run: dotnet test
 
-  publish-windows-console-exe-dist:
-    name: Publish Windows Console Exe Distribution
-    runs-on: 'windows-latest'
-    needs: build-and-test
-    strategy:
-      max-parallel: 1
-      matrix:
-        dotnet: [ '7.0' ]
-        os: [ 'win10-x64' ]
+  # publish-windows-console-exe-dist:
+  #   name: Publish Windows Console Exe Distribution
+  #   runs-on: 'windows-latest'
+  #   needs: build-and-test
+  #   strategy:
+  #     max-parallel: 1
+  #     matrix:
+  #       dotnet: [ '7.0' ]
+  #       os: [ 'win10-x64' ]
 
-    steps:
+  #   steps:
 
-    - uses: actions/checkout@v3
-    - name: Publish Windows Console Exe Distribution
-      uses: ./.github/actions/publish-console-exe-dist
-      with:
-        dotnet-version: ${{ matrix.dotnet }}
-        os: ${{ matrix.os }}
-    # - name: Setup .NET Core SDK ${{ matrix.dotnet }}
-    #   uses: actions/setup-dotnet@v3
-    #   with:
-    #     dotnet-version: ${{ matrix.dotnet }}
-    
-    # - name: Clean
-    #   run: dotnet clean ${{ github.workspace }}/src/ConsoleClient/ConsoleClient.csproj --configuration Release && dotnet nuget locals all --clear
-    
-    # - name: Restore
-    #   run: dotnet restore ${{ github.workspace }}/src/ConsoleClient/ConsoleClient.csproj
-
-    # - name: Prepare env
-    #   run: |
-    #       echo "BUILD_VERSION=$Env:GITHUB_RUN_NUMBER-$Env:GITHUB_RUN_ID" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-    #       echo "RUNNER_TOOL_CACHE=$Env:RUNNER_TOOL_CACHE" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-        
-    # - name: Publish ${{matrix.os}}
-    #   run: dotnet publish ${{ github.workspace }}/src/ConsoleClient/ConsoleClient.csproj --no-restore -c Release -r ${{ matrix.os }} -o ${{ github.workspace }}/dist/${{ matrix.os }} --version-suffix ${{ env.BUILD_VERSION }} --self-contained true
-
-    # - name: Copy Config to Distro
-    #   run: cp ${{ github.workspace }}/configuration.example.json ${{ github.workspace }}/dist/${{ matrix.os }}/configuration.local.json
-
-    # # Create Build Artifact
-    # - name: Upload Artifact ${{ matrix.os }}_${{ env.BUILD_VERSION }}
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: ${{ matrix.os }}_headless_${{ env.BUILD_VERSION }}
-    #     path: ${{ github.workspace }}/dist/headless/${{ matrix.os }}
+  #   - uses: actions/checkout@v3
+  #   - name: Publish Windows Console Exe Distribution
+  #     uses: ./.github/actions/publish-console-exe-dist
+  #     with:
+  #       dotnet-version: ${{ matrix.dotnet }}
+  #       os: ${{ matrix.os }}
 
   # compile-distro-ui:
   #  name: Compile Distro UI
@@ -136,29 +108,29 @@ jobs:
   #      name: ${{ matrix.os }}_ui_${{ env.BUILD_VERSION }}
   #      path: ${{ github.workspace }}/dist/${{ matrix.os }}-ui/AppPackages
  
-  # publish-docker-images:
-  #   name: Publish Docker Images
-  #   runs-on: ubuntu-latest
-  #   needs: build-and-test
-  #   strategy:
-  #     matrix:
-  #         dockerfile: ['Dockerfile.console', 'Dockerfile.api', 'Dockerfile.webui']
-  #         include:
-  #             - dockerfile: 'Dockerfile.console'
-  #               tag: 'pr-validator-console-A'
-  #             - dockerfile: 'Dockerfile.api'
-  #               tag: 'pr-validator-api-A'
-  #             - dockerfile: 'Dockerfile.webui'
-  #               tag: 'pr-validator-webui-A'
+  publish-docker-images:
+    name: Publish Docker Images
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    strategy:
+      matrix:
+          dockerfile: ['Dockerfile.console', 'Dockerfile.api', 'Dockerfile.webui']
+          include:
+              - dockerfile: 'Dockerfile.console'
+                tag: 'pr-validator-console-A'
+              - dockerfile: 'Dockerfile.api'
+                tag: 'pr-validator-api-A'
+              - dockerfile: 'Dockerfile.webui'
+                tag: 'pr-validator-webui-A'
 
-  #   steps:
+    steps:
 
-  #   - uses: actions/checkout@v3
-  #   - name: Publish Docker Images
-  #     uses: ./.github/actions/publish-docker-images
-  #     with:
-  #       dockerfile: ${{ matrix.dockerfile }}
-  #       tag: ${{ matrix.tag }}
+    - uses: actions/checkout@v3
+    - name: Publish Docker Images
+      uses: ./.github/actions/publish-docker-images
+      with:
+        dockerfile: ${{ matrix.dockerfile }}
+        tag: ${{ matrix.tag }}
   # create_docker_images:
   #  name: Publish Docker Images - PR
   #  runs-on: ubuntu-latest
