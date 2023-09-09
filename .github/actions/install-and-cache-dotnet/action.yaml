@@ -30,7 +30,6 @@ runs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
-        cache: true
 
     - name: Check default dotnet version
       run: dotnet --version
