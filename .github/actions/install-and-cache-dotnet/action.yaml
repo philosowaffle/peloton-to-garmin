@@ -17,27 +17,28 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Cache dotnet
-      id: cache-dotnet
-      uses: actions/cache@v3
-      with:
-        path: ${{ inputs.dotnet-install-dir }}
-        key: ${{ matrix.os }}-${{ matrix.dotnet }}
-        restore-keys: ${{ inputs.os }}-${{ inputs.dotnet-version }}
+    # - name: Cache dotnet
+    #   id: cache-dotnet
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: ${{ inputs.dotnet-install-dir }}
+    #     key: ${{ matrix.os }}-${{ matrix.dotnet }}
+    #     restore-keys: ${{ inputs.os }}-${{ inputs.dotnet-version }}
 
     - name: Install dotnet
       if: ${{ steps.cache-dotnet.outputs.cache-hit != 'true' }}
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
+        cache: true
 
     - name: Check default dotnet version
       run: dotnet --version
       shell: bash
 
-    - name: Set installed/cached dotnet path [${{ inputs.dotnet-install-dir }}]
-      run: echo "${{ inputs.dotnet-install-dir }}" | Out-File -FilePath $ENV:GITHUB_PATH -Encoding utf8 -Append
-      shell: pwsh
+    # - name: Set installed/cached dotnet path [${{ inputs.dotnet-install-dir }}]
+    #   run: echo "${{ inputs.dotnet-install-dir }}" | Out-File -FilePath $ENV:GITHUB_PATH -Encoding utf8 -Append
+    #   shell: pwsh
 
     # - name: Check installed/cached dotnet version
     #   run: dotnet --version
