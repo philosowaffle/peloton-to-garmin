@@ -40,13 +40,13 @@ runs:
       run: |
           echo "BUILD_VERSION=$Env:GITHUB_RUN_NUMBER-$Env:GITHUB_RUN_ID" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
           echo "RUNNER_TOOL_CACHE=$Env:RUNNER_TOOL_CACHE" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-      shell: pwsh
+      shell: cmd
     
     - name: Decrypt PFX file
       run: |
         echo "${{ inputs.secret_maui_signing_key }}" > cert.pfx.asc
         certutil -decode cert.pfx.asc cert.pfx
-      shell: pwsh
+      shell: cmd
     
     - name: Add cert to Store
       run: certutil -user -q -p "${{ inputs.secret_maui_pfx_password }}" -importpfx cert.pfx NoRoot
