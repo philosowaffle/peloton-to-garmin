@@ -7,6 +7,10 @@ inputs:
   tag:
     description: 'The Tag for the Docker image'
     required: true
+  version_tag: 'Specific version tag'
+    required: false
+  major_version_tag: 'Major version tag'
+    required: false
   secret_docker_username:
     description: "Docker username"
     required: true
@@ -47,8 +51,9 @@ runs:
         echo "BUILD_VERSION=${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}" >> $GITHUB_ENV
       shell: bash
 
-    - name: Build & Push to Package Repositories
-      id: docker_build
+    - name: Build & Push Tag to Package Repositories
+      if: inputs.version_tag == ''
+      id: docker_build_1
       uses: docker/build-push-action@v3
       with:
         push: true
@@ -58,7 +63,28 @@ runs:
         tags: |
             ${{ inputs.secret_docker_username }}/peloton-to-garmin:${{ inputs.tag }}
             ghcr.io/${{ github.repository_owner }}/peloton-to-garmin:${{ inputs.tag }}
+    
+    - name: Build & Push Version Tags to Package Repositories
+      if: inputs.version_tag != ''
+      id: docker_build_2
+      uses: docker/build-push-action@v3
+      with:
+        push: true
+        file: ./docker/${{ inputs.dockerfile }}
+        platforms: linux/amd64,linux/arm64,linux/arm/v7
+        build-args: VERSION=${{ env.BUILD_VERSION }}
+        tags: |
+            ${{ inputs.secret_docker_username }}/peloton-to-garmin:${{ inputs.tag }}
+            ${{ inputs.secret_docker_username }}/peloton-to-garmin:${{ inputs.version_tag }}
+            ${{ inputs.secret_docker_username }}/peloton-to-garmin:${{ inputs.major_version_tag }}
+            ghcr.io/${{ github.repository_owner }}/peloton-to-garmin:${{ inputs.tag }}
+            ghcr.io/${{ github.repository_owner }}/peloton-to-garmin:${{ inputs.version_tag }}
+            ghcr.io/${{ github.repository_owner }}/peloton-to-garmin:${{ inputs.major_version_tag }}
 
     - name: Image digest
-      run: echo ${{ steps.docker_build.outputs.digest }}
+      run: echo ${{ steps.docker_build_1.outputs.digest }}
+      shell: bash
+
+    - name: Image digest
+      run: echo ${{ steps.docker_build_2.outputs.digest }}
       shell: bash
