@@ -38,8 +38,8 @@ runs:
       shell: pwsh
 
     # Create Build Artifact
-    - name: Upload Artifact ${{ inputs.os }}_${{ env.BUILD_VERSION }}
+    - name: Upload Artifact console_${{ inputs.os }}_${{ env.BUILD_VERSION }}
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ inputs.os }}_console_${{ env.BUILD_VERSION }}
-        path: ${{ github.workspace }}/dist/console/${{ inputs.os }}
+        name: console_${{ inputs.os }}_${{ env.BUILD_VERSION }}
+        path: ${{ github.workspace }}/dist/${{ inputs.os }}
