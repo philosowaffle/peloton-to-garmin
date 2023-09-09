@@ -22,7 +22,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install Dotnet
-      id: cache-dotnet
+      # id: cache-dotnet
       uses: ./.github/actions/install-and-cache-dotnet
       with:
         dotnet-version: ${{ matrix.dotnet }}
@@ -31,7 +31,6 @@ jobs:
     - name: Check version
       # run: ${{ env.DOTNET_ROOT}}\dotnet version
       run: dotnet version
-      shell: bash
 
   #   - name: Install MAUI Workloads
   #     run: dotnet workload install maui --ignore-failed-sources
