@@ -7,36 +7,36 @@ on:
 
 jobs:
 
-  build-and-test:
-    strategy:
-      matrix:
-        dotnet: ['7.0']
-        os: [windows-latest]
+  # build-and-test:
+  #   strategy:
+  #     matrix:
+  #       dotnet: ['7.0']
+  #       os: [windows-latest]
 
-    runs-on: ${{ matrix.os }}
+  #   runs-on: ${{ matrix.os }}
 
-    steps:
-    - uses: actions/checkout@v3
+  #   steps:
+  #   - uses: actions/checkout@v3
 
-    # - name: Install dotnet
-    #   uses: actions/setup-dotnet@v3
-    #   with:
-    #     dotnet-version: ${{ inputs.dotnet-version }}
+  #   - name: Install dotnet
+  #     uses: actions/setup-dotnet@v3
+  #     with:
+  #       dotnet-version: ${{ matrix.dotnet }}
 
-    # - name: Install MAUI Workloads
-    #   run: dotnet workload install maui --ignore-failed-sources
+  #   - name: Install MAUI Workloads
+  #     run: dotnet workload install maui --ignore-failed-sources
 
-    # - name: Clean
-    #   run: dotnet clean --configuration Debug && dotnet nuget locals all --clear
+  #   - name: Clean
+  #     run: dotnet clean --configuration Debug && dotnet nuget locals all --clear
     
-    # - name: Restore
-    #   run: dotnet restore
+  #   - name: Restore
+  #     run: dotnet restore
 
-    # - name: Build
-    #   run: dotnet build --no-restore --configuration Debug
+  #   - name: Build
+  #     run: dotnet build --no-restore --configuration Debug
 
-    # - name: Test
-    #   run: dotnet test
+  #   - name: Test
+  #     run: dotnet test
 
   # publish-windows-console-exe-dist:
   #   name: Publish Windows Console Exe Distribution
@@ -60,7 +60,7 @@ jobs:
   publish-ui-dist:
     name: Publish UI Distribution
     runs-on: 'windows-latest'
-    needs: build-and-test
+    # needs: build-and-test
     strategy:
       max-parallel: 1
       matrix:
@@ -70,15 +70,15 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v3
-    - name: Publish UI Distribution
-      uses: ./.github/actions/publish-ui-dist
-      with:
-        dotnet-version: ${{ matrix.dotnet }}
-        os: ${{ matrix.os }}
-        framework: ${{ matrix.framework }}
-        secret_maui_signing_key: ${{ secrets.MAUI_SIGNING_KEY }}
-        secret_maui_pfx_password: ${{ secrets.MAUI_PFX_PASSWORD }}
+      - uses: actions/checkout@v3
+      - name: Publish UI Distribution
+        uses: ./.github/actions/publish-ui-dist
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+          os: ${{ matrix.os }}
+          framework: ${{ matrix.framework }}
+          secret_maui_signing_key: ${{ secrets.MAUI_SIGNING_KEY }}
+          secret_maui_pfx_password: ${{ secrets.MAUI_PFX_PASSWORD }}
 
   # compile-distro-ui:
   #  name: Compile Distro UI
