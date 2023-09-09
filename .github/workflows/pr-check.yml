@@ -31,6 +31,7 @@ jobs:
     - name: Check version
       # run: ${{ env.DOTNET_ROOT}}\dotnet version
       run: dotnet version
+      shell: bash
 
   #   - name: Install MAUI Workloads
   #     run: dotnet workload install maui --ignore-failed-sources
