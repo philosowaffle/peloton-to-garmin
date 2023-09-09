@@ -131,6 +131,9 @@ jobs:
       with:
         dockerfile: ${{ matrix.dockerfile }}
         tag: ${{ matrix.tag }}
+        secret_docker_username: ${{ secrets.DOCKER_USERNAME }}
+        secret_docker_password: ${{ secrets.DOCKER_PASSWORD }}
+        secret_github_package: ${{ secrets.GH_PACKAGE_SECRET}}
   # create_docker_images:
   #  name: Publish Docker Images - PR
   #  runs-on: ubuntu-latest
