@@ -63,6 +63,11 @@ runs:
         tags: |
             ${{ inputs.secret_docker_username }}/peloton-to-garmin:${{ inputs.tag }}
             ghcr.io/${{ github.repository_owner }}/peloton-to-garmin:${{ inputs.tag }}
+
+    - name: Image digest
+      if: inputs.version_tag == ''
+      run: echo ${{ steps.docker_build_1.outputs.digest }}
+      shell: bash
     
     - name: Build & Push Version Tags to Package Repositories
       if: inputs.version_tag != ''
@@ -82,9 +87,6 @@ runs:
             ghcr.io/${{ github.repository_owner }}/peloton-to-garmin:${{ inputs.major_version_tag }}
 
     - name: Image digest
-      run: echo ${{ steps.docker_build_1.outputs.digest }}
-      shell: bash
-
-    - name: Image digest
+      if: inputs.version_tag != ''
       run: echo ${{ steps.docker_build_2.outputs.digest }}
       shell: bash
