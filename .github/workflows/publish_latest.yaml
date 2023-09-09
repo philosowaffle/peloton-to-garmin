@@ -1,0 +1,58 @@
+name: Publish Latest
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - master
+    paths:
+    - 'src/**'
+    - 'docker/**'
+    - 'PelotonToGarmin.sln'
+    - 'configuration.example.json'
+
+jobs:
+
+    publish-windows-console-exe-dist:
+        name: Publish Windows Console Exe Distribution
+        runs-on: 'windows-latest'
+        strategy:
+          max-parallel: 1
+          matrix:
+            dotnet: [ '7.0' ]
+            os: [ 'win10-x64' ]
+    
+        steps:
+    
+        - uses: actions/checkout@v3
+        - name: Publish Windows Console Exe Distribution
+          uses: ./.github/actions/publish-console-exe-dist
+          with:
+            dotnet-version: ${{ matrix.dotnet }}
+            os: ${{ matrix.os }}
+    
+    publish-docker-images:
+        name: Publish Docker Images
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                dockerfile: ['Dockerfile.console', 'Dockerfile.api', 'Dockerfile.webui']
+                include:
+                    - dockerfile: 'Dockerfile.console'
+                      tag: 'console-latest'
+                    - dockerfile: 'Dockerfile.api'
+                      tag: 'api-latest'
+                    - dockerfile: 'Dockerfile.webui'
+                      tag: 'webui-latest'
+    
+        steps:
+    
+            - uses: actions/checkout@v3
+            - name: Publish Docker Images
+              uses: ./.github/actions/publish-docker-images
+              with:
+                dockerfile: ${{ matrix.dockerfile }}
+                tag: ${{ matrix.tag }}
+                secret_docker_username: ${{ secrets.DOCKER_USERNAME }}
+                secret_docker_password: ${{ secrets.DOCKER_PASSWORD }}
+                secret_github_package: ${{ secrets.GH_PACKAGE_SECRET}}
