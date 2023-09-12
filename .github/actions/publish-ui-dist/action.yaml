@@ -61,4 +61,4 @@ runs:
       uses: actions/upload-artifact@v3
       with:
         name: ui_${{ inputs.os }}_${{ env.BUILD_VERSION }}
-        path: ${{ github.workspace }}/dist/${{ inputs.os }}-ui/AppPackages
+        path: ${{ github.workspace }}/dist/${{ inputs.os }}-ui
