@@ -12,25 +12,7 @@ on:
     - 'configuration.example.json'
 
 jobs:
-
-    publish-windows-console-exe-dist:
-        name: Publish Windows Console Exe Distribution
-        runs-on: 'windows-latest'
-        strategy:
-          matrix:
-            dotnet: [ '7.0' ]
-            os: [ 'win10-x64' ]
-    
-        steps:
-    
-        - uses: actions/checkout@v3
-        - name: Publish Windows Console Exe Distribution
-          uses: ./.github/actions/publish-console-exe-dist
-          with:
-            dotnet-version: ${{ matrix.dotnet }}
-            os: ${{ matrix.os }}
-    
-    publish-docker-images:
+  publish-docker-images:
         name: Publish Docker Images
         runs-on: ubuntu-latest
         strategy:
@@ -55,3 +37,41 @@ jobs:
                 secret_docker_username: ${{ secrets.DOCKER_USERNAME }}
                 secret_docker_password: ${{ secrets.DOCKER_PASSWORD }}
                 secret_github_package: ${{ secrets.GH_PACKAGE_SECRET}}
+
+  publish-windows-console-exe-dist:
+      name: Publish Windows Console Exe Distribution
+      runs-on: 'windows-latest'
+      strategy:
+        matrix:
+          dotnet: [ '7.0' ]
+          os: [ 'win10-x64' ]
+  
+      steps:
+  
+      - uses: actions/checkout@v3
+      - name: Publish Windows Console Exe Distribution
+        uses: ./.github/actions/publish-console-exe-dist
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+          os: ${{ matrix.os }}
+
+  publish-ui-dist:
+    name: Publish UI Distribution
+    runs-on: 'windows-latest'
+    strategy:
+      matrix:
+        dotnet: [ '7.0.400' ]
+        framework: ['net7.0-windows10.0.19041.0']
+        os: [ 'win10-x64' ]
+
+    steps:
+
+      - uses: actions/checkout@v3
+      - name: Publish UI Distribution
+        uses: ./.github/actions/publish-ui-dist
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+          os: ${{ matrix.os }}
+          framework: ${{ matrix.framework }}
+          secret_maui_signing_key: ${{ secrets.MAUI_SIGNING_KEY }}
+          secret_maui_pfx_password: ${{ secrets.MAUI_PFX_PASSWORD }}
