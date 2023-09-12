@@ -43,26 +43,24 @@ jobs:
   #   runs-on: 'windows-latest'
   #   needs: build-and-test
   #   strategy:
-  #     max-parallel: 1
   #     matrix:
   #       dotnet: [ '7.0' ]
   #       os: [ 'win10-x64' ]
 
-    # steps:
+  #   steps:
 
-    # - uses: actions/checkout@v3
-    # - name: Publish Windows Console Exe Distribution
-    #   uses: ./.github/actions/publish-console-exe-dist
-    #   with:
-    #     dotnet-version: ${{ matrix.dotnet }}
-    #     os: ${{ matrix.os }}
+  #   - uses: actions/checkout@v3
+  #   - name: Publish Windows Console Exe Distribution
+  #     uses: ./.github/actions/publish-console-exe-dist
+  #     with:
+  #       dotnet-version: ${{ matrix.dotnet }}
+  #       os: ${{ matrix.os }}
 
   publish-ui-dist:
     name: Publish UI Distribution
     runs-on: 'windows-latest'
     # needs: build-and-test
     strategy:
-      max-parallel: 1
       matrix:
         dotnet: [ '7.0' ]
         framework: ['net7.0-windows10.0.19041.0']

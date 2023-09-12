@@ -25,7 +25,7 @@ runs:
         dotnet-version: ${{ inputs.dotnet-version }}
 
     - name: Install MAUI Workloads
-      run: dotnet workload install maui --ignore-failed-sources
+      run: dotnet workload install maui-desktop --ignore-failed-sources # TODO: change back to generic "maui" instead of "maui-desktop" to install deps for all platforms
       shell: pwsh
       
     - name: Clean
