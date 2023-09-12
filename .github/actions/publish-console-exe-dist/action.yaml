@@ -7,6 +7,10 @@ inputs:
   os:
     description: 'The OS we are running on'
     required: true
+outputs:
+  artifact:
+    description: 'Path to the published artifact'
+    value: ${{ github.workspace }}/dist/${{ inputs.os }}
 runs:
   using: "composite"
   steps:

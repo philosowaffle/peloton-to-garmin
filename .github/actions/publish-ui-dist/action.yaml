@@ -14,8 +14,12 @@ inputs:
     description: 'The MAUI signing Key'
     required: true
   secret_maui_pfx_password:
-    description: 'The mAUI PFX Password'
+    description: 'The MAUI PFX Password'
     required: true
+outputs:
+  artifact:
+    description: 'Path to the published artifact'
+    value: ${{ github.workspace }}/dist/${{ inputs.os }}-ui
 runs:
   using: "composite"
   steps:

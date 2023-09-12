@@ -7,9 +7,11 @@ inputs:
   tag:
     description: 'The Tag for the Docker image'
     required: true
-  version_tag: 'Specific version tag'
+  version_tag: 
+    description: 'Specific version tag'
     required: false
-  major_version_tag: 'Major version tag'
+  major_version_tag: 
+    description: 'Major version tag'
     required: false
   secret_docker_username:
     description: "Docker username"

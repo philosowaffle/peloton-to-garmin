@@ -17,7 +17,6 @@ jobs:
         name: Publish Windows Console Exe Distribution
         runs-on: 'windows-latest'
         strategy:
-          max-parallel: 1
           matrix:
             dotnet: [ '7.0' ]
             os: [ 'win10-x64' ]
