@@ -87,8 +87,6 @@ jobs:
           dotnet-version: ${{ matrix.dotnet }}
           os: ${{ matrix.os }}
           framework: ${{ matrix.framework }}
-          secret_maui_signing_key: ${{ secrets.MAUI_SIGNING_KEY }}
-          secret_maui_pfx_password: ${{ secrets.MAUI_PFX_PASSWORD }}
   
   create-gh-release:
     runs-on: ubuntu-latest
