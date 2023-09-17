@@ -44,6 +44,10 @@ runs:
       run: dotnet publish ${{ github.workspace }}/src/ClientUI/ClientUI.csproj --no-restore -c Release -f ${{ inputs.framework }} -p:RuntimeIdentifierOverride=${{ inputs.os }} -p:PublishSingleFile=true -p:SelfContained=true
       shell: pwsh
 
+    - name: Delete extra publish dir
+      run: rm -rf ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os }}/publish
+      shell: bash
+
     # Create Build Artifact
     - name: Upload Artifact ui_${{ inputs.os }}_${{ env.BUILD_VERSION }}
       uses: actions/upload-artifact@v3
