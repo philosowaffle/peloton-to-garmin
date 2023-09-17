@@ -25,14 +25,6 @@ runs:
     - name: Install MAUI Workloads
       run: dotnet workload install maui-desktop --ignore-failed-sources # TODO: change back to generic "maui" instead of "maui-desktop" to install deps for all platforms
       shell: pwsh
-      
-    - name: Clean
-      run: dotnet clean ${{ github.workspace }}/src/ClientUI/ClientUI.csproj --configuration Release && dotnet nuget locals all --clear
-      shell: pwsh
-      
-    - name: Restore
-      run: dotnet restore ${{ github.workspace }}/src/ClientUI/ClientUI.csproj
-      shell: pwsh
 
     - name: Prepare env
       run: |
@@ -41,11 +33,19 @@ runs:
       shell: pwsh
           
     - name: Publish ${{ inputs.os }}
-      run: dotnet publish ${{ github.workspace }}/src/ClientUI/ClientUI.csproj --no-restore -c Release -f ${{ inputs.framework }} -p:RuntimeIdentifierOverride=${{ inputs.os }} -p:PublishSingleFile=true -p:SelfContained=true
+      run: dotnet publish ${{ github.workspace }}/src/ClientUI/ClientUI.csproj -c Release -f ${{ inputs.framework }} -p:RuntimeIdentifierOverride=${{ inputs.os }} -p:PublishSingleFile=true -p:SelfContained=true
       shell: pwsh
 
     - name: Copy Config to Distro
       run: Copy-Item ${{ github.workspace }}/configuration.example.json -Destination ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os }}
+      shell: pwsh
+
+    - name: Rename Config
+      run: Rename-Item ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os }}/configuration.example.json -NewName configuration.local.json
+      shell: pwsh
+
+    - name: Remove nested Publish Dir
+      run: Remove-Item ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os }}/publish -Recurse
       shell: pwsh
 
     # Create Build Artifact
