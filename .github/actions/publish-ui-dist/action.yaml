@@ -57,7 +57,7 @@ runs:
       shell: cmd
           
     - name: Publish ${{ inputs.os }}
-      run: dotnet publish ${{ github.workspace }}/src/ClientUI/ClientUI.csproj --no-restore -c Release -f ${{ inputs.framework }} -p:RuntimeIdentifierOverride=${{ inputs.os }} -o ${{ github.workspace }}/dist/${{ inputs.os }}-ui
+      run: dotnet publish ${{ github.workspace }}/src/ClientUI/ClientUI.csproj --no-restore -c Release -f ${{ inputs.framework }} -p:RuntimeIdentifierOverride=${{ inputs.os }}
       shell: pwsh
 
     # Create Build Artifact
@@ -65,4 +65,4 @@ runs:
       uses: actions/upload-artifact@v3
       with:
         name: ui_${{ inputs.os }}_${{ env.BUILD_VERSION }}
-        path: ${{ github.workspace }}/dist/${{ inputs.os }}-ui
+        path: ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os }}/AppPackages/
