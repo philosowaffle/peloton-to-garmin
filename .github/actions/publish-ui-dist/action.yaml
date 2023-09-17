@@ -45,8 +45,8 @@ runs:
       shell: pwsh
 
     - name: Copy Config to Distro
-      run: cp ${{ github.workspace }}/configuration.example.json ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os }}/configuration.local.json
-      shell: sh
+      run: Copy-Item ${{ github.workspace }}/configuration.example.json -Destination ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os }}
+      shell: pwsh
 
     # Create Build Artifact
     - name: Upload Artifact ui_${{ inputs.os }}_${{ env.BUILD_VERSION }}
