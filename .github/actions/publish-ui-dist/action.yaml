@@ -42,10 +42,6 @@ runs:
       run: dotnet publish ${{ github.workspace }}/src/ClientUI/ClientUI.csproj -c Release -f ${{ inputs.framework }} -p:RuntimeIdentifierOverride=${{ inputs.os }} -p:PublishSingleFile=true -p:SelfContained=true
       shell: pwsh
 
-    # - name: Copy Config to Distro
-    #   run: Copy-Item ${{ github.workspace }}/configuration.example.json -Destination ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os }}
-    #   shell: pwsh
-
     - name: Rename Config
       run: Rename-Item ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os }}/configuration.example.json -NewName configuration.local.json
       shell: pwsh
