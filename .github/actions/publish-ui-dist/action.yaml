@@ -22,6 +22,10 @@ runs:
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
 
+    - name: List MAUI Workloads
+      run: dotnet workload list
+      shell: pwsh
+
     # TODO: change back to generic "maui" instead of "maui-desktop" to install deps for all platforms, maui-desktop
     # Pinned to workload version: https://github.com/dotnet/maui/discussions/6528
     - name: Install MAUI Workloads
