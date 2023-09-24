@@ -117,11 +117,9 @@ configuration.local.json
 /src/Api/data
 /src/ConsoleClient/data
 /src/ConsoleClient/python/**
-/src/WebUI/wwwroot/lib
 */**/output/**
 /Output
 /.vs/ProjectSettings.json
 .vs/
 /.vscode/settings.json
-/src/SharedUI/wwwroot/lib
 /src/ClientUI/ClientUI.csproj.user
