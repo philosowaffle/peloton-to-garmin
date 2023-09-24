@@ -73,7 +73,7 @@ jobs:
       artifact: ${{ steps.win-ui-create-artifact.outputs.artifact }}
     strategy:
       matrix:
-        dotnet: [ '7.0' ]
+        dotnet: [ '7.0.400' ]
         framework: ['net7.0-windows10.0.22621.0']
         os: [ 'win10-x64' ]
 
@@ -96,20 +96,18 @@ jobs:
         uses: papeloto/action-zip@v1
         with:
           files: ${{ needs.publish-windows-console-exe-dist.outputs.artifact }}
-          dest: /dist/${{ matrix.os }}_${{ github.event.inputs.version }}.zip
+          dest: /dist/console_win_${{ github.event.inputs.version }}.zip
       
       - name: Create Zip for Win UI Release Artifact
         uses: papeloto/action-zip@v1
         with:
           files: ${{ needs.publish-ui-dist.outputs.artifact }}
-          dest: /dist/${{ matrix.os }}_${{ github.event.inputs.version }}-ui.zip
+          dest: /dist/ui_win_${{ github.event.inputs.version }}.zip
     
       - name: Create Release and Upload Artifacts
         uses: ncipollo/release-action@v1
         with:
-          artifacts: 
-            - "${{ github.workspace }}/dist/${{ matrix.os }}_${{ github.event.inputs.version }}.zip"
-            - "${{ github.workspace }}/dist/${{ matrix.os }}_${{ github.event.inputs.version }}-ui.zip"
+          artifacts: "${{ github.workspace }}/dist/console_win_${{ github.event.inputs.version }}.zip,${{ github.workspace }}/dist/ui_win_${{ github.event.inputs.version }}.zip"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: v${{ github.event.inputs.version }}
           allowUpdates: true

@@ -39,7 +39,7 @@ namespace Common.Database
 			{
 				var settings = _db.GetItem<Settings>("1");
 			}
-			catch (KeyNotFoundException k)
+			catch (KeyNotFoundException)
 			{
 				var success = _db.InsertItem("1", _defaultSettings);
 				if (!success)
