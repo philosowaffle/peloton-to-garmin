@@ -26,16 +26,6 @@ runs:
       run: dotnet workload list
       shell: pwsh
 
-    # TODO: change back to generic "maui" instead of "maui-desktop" to install deps for all platforms, maui-desktop
-    # Pinned to workload version: https://github.com/dotnet/maui/discussions/6528
-    # - name: Install MAUI Workloads
-    #   run: dotnet workload install maui-windows maui-desktop --ignore-failed-sources --from-rollback-file https://maui.blob.core.windows.net/metadata/rollbacks/7.0.92.json --source https://api.nuget.org/v3/index.json
-    #   shell: pwsh
-
-    # - name: List MAUI Workloads
-    #   run: dotnet workload list
-    #   shell: pwsh
-
     - name: Prepare env
       run: |
           echo "BUILD_VERSION=$Env:GITHUB_RUN_NUMBER-$Env:GITHUB_RUN_ID" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
