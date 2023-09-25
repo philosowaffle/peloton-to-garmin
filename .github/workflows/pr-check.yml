@@ -35,24 +35,6 @@ jobs:
     - name: Test
       run: dotnet test
 
-  publish-windows-console-exe-dist:
-    name: Publish Windows Console Exe Distribution
-    runs-on: 'windows-latest'
-    needs: build-and-test
-    strategy:
-      matrix:
-        dotnet: [ '7.0' ]
-        os: [ 'win10-x64' ]
-
-    steps:
-
-    - uses: actions/checkout@v3
-    - name: Publish Windows Console Exe Distribution
-      uses: ./.github/actions/publish-console-exe-dist
-      with:
-        dotnet-version: ${{ matrix.dotnet }}
-        os: ${{ matrix.os }}
-
   publish-ui-dist:
     name: Publish UI Distribution
     runs-on: 'windows-latest'

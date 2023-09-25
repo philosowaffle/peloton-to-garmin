@@ -42,7 +42,7 @@ Convert, Backup, and Sync.
 
 ## Screenshots
 
-#### Converted and imported Cycling Workout
+### Converted and imported Cycling Workout
 
 ![Converted Cycling Workout](https://github.com/philosowaffle/peloton-to-garmin/raw/master/images/example_cycle.png?raw=true "Converted Cycling Workout")
 
@@ -58,5 +58,6 @@ Convert, Backup, and Sync.
 
 ![Laps](https://github.com/philosowaffle/peloton-to-garmin/raw/master/images/example_laps.png?raw=true "Laps")
 
-### Web UI
+### UI
+
 ![Web UI Demo](https://github.com/philosowaffle/peloton-to-garmin/raw/master/images/p2g_webui_demo.gif?raw=true "Web UI Demo")
