@@ -22,7 +22,9 @@ jobs:
     container: 
       image:  philosowaffle/peloton-to-garmin:stable
     steps:
-    - run: mkdir -p /app/output
+    - name: Set env
+      run: echo "OUTPUT_DIR=/app/output" >> $GITHUB_ENV
+    - run: mkdir -p ${{ env.OUTPUT_DIR }}
     - name: Create device info file
       env: 
         DEVICE_INFO: ${{ secrets.DEVICE_INFO }}
@@ -90,4 +92,4 @@ jobs:
       if: ${{ github.event.inputs.saveLocalCopy }}
       with:
         name: output
-        path: app/output/*.fit
+        path: ${{ env.OUTPUT_DIR }}/*.fit
