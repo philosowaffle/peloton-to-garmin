@@ -92,4 +92,4 @@ jobs:
       if: ${{ github.event.inputs.saveLocalCopy }}
       with:
         name: output
-        path: ${{ env.OUTPUT_DIR }}/*.fit
+        path: ${{ env.OUTPUT_DIR }}/fit/*.fit
