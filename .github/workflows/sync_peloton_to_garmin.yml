@@ -88,8 +88,16 @@ jobs:
         P2G_GARMIN__EMAIL: ${{ secrets.P2G_GARMIN__EMAIL }}
         P2G_GARMIN__PASSWORD: ${{ secrets.P2G_GARMIN__PASSWORD }}
         TZ: America/Chicago
-    - uses: actions/upload-artifact@v3
+
+    - name: archive files
       if: ${{ github.event.inputs.saveLocalCopy }}
+      run: |
+        apt-get update
+        apt-get install -y zip
+        zip -r output.zip ${{ env.OUTPUT_DIR }}
+        
+    - uses: actions/upload-artifact@v3
       with:
         name: output
-        path: ${{ env.OUTPUT_DIR }}/fit/*.fit
+        path: output.zip
+        if-no-files-found: error
