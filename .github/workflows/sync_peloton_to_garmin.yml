@@ -91,10 +91,10 @@ jobs:
 
     - name: zip output files 
       if: ${{ github.event.inputs.saveLocalCopy }}
-      run: |
-        zip -r output.zip ${{ env.OUTPUT_DIR }}
+      run: zip -r output.zip ${{ env.OUTPUT_DIR }}
     - uses: actions/upload-artifact@v3
       if: ${{ github.event.inputs.saveLocalCopy }}
       with:
         name: output
         path: output.zip
+        if-no-files-found: error
