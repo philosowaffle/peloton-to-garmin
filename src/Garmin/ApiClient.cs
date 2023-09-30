@@ -31,7 +31,8 @@ namespace Garmin
 
 		private static string UPLOAD_URL = $"{BASE_URL}/modern/proxy/upload-service/upload";
 
-		private const string ORIGIN = SSO_URL;
+		private const string ORIGIN = "https://sso.garmin.com";
+		private const string REFERER = "https://sso.garmin.com/sso/signin";
 
 		private static readonly ILogger _logger = LogContext.ForClass<ApiClient>();
 
@@ -61,6 +62,8 @@ namespace Garmin
 			result.RawResponseBody = await SSO_SIGNIN_URL
 						.WithHeader("User-Agent", auth.UserAgent)
 						.WithHeader("origin", ORIGIN)
+						.WithHeader("referer", REFERER)
+						.WithHeader("NK", "NT")
 						.SetQueryParams(queryParams)
 						.WithCookies(jar)
 						.StripSensitiveDataFromLogging(auth.Email, auth.Password)

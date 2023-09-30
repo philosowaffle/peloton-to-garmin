@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="IdentityModel" Version="6.2.0" />
+    <PackageReference Include="OAuth.DotNetCore" Version="3.0.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,6 +8,9 @@ using Conversion;
 using Dynastream.Fit;
 using Flurl;
 using Flurl.Http;
+using Flurl.Http.Configuration;
+using Garmin;
+using Garmin.Auth;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 using Moq;
@@ -19,6 +22,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -38,6 +42,26 @@ namespace UnitTests
 					.MinimumLevel.Verbose()
 					//.MinimumLevel.Information()
 					.CreateLogger();
+
+			// Allows using fiddler
+			FlurlHttp.Configure(cli =>
+			{
+				cli.HttpClientFactory = new UntrustedCertClientFactory();
+			});
+		}
+
+		[Test]
+		public async Task OAuth2()
+		{
+			//FlurlHttp.Configure(settings =>
+			//{
+			//	settings.Timeout = new TimeSpan(0, 0, defaultTimeoutSeconds);
+			//	settings.
+			//	settings.Redirects.ForwardHeaders = true;
+			//});
+
+			var service = new GarminOAuthService(null, new Garmin.ApiClient());
+			await service.GetAuthTokenAsync();
 		}
 
 		//[Test]
@@ -208,6 +232,17 @@ namespace UnitTests
 			public new void Save(Tuple<string, ICollection<Mesg>> data, string path)
 			{
 				base.Save(data, path);
+			}
+		}
+
+		private class UntrustedCertClientFactory : DefaultHttpClientFactory
+		{
+			public override HttpMessageHandler CreateMessageHandler()
+			{
+				return new HttpClientHandler
+				{
+					ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+				};
 			}
 		}
 	}
