@@ -14,7 +14,8 @@ namespace Garmin
 	public interface IGarminApiClient
 	{
 		Task InitSigninFlowAsync(object queryParams, string userAgent, out CookieJar jar);
-		Task InitCookieJarAsync(object queryParams, string userAgent, out CookieJar jar)
+		Task InitCookieJarAsync(object queryParams, string userAgent, out CookieJar jar);
+		Task<GarminResult> GetCsrfTokenAsync(GarminApiAuthentication auth, object queryParams, CookieJar jar);
 		Task<SendCredentialsResult> SendCredentialsAsync(GarminApiAuthentication auth, object queryParams, object loginData, CookieJar jar);
 		Task<string> SendMfaCodeAsync(string userAgent, object queryParams, object mfaData, CookieJar jar);
 		Task<IFlurlResponse> SendServiceTicketAsync(string userAgent, string serviceTicket, CookieJar jar);
@@ -25,7 +26,7 @@ namespace Garmin
 	{
 		private const string BASE_URL = "https://connect.garmin.com";
 		private const string SSO_URL = "https://sso.garmin.com";
-		private const string SIGNIN_URL = "https://sso.garmin.com/sso/signin";
+		private const string SSO_SIGNIN_URL = "https://sso.garmin.com/sso/signin";
 		private const string SSO_EMBED_URL = "https://sso.garmin.com/sso/embed";
 
 		private static string UPLOAD_URL = $"{BASE_URL}/modern/proxy/upload-service/upload";
@@ -36,7 +37,7 @@ namespace Garmin
 
 		public Task InitSigninFlowAsync(object queryParams, string userAgent, out CookieJar jar)
 		{
-			return SIGNIN_URL
+			return SSO_SIGNIN_URL
 						.WithHeader("User-Agent", userAgent)
 						.WithHeader("origin", ORIGIN)
 						.SetQueryParams(queryParams)
@@ -57,7 +58,7 @@ namespace Garmin
 		public async Task<SendCredentialsResult> SendCredentialsAsync(GarminApiAuthentication auth, object queryParams, object loginData, CookieJar jar)
 		{
 			var result = new SendCredentialsResult();
-			result.RawResponseBody = await SIGNIN_URL
+			result.RawResponseBody = await SSO_SIGNIN_URL
 						.WithHeader("User-Agent", auth.UserAgent)
 						.WithHeader("origin", ORIGIN)
 						.SetQueryParams(queryParams)
@@ -65,6 +66,21 @@ namespace Garmin
 						.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 						.OnRedirect((r) => { result.WasRedirected = true; result.RedirectedTo = r.Redirect.Url; })
 						.PostUrlEncodedAsync(loginData)
+						.ReceiveString();
+
+			return result;
+		}
+
+		public async Task<GarminResult> GetCsrfTokenAsync(GarminApiAuthentication auth, object queryParams, CookieJar jar)
+		{
+			var result = new GarminResult();
+			result.RawResponseBody = await SSO_SIGNIN_URL
+						.WithHeader("User-Agent", auth.UserAgent)
+						.WithHeader("origin", ORIGIN)
+						.SetQueryParams(queryParams)
+						.WithCookies(jar)
+						.StripSensitiveDataFromLogging(auth.Email, auth.Password)
+						.GetAsync()
 						.ReceiveString();
 
 			return result;
