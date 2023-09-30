@@ -88,8 +88,13 @@ jobs:
         P2G_GARMIN__EMAIL: ${{ secrets.P2G_GARMIN__EMAIL }}
         P2G_GARMIN__PASSWORD: ${{ secrets.P2G_GARMIN__PASSWORD }}
         TZ: America/Chicago
+
+    - name: zip output files 
+      if: ${{ github.event.inputs.saveLocalCopy }}
+      run: |
+        zip -r output.zip ${{ env.OUTPUT_DIR }}
     - uses: actions/upload-artifact@v3
       if: ${{ github.event.inputs.saveLocalCopy }}
       with:
         name: output
-        path: ${{ env.OUTPUT_DIR }}/fit/*.fit
+        path: output.zip
