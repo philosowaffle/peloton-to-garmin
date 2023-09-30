@@ -53,13 +53,6 @@ namespace UnitTests
 		[Test]
 		public async Task OAuth2()
 		{
-			//FlurlHttp.Configure(settings =>
-			//{
-			//	settings.Timeout = new TimeSpan(0, 0, defaultTimeoutSeconds);
-			//	settings.
-			//	settings.Redirects.ForwardHeaders = true;
-			//});
-
 			var service = new GarminOAuthService(null, new Garmin.ApiClient());
 			await service.GetAuthTokenAsync();
 		}

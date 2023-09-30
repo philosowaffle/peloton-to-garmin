@@ -10,6 +10,9 @@ using System.Collections.Generic;
 using Common.Observe;
 using Serilog;
 using System.Web;
+using System.IO;
+using System.Net;
+using Newtonsoft.Json;
 
 namespace Garmin.Auth;
 public interface IGarminOAuthService
@@ -32,8 +35,7 @@ public class GarminOAuthService : IGarminOAuthService
 	public async Task GetAuthTokenAsync()
 	{
 		var auth = new GarminApiAuthentication();
-		//auth.UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148";
-		auth.UserAgent = "com.garmin.android.apps.connectmobile";
+		auth.UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148";
 		auth.Email = "";
 		auth.Password = "";
 
@@ -115,6 +117,7 @@ public class GarminOAuthService : IGarminOAuthService
 		// Exchane for OAuth2
 		////////////////////////////////
 		var oAuth2Token = await GetOAuth2TokenAsync(oAuthToken, oAuthTokenSecret, auth.UserAgent);
+		//var oAuth2Token = await Copy_GetOAuth2TokenAsync(oAuthToken, oAuthTokenSecret, auth.UserAgent);
 
 		/////////////////////////////////
 		// Test
@@ -167,8 +170,8 @@ public class GarminOAuthService : IGarminOAuthService
 		var token = await oauthClient2.RequestUrl
 							.WithHeader("User-Agent", userAgent)
 							.WithHeader("Authorization", oauthClient2.GetAuthorizationHeader())
-							.WithHeader("Content-Type", "application/x-www-form-urlencoded")
-							.PostAsync()
+							.WithHeader("Content-Type", "application/x-www-form-urlencoded") // this header is required, without it you get a 500
+							.PostUrlEncodedAsync(new object()) // hack: PostAsync() will drop the content-type header, by posting empty object we trick flurl into leaving the header
 							.ReceiveJson<OAuth2Token>();
 
 		return token;
