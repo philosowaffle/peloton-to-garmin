@@ -2,7 +2,6 @@
 using Common.Stateful;
 using Flurl.Http;
 using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using OAuth;
@@ -10,16 +9,13 @@ using System.Collections.Generic;
 using Common.Observe;
 using Serilog;
 using System.Web;
-using System.IO;
-using System.Net;
-using Newtonsoft.Json;
 
 namespace Garmin.Auth;
 public interface IGarminOAuthService
 {
 }
 
-public class GarminOAuthService : IGarminOAuthService
+public class GarminOAuthService : IGarminAuthenticationService
 {
 	private static readonly ILogger _logger = LogContext.ForClass<GarminOAuthService>();
 
@@ -30,6 +26,28 @@ public class GarminOAuthService : IGarminOAuthService
 	{
 		_settingsService = settingsService;
 		_apiClient = apiClient;
+	}
+
+	public async Task<GarminApiAuthentication> GetGarminAuthenticationAsync()
+	{
+		var settings = await _settingsService.GetSettingsAsync();
+		settings.Garmin.EnsureGarminCredentialsAreProvided();
+
+		var auth = _settingsService.GetGarminAuthentication(settings.Garmin.Email);
+		if (auth is object && auth.IsValid(settings))
+			return auth;
+
+		return await RefreshGarminAuthenticationAsync();
+	}
+
+	public Task<GarminApiAuthentication> RefreshGarminAuthenticationAsync()
+	{
+		throw new NotImplementedException();
+	}
+
+	public Task<GarminApiAuthentication> CompleteMFAAuthAsync(string mfaCode)
+	{
+		throw new NotImplementedException();
 	}
 
 	public async Task GetAuthTokenAsync()

@@ -8,15 +8,16 @@ public class GarminApiAuthentication : IApiAuthentication
 	public string Password { get; set; }
 	public AuthStage AuthStage { get; set; }
 	public CookieJar CookieJar { get; set; }
-	public string UserAgent { get; set; } = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/50.0";
+	public string UserAgent { get; set; } = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148";
 	public string MFACsrfToken { get; set; }
+	public OAuth2Token OAuth2Token { get; set; }
 
 	public bool IsValid(Settings settings)
 	{
 		return Email == settings.Garmin.Email
 			&& Password == settings.Garmin.Password
-			&& CookieJar is object
-			&& AuthStage == AuthStage.Completed;
+			&& AuthStage == AuthStage.Completed
+			&& !string.IsNullOrWhiteSpace(OAuth2Token?.Access_Token);
 	}
 }
 
