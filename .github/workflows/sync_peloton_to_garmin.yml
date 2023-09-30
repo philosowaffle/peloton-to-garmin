@@ -89,9 +89,12 @@ jobs:
         P2G_GARMIN__PASSWORD: ${{ secrets.P2G_GARMIN__PASSWORD }}
         TZ: America/Chicago
 
-    - name: zip output files 
+    - name: zip output files
       if: ${{ github.event.inputs.saveLocalCopy }}
-      run: zip -r output.zip ${{ env.OUTPUT_DIR }}
+      uses: papeloto/action-zip@v1
+      with:
+        files: ${{ env.OUTPUT_DIR }}
+        dest: output.zip
     - uses: actions/upload-artifact@v3
       if: ${{ github.event.inputs.saveLocalCopy }}
       with:
