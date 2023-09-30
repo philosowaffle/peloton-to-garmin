@@ -80,6 +80,7 @@ namespace Garmin
 			return "https://sso.garmin.com/sso/verifyMFA/loginEnterMfaCode"
 						.WithHeader("User-Agent", userAgent)
 						.WithHeader("origin", ORIGIN)
+						.WithHeader("referer", "https://sso.garmin.com/sso/verifyMFA/loginEnterMfaCode")
 						.SetQueryParams(queryParams)
 						.WithCookies(jar)
 						.OnRedirect(redir => redir.Request.WithCookies(jar))

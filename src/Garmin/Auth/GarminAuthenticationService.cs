@@ -207,7 +207,7 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 
 		var mfaData = new List<KeyValuePair<string, string>>()
 		{
-			new KeyValuePair<string, string>("embed", "false"),
+			new KeyValuePair<string, string>("embed", "true"),
 			new KeyValuePair<string, string>("mfa-code", mfaCode),
 			new KeyValuePair<string, string>("fromPage", "setupEnterMfaCode"),
 			new KeyValuePair<string, string>("_csrf", auth.MFACsrfToken)
@@ -238,15 +238,16 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 		/////////////////////////////////
 		// Try to find the csrf Token
 		////////////////////////////////
-		var regex3 = new Regex("name=\"_csrf\"\\s+value=\"(?<csrf>[A-Z0-9]+)");
-		var match3 = regex3.Match(sendCredentialsResponseBody);
-		if (!match3.Success)
-			throw new GarminAuthenticationError("MFA: Failed to find csrf token.") { Code = Code.FailedPriorToMfaUsed };
+		var tokenRegex = new Regex("name=\"_csrf\"\\s+value=\"(?<csrf>.+?)\"");
+		var match = tokenRegex.Match(sendCredentialsResponseBody);
+		if (!match.Success)
+			throw new GarminAuthenticationError($"MFA: Failed to find regex match for csrf token. tokenResult: {sendCredentialsResponseBody}") { Code = Code.FailedPriorToMfaUsed };
 
-		var csrfToken = match3.Groups.GetValueOrDefault("csrf")?.Value;
-		_logger.Verbose($"_csrf Token: {csrfToken}");
-		if (string.IsNullOrEmpty(csrfToken))
-			throw new GarminAuthenticationError("MFA: Found csrf token but it was null or empty.") { Code = Code.FailedPriorToMfaUsed };
+		var csrfToken = match.Groups.GetValueOrDefault("csrf")?.Value;
+		_logger.Verbose($"Csrf Token: {csrfToken}");
+
+		if (string.IsNullOrWhiteSpace(csrfToken))
+			throw new GarminAuthenticationError("MFA: Found csrfToken but its null.") { Code = Code.FailedPriorToMfaUsed };
 
 		auth.AuthStage = AuthStage.NeedMfaToken;
 		auth.MFACsrfToken = csrfToken;
