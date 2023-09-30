@@ -94,7 +94,7 @@ jobs:
       run: |
         apt-get update
         apt-get install -y zip
-        zip -r output.zip ${{ env.OUTPUT_DIR }}
+        zip -r -j output.zip ${{ env.OUTPUT_DIR }}
         
     - uses: actions/upload-artifact@v3
       with:
