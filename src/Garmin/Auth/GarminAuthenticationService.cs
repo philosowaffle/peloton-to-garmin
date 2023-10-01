@@ -2,7 +2,6 @@
 using Common.Service;
 using Common.Stateful;
 using Flurl.Http;
-using OAuth;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -18,7 +17,6 @@ public interface IGarminAuthenticationService
 	Task<GarminApiAuthentication> GetGarminAuthenticationAsync();
 	Task<GarminApiAuthentication> RefreshGarminAuthenticationAsync();
 	Task<GarminApiAuthentication> CompleteMFAAuthAsync(string mfaCode);
-
 }
 
 public class GarminAuthenticationService : IGarminAuthenticationService
@@ -54,6 +52,11 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 
 	public async Task<GarminApiAuthentication> RefreshGarminAuthenticationAsync()
 	{
+		/////////////////////////////////////////////////////////////////////////////
+		// TODO: Implement refresh using OAuth tokens instead of re-using credentials
+		// Eventually remove need to store credentials locally
+		///////////////////////////////////////////////////////////////////////////////
+
 		var settings = await _settingsService.GetSettingsAsync();
 		settings.Garmin.EnsureGarminCredentialsAreProvided();
 
@@ -99,25 +102,11 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 		try
 		{
 			var tokenResult = await _apiClient.GetCsrfTokenAsync(auth, csrfRequest, jar);
-
-			var tokenRegex = new Regex("name=\"_csrf\"\\s+value=\"(?<csrf>.+?)\"");
-			var match = tokenRegex.Match(tokenResult.RawResponseBody);
-			if (!match.Success)
-				throw new GarminAuthenticationError($"Failed to find regex match for csrf token. tokenResult: {tokenResult}") { Code = Code.FailedPriorToCredentialsUsed };
-
-			csrfToken = match.Groups.GetValueOrDefault("csrf")?.Value;
-			_logger.Verbose($"Csrf Token: {csrfToken}");
-
-			if (string.IsNullOrWhiteSpace(csrfToken))
-				throw new GarminAuthenticationError("Found csrfToken but its null.") { Code = Code.FailedPriorToCredentialsUsed };
+			csrfToken = FindCsrfToken(tokenResult.RawResponseBody, failureStepCode: Code.FailedPriorToCredentialsUsed);
 		}
 		catch (FlurlHttpException e)
 		{
 			throw new GarminAuthenticationError("Failed to fetch csrf token from Garmin.", e) { Code = Code.FailedPriorToCredentialsUsed };
-		}
-		catch (Exception e)
-		{
-			throw new GarminAuthenticationError("Failed to parse csrf token.", e) { Code = Code.FailedPriorToCredentialsUsed };
 		}
 
 		/////////////////////////////////
@@ -153,7 +142,9 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 			if (!settings.Garmin.TwoStepVerificationEnabled)
 				throw new GarminAuthenticationError("Detected Garmin TwoFactorAuthentication but TwoFactorAuthenctication is not enabled in P2G settings. Please enable TwoFactorAuthentication in your P2G Garmin settings.") { Code = Code.UnexpectedMfa };
 
-			SetMFACsrfToken(auth, sendCredentialsResult.RawResponseBody);
+			var mfaCsrfToken = FindCsrfToken(sendCredentialsResult.RawResponseBody, failureStepCode: Code.FailedPriorToMfaUsed);
+			auth.AuthStage = AuthStage.NeedMfaToken;
+			auth.MFACsrfToken = mfaCsrfToken;
 			auth.CookieJar = jar;
 			_settingsService.SetGarminAuthentication(auth);
 			return auth;
@@ -180,15 +171,23 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 		////////////////////////////////////////////
 		// Get OAuth1 Tokens
 		///////////////////////////////////////////
-		var (oAuthToken, oAuthTokenSecret) = await GetOAuth1Async(ticket, auth.UserAgent);
+		var consumerCredentials = await _apiClient.GetConsumerCredentialsAsync();
+		await GetOAuth1Async(ticket, auth, consumerCredentials);
 
 		////////////////////////////////////////////
 		// Exchange for OAuth2 Token
 		///////////////////////////////////////////
-		var oAuth2Token = await GetOAuth2TokenAsync(oAuthToken, oAuthTokenSecret, auth.UserAgent);
+		try
+		{
+			auth.OAuth2Token = await _apiClient.GetOAuth2TokenAsync(auth, consumerCredentials);			
+		}
+		catch (Exception e)
+		{
+			throw new GarminAuthenticationError("Auth appeared successful but failed to get the OAuth2 token.", e) { Code = Code.AuthAppearedSuccessful };
+		}
 
 		auth.AuthStage = AuthStage.Completed;
-		auth.OAuth2Token = oAuth2Token;
+		auth.MFACsrfToken = string.Empty;
 		_settingsService.SetGarminAuthentication(auth);
 		return auth;
 	}
@@ -232,42 +231,34 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 		}
 	}
 
-	private void SetMFACsrfToken(GarminApiAuthentication auth, string sendCredentialsResponseBody)
+	private string FindCsrfToken(string rawResponseBody, Code failureStepCode)
 	{
-		/////////////////////////////////
-		// Try to find the csrf Token
-		////////////////////////////////
-		var tokenRegex = new Regex("name=\"_csrf\"\\s+value=\"(?<csrf>.+?)\"");
-		var match = tokenRegex.Match(sendCredentialsResponseBody);
-		if (!match.Success)
-			throw new GarminAuthenticationError($"MFA: Failed to find regex match for csrf token. tokenResult: {sendCredentialsResponseBody}") { Code = Code.FailedPriorToMfaUsed };
+		try
+		{
+			var tokenRegex = new Regex("name=\"_csrf\"\\s+value=\"(?<csrf>.+?)\"");
+			var match = tokenRegex.Match(rawResponseBody);
+			if (!match.Success)
+				throw new GarminAuthenticationError($"Failed to find regex match for csrf token. tokenResult: {rawResponseBody}") { Code = failureStepCode };
 
-		var csrfToken = match.Groups.GetValueOrDefault("csrf")?.Value;
-		_logger.Verbose($"Csrf Token: {csrfToken}");
+			var csrfToken = match.Groups.GetValueOrDefault("csrf")?.Value;
+			_logger.Verbose($"Csrf Token: {csrfToken}");
 
-		if (string.IsNullOrWhiteSpace(csrfToken))
-			throw new GarminAuthenticationError("MFA: Found csrfToken but its null.") { Code = Code.FailedPriorToMfaUsed };
+			if (string.IsNullOrWhiteSpace(csrfToken))
+				throw new GarminAuthenticationError("Found csrfToken but its null.") { Code = failureStepCode };
 
-		auth.AuthStage = AuthStage.NeedMfaToken;
-		auth.MFACsrfToken = csrfToken;
+			return csrfToken;
+		} catch (Exception e)
+		{
+			throw new GarminAuthenticationError("Failed to parse csrf token.", e) { Code = failureStepCode };
+		}
 	}
 
-	private async Task<(string oAuthToken, string oAuthTokenSecret)> GetOAuth1Async(string ticket, string userAgent)
+	private async Task GetOAuth1Async(string ticket, GarminApiAuthentication auth, ConsumerCredentials credentials)
 	{
-		// todo: don't hard code
-		var consumerKey = "fc3e99d2-118c-44b8-8ae3-03370dde24c0";
-		var consumerSecret = "E08WAR897WEy2knn7aFBrvegVAf0AFdWBBF";
-
-		OAuthRequest oauthClient = OAuthRequest.ForRequestToken(consumerKey, consumerSecret);
-		oauthClient.RequestUrl = $"https://connectapi.garmin.com/oauth-service/oauth/preauthorized?ticket={ticket}&login-url=https://sso.garmin.com/sso/embed&accepts-mfa-tokens=true";
-
 		string oauth1Response = null;
 		try
 		{
-			oauth1Response = await oauthClient.RequestUrl
-							.WithHeader("User-Agent", userAgent)
-							.WithHeader("Authorization", oauthClient.GetAuthorizationHeader())
-							.GetStringAsync();
+			oauth1Response = await _apiClient.GetOAuth1TokenAsync(auth, credentials, ticket);
 		} catch (Exception e)
 		{
 			throw new GarminAuthenticationError("Auth appeared successful but failed to get the OAuth1 token.", e) { Code = Code.AuthAppearedSuccessful };
@@ -287,31 +278,10 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 		if (string.IsNullOrWhiteSpace(oAuthTokenSecret))
 			throw new GarminAuthenticationError($"Auth appeared successful but returned OAuth1 token secret is null. oauth1Response: {oauth1Response}") { Code = Code.AuthAppearedSuccessful };
 
-		return (oAuthToken, oAuthTokenSecret);
-	}
-
-	private async Task<OAuth2Token> GetOAuth2TokenAsync(string oAuthToken, string oAuthTokenSecret, string userAgent)
-	{
-		// todo: don't hard code
-		var consumerKey = "fc3e99d2-118c-44b8-8ae3-03370dde24c0";
-		var consumerSecret = "E08WAR897WEy2knn7aFBrvegVAf0AFdWBBF";
-
-		OAuthRequest oauthClient2 = OAuthRequest.ForProtectedResource("POST", consumerKey, consumerSecret, oAuthToken, oAuthTokenSecret);
-		oauthClient2.RequestUrl = "https://connectapi.garmin.com/oauth-service/oauth/exchange/user/2.0";
-
-		try
+		auth.OAuth1Token = new OAuth1Token()
 		{
-			var token = await oauthClient2.RequestUrl
-										.WithHeader("User-Agent", userAgent)
-										.WithHeader("Authorization", oauthClient2.GetAuthorizationHeader())
-										.WithHeader("Content-Type", "application/x-www-form-urlencoded") // this header is required, without it you get a 500
-										.PostUrlEncodedAsync(new object()) // hack: PostAsync() will drop the content-type header, by posting empty object we trick flurl into leaving the header
-										.ReceiveJson<OAuth2Token>();
-
-			return token;
-		} catch (Exception e)
-		{
-			throw new GarminAuthenticationError("Auth appeared successful but failed to get the OAuth2 token.", e) { Code = Code.AuthAppearedSuccessful };
-		}
+			Token = oAuthToken,
+			TokenSecret = oAuthTokenSecret
+		};
 	}
 }

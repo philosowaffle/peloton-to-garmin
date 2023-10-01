@@ -4,6 +4,7 @@ using Common.Stateful;
 using Flurl.Http;
 using Garmin.Auth;
 using Garmin.Dto;
+using OAuth;
 using Serilog;
 using System.IO;
 using System.Linq;
@@ -17,6 +18,9 @@ namespace Garmin
 		Task<GarminResult> GetCsrfTokenAsync(GarminApiAuthentication auth, object queryParams, CookieJar jar);
 		Task<SendCredentialsResult> SendCredentialsAsync(GarminApiAuthentication auth, object queryParams, object loginData, CookieJar jar);
 		Task<string> SendMfaCodeAsync(string userAgent, object queryParams, object mfaData, CookieJar jar);
+		Task<string> GetOAuth1TokenAsync(GarminApiAuthentication auth, ConsumerCredentials credentials, string ticket);
+		Task<OAuth2Token> GetOAuth2TokenAsync(GarminApiAuthentication auth, ConsumerCredentials credentials);
+		Task<ConsumerCredentials> GetConsumerCredentialsAsync();
 		Task<UploadResponse> UploadActivity(string filePath, string format, GarminApiAuthentication auth);
 	}
 
@@ -31,6 +35,12 @@ namespace Garmin
 		private const string REFERER = "https://sso.garmin.com/sso/signin";
 
 		private static readonly ILogger _logger = LogContext.ForClass<ApiClient>();
+
+		public Task<ConsumerCredentials> GetConsumerCredentialsAsync()
+		{
+			return "https://thegarth.s3.amazonaws.com/oauth_consumer.json"
+				.GetJsonAsync<ConsumerCredentials>();
+		}
 
 		public Task InitCookieJarAsync(object queryParams, string userAgent, out CookieJar jar)
 		{
@@ -80,12 +90,33 @@ namespace Garmin
 			return "https://sso.garmin.com/sso/verifyMFA/loginEnterMfaCode"
 						.WithHeader("User-Agent", userAgent)
 						.WithHeader("origin", ORIGIN)
-						.WithHeader("referer", "https://sso.garmin.com/sso/verifyMFA/loginEnterMfaCode")
 						.SetQueryParams(queryParams)
 						.WithCookies(jar)
 						.OnRedirect(redir => redir.Request.WithCookies(jar))
 						.PostUrlEncodedAsync(mfaData)
 						.ReceiveString();
+		}
+
+		public Task<string> GetOAuth1TokenAsync(GarminApiAuthentication auth, ConsumerCredentials credentials, string ticket)
+		{
+			OAuthRequest oauthClient = OAuthRequest.ForRequestToken(credentials.Consumer_Key, credentials.Consumer_Secret);
+			oauthClient.RequestUrl = $"https://connectapi.garmin.com/oauth-service/oauth/preauthorized?ticket={ticket}&login-url=https://sso.garmin.com/sso/embed&accepts-mfa-tokens=true";
+			return oauthClient.RequestUrl
+							.WithHeader("User-Agent", auth.UserAgent)
+							.WithHeader("Authorization", oauthClient.GetAuthorizationHeader())
+							.GetStringAsync();
+		}
+		public Task<OAuth2Token> GetOAuth2TokenAsync(GarminApiAuthentication auth, ConsumerCredentials credentials)
+		{
+			OAuthRequest oauthClient2 = OAuthRequest.ForProtectedResource("POST", credentials.Consumer_Key, credentials.Consumer_Secret, auth.OAuth1Token.Token, auth.OAuth1Token.TokenSecret);
+			oauthClient2.RequestUrl = "https://connectapi.garmin.com/oauth-service/oauth/exchange/user/2.0";
+
+			return oauthClient2.RequestUrl
+								.WithHeader("User-Agent", auth.UserAgent)
+								.WithHeader("Authorization", oauthClient2.GetAuthorizationHeader())
+								.WithHeader("Content-Type", "application/x-www-form-urlencoded") // this header is required, without it you get a 500
+								.PostUrlEncodedAsync(new object()) // hack: PostAsync() will drop the content-type header, by posting empty object we trick flurl into leaving the header
+								.ReceiveJson<OAuth2Token>();
 		}
 
 		public async Task<UploadResponse> UploadActivity(string filePath, string format, GarminApiAuthentication auth)
