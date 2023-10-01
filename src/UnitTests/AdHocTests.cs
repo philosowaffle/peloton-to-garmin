@@ -50,13 +50,6 @@ namespace UnitTests
 			});
 		}
 
-		[Test]
-		public async Task OAuth2()
-		{
-			var service = new GarminOAuthService(null, new Garmin.ApiClient());
-			await service.GetAuthTokenAsync();
-		}
-
 		//[Test]
 		//public void EncryptionKeyGenerator()
 		//{
