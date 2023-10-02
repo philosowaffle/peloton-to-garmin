@@ -113,7 +113,9 @@ public class SettingsService : ISettingsService
 		lock (_lock)
 		{
 			var key = $"{GarminApiAuthKey}:{authentication.Email}";
-			_cache.Set(key, authentication, new MemoryCacheEntryOptions() { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(45) });
+			var expiration = authentication.OAuth2Token?.Expires_In - (60 * 60) ?? 0; // expire an hour early
+			var finalExpiration = expiration <= 0 ? 45 * 60 : expiration; // default to 45min
+			_cache.Set(key, authentication, new MemoryCacheEntryOptions() { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(finalExpiration) });
 		}
 	}
 

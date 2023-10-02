@@ -9,6 +9,9 @@ on:
       workoutsToDownload:
         type: number
         default: "5"
+      saveLocalCopy:
+        type: boolean
+        default: false
   schedule:
     - cron: '0 15,23 * * *'
 
@@ -19,7 +22,9 @@ jobs:
     container: 
       image:  philosowaffle/peloton-to-garmin:stable
     steps:
-    - run: mkdir -p /app/output
+    - name: Set env
+      run: echo "OUTPUT_DIR=/app/output" >> $GITHUB_ENV
+    - run: mkdir -p ${{ env.OUTPUT_DIR }}
     - name: Create device info file
       env: 
         DEVICE_INFO: ${{ secrets.DEVICE_INFO }}
@@ -43,7 +48,7 @@ jobs:
             "Fit": true,
             "Json": false,
             "Tcx": false,
-            "SaveLocalCopy": false,
+            "SaveLocalCopy": ${{ github.event.inputs.saveLocalCopy || false }},
             "IncludeTimeInHRZones": false,
             "IncludeTimeInPowerZones": false,
             "DeviceInfoPath": "./deviceInfo.xml"
@@ -83,3 +88,16 @@ jobs:
         P2G_GARMIN__EMAIL: ${{ secrets.P2G_GARMIN__EMAIL }}
         P2G_GARMIN__PASSWORD: ${{ secrets.P2G_GARMIN__PASSWORD }}
         TZ: America/Chicago
+
+    - name: archive files
+      if: ${{ github.event.inputs.saveLocalCopy }}
+      run: |
+        apt-get update
+        apt-get install -y zip
+        zip -r -j output.zip ${{ env.OUTPUT_DIR }}
+        
+    - uses: actions/upload-artifact@v3
+      with:
+        name: output
+        path: output.zip
+        if-no-files-found: error

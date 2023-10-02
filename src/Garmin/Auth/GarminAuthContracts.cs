@@ -5,6 +5,12 @@ public interface GarminResultWrapper
 	string RawResponseBody { get; set; }
 }
 
+public class GarminResult : GarminResultWrapper
+{
+	public string RawResponseBody { get; set; }
+}
+
+
 public class SendCredentialsResult : GarminResultWrapper
 {
 	public bool WasRedirected { get; set; }
