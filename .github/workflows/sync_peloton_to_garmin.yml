@@ -13,7 +13,7 @@ on:
         type: boolean
         default: false
   schedule:
-    - cron: '0 1 * * *'
+    - cron: '00 09 2-30/2 * *'
 
 jobs:
   sync:
@@ -49,8 +49,8 @@ jobs:
             "Json": false,
             "Tcx": false,
             "SaveLocalCopy": ${{ github.event.inputs.saveLocalCopy || false }},
-            "IncludeTimeInHRZones": false,
-            "IncludeTimeInPowerZones": false,
+            "IncludeTimeInHRZones": true,
+            "IncludeTimeInPowerZones": true,
             "DeviceInfoPath": "./deviceInfo.xml"
           },
           "Peloton": {
@@ -87,7 +87,7 @@ jobs:
         P2G_PELOTON__PASSWORD: ${{ secrets.P2G_PELOTON__PASSWORD }}
         P2G_GARMIN__EMAIL: ${{ secrets.P2G_GARMIN__EMAIL }}
         P2G_GARMIN__PASSWORD: ${{ secrets.P2G_GARMIN__PASSWORD }}
-        TZ: America/Chicago
+        TZ: Europe/London
 
     - name: archive files
       if: ${{ github.event.inputs.saveLocalCopy }}

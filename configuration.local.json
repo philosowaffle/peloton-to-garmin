@@ -1,0 +1,71 @@
+{
+  "App": {
+    "OutputDirectory": "./output",
+    "EnablePolling": true,
+    "PollingIntervalSeconds": 86400,
+    "CloseWindowOnFinish": false,
+    "CheckForUpdates": true
+  },
+
+  "Format": {
+    "Fit": true,
+    "Json": false,
+    "Tcx": false,
+    "SaveLocalCopy": true,
+    "IncludeTimeInHRZones": false,
+    "IncludeTimeInPowerZones": false,
+    "DeviceInfoPath": "./deviceInfo.xml"
+  },
+
+  "Peloton": {
+    "Email": "",
+    "Password": "",
+    "NumWorkoutsToDownload": 1,
+    "ExcludeWorkoutTypes": [ ]
+  },
+
+  "Garmin": {
+    "Email": "",
+    "Password": "",
+    "TwoStepVerificationEnabled": false,
+    "Upload": false,
+    "FormatToUpload": "fit",
+    "UploadStrategy": 2
+  },
+
+  "Observability": {
+
+    "Prometheus": {
+      "Enabled": false,
+      "Port": 4000
+    },
+
+    "Jaeger": {
+      "Enabled": false,
+      "AgentHost": "localhost",
+      "AgentPort": 6831
+    },
+
+    "Serilog": {
+      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File" ],
+      "MinimumLevel": {
+        "Default": "Information",
+        "Override": {
+          "Microsoft": "Error",
+          "System": "Error"
+        }
+      },
+      "WriteTo": [
+        { "Name": "Console" },
+        {
+          "Name": "File",
+          "Args": {
+            "path": "./output/log.txt",
+            "rollingInterval": "Day",
+            "retainedFileCountLimit": 7
+          }
+        }
+      ]
+    }
+  }
+}
