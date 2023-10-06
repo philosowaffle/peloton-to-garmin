@@ -97,6 +97,7 @@ jobs:
         zip -r -j output.zip ${{ env.OUTPUT_DIR }}
         
     - uses: actions/upload-artifact@v3
+      if: ${{ github.event.inputs.saveLocalCopy }}
       with:
         name: output
         path: output.zip
