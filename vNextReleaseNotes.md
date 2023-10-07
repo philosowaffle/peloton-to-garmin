@@ -9,6 +9,7 @@
 	- [#495] Open Lateral Raise, Pike Push Up, Dolphin
 	- [#499] Forearm Side Plank Rotation, Straight Leg Bicycle
 	- [#510] Bear Crawl
+	- [#546] Arm Circles, Criss-Cross, High Pull, Oblique Heel Tap, Row, Single Leg Stretch, Tricep Dip
 - [#532] GitHubAction now supports attaching output files to the GitHub Action as a zip file you can download - @anlesk
 
 ## Fixes
