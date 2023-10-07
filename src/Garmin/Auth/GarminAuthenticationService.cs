@@ -26,7 +26,11 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 	{
 		id = "gauth-widget",
 		embedWidget = "true",
-		gauthHost = "https://sso.garmin.com/sso"
+		gauthHost = "https://sso.garmin.com/sso/embed",
+		redirectAfterAccountCreationUrl = "https://sso.garmin.com/sso/embed",
+		redirectAfterAccountLoginUrl = "https://sso.garmin.com/sso/embed",
+		service = "https://sso.garmin.com/sso/embed",
+		source = "https://sso.garmin.com/sso/embed",
 	};
 
 	private readonly ISettingsService _settingsService;

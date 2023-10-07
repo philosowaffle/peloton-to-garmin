@@ -14,6 +14,7 @@
 ## Fixes
 
 - [#526] `Auth appeared successful but there was an error sending the service ticket to Garmin`
+- [#541] Continuation of #526 but specifically for the MFA flow
 - `All converters were skipped.` - confusing log message when no workouts needed to be synced
 
 ## Housekeeping
