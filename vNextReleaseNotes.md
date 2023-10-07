@@ -9,11 +9,13 @@
 	- [#495] Open Lateral Raise, Pike Push Up, Dolphin
 	- [#499] Forearm Side Plank Rotation, Straight Leg Bicycle
 	- [#510] Bear Crawl
+	- [#546] Arm Circles, Criss-Cross, High Pull, Oblique Heel Tap, Row, Single Leg Stretch, Tricep Dip
 - [#532] GitHubAction now supports attaching output files to the GitHub Action as a zip file you can download - @anlesk
 
 ## Fixes
 
 - [#526] `Auth appeared successful but there was an error sending the service ticket to Garmin`
+- [#541] Continuation of #526 but specifically for the MFA flow
 - `All converters were skipped.` - confusing log message when no workouts needed to be synced
 
 ## Housekeeping

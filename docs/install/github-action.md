@@ -26,6 +26,7 @@ Once you've created your fork, you'll need to set a number of secrets in your re
 
 1. From your forked copy of P2G, click the `Settings`
 1. Then, on the side nav, select `Secrets` and then `Actions`.
+1. Continue on to the [Action Permissions](#action-permissions) instructions below
 
 From this point on you can add secrets by clicking the `New repository secret` button at the top right.
 
@@ -37,9 +38,16 @@ From this point on you can add secrets by clicking the `New repository secret` b
 | `P2G_GARMIN__PASSWORD`  | The password that you use to log into Garmin                          |
 | `DEVICE_INFO`           | The contents of the deviceInfo.xml that you want to use for the sync |
 
+## Action Permissions
+
+1. From your forked copy of P2G, click the `Settings` tab
+1. Navigate to the settings for `Actions > General`
+1. Under `Action Permissions` choose the 4th radio button titled: "Allow <youruser>, and select non-<youruser>, actions and reusable workflows".
+1. Under the same radio button, check the checkbox to "Allow actions created by GitHub"
+
 ## Starting the workflow
 
-Once you've configured your secrets, you can then navigate to the `Actions` tab within your repository. 
+Once you've configured your secrets, you can then navigate to the `Actions` tab within your repository.
 
 1. Enable actions for your fork. 
 1. You can now run the `Sync workflow` manually
