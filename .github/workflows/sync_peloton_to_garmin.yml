@@ -40,7 +40,6 @@ jobs:
         cat <<EOT > /app/configuration.local.json 
         {
           "App": {
-            "OutputDirectory": "/app/output",
             "EnablePolling": false
           },
           "Format": {

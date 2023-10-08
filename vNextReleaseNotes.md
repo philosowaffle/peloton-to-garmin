@@ -6,12 +6,13 @@
 - [#352] Created Windows GUI application
 - [#421] Uplift to dotnet 7
 - [#486] View logs from UI
+- [#540] New docs site!
 
 ## Breaking Changes
 
 - [#302] Removed deprecated settings `PythonAndGUploadInstalled` and `CloseWindowOnFinish`
 - [#465] Remove support for uploading to Garmin via Python - `UploadStrategy`
-- [#483] Removed setting for configuring `OutputDirectory`
+- [#483] Removed setting for configuring `OutputDirectory` and `WorkingDirectory`
 - [#348] P2G API and WebUI now binds to port `8080` by default
 
 ## Docker Tags

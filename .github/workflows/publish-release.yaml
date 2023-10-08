@@ -45,27 +45,6 @@ jobs:
           secret_docker_password: ${{ secrets.DOCKER_PASSWORD }}
           secret_github_package: ${{ secrets.GH_PACKAGE_SECRET}}
 
-  publish-windows-console-exe-dist:
-    name: Publish Windows Console Distribution
-    runs-on: 'windows-latest'
-    outputs:
-      artifact: ${{ steps.win-exe-create-artifact.outputs.artifact }}
-    strategy:
-      matrix:
-        dotnet: [ '7.0' ]
-        #os: [ 'win10-x64', 'osx-x64' ] # osx signing issue, mac wont run the executable
-        os: [ 'win10-x64' ]
-
-    steps:
-
-    - uses: actions/checkout@v3
-    - name: Publish Windows Console Exe Distribution
-      uses: ./.github/actions/publish-console-exe-dist
-      id: win-exe-create-artifact
-      with:
-        dotnet-version: ${{ matrix.dotnet }}
-        os: ${{ matrix.os }}
-  
   publish-ui-dist:
     name: Publish UI Distribution
     runs-on: 'windows-latest'
@@ -90,14 +69,8 @@ jobs:
   
   create-gh-release:
     runs-on: ubuntu-latest
-    needs: [publish-windows-console-exe-dist, publish-ui-dist, publish-docker-images ]
+    needs: [publish-ui-dist, publish-docker-images]
     steps:
-      - name: Create Zip for Win EXE Release Artifact
-        uses: papeloto/action-zip@v1
-        with:
-          files: ${{ needs.publish-windows-console-exe-dist.outputs.artifact }}
-          dest: /dist/console_win_${{ github.event.inputs.version }}.zip
-      
       - name: Create Zip for Win UI Release Artifact
         uses: papeloto/action-zip@v1
         with:
@@ -113,3 +86,25 @@ jobs:
           allowUpdates: true
           replacesArtifacts: true
           bodyFile:  ${{ github.workspace }}/vNextReleaseNotes.md
+  
+  publish-gh-pages:
+    name: Publish GH Pages
+    runs-on: ubuntu-latest
+    needs: [create-gh-release]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure Git user
+        run: |
+          git config --local user.email "philosowaffle@gmail.com"
+          git config --local user.name "philosowaffle"
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+
+      - run: pip install mkdocs-material mike
+      - run: mike deploy --push --update-aliases v${{ github.event.inputs.version }} latest
+        working-directory: ./mkdocs
+      - run: mike set-default --push latest
+        working-directory: ./mkdocs
