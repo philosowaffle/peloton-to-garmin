@@ -90,15 +90,15 @@ jobs:
         TZ: America/Chicago
 
     - name: archive files
-      # saveLocalCopy can be set when workflow action is manually run otherwise it's skipped 
-      if: ${{ github.event.inputs.saveLocalCopy == 'true' || false }}
+      # saveLocalCopy can be set when workflow action is manually run otherwise it's always skipped 
+      if: ${{ github.event.inputs.saveLocalCopy == 'true' }}
       run: |
         apt-get update
         apt-get install -y zip
         zip -r -j output.zip ${{ env.OUTPUT_DIR }}
         
     - uses: actions/upload-artifact@v3
-      if: ${{ github.event.inputs.saveLocalCopy == 'true' || false }}
+      if: ${{ github.event.inputs.saveLocalCopy == 'true' }}
       with:
         name: output
         path: output.zip
