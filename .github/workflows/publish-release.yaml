@@ -86,3 +86,24 @@ jobs:
           allowUpdates: true
           replacesArtifacts: true
           bodyFile:  ${{ github.workspace }}/vNextReleaseNotes.md
+  
+  publish-gh-pages:
+    name: Publish GH Pages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure Git user
+        run: |
+          git config --local user.email "philosowaffle@gmail.com"
+          git config --local user.name "philosowaffle"
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+
+      - run: pip install mkdocs-material mike
+      - run: mike deploy --push --update-aliases v${{ github.event.inputs.version }} latest
+        working-directory: ./mkdocs
+      - run: mike set-default --push latest
+        working-directory: ./mkdocs

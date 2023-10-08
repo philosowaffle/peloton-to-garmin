@@ -123,3 +123,6 @@ configuration.local.json
 .vs/
 /.vscode/settings.json
 /src/ClientUI/ClientUI.csproj.user
+
+# docs
+/mkdocs/site
