@@ -20,7 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     # The type of runner that the job will run on
     container: 
-      image:  philosowaffle/peloton-to-garmin:stable
+      # image:  philosowaffle/peloton-to-garmin:stable
+      image:  philosowaffle/peloton-to-garmin:console-latest
     steps:
     - name: Set env
       run: echo "OUTPUT_DIR=/app/output" >> $GITHUB_ENV
