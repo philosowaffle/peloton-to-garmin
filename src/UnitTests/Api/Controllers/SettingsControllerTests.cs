@@ -84,6 +84,36 @@ public class SettingsControllerTests
 	}
 
 	[Test]
+	public async Task AppPost_With_EnablePollingWhenGarminMFAEnabled_Throws()
+	{
+		var autoMocker = new AutoMocker();
+		var controller = autoMocker.CreateInstance<SettingsController>();
+		var settingService = autoMocker.GetMock<ISettingsService>();
+		var fileHandler = autoMocker.GetMock<IFileHandling>();
+
+		fileHandler
+			.Setup(f => f.DirExists("blah"))
+			.Returns(true)
+			.Verifiable();
+
+		settingService.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settingService.Object.GetSettingsAsync))
+			.ReturnsAsync(new Settings() { Garmin = new() { TwoStepVerificationEnabled = true } });
+
+		var request = new App()
+		{
+			EnablePolling = true,
+			OutputDirectory = "blah",
+		};
+
+		var response = await controller.AppPost(request);
+
+		var result = response.Result as BadRequestObjectResult;
+		result.Should().NotBeNull();
+		var value = result.Value as ErrorResponse;
+		value.Message.Should().Be("Automatic Syncing cannot be enabled when Garmin TwoStepVerification is enabled.");
+	}
+
+	[Test]
 	public async Task FormatPost_With_NullRequest_Returns400()
 	{
 		var autoMocker = new AutoMocker();
@@ -98,14 +128,14 @@ public class SettingsControllerTests
 	}
 
 	[Test]
-	public async Task FormatPost_With_InvalidOutPutDir_Returns400()
+	public async Task FormatPost_With_InvalidDeviceInfoPath_Returns400()
 	{
 		var autoMocker = new AutoMocker();
 		var controller = autoMocker.CreateInstance<SettingsController>();
 		var fileHandler = autoMocker.GetMock<IFileHandling>();
 
 		fileHandler
-			.Setup(f => f.DirExists("blah"))
+			.Setup(f => f.FileExists("blah"))
 			.Returns(false)
 			.Verifiable();
 
@@ -194,5 +224,29 @@ public class SettingsControllerTests
 		result.Should().NotBeNull();
 		var value = result.Value as ErrorResponse;
 		value.Message.Should().Be("PostRequest must not be null.");
+	}
+
+	[Test]
+	public async Task GarminPost_With_EnableGarminMFAWhenPollingEnabled_Throws()
+	{
+		var autoMocker = new AutoMocker();
+		var controller = autoMocker.CreateInstance<SettingsController>();
+		var settingService = autoMocker.GetMock<ISettingsService>();
+
+		settingService.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settingService.Object.GetSettingsAsync))
+			.ReturnsAsync(new Settings() { App = new() { EnablePolling = true } });
+
+		SettingsGarminPostRequest request = new ()
+		{
+			Upload = true,
+			TwoStepVerificationEnabled = true
+		};
+
+		var response = await controller.GarminPost(request);
+
+		var result = response.Result as BadRequestObjectResult;
+		result.Should().NotBeNull();
+		var value = result.Value as ErrorResponse;
+		value.Message.Should().Be("Garmin TwoStepVerification cannot be enabled while Automatic Syncing is enabled. Please disable Automatic Syncing first.");
 	}
 }

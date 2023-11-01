@@ -11,6 +11,7 @@ namespace Common
 	{
 		void MkDirIfNotExists(string path);
 		bool DirExists(string path);
+		bool FileExists(string path);
 		string[] GetFiles(string path);
 
 		T DeserializeJson<T>(string file);
@@ -43,6 +44,14 @@ namespace Common
 			using var trace1 = Tracing.Trace(nameof(DirExists), "io")
 										.WithTag("path", path);
 			return Directory.Exists(path);
+		}
+
+		public bool FileExists(string path)
+		{
+			using var trace1 = Tracing.Trace(nameof(FileExists), "io")
+										.WithTag("path", path);
+			var p = Path.GetFullPath(path);
+			return File.Exists(p);
 		}
 
 		public string[] GetFiles(string path)

@@ -3,20 +3,21 @@
 
 ## Features
 
-- [#381] Rowing - now captures AvgStrokeDistance
-- [#374] Rowing - can now configure PreferredLapType for Row workouts
-- [#366] WebUI - Can now Clear your Peloton or Garmin Password via the UI
-- [#301] WebUI - Better feedback and error handling when saving Settings changes
-- [#358] Docker - Begin publishing Docker Images on GitHub Packages
-- [#358] Docker - Introduce new Docker major version Release tag - allows you to pin to all updates to a major version i.e. `v3`
-- [#310] Docker - Arm 32bit image is now available
+- [#502] Partial support for Peloton Gym
+- [#497] Add minimal support for Rowing Bootcamp
+- More exercise mappings
+	- [#495] Open Lateral Raise, Pike Push Up, Dolphin
+	- [#499] Forearm Side Plank Rotation, Straight Leg Bicycle
+	- [#510] Bear Crawl
+	- [#546] Arm Circles, Criss-Cross, High Pull, Oblique Heel Tap, Row, Single Leg Stretch, Tricep Dip
+- [#532] GitHubAction now supports attaching output files to the GitHub Action as a zip file you can download - @anlesk
 
-## Changes
+## Fixes
 
-- [#384] Bump dependency versions + Pull latest Garmin SDK (21.94)
-- [#366] WebUI - Credentials are now stored encrypted
-	- A one time migration step will happen on startup to encrypt your existing credentials
-	- If a problem occurs you may have to re-configure your Peloton and Garmin credentials
-- [#399] WebUI - Existing settings will be migrated to a new format associated with a UserId
-	- A one time migration step will happen on startup to move existing settings to be associated with a UserId
-	- If a problem occurs you may have to re-configure your settings
+- [#526] `Auth appeared successful but there was an error sending the service ticket to Garmin`
+- [#541] Continuation of #526 but specifically for the MFA flow
+- `All converters were skipped.` - confusing log message when no workouts needed to be synced
+
+## Housekeeping
+
+- [#509] Various dependency bumps

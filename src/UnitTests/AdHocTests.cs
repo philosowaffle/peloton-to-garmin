@@ -8,6 +8,9 @@ using Conversion;
 using Dynastream.Fit;
 using Flurl;
 using Flurl.Http;
+using Flurl.Http.Configuration;
+using Garmin;
+using Garmin.Auth;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 using Moq;
@@ -19,6 +22,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -38,6 +42,12 @@ namespace UnitTests
 					.MinimumLevel.Verbose()
 					//.MinimumLevel.Information()
 					.CreateLogger();
+
+			// Allows using fiddler
+			FlurlHttp.Configure(cli =>
+			{
+				cli.HttpClientFactory = new UntrustedCertClientFactory();
+			});
 		}
 
 		//[Test]
@@ -56,15 +66,9 @@ namespace UnitTests
 		//}
 
 		//[Test]
-		//public async Task AA()
-		//{
-
-		//}
-
-		//[Test]
 		//public void DecodeFitFile()
 		//{
-		//	var output = Path.Join(FitDirectory, "p2g_cycle_workout.fit");
+		//	var output = Path.Join(FitDirectory, "strength_with_exercises.fit");
 		//	FitDecoder.Decode(output);
 		//}
 
@@ -74,7 +78,7 @@ namespace UnitTests
 		//	var email = "";
 		//	var password = "";
 
-		//	var workoutId = "";
+		//	var workoutId = "13afceebe0f74a338f60bf9d70f657ef";
 		//	var userId = "";
 
 		//	var settings = new Settings()
@@ -93,11 +97,43 @@ namespace UnitTests
 		//	var client = new ApiClient(settingMock.Object);
 
 		//	//var recentWorkouts = await client.GetWorkoutsAsync(userId, 5, 0);
-		//	var workoutSamples = await client.GetWorkoutsAsync(System.DateTime.UtcNow.AddDays(-1), System.DateTime.UtcNow);
-		//	await client.GetUserDataAsync();
+		//	var workouts = await client.GetWorkoutsAsync(System.DateTime.UtcNow.AddDays(-1), System.DateTime.UtcNow);
+		//	var workoutSamples = await client.GetWorkoutSamplesByIdAsync(workoutId);
 
-		//	Log.Debug(workoutSamples.ToString());
-		//	//SaveRawData(workoutSamples, workoutId, DataDirectory);
+		//	//await client.GetUserDataAsync();
+
+		//	//Log.Debug(workoutSamples.ToString());
+		//	SaveRawData(workoutSamples, workoutId, DataDirectory);
+		//}
+
+		//[Test]
+		//public async Task DownloadAndSaveP2GWorkoutDetails()
+		//{
+		//	var email = "";
+		//	var password = "";
+
+		//	var workoutId = "631fe107823048708d4c9f18a2888c6e";
+
+		//	var settings = new Settings()
+		//	{
+		//		Peloton = new()
+		//		{
+		//			Email = email,
+		//			Password = password,
+		//		}
+		//	};
+
+		//	var autoMocker = new AutoMocker();
+		//	var settingMock = autoMocker.GetMock<ISettingsService>();
+		//	settingMock.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
+
+		//	var fileHandler = autoMocker.GetMock<IFileHandling>();
+
+		//	var client = new ApiClient(settingMock.Object);
+		//	var service = new PelotonService(settingMock.Object, client, fileHandler.Object);
+
+		//	var p2gWorkout = await service.GetWorkoutDetailsAsync(workoutId);
+		//	SaveData(p2gWorkout, workoutId, DataDirectory);
 		//}
 
 		//[Test]
@@ -109,9 +145,9 @@ namespace UnitTests
 		//}
 
 		//[Test]
-		//public async Task Convert()
+		//public async Task Convert_From_File()
 		//{
-		//	var file = Path.Join(DataDirectory, "rower_workout.json");
+		//	var file = Path.Join(DataDirectory, "631fe107823048708d4c9f18a2888c6e_workout.json");
 		//	//var file = Path.Join(DataDirectory, "cycling_target_metrics.json");
 		//	//var file = Path.Join(DataDirectory, "tread_run_workout.json");
 
@@ -120,10 +156,6 @@ namespace UnitTests
 
 		//	var settings = new Settings()
 		//	{
-		//		Format = new Format()
-		//		{
-		//			Rowing = new Rowing() { PreferredLapType = PreferredLapType.Class_Segments }
-		//		}
 		//	};
 		//	var fileHandler = new IOWrapper();
 
@@ -140,6 +172,12 @@ namespace UnitTests
 		private void SaveRawData(dynamic data, string workoutId, string path)
 		{
 			System.IO.File.WriteAllText(Path.Join(path, $"{workoutId}_workout.json"), data.ToString());
+		}
+
+		private void SaveData(object data, string fileName, string path)
+		{
+			var serializedData = JsonSerializer.Serialize(data, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, WriteIndented = true });
+			System.IO.File.WriteAllText(Path.Join(path, $"{fileName}_workout.json"), serializedData.ToString());
 		}
 
 		private async Task<JObject> GetRecentWorkoutsAsync(string userId, int numWorkouts = 3)
@@ -164,7 +202,7 @@ namespace UnitTests
 			public async Task<ICollection<Mesg>> ConvertForTest(string path, Settings settings)
 			{
 				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
-				var converted = await this.ConvertInternalAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
+				var converted = await this.ConvertInternalAsync(workoutData, settings);
 
 				return converted.Item2;
 			}
@@ -172,7 +210,7 @@ namespace UnitTests
 			public async Task<Tuple<string, ICollection<Mesg>>> Convert(string path, Settings settings)
 			{
 				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
-				var converted = await this.ConvertInternalAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
+				var converted = await this.ConvertInternalAsync(workoutData, settings);
 
 				return converted;
 			}
@@ -180,6 +218,17 @@ namespace UnitTests
 			public new void Save(Tuple<string, ICollection<Mesg>> data, string path)
 			{
 				base.Save(data, path);
+			}
+		}
+
+		private class UntrustedCertClientFactory : DefaultHttpClientFactory
+		{
+			public override HttpMessageHandler CreateMessageHandler()
+			{
+				return new HttpClientHandler
+				{
+					ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+				};
 			}
 		}
 	}

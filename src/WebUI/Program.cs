@@ -8,6 +8,7 @@ using Prometheus;
 using Common.Observe;
 using Common.Stateful;
 using Common.Http;
+using Serilog.Settings.Configuration;
 
 ///////////////////////////////////////////////////////////
 /// STATICS
@@ -15,13 +16,14 @@ using Common.Http;
 Statics.AppType = Constants.WebUIName;
 Statics.MetricPrefix = Constants.WebUIName;
 Statics.TracingService = Constants.WebUIName;
+Statics.ConfigPath = Path.Join(Environment.CurrentDirectory, "configuration.local.json");
 
 ///////////////////////////////////////////////////////////
 /// HOST
 ///////////////////////////////////////////////////////////
 var builder = WebApplication.CreateBuilder(args);
 
-var configProvider = builder.Configuration.AddJsonFile(Path.Join(Environment.CurrentDirectory, "configuration.local.json"), optional: true, reloadOnChange: true)
+var configProvider = builder.Configuration.AddJsonFile(Statics.ConfigPath, optional: true, reloadOnChange: true)
 				.AddEnvironmentVariables(prefix: "P2G_")
 				.AddCommandLine(args);
 
@@ -33,7 +35,7 @@ builder.WebHost.UseUrls(config.WebUI.HostUrl);
 builder.Host.UseSerilog((ctx, logConfig) =>
 {
 	logConfig
-	.ReadFrom.Configuration(ctx.Configuration, sectionName: $"{nameof(Observability)}:Serilog")
+	.ReadFrom.Configuration(ctx.Configuration, new ConfigurationReaderOptions() { SectionName = $"{nameof(Observability)}:Serilog" })
 	.Enrich.WithSpan()
 	.Enrich.FromLogContext();
 });
@@ -54,7 +56,7 @@ FlurlConfiguration.Configure(config.Observability, 30);
 Tracing.EnableWebUITracing(builder.Services, config.Observability.Jaeger);
 
 Log.Logger = new LoggerConfiguration()
-				.ReadFrom.Configuration(builder.Configuration, sectionName: $"{nameof(Observability)}:Serilog")
+				.ReadFrom.Configuration(builder.Configuration, new ConfigurationReaderOptions() { SectionName = $"{nameof(Observability)}:Serilog" })
 				.Enrich.FromLogContext()
 				.CreateLogger();
 

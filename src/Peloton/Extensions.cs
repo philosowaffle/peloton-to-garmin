@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Flurl.Http;
+using System;
 
 namespace Peloton;
 
@@ -11,5 +12,11 @@ public static class Extensions
 
 		if (string.IsNullOrEmpty(settings.Password))
 			throw new ArgumentException("Peloton Password must be set.", nameof(settings.Password));
+	}
+
+	public static IFlurlRequest WithCommonHeaders(this IFlurlRequest request)
+	{
+		return request
+			.WithHeader("Peloton-Platform", "web"); // needed to get GPS points for outdoor activity in response
 	}
 }

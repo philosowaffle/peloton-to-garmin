@@ -12,10 +12,12 @@ Convert, Backup, and Sync.
 
 1. Syncs workout data from Peloton to Garmin Connect
 1. Supports all Peloton workout types (Biking, Tread, Core, Meditation, Rower etc.)
+1. Supports Garmin accounts protected by Two Step Verification
 1. Syncs all available metric data from Peloton over to Garmin Connect
 1. Syncs laps and target cadence
 1. Synced workouts count towards Garmin Badges and Challenges
-1. Synced workouts will count towards VO2 max calculations [1]({{ site.baseurl }}{% link configuration/providing-device-info.md %})
+1. Synced workouts count towards VO2 Max [1]({{ site.baseurl }}{% link faq.md %}) and Training Stress Scores
+1. Syncs Exercise information (including reps and weight) for Strength and Core workouts (when available)
 1. Syncs on demand or on a schedule
 1. Highly Configurable
 1. Docker-ized
@@ -35,7 +37,7 @@ Convert, Backup, and Sync.
     1. If you use your Garmin device to send HR data to the Peloton Bike or Tread then at the end of your workout **do not save the workout on your watch, discard it.**
 1. Sync your workout with P2G
     1. You can go to your computer and manually run P2G to sync recent workouts
-    1. **OR** You can configure P2G to run in the background on your computer, syncing workouts every hour
+    1. **OR** You can configure P2G to run in the background on your computer, syncing workouts once a day
 1. P2G can be configured to download your workout data and save it to your computer **AND** it can automatically upload those workouts to Garmin Connect
 
 ## Screenshots

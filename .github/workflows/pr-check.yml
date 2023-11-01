@@ -3,7 +3,7 @@ name: PR Check
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ master ]
+    branches: [ master, v4-wip ]
 
 jobs:
 

@@ -14,7 +14,6 @@ namespace Api.Controllers
 	[Consumes("application/json")]
 	public class PelotonWorkoutsController : Controller
 	{
-
 		private readonly IPelotonService _pelotonService;
 
 		public PelotonWorkoutsController(IPelotonService pelotonService)
