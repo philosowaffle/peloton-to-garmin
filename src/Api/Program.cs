@@ -7,13 +7,16 @@ using Common.Service;
 using Common.Stateful;
 using Conversion;
 using Garmin;
+using Garmin.Auth;
 using Microsoft.Extensions.Caching.Memory;
 using Peloton;
+using Peloton.AnnualChallenge;
 using Philosowaffle.Capability.ReleaseChecks;
 using Prometheus;
 using Serilog;
 using Serilog.Enrichers.Span;
 using Serilog.Events;
+using Serilog.Settings.Configuration;
 using Sync;
 using System.Reflection;
 
@@ -23,6 +26,7 @@ using System.Reflection;
 Statics.AppType = Constants.ApiName;
 Statics.MetricPrefix = Constants.ApiName;
 Statics.TracingService = Constants.ApiName;
+Statics.ConfigPath = Path.Join(Environment.CurrentDirectory, "configuration.local.json");
 
 ///////////////////////////////////////////////////////////
 /// HOST
@@ -30,7 +34,7 @@ Statics.TracingService = Constants.ApiName;
 var builder = WebApplication
 				.CreateBuilder(args);
 
-var configProvider = builder.Configuration.AddJsonFile(Path.Join(Environment.CurrentDirectory, "configuration.local.json"), optional: true, reloadOnChange: true)
+var configProvider = builder.Configuration.AddJsonFile(Statics.ConfigPath, optional: true, reloadOnChange: true)
 				.AddEnvironmentVariables(prefix: "P2G_")
 				.AddCommandLine(args);
 
@@ -42,7 +46,7 @@ builder.WebHost.UseUrls(config.Api.HostUrl);
 builder.Host.UseSerilog((ctx, logConfig) =>
 {
 	logConfig
-	.ReadFrom.Configuration(ctx.Configuration, sectionName: $"{nameof(Observability)}:Serilog")
+	.ReadFrom.Configuration(ctx.Configuration, new ConfigurationReaderOptions() { SectionName = $"{nameof(Observability)}:Serilog" })
 	.Enrich.WithSpan()
 	.Enrich.FromLogContext();
 });
@@ -77,6 +81,7 @@ builder.Services.AddSingleton<IConverter, TcxConverter>();
 builder.Services.AddSingleton<IConverter, JsonConverter>();
 
 // GARMIN
+builder.Services.AddSingleton<IGarminAuthenticationService, GarminAuthenticationService>();
 builder.Services.AddSingleton<IGarminUploader, GarminUploader>();
 builder.Services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
 
@@ -89,6 +94,7 @@ builder.Services.AddSingleton<IDbMigrations, DbMigrations>();
 // PELOTON
 builder.Services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
 builder.Services.AddSingleton<IPelotonService, PelotonService>();
+builder.Services.AddSingleton<IAnnualChallengeService, AnnualChallengeService>();
 
 // RELEASE CHECKS
 builder.Services.AddGitHubReleaseChecker();
@@ -108,7 +114,7 @@ FlurlConfiguration.Configure(config.Observability);
 Tracing.EnableApiTracing(builder.Services, config.Observability.Jaeger);
 
 Log.Logger = new LoggerConfiguration()
-				.ReadFrom.Configuration(builder.Configuration, sectionName: $"{nameof(Observability)}:Serilog")
+				.ReadFrom.Configuration(builder.Configuration, new ConfigurationReaderOptions() { SectionName = $"{nameof(Observability)}:Serilog" })
 				.Enrich.FromLogContext()
 				.CreateLogger();
 

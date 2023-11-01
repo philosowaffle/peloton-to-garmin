@@ -109,6 +109,7 @@ public class Format
 		Cycling = new Cycling();
 		Running = new Running();
 		Rowing = new Rowing();
+		Strength= new Strength();
 	}
 
 	[DisplayName("FIT")]
@@ -135,6 +136,7 @@ public class Format
 	public Cycling Cycling { get; set; }
 	public Running Running { get; set; }
 	public Rowing Rowing { get; init; }
+	public Strength Strength { get; init; }
 }
 
 public record Cycling
@@ -150,6 +152,17 @@ public record Running
 public record Rowing
 {
 	public PreferredLapType PreferredLapType { get; set; }
+}
+
+public record Strength
+{
+	/// <summary>
+	/// When no Rep information is provided by Peloton, P2G will calculate number
+	/// of reps based on this default value. Example, if your DefaultNumSecondsPerRep is 3,
+	/// and the Exercise duration was 15 seconds, then P2G would credit you with 5 reps for that
+	/// exercise.
+	/// </summary>
+	public int DefaultSecondsPerRep { get; set; } = 3;
 }
 
 public enum PreferredLapType
@@ -185,6 +198,7 @@ public class Garmin : ICredentials
 	public EncryptionVersion EncryptionVersion { get; set; }
 	public string Email { get; set; }
 	public string Password { get; set; }
+	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
 	public UploadStrategy UploadStrategy { get; set; }

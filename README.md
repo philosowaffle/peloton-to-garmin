@@ -8,15 +8,16 @@
 
 **Peloton Tag:** _#PelotonToGarmin_
 
-Convert workout data from Peloton into a format that can be uploaded to Garmin.
+Sync workouts from Peloton to Garmin.
 
 * Fetch latest workouts from Peloton
   * Bike, Tread, Rower, Meditation, Strength, Outdoor, and more
-* Convert Peloton workout to a variety of formats
-* Upload TCX or FIT workout to Garmin
-* Avoid duplicates in Garmin
-* Backup your downloaded data and converted files
+* Automatically upload TCX or FIT workout to Garmin
+* Convert Peloton workouts to a variety of formats for offline backup
 * Earn Badges and credit for Garmin Challenges
+* Counts towards VO2 Max [1]({{ site.baseurl }}{% link faq.md %}) and Training Stress Scores
+* Supports Garmin accounts protected by Two Step Verification
+* Supports mapping Exercises from Strength workouts
 
 Head on over to the [Wiki](https://philosowaffle.github.io/peloton-to-garmin) to get started!
 

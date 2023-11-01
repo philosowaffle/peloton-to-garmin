@@ -54,8 +54,9 @@ namespace Common.Observe
 			if (!config.Enabled)
 				return;
 
-			services.AddOpenTelemetryTracing(
-				(builder) =>
+			services
+				.AddOpenTelemetry()
+				.WithTracing((builder) =>
 				{
 					builder
 					.ConfigureDefaultBuilder(config)
@@ -75,7 +76,9 @@ namespace Common.Observe
 			if (!config.Enabled)
 				return;
 
-			services.AddOpenTelemetryTracing(
+			services
+				.AddOpenTelemetry()
+				.WithTracing(
 				(builder) =>
 				{
 					builder.ConfigureDefaultBuilder(config);

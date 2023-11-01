@@ -11,13 +11,17 @@ Below are a list of commonly asked questions. For even more help head on over to
 1. TOC
 {:toc}
 
-## VO2 Max is not displaying
+## VO2 Max and TSS
 
 Garmin will only generate a VO2 max for your workouts if all of the following criteria are met:
 
 1. Your personal Garmin device already supports VO2 Max Calculations
 1. You have not configured a [custom device info file]({{ site.baseurl }}{% link configuration/providing-device-info.md %}) (i.e. you are using the defaults)
 1. You have met all of [Garmin's VO2 requirements](https://support.garmin.com/en-SG/?faq=MyIZ05OMpu6wSl95UVUjp7) for your workout type
+
+## Garmin Two Step Verification
+
+Only some [install options have support]({{ site.baseurl }}{% link install/index.md %}) for Garmin Two Step Verification.  In all cases, automatic-syncing is never supported when your Garmin account is protected by two step verification.
 
 ## Garmin Upload Not Working
 

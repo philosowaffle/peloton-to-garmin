@@ -92,7 +92,7 @@ namespace Conversion
 
 		protected abstract bool ShouldConvert(Format settings);
 
-		protected abstract Task<T> ConvertInternalAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings);
+		protected abstract Task<T> ConvertInternalAsync(P2GWorkout workoutData, Settings settings);
 
 		protected abstract void Save(T data, string path);
 
@@ -116,14 +116,14 @@ namespace Conversion
 			var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout);
 			try
 			{
-				converted = await ConvertInternalAsync(workoutData.Workout, workoutData.WorkoutSamples, workoutData.UserData, settings);
+				converted = await ConvertInternalAsync(workoutData, settings);
 			}
 			catch (Exception e)
 			{
 				_logger.Error(e, "Failed to convert workout data to format {@Format} {@Workout}", Format, workoutTitle);
 				status.Result = ConversionResult.Failed;
 				status.ErrorMessage = $"Unknown error while trying to convert workout data for {workoutTitle} - {e.Message}";
-				tracing?.AddTag("excetpion.message", e.Message);
+				tracing?.AddTag("exception.message", e.Message);
 				tracing?.AddTag("exception.stacktrace", e.StackTrace);
 				tracing?.AddTag("convert.success", false);
 				tracing?.AddTag("convert.errormessage", status.ErrorMessage);
@@ -240,6 +240,19 @@ namespace Conversion
 			}
 		}
 
+		public static float ConvertWeightToKilograms(double value, string unit)
+		{
+			var weightUnit = UnitHelpers.GetWeightUnit(unit);
+			switch (weightUnit)
+			{
+				case WeightUnit.Pounds:
+					return (float)(value * 0.453592);
+				case WeightUnit.Kilograms:
+				default:
+					return (float)value;
+			}
+		}
+
 		public static float GetTotalDistance(WorkoutSamples workoutSamples)
 		{
 			var distanceSummary = GetDistanceSummary(workoutSamples);
@@ -290,7 +303,7 @@ namespace Conversion
 			return distanceSummary;
 		}
 
-		protected Summary GetCalorieSummary(WorkoutSamples workoutSamples)
+		public static Summary GetCalorieSummary(WorkoutSamples workoutSamples)
 		{
 			if (workoutSamples?.Summaries is null)
 			{
@@ -300,10 +313,16 @@ namespace Conversion
 
 			var summaries = workoutSamples.Summaries;
 			var caloriesSummary = summaries.FirstOrDefault(s => s.Slug == "calories");
-			if (caloriesSummary is null)
-				_logger.Verbose("No calories slug found.");
+			if (caloriesSummary is not null)
+				return caloriesSummary;
 
-			return caloriesSummary;
+			// calories may have been provided by Apple Watch
+			caloriesSummary = summaries.FirstOrDefault(s => s.Slug == "total_calories");
+			if (caloriesSummary is not null)
+				return caloriesSummary;
+
+			_logger.Verbose("No calories slug found.");
+			return null;
 		}
 
 		protected float GetMaxSpeedMetersPerSecond(WorkoutSamples workoutSamples)
@@ -607,6 +626,7 @@ namespace Conversion
 				case FitnessDiscipline.Meditation:
 					return Sport.Training;
 				case FitnessDiscipline.Caesar:
+				case FitnessDiscipline.Caesar_Bootcamp:
 					return Sport.Rowing;
 				default:
 					return Sport.Invalid;

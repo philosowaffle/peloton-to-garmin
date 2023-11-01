@@ -75,6 +75,9 @@ public class SettingsController : Controller
 			var settings = await _settingsService.GetSettingsAsync();
 			settings.App = updatedAppSettings;
 
+			if (settings.Garmin.TwoStepVerificationEnabled && settings.App.EnablePolling)
+				return new BadRequestObjectResult(new ErrorResponse($"Automatic Syncing cannot be enabled when Garmin TwoStepVerification is enabled."));
+
 			await _settingsService.UpdateSettingsAsync(settings);
 			var updatedSettings = await _settingsService.GetSettingsAsync();
 
@@ -102,7 +105,7 @@ public class SettingsController : Controller
 			return result;
 
 		if (!string.IsNullOrWhiteSpace(updatedFormatSettings.DeviceInfoPath)
-			&& !_fileHandler.DirExists(updatedFormatSettings.DeviceInfoPath))
+			&& !_fileHandler.FileExists(updatedFormatSettings.DeviceInfoPath))
 			return new BadRequestObjectResult(new ErrorResponse($"DeviceInfo path is either not accessible or does not exist."));
 
 		try
@@ -176,6 +179,9 @@ public class SettingsController : Controller
 		{
 			var settings = await _settingsService.GetSettingsAsync();
 			settings.Garmin = updatedGarminSettings.Map();
+
+			if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled && settings.App.EnablePolling)
+				return new BadRequestObjectResult(new ErrorResponse($"Garmin TwoStepVerification cannot be enabled while Automatic Syncing is enabled. Please disable Automatic Syncing first."));
 
 			await _settingsService.UpdateSettingsAsync(settings);
 			var updatedSettings = await _settingsService.GetSettingsAsync();

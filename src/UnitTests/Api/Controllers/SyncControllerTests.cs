@@ -1,5 +1,8 @@
 ﻿using Api.Controllers;
+using Common;
 using Common.Dto.Api;
+using Common.Service;
+using Common.Stateful;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +40,10 @@ namespace UnitTests.Api.Controllers
 		{
 			var autoMocker = new AutoMocker();
 			var controller = autoMocker.CreateInstance<SyncController>();
+			var settings = autoMocker.GetMock<ISettingsService>();
+
+			settings.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settings.Object.GetSettingsAsync))
+				.ReturnsAsync(new Settings());
 
 			var request = new SyncPostRequest();
 
@@ -53,6 +60,10 @@ namespace UnitTests.Api.Controllers
 		{
 			var autoMocker = new AutoMocker();
 			var controller = autoMocker.CreateInstance<SyncController>();
+			var settings = autoMocker.GetMock<ISettingsService>();
+
+			settings.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settings.Object.GetSettingsAsync))
+				.ReturnsAsync(new Settings());
 
 			var request = new SyncPostRequest() { WorkoutIds = new List<string>() };
 
@@ -65,11 +76,40 @@ namespace UnitTests.Api.Controllers
 		}
 
 		[Test]
+		public async Task SyncAsync_WhenGarminMfaEnabled_AndNoAuthTokenYet_Returns401()
+		{
+			var autoMocker = new AutoMocker();
+			var controller = autoMocker.CreateInstance<SyncController>();
+			var settings = autoMocker.GetMock<ISettingsService>();
+
+			settings.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settings.Object.GetSettingsAsync))
+				.ReturnsAsync(new Settings() { Garmin = new() { Upload = true, TwoStepVerificationEnabled = true } });
+
+			settings.SetupWithAny<ISettingsService, GarminApiAuthentication>(nameof(settings.Object.GetGarminAuthentication))
+				.Returns((GarminApiAuthentication)null);
+
+			var request = new SyncPostRequest() { WorkoutIds = new List<string>() { "someId" } };
+
+			var response = await controller.SyncAsync(request);
+
+			var result = response.Result as UnauthorizedObjectResult;
+			result.Should().NotBeNull();
+			var value = result.Value as ErrorResponse;
+			value.Message.Should().Be("Must initialize Garmin two factor auth token before sync can be preformed.");
+			value.Code.Should().Be(ErrorCode.NeedToInitGarminMFAAuth);
+		}
+
+		[Test]
 		public async Task SyncAsync_WorkoutIds_Calls_CorrectMethod()
 		{
 			var autoMocker = new AutoMocker();
 			var controller = autoMocker.CreateInstance<SyncController>();
 			var service = autoMocker.GetMock<ISyncService>();
+			var settings = autoMocker.GetMock<ISettingsService>();
+
+			settings.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settings.Object.GetSettingsAsync))
+				.ReturnsAsync(new Settings());
+
 			service.SetReturnsDefault(Task.FromResult(new SyncResult() { SyncSuccess = true }));
 
 			var request = new SyncPostRequest() { WorkoutIds = new List<string>() { "someId" } };
@@ -88,6 +128,10 @@ namespace UnitTests.Api.Controllers
 			var autoMocker = new AutoMocker();
 			var controller = autoMocker.CreateInstance<SyncController>();
 			var service = autoMocker.GetMock<ISyncService>();
+			var settings = autoMocker.GetMock<ISettingsService>();
+
+			settings.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settings.Object.GetSettingsAsync))
+				.ReturnsAsync(new Settings());
 
 			service.Setup(s => s.SyncAsync(It.IsAny<ICollection<string>>(), null))
 				.Throws(new Exception("Some unhandled case."));
@@ -109,6 +153,11 @@ namespace UnitTests.Api.Controllers
 			var autoMocker = new AutoMocker();
 			var controller = autoMocker.CreateInstance<SyncController>();
 			var service = autoMocker.GetMock<ISyncService>();
+			var settings = autoMocker.GetMock<ISettingsService>();
+
+			settings.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settings.Object.GetSettingsAsync))
+				.ReturnsAsync(new Settings());
+
 			service.SetReturnsDefault(Task.FromResult(new SyncResult() { SyncSuccess = false }));
 
 			var request = new SyncPostRequest() { WorkoutIds = new List<string>() { "someId" } };
@@ -128,6 +177,11 @@ namespace UnitTests.Api.Controllers
 			var autoMocker = new AutoMocker();
 			var controller = autoMocker.CreateInstance<SyncController>();
 			var service = autoMocker.GetMock<ISyncService>();
+			var settings = autoMocker.GetMock<ISettingsService>();
+
+			settings.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settings.Object.GetSettingsAsync))
+				.ReturnsAsync(new Settings());
+
 			service.SetReturnsDefault(Task.FromResult(new SyncResult()
 			{
 				SyncSuccess = true,
@@ -157,6 +211,10 @@ namespace UnitTests.Api.Controllers
 			var autoMocker = new AutoMocker();
 			var controller = autoMocker.CreateInstance<SyncController>();
 			var service = autoMocker.GetMock<ISyncService>();
+			var settings = autoMocker.GetMock<ISettingsService>();
+
+			settings.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settings.Object.GetSettingsAsync))
+				.ReturnsAsync(new Settings());
 
 			var syncResult = new SyncResult()
 			{
