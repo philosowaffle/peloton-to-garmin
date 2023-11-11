@@ -186,7 +186,7 @@
 		{
 			syncResponse = await _apiClient.SyncPostAsync(new SyncPostRequest() { WorkoutIds = TodaysWorkouts.Select(w => w!.Id!).ToList() });
 		}
-		catch (FlurlHttpTimeoutException te)
+		catch (SyncTimeoutException te)
 		{
 			_toaster.AddInformation("Long running sync will continue running in the background.");
 			Log.Information("UI - Sync timeout reached.", te);

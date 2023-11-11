@@ -128,6 +128,7 @@ public class ApiClient : IApiClient
 		try
 		{
 			return await $"{_apiUrl}/api/sync"
+				.WithTimeout(30)
 				.PostJsonAsync(syncPostRequest)
 				.ReceiveJson<SyncPostResponse>();
 		}
