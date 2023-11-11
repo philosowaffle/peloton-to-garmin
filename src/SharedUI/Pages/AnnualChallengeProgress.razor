@@ -35,14 +35,15 @@
 
 <div class="row justify-content-start">
 
-    @if (!annualProgress.Tiers.Any())
+    @if (!loading && !annualProgress.Tiers.Any())
     {
-       <HxAlert Color="ThemeColor.Primary">Looks like you haven't signed up for the Peloton Annual 2023 Challenge yet. Join the challenge on Peloton then check back here!</HxAlert>
+        <HxAlert Color="ThemeColor.Primary">Looks like you haven't signed up for the Peloton Annual 2023 Challenge yet. Join the challenge on Peloton then check back here!</HxAlert>
     }
 </div>
 
 @code {
     private ProgressGetResponse annualProgress;
+    private bool loading = true;
 
     public AnnualChallengeProgress() : base(nameof(AnnualChallengeProgress))
     {
@@ -67,7 +68,10 @@
             _toaster.AddError($"Failed to load Annual Challenge progress report - {e.Message} - See logs for details.");
             Log.Error("UI - Failed to load Annual Challenge progress report.", e);
             annualProgress = new ProgressGetResponse() { Tiers = new List<Tier>() };
-        } 
+        } finally
+        {
+            loading = false;
+        }
     }
 
     public ThemeColor GetThemeColor(bool isOnTrack)
