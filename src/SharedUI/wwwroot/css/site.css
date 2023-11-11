@@ -27,7 +27,7 @@ a, .btn-link {
     padding-top: 1.1rem;
 }
 
-.nav-link {
+a.nav-link {
     padding: .5rem 1rem !important;
 }
 
