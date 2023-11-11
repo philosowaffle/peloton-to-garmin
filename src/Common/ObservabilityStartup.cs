@@ -3,6 +3,7 @@ using Common.Observe;
 using Common.Stateful;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Enrichers.Span;
 using Serilog.Settings.Configuration;
@@ -50,7 +51,7 @@ public static class ObservabilityStartup
 
 		// Always write to app defined log file
 		loggingConfig.WriteTo.File(
-				Path.Join(Statics.DefaultOutputDirectory, "log.txt"), 
+				Path.Join(Statics.DefaultOutputDirectory, $"{Statics.AppType}_log.txt"), 
 				rollingInterval: RollingInterval.Day,
 				retainedFileCountLimit: 2,
 				shared: false,

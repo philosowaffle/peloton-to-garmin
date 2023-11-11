@@ -18,7 +18,7 @@ public static class MauiProgram
 		Statics.MetricPrefix = Constants.ClientUIName;
 		Statics.TracingService = Constants.ClientUIName;
 
-		Directory.CreateDirectory(Path.Combine(Statics.DefaultOutputDirectory, "output"));
+		Directory.CreateDirectory(Statics.DefaultOutputDirectory);
 
 		///////////////////////////////////////////////////////////
 		/// HOST

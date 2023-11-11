@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Common.Stateful
 {
@@ -9,8 +10,8 @@ namespace Common.Stateful
 		public static string TracingService = "p2g";
 
 		public static string DefaultDataDirectory = Environment.CurrentDirectory;
-		public static string DefaultTempDirectory = Environment.CurrentDirectory;
-		public static string DefaultOutputDirectory = Environment.CurrentDirectory;
+		public static string DefaultTempDirectory = Path.Join(Environment.CurrentDirectory, "working");
+		public static string DefaultOutputDirectory = Path.Join(Environment.CurrentDirectory, "output");
 
 		public static string ConfigPath;
 	}

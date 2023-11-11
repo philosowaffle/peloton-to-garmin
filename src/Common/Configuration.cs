@@ -78,8 +78,8 @@ public class App
 
 	public static string DataDirectory => Path.GetFullPath(Path.Join(Statics.DefaultDataDirectory, "data"));
 
-	public string WorkingDirectory => Path.Join(Statics.DefaultTempDirectory, "working");
-	public string OutputDirectory => Path.Join(Statics.DefaultDataDirectory, "output");
+	public string WorkingDirectory => Statics.DefaultTempDirectory;
+	public string OutputDirectory => Statics.DefaultOutputDirectory;
 	public string FailedDirectory => Path.GetFullPath(Path.Join(OutputDirectory, "failed"));
 	public string DownloadDirectory => Path.GetFullPath(Path.Join(WorkingDirectory, "downloaded"));
 	public string UploadDirectory => Path.GetFullPath(Path.Join(WorkingDirectory, "upload"));
