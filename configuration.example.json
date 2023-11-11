@@ -53,15 +53,7 @@
         }
       },
       "WriteTo": [
-        { "Name": "Console" },
-        {
-          "Name": "File",
-          "Args": {
-            "path": "./output/log.txt",
-            "rollingInterval": "Day",
-            "retainedFileCountLimit": 7
-          }
-        }
+        { "Name": "Console" }
       ]
     }
   }
