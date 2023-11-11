@@ -227,6 +227,55 @@ namespace UnitTests.Sync
 		}
 
 		[Test]
+		public async Task SyncAsync_WhenNoWorkouts_Should_NotThrow()
+		{
+			// SETUP
+			var mocker = new AutoMocker();
+
+			var service = mocker.CreateInstance<SyncService>();
+			var peloton = mocker.GetMock<IPelotonService>();
+			var db = mocker.GetMock<ISyncStatusDb>();
+			var converter = mocker.GetMock<IConverter>();
+			var garmin = mocker.GetMock<IGarminUploader>();
+			var fileHandler = mocker.GetMock<IFileHandling>();
+			var settingsService = mocker.GetMock<ISettingsService>();
+
+			var settings = new Settings();
+			settings.Format.Fit = true;
+			settings.App.CheckForUpdates = false;
+			settings.Peloton.NumWorkoutsToDownload = 5;
+			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
+
+			converter.Setup(c => c.ConvertAsync(It.IsAny<P2GWorkout>())).ReturnsAsync(new ConvertStatus() { Result = ConversionResult.Success });
+
+			var syncStatus = new SyncServiceStatus();
+			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
+			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<Workout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
+
+			var result = new ServiceResult<ICollection<Workout>>();
+			result.Result = null;
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(It.IsAny<int>()))
+					.ReturnsAsync(result)
+					.Verifiable();
+
+			// ACT
+			var response = await service.SyncAsync(5);
+
+			// ASSERT
+			response.SyncSuccess.Should().BeTrue();
+			response.PelotonDownloadSuccess.Should().BeTrue();
+			response.ConversionSuccess.Should().BeTrue();
+			response.UploadToGarminSuccess.Should().BeTrue();
+			response.Errors.Should().BeNullOrEmpty();
+
+			peloton.Verify(x => x.GetRecentWorkoutsAsync(5), Times.Once);
+			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>()), Times.Once);
+			garmin.Verify(x => x.UploadToGarminAsync(), Times.Once);
+			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
+			fileHandler.Verify(x => x.Cleanup(It.IsAny<string>()), Times.Exactly(3));
+		}
+
+		[Test]
 		public async Task SyncAsync_When_CheckForUpdates_Disabled_Should_NotCheck()
 		{
 			// SETUP

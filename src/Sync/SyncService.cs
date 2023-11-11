@@ -210,7 +210,7 @@ namespace Sync
 
 		private IEnumerable<string> FilterToCompletedWorkoutIds(ICollection<Workout> workouts)
 		{
-			return workouts
+			return workouts?
 					.Where(w =>
 					{
 						var shouldKeep = w.Status == "COMPLETE";
@@ -219,7 +219,7 @@ namespace Sync
 						_logger.Debug("Skipping in progress workout. {@WorkoutId} {@WorkoutStatus} {@WorkoutType} {@WorkoutTitle}", w.Id, w.Status, w.Fitness_Discipline, w.Title);
 						return false;
 					})
-					.Select(r => r.Id);
+					.Select(r => r.Id) ?? new List<string>();
 		}
 
 		private async Task<SyncResult> SyncWithWorkoutLoaderAsync(Func<Task<ServiceResult<ICollection<Workout>>>> loader, ICollection<WorkoutType>? exclude)
