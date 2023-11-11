@@ -67,10 +67,7 @@ jobs:
             },
             "Serilog": {
               "Using": [ "Serilog.Sinks.Console"],
-              "MinimumLevel": "Information",
-              "WriteTo": [
-                { "Name": "Console" }
-              ]
+              "MinimumLevel": "Information"
             }
           }
         }

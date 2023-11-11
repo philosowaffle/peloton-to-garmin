@@ -54,6 +54,8 @@ static IHostBuilder CreateHostBuilder(string[] args)
 				.Enrich.WithSpan()
 				.Enrich.FromLogContext();
 
+			logConfig.WriteTo.Console();
+
 			logConfig.WriteTo.File(
 				Path.Join(Statics.DefaultOutputDirectory, $"{Statics.AppType}_log.txt"),
 				rollingInterval: RollingInterval.Day,

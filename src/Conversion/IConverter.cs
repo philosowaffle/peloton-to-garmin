@@ -194,7 +194,7 @@ namespace Conversion
 
 				var backupDest = Path.Join(localSaveDir, $"{workoutTitle}.{formatString}");
 				_fileHandler.Copy(sourcePath, backupDest, overwrite: true);
-				_logger.Information("[@Format] Backed up file {@File}", Format, backupDest);
+				_logger.Information("[{@Format}] Backed up file {@File}", Format, backupDest);
 			}
 			catch (Exception e)
 			{
