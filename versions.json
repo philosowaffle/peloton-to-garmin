@@ -1,1 +1,9 @@
-[{"version": "master", "title": "master", "aliases": ["latest"]}]
+[
+  {
+    "version": "master",
+    "title": "master",
+    "aliases": [
+      "latest"
+    ]
+  }
+]
