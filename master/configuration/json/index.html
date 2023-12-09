@@ -1,0 +1,2075 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Convert workout data from Peloton into JSON/TCX/FIT files that can be uploaded to Garmin Connect">
+      
+      
+        <meta name="author" content="philosowaffle">
+      
+      
+        <link rel="canonical" href="https://philosowaffle.github.io/peloton-to-garmin/master/configuration/json/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../../observability/">
+      
+      
+      <link rel="icon" href="../../img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.1">
+    
+    
+      
+        <title>User Interface and Json - Peloton To Garmin</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.45e1311d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#json-config-file" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Peloton To Garmin" class="md-header__button md-logo" aria-label="Peloton To Garmin" data-md-component="logo">
+      
+  <img src="../../img/256x256.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Peloton To Garmin
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              User Interface and Json
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/philosowaffle/peloton-to-garmin" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../features/" class="md-tabs__link">
+        
+  
+    
+  
+  Features
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../install/" class="md-tabs__link">
+          
+  
+    
+  
+  Install
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+    
+  
+  Configuration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../help/" class="md-tabs__link">
+          
+  
+    
+  
+  Help
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Peloton To Garmin" class="md-nav__button md-logo" aria-label="Peloton To Garmin" data-md-component="logo">
+      
+  <img src="../../img/256x256.png" alt="logo">
+
+    </a>
+    Peloton To Garmin
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/philosowaffle/peloton-to-garmin" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Features
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../install/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Install
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Install
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Docker
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Docker
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/docker-webui/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Web UI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/docker-headless/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Headless
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/windows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows App
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/source/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Source
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/github-action/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GitHub Actions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Configuration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    User Interface and Json
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    User Interface and Json
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#api-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Api Config
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Api Config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#advanced-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced usage
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#webui-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      WebUI Config
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#app-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      App Config
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#format-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Format Config
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Format Config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#understanding-custom-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding Custom Zones
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-device-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Device Info
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lap-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lap Types
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#peloton-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Peloton Config
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Peloton Config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choosing-number-of-workouts-to-download" class="md-nav__link">
+    <span class="md-ellipsis">
+      Choosing Number of Workouts To Download
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exclude-workout-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exclude Workout Types
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#garmin-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Garmin Config
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#observability-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Observability Config
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Observability Config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prometheus-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prometheus Config
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prometheus Config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-prometheus-scraper-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Prometheus scraper config
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jaeger-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Jaeger Config
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serilog-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Serilog Config
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../observability/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Observability
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Help
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Help
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../help/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Help
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    F.A.Q
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/migrations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Migration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#api-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Api Config
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Api Config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#advanced-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced usage
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#webui-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      WebUI Config
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#app-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      App Config
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#format-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Format Config
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Format Config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#understanding-custom-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding Custom Zones
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-device-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Device Info
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lap-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lap Types
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#peloton-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Peloton Config
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Peloton Config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choosing-number-of-workouts-to-download" class="md-nav__link">
+    <span class="md-ellipsis">
+      Choosing Number of Workouts To Download
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exclude-workout-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exclude Workout Types
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#garmin-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Garmin Config
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#observability-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Observability Config
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Observability Config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prometheus-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prometheus Config
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prometheus Config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-prometheus-scraper-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Prometheus scraper config
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jaeger-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Jaeger Config
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serilog-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Serilog Config
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="json-config-file">Json Config File</h1>
+<p>Based on your installation method, configuration may be provided via a <code>configuration.local.json</code> or it may be done via the user interface.  In the below documentation you will see the information for both the JSON config file, and the Web UI.</p>
+<p>By default, P2G looks for a file named <code>configuration.local.json</code> in the same directory where the program is run.</p>
+<p>The config file is written in JSON and supports hot-reload for all fields except the following:</p>
+<ol>
+<li><code>App.PollingintervalSeconds</code></li>
+<li><code>Observability</code> Section</li>
+</ol>
+<p>The config file is organized into the below sections.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Section</th>
+<th style="text-align: left;">Platforms</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="#api-config">Api Config</a></td>
+<td style="text-align: left;">Web UI</td>
+<td style="text-align: left;">This section provides global settings for the P2G Api.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#webui-config">WebUI Config</a></td>
+<td style="text-align: left;">Web UI</td>
+<td style="text-align: left;">This section provides global settings for the P2G Web UI.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#app-config">App Config</a></td>
+<td style="text-align: left;">Headless</td>
+<td style="text-align: left;">This section provides global settings for the P2G application.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#format-config">Format Config</a></td>
+<td style="text-align: left;">Headless</td>
+<td style="text-align: left;">This section provides settings related to conversions and what formats should be created/saved.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#peloton-config">Peloton Config</a></td>
+<td style="text-align: left;">Headless</td>
+<td style="text-align: left;">This section provides settings related to fetching workouts from Peloton.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#garmin-config">Garmin Config</a></td>
+<td style="text-align: left;">Headless</td>
+<td style="text-align: left;">This section provides settings related to uploading workouts to Garmin.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#observability-config">Observability Config</a></td>
+<td style="text-align: left;">All</td>
+<td style="text-align: left;">This section provides settings related to Metrics, Logs, and Traces for monitoring purposes.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="api-config">Api Config</h2>
+<p>If you aren't running the Web UI version of P2G you can ignore this section.  </p>
+<p>This section lives in <code>webui.local.json</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="w"> </span><span class="nt">&quot;Api&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;HostUrl&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://p2g-api:8080&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">UI Setting Location</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">HostUrl</td>
+<td style="text-align: left;">yes</td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;">none</td>
+<td style="text-align: left;">The host and port for the Web UI to communicate with the Api.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="advanced-usage">Advanced usage</h3>
+<p>Typically this section is only needed in the <code>webui.local.json</code> so that the Web UI knows where to find the running Api.  However, if you have a unique setup and need to modify the Host and Port the Api binds to, then you can also provide this config section in the <code>api.local.json</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="w"> </span><span class="nt">&quot;Api&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;HostUrl&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://*:8080&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">UI Setting Location</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">HostUrl</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>http://localhost:8080</code></td>
+<td style="text-align: left;">none</td>
+<td style="text-align: left;">The host and port the Api should bind to and listen on.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="webui-config">WebUI Config</h2>
+<p>If you aren't running the Web UI version of P2G you can ignore this section.</p>
+<p>You can provide this config section in the <code>webui.local.json</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="w"> </span><span class="nt">&quot;WebUI&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;HostUrl&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://*:8080&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">UI Setting Location</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">HostUrl</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>http://localhost:8080</code></td>
+<td style="text-align: left;">none</td>
+<td style="text-align: left;">The host and port the WebUI should bind to and listen on.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="app-config">App Config</h2>
+<p>This section provides global settings for the P2G application.</p>
+<div class="highlight"><pre><span></span><code><span class="w"> </span><span class="nt">&quot;App&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;EnablePolling&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;PollingIntervalSeconds&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">86400</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;CheckForUpdates&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">UI Setting Location</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">EnablePolling</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>true</code></td>
+<td style="text-align: left;"><code>App Tab</code></td>
+<td style="text-align: left;"><code>true</code> if you wish P2G to run continuously and poll Peloton for new workouts.</td>
+</tr>
+<tr>
+<td style="text-align: left;">PollingIntervalSeconds</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">86400</td>
+<td style="text-align: left;"><code>App Tab</code></td>
+<td style="text-align: left;">The polling interval in seconds determines how frequently P2G should check for new workouts. Be warned, that setting this to a frequency of hourly or less may get you flagged by Peloton as a bad actor and they may reset your password. The default is set to Daily.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CheckForUpdates</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>true</code></td>
+<td style="text-align: left;"><code>App Tab</code></td>
+<td style="text-align: left;"><code>true</code> if P2G should check for updates and write a log message if a new release is available. If using the UI this message will display there as well.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="format-config">Format Config</h2>
+<p>This section provides settings related to conversions and what formats should be created/saved.  P2G supports converting Peloton workouts into a variety of different formats.  P2G also lets you choose whether or not you wish to save a local copy when the conversion is completed. This can be useful if you wish to backup your workouts or upload them manually to a different service other than Garmin.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Format&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;Fit&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;Json&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;Tcx&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;SaveLocalCopy&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;IncldudeTimeInHRZones&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;IncludeTimeInPowerZones&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;DeviceInfoPath&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./deviceInfo.xml&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;Cycling&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;PreferredLapType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Class_Targets&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;Running&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;PreferredLapType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Distance&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;Rowing&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;PreferredLapType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Class_Segments&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;Strength&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;DefaultSecondsPerRep&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">UI Setting Location</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Fit</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>false</code></td>
+<td style="text-align: left;"><code>Conversion Tab</code></td>
+<td style="text-align: left;"><code>true</code> indicates you wish downloaded workouts to be converted to FIT</td>
+</tr>
+<tr>
+<td style="text-align: left;">Json</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>false</code></td>
+<td style="text-align: left;"><code>Conversion Tab</code></td>
+<td style="text-align: left;"><code>true</code> indicates you wish downloaded workouts to be converted to JSON. This will automatically save a local copy when enabled.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Tcx</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>false</code></td>
+<td style="text-align: left;"><code>Conversion Tab</code></td>
+<td style="text-align: left;"><code>true</code> indicates you wish downloaded workouts to be converted to TCX</td>
+</tr>
+<tr>
+<td style="text-align: left;">SaveLocalCopy</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>false</code></td>
+<td style="text-align: left;"><code>Conversion &gt; Advanced</code></td>
+<td style="text-align: left;"><code>true</code> will save any converted workouts to your specified <a href="#app-config">OutputDirectory</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">IncludeTimeInHRZones</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>false</code></td>
+<td style="text-align: left;"><code>Conversion &gt; Advanced</code></td>
+<td style="text-align: left;"><strong>Only use this if you are unable to configure your Max HR on Garmin Connect.</strong> When set to True, P2G will attempt to capture the time spent in each HR Zone per the data returned by Peloton. See <a href="#understanding-custom-zones">understanding custom zones</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">IncludePowerInHRZones</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>false</code></td>
+<td style="text-align: left;"><code>Conversion &gt; Advanced</code></td>
+<td style="text-align: left;"><strong>Only use this if you are unable to configure your FTP and Power Zones on Garmin Connect.</strong> When set to True, P2G will attempt to capture the time spent in each Power Zone per the data returned by Peloton. See <a href="#understanding-custom-zones">understanding custom zones</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">DeviceInfoPath</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;"><code>Conversion &gt; Advanced</code></td>
+<td style="text-align: left;">The path to your <code>deviceInfo.xml</code> file. See <a href="#custom-device-info">providing device info</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Cycling</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;">none</td>
+<td style="text-align: left;">Configuration specific to Cycling workouts.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cycling.PreferredLapType</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>Default</code></td>
+<td style="text-align: left;"><code>Conversion Tab</code></td>
+<td style="text-align: left;">The preferred <a href="#lap-types">lap type to use</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Running</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;">none</td>
+<td style="text-align: left;">Configuration specific to Running workouts.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Running.PreferredLapType</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>Default</code></td>
+<td style="text-align: left;"><code>Conversion Tab</code></td>
+<td style="text-align: left;">The preferred <a href="#lap-types">lap type to use</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Rowing</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;">none</td>
+<td style="text-align: left;">Configuration specific to Rowing workouts.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Rowing.PreferredLapType</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>Default</code></td>
+<td style="text-align: left;"><code>Conversion Tab</code></td>
+<td style="text-align: left;">The preferred <a href="#lap-types">lap type to use</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Strength</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;"><code>Conversion Tab</code></td>
+<td style="text-align: left;">Configuration specific to Strength workouts.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Strength.DefaultSecondsPerRep</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>3</code></td>
+<td style="text-align: left;"><code>Conversion Tab</code></td>
+<td style="text-align: left;">For exercises that are done for time instead of reps, P2G can estimate how many reps you completed using this value. Ex. If <code>DefaultSecondsPerRep=3</code> and you do Curls for 15s, P2G will estimate you completed 5 reps.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="understanding-custom-zones">Understanding Custom Zones</h3>
+<p>Garmin Connect expects that users have a registered device and they expect users have set up their HR and Power Zones on that device. However, this presents a problem if you either A) do not have a device capable of tracking Power or B) do not have a Garmin device at all.</p>
+<p>The most common scenario for Peloton users is A, where they do not own a Power capable Garmin device and therefore are not able to configure their Power Zones in Garmin Connect.  If you do not have Power or HR zones configured in Garmin Connect then you are not able to view accurate <code>Time In Zones</code> charts for a given workout.</p>
+<p>P2G provides a work around for this by optionally enriching the workout with the <code>Time In Zones</code> data with one caveat: the chart will not display the range value for the zone.</p>
+<p><img alt="Example Cycling Workout" src="https://github.com/philosowaffle/peloton-to-garmin/blob/master/images/missing_zone_values.png?raw=true" title="Example Missing Zone Values" /></p>
+<p>This is only available when generating and uploading the <a href="#garmin-config">FIT</a> format.</p>
+<h3 id="custom-device-info">Custom Device Info</h3>
+<p>By default, P2G using a custom device when converting and upload workouts.  This device information is needed in order to count your Peloton workouts towards Challenges and Badges on Garmin. However, you may observe on Garmin Connect that your Peloton workouts will show a device image that does not match your personal device.</p>
+<p>If you choose, you can provide P2G with your personal Device Info which will cause the Garmin workout to show the correct to device. Note, <strong>this is completely optional and is only for cosmetic preference</strong>, your workout will be converted, uploaded, and counted towards challenges regardless of whether this matches your personal device.</p>
+<p>See <a href="../providing-device-info/">configuring device info</a> for detailed steps on how to create your <code>deviceInfo.xml</code>.</p>
+<h3 id="lap-types">Lap Types</h3>
+<p>P2G supports several different strategies for creating Laps in Garmin Connect.  If a certain strategy is not available P2G will attempt to fallback to a different strategy.  You can override this behavior by specifying your preferred Lap type in the config. When <code>PreferredLapType</code> is set, P2G will first attempt to generate your preferred type and then fall back to the default behavior if it is unable to.  By default P2G will:</p>
+<ol>
+<li>First try to create laps based on <code>Class_Targets</code></li>
+<li>Then try to create laps based on <code>Class_Segments</code></li>
+<li>Finally fallback to create laps based on <code>Distance</code></li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Strategy</th>
+<th style="text-align: left;">Config Value</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Class Targets</td>
+<td style="text-align: left;"><code>Class_Targets</code></td>
+<td style="text-align: left;">If the Peloton data includes Target Cadence information, then laps will be created to match any time the Target Cadence changed.  You must use this strategy if you want the Target Cadence to show up in Garmin on the Cadence chart.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Class Segments</td>
+<td style="text-align: left;"><code>Class_Segments</code></td>
+<td style="text-align: left;">If the Peloton data includes Class Segment information, then laps will be created to match each segment: Warm Up, Cycling, Weights, Cool Down, etc.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Distance</td>
+<td style="text-align: left;"><code>Distance</code></td>
+<td style="text-align: left;">P2G will caclulate Laps based on distance for each 1mi, 1km, or 500m (for Row only) based on your distance setting in Peloton.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="peloton-config">Peloton Config</h2>
+<p>This section provides settings related to fetching workouts from Peloton.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Peloton&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;Email&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;peloton@gmail.com&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;Password&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;peloton&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;NumWorkoutsToDownload&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;ExcludeWorkoutTypes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&quot;meditation&quot;</span><span class="w"> </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Console or Docker Headless: Your username and password for Peloton and Garmin Connect are stored in clear text, which <strong>is not secure</strong>. Please be aware of the risks.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">WebUI version 3.3.0: Credentials are stored <strong>encrypted</strong>.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">GitHub Actions: Credentials are stored <strong>encrypted</strong>.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">UI Setting Location</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Email</td>
+<td style="text-align: left;"><strong>yes</strong></td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;"><code>Peloton Tab</code></td>
+<td style="text-align: left;">Your Peloton email used to sign in</td>
+</tr>
+<tr>
+<td style="text-align: left;">Password</td>
+<td style="text-align: left;"><strong>yes</strong></td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;"><code>Peloton Tab</code></td>
+<td style="text-align: left;">Your Peloton password used to sign in</td>
+</tr>
+<tr>
+<td style="text-align: left;">NumWorkoutsToDownload</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;"><code>Peloton Tab</code></td>
+<td style="text-align: left;">The default number of workouts to download. See <a href="#choosing-number-of-workouts-to-download">choosing number of workouts to download</a>.  Set this to <code>0</code> if you would like P2G to prompt you each time for a number to download.</td>
+</tr>
+<tr>
+<td style="text-align: left;">ExcludeWorkoutTypes</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">none</td>
+<td style="text-align: left;"><code>Peloton Tab</code></td>
+<td style="text-align: left;">A comma separated list of workout types that you do not want P2G to download/convert/upload. See <a href="#exclude-workout-types">example use cases</a> below.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="choosing-number-of-workouts-to-download">Choosing Number of Workouts To Download</h3>
+<p>When choosing the number of workouts P2G should download each polling cycle its important to keep your configured <a href="#app-config">PollingInterval</a> in mind. If, for example, your polling interval is set to hourly, then you may want to set <code>NumWorkoutsToDownload</code> to 4 or greater. This ensures if you did four 15min workouts during that hour they would all be captured.</p>
+<h3 id="exclude-workout-types">Exclude Workout Types</h3>
+<p>Example use cases:</p>
+<ol>
+<li>You take a wide variety of Peloton classes, including meditation and you want to skip uploading meditation classes.</li>
+<li>You want to avoid double-counting activities you already track directly on a Garmin device, such as outdoor running workouts.</li>
+</ol>
+<p>The available values are:</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="err">Cycli</span><span class="kc">n</span><span class="err">g</span>
+<span class="w">  </span><span class="err">BikeBoo</span><span class="kc">t</span><span class="err">camp</span>
+<span class="w">  </span><span class="err">TreadmillRu</span><span class="kc">nn</span><span class="err">i</span><span class="kc">n</span><span class="err">g</span>
+<span class="w">  </span><span class="err">Ou</span><span class="kc">t</span><span class="err">doorRu</span><span class="kc">nn</span><span class="err">i</span><span class="kc">n</span><span class="err">g</span>
+<span class="w">  </span><span class="err">TreadmillWalki</span><span class="kc">n</span><span class="err">g</span>
+<span class="w">  </span><span class="err">Ou</span><span class="kc">t</span><span class="err">doorWalki</span><span class="kc">n</span><span class="err">g</span>
+<span class="w">  </span><span class="err">Cardio</span>
+<span class="w">  </span><span class="err">Circui</span><span class="kc">t</span>
+<span class="w">  </span><span class="err">S</span><span class="kc">tren</span><span class="err">g</span><span class="kc">t</span><span class="err">h</span>
+<span class="w">  </span><span class="err">S</span><span class="kc">tret</span><span class="err">chi</span><span class="kc">n</span><span class="err">g</span>
+<span class="w">  </span><span class="err">Yoga</span>
+<span class="w">  </span><span class="err">Medi</span><span class="kc">tat</span><span class="err">io</span><span class="kc">n</span>
+</code></pre></div>
+<h2 id="garmin-config">Garmin Config</h2>
+<p>This section provides settings related to uploading workouts to Garmin.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Garmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;Email&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;garmin@gmail.com&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;Password&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;garmin&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;TwoStepVerificationEnabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;Upload&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;FormatToUpload&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fit&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Console or Docker Headless: Your username and password for Peloton and Garmin Connect are stored in clear text, which <strong>is not secure</strong>. Please be aware of the risks.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">WebUI version 3.3.0: Credentials are stored <strong>encrypted</strong>.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">GitHub Actions: Credentials are stored <strong>encrypted</strong>.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">UI Setting Location</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Email</td>
+<td style="text-align: left;"><strong>yes - if Upload=true</strong></td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;"><code>Garmin Tab</code></td>
+<td style="text-align: left;">Your Garmin email used to sign in</td>
+</tr>
+<tr>
+<td style="text-align: left;">Password</td>
+<td style="text-align: left;"><strong>yes - if Upload=true</strong></td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;"><code>Garmin Tab</code></td>
+<td style="text-align: left;">Your Garmin password used to sign in</td>
+</tr>
+<tr>
+<td style="text-align: left;">TwoStepVerificationEnabled</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>false</code></td>
+<td style="text-align: left;"><code>Garmin Tab</code></td>
+<td style="text-align: left;">Whether or not your Garmin account is protected by Two Step Verification</td>
+</tr>
+<tr>
+<td style="text-align: left;">Upload</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>false</code></td>
+<td style="text-align: left;"><code>Garmin Tab</code></td>
+<td style="text-align: left;"><code>true</code> indicates you wish downloaded workouts to be automatically uploaded to Garmin for you.</td>
+</tr>
+<tr>
+<td style="text-align: left;">FormatToUpload</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>fit</code></td>
+<td style="text-align: left;"><code>Garmin Tab &gt; Advanced</code></td>
+<td style="text-align: left;">Valid values are <code>fit</code> or <code>tcx</code>. Ensure the format you specify here is also enabled in your <a href="#format-config">Format config</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="observability-config">Observability Config</h2>
+<p>P2G supports publishing OpenTelemetry Metrics, Logs, and Trace. This section provides settings related to those pillars.</p>
+<p>The Observability config section contains three main sub-sections:</p>
+<ol>
+<li><a href="#prometheus-config">Prometheus</a> - Metrics</li>
+<li><a href="#jaeger-config">Jaeger</a> - Traces</li>
+<li><a href="#serilog-config">Serilog</a> - Logs</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Observability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="nt">&quot;Prometheus&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;Enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;Port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4000</span>
+<span class="w">    </span><span class="p">},</span>
+
+<span class="w">    </span><span class="nt">&quot;Jaeger&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;Enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;AgentHost&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;AgentPort&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">6831</span>
+<span class="w">    </span><span class="p">},</span>
+
+<span class="w">    </span><span class="nt">&quot;Serilog&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;Using&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&quot;Serilog.Sinks.Console&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Serilog.Sinks.File&quot;</span><span class="w"> </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;MinimumLevel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Information&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;WriteTo&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Console&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;File&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;Args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./output/log.txt&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;rollingInterval&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Day&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;retainedFileCountLimit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<h3 id="prometheus-config">Prometheus Config</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Prometheus&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;Enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;Port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4000</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Enabled</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>false</code></td>
+<td style="text-align: left;">Whether or not to expose metrics. Metrics will be available at <code>http://localhost:{port}/metrics</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Port</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>80</code></td>
+<td style="text-align: left;">The port the metrics endpoint should be served on. Only valid for Console mode, not Api/WebUI</td>
+</tr>
+</tbody>
+</table>
+<p>If you are using Docker, ensure you have exposed the port from your container.</p>
+<h4 id="example-prometheus-scraper-config">Example Prometheus scraper config</h4>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;p2g&#39;</span>
+<span class="w">    </span><span class="nt">scrape_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span>
+<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">&lt;p2gIPaddress&gt;</span><span class="p p-Indicator">:</span><span class="nv">&lt;p2gPort&gt;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">tls_config</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">insecure_skip_verify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
+<h3 id="jaeger-config">Jaeger Config</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Jaeger&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;Enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;AgentHost&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;AgentPort&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">6831</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Enabled</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>false</code></td>
+<td style="text-align: left;">Whether or not to generate traces.</td>
+</tr>
+<tr>
+<td style="text-align: left;">AgentHost</td>
+<td style="text-align: left;"><strong>yes - if Enalbed=true</strong></td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;">The host address for your trace collector.</td>
+</tr>
+<tr>
+<td style="text-align: left;">AgentPort</td>
+<td style="text-align: left;"><strong>yes - if Enabled=true</strong></td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;">The port for your trace collector.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="serilog-config">Serilog Config</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Serilog&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;Using&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&quot;Serilog.Sinks.Console&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Serilog.Sinks.File&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Serilog.Sinks.Grafana.Loki&quot;</span><span class="w"> </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;MinimumLevel&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;Default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Information&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Override&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;Microsoft&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Error&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;System&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Error&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;WriteTo&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Console&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;File&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;Args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./output/log.txt&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;rollingInterval&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Day&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;retainedFileCountLimit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GrafanaLoki&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;Args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://192.168.1.95:3100&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;textFormatter&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Serilog.Sinks.Grafana.Loki.LokiJsonTextFormatter, Serilog.Sinks.Grafana.Loki&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">              </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;app&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;p2g&quot;</span>
+<span class="w">              </span><span class="p">}</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}]</span>
+<span class="p">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Using</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;">A list of sinks you would like use. The valid sinks are listed in the examplea above.</td>
+</tr>
+<tr>
+<td style="text-align: left;">MinimumLevel</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;">The minimum level to write. <code>[Verbose, Debug, Information, Warning, Error, Fatal]</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">WriteTo</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;">Additional config for various sinks you are writing to.</td>
+</tr>
+</tbody>
+</table>
+<p>More detailed information about configuring Logging can be found on the <a href="https://github.com/serilog/serilog-settings-configuration#serilogsettingsconfiguration--">Serilog Config Repo</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.path", "navigation.top", "naviation.sections", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>
