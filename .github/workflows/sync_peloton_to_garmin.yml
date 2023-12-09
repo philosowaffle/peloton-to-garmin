@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     # The type of runner that the job will run on
     container: 
-      image:  philosowaffle/peloton-to-garmin:stable
+      image:  philosowaffle/peloton-to-garmin:console-stable
     steps:
     - name: Set env
       run: echo "OUTPUT_DIR=/app/output" >> $GITHUB_ENV
@@ -40,9 +40,7 @@ jobs:
         cat <<EOT > /app/configuration.local.json 
         {
           "App": {
-            "OutputDirectory": "/app/output",
-            "EnablePolling": false,
-            "CloseWindowOnFinish": true
+            "EnablePolling": false
           },
           "Format": {
             "Fit": true,
@@ -55,12 +53,10 @@ jobs:
           },
           "Peloton": {
             "NumWorkoutsToDownload": ${{ github.event.inputs.workoutsToDownload || env.DEFAULT_WORKOUT_NUM }},
-            "ExcludeWorkoutTypes": [ "meditation" ],
           },
           "Garmin": {
             "Upload": true,
-            "FormatToUpload": "fit",
-            "UploadStrategy": 2
+            "FormatToUpload": "fit"
           },
           "Observability": {
             "Prometheus": {
@@ -71,15 +67,12 @@ jobs:
             },
             "Serilog": {
               "Using": [ "Serilog.Sinks.Console"],
-              "MinimumLevel": "Information",
-              "WriteTo": [
-                { "Name": "Console" }
-              ]
+              "MinimumLevel": "Information"
             }
           }
         }
         EOT
-    - run: /app/PelotonToGarminConsole
+    - run: /app/ConsoleClient
       if: ${{ env.P2G_PELOTON__EMAIL && env.P2G_PELOTON__PASSWORD && env.P2G_GARMIN__EMAIL && env.P2G_GARMIN__PASSWORD }}
       working-directory: /app
       env:

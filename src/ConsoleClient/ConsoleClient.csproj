@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <AssemblyName>ConsoleClient</AssemblyName>
+    <RootNamespace>ConsoleClient</RootNamespace>
+    <RuntimeIdentifiers>win10-x64;osx-x64;linux-x64</RuntimeIdentifiers>
+    <PackageProjectUrl>https://github.com/philosowaffle/peloton-to-garmin</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/philosowaffle/peloton-to-garmin</RepositoryUrl>
+    <Authors>Bailey Belvis</Authors>
+    <ApplicationIcon>../../images/logo/256x256.ico</ApplicationIcon>
+    <PackageIcon>../../images/logo/256x256.png</PackageIcon>
+    <RepositoryType>git</RepositoryType>
+    <SignAssembly>false</SignAssembly>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+	  <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	  <DockerfileContext>.</DockerfileContext>
+	  <DockerfileFile>../../docker/Dockerfile.console</DockerfileFile>
+	  <DockerfileRunArguments>-v $(pwd)/configuration.local.json:/app/configuration.local.json:ro</DockerfileRunArguments>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Flurl.Http" Version="3.2.4" />
+    <PackageReference Include="JsonFlatFileDataStore" Version="2.4.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
+    <PackageReference Include="Philosowaffle.Capability.ReleaseChecks" Version="1.0.0" />
+    <PackageReference Include="prometheus-net.DotNetRuntime" Version="4.4.0" />
+    <PackageReference Include="Serilog" Version="3.1.1" />
+	<PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
+    <PackageReference Include="Serilog.Enrichers.Span" Version="3.1.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="7.0.1" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="9.0.3" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.Grafana.Loki" Version="8.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sync\Sync.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\Conversion\Conversion.csproj" />
+    <ProjectReference Include="..\Garmin\Garmin.csproj" />
+    <ProjectReference Include="..\Peloton\Peloton.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\images\logo\256x256.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

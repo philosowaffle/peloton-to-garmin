@@ -1,8 +1,7 @@
 ﻿using Common.Dto;
+using Common.Stateful;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 
 namespace Common;
@@ -68,37 +67,23 @@ public class App
 {
 	public App()
 	{
-		OutputDirectory = Path.Join(Environment.CurrentDirectory, "output");
-		WorkingDirectory = Path.Join(Environment.CurrentDirectory, "working");
-
 		CheckForUpdates = true;
 		EnablePolling = false;
 		PollingIntervalSeconds = 86400; // 1 day
 	}
 
-	[DisplayName("Output Directory")]
-	[Description("Where downloaded and converted files should be saved to.")] 
-	public string OutputDirectory { get; set; }
-	[DisplayName("Working Directory")]
-	[Description("The directory where P2G can work. When running, P2G will create and delete files and needs a dedicated directory to do that.")]
-	public string WorkingDirectory { get; set; }
-
-	[DisplayName("Enable Polling")]
-	[Description("Enabled if you wish P2G to run continuously and poll Peloton for new workouts.")]
 	public bool EnablePolling { get; set; }
-	[DisplayName("Polling Interval in Seconds")]
-	[Description("The polling interval in seconds determines how frequently P2G should check for new workouts. Be warned, that setting this to a frequency of hourly or less may get you flagged by Peloton as a bad actor and they may reset your password.")]
 	public int PollingIntervalSeconds { get; set; }
-	[Obsolete]
-	public bool? PythonAndGUploadInstalled { get; set; }
-	public bool CloseWindowOnFinish { get; set; }
 	public bool CheckForUpdates { get; set; }
 
+	public static string DataDirectory => Path.GetFullPath(Path.Join(Statics.DefaultDataDirectory, "data"));
 
-	public static string DataDirectory = Path.GetFullPath(Path.Join(Environment.CurrentDirectory, "data"));
+	public string WorkingDirectory => Statics.DefaultTempDirectory;
+	public string OutputDirectory => Statics.DefaultOutputDirectory;
 	public string FailedDirectory => Path.GetFullPath(Path.Join(OutputDirectory, "failed"));
 	public string DownloadDirectory => Path.GetFullPath(Path.Join(WorkingDirectory, "downloaded"));
 	public string UploadDirectory => Path.GetFullPath(Path.Join(WorkingDirectory, "upload"));
+	
 
 }
 
@@ -112,26 +97,12 @@ public class Format
 		Strength= new Strength();
 	}
 
-	[DisplayName("FIT")]
-	[Description("Enabled indicates you wish downloaded workouts to be converted to FIT")]
 	public bool Fit { get; set; }
-	[DisplayName("JSON")]
-	[Description("Enabled indicates you wish downloaded workouts to be converted to JSON")]
 	public bool Json { get; set; }
-	[DisplayName("TCX")]
-	[Description("Enabled indicates you wish downloaded workouts to be converted to TCX.")]
 	public bool Tcx { get; set; }
-	[DisplayName("Save a local copy")]
-	[Description("Save any converted workouts to your specified Output Directory")]
 	public bool SaveLocalCopy { get; set; }
-	[DisplayName("Include Time in HR Zones")]
-	[Description("Only use this if you are unable to configure your Max HR on Garmin Connect. When set to True, P2G will attempt to capture the time spent in each HR Zone per the data returned by Peloton.")]
 	public bool IncludeTimeInHRZones { get; set; }
-	[DisplayName("Include Time in Power Zones")]
-	[Description("Only use this if you are unable to configure your FTP and Power Zones on Garmin Connect. When set to True, P2G will attempt to capture the time spent in each Power Zone per the data returned by Peloton.")]
 	public bool IncludeTimeInPowerZones { get; set; }
-	[DisplayName("Device Info Path")]
-	[Description("The path to your deviceInfo.xml file.")]
 	public string DeviceInfoPath { get; set; }
 	public Cycling Cycling { get; set; }
 	public Running Running { get; set; }
@@ -190,25 +161,19 @@ public class Peloton : ICredentials
 
 public class Garmin : ICredentials
 {
-	public Garmin()
-	{
-		UploadStrategy = UploadStrategy.NativeImplV1;
-	}
-
 	public EncryptionVersion EncryptionVersion { get; set; }
 	public string Email { get; set; }
 	public string Password { get; set; }
 	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
-	public UploadStrategy UploadStrategy { get; set; }
 }
 
 public class ApiSettings
 {
 	public ApiSettings()
 	{
-		HostUrl = "http://localhost";
+		HostUrl = "http://*:8080";
 	}
 
 	public string HostUrl { get; set; }
@@ -218,7 +183,7 @@ public class WebUISettings
 {
 	public WebUISettings()
 	{
-		HostUrl = "http://localhost";
+		HostUrl = "http://*:8080";
 	}
 
 	public string HostUrl { get; set; }
@@ -252,13 +217,6 @@ public class Prometheus
 public class Developer
 {
 	public string UserAgent { get; set; }
-}
-
-public enum UploadStrategy : byte
-{
-	PythonAndGuploadInstalledLocally = 0,
-	WindowsExeBundledPython = 1,
-	NativeImplV1 = 2
 }
 
 public enum FileFormat : byte

@@ -1,0 +1,72 @@
+﻿@inject IApiClient _apiClient
+@inject IHxMessengerService _toaster;
+
+<EditForm Model="@appSettings">
+	<div class="row g-3">
+		<div class="col-md-12">
+			<HxCard>
+				<HeaderTemplate>
+					<HxSwitch Text="Automatic Syncing" @bind-Value="appSettings.EnablePolling" Inline="true" />
+				</HeaderTemplate>
+				<BodyTemplate>
+					<HxFormState Enabled="@appSettings.EnablePolling">
+						<HxInputNumber Label="Check for new workouts every X (seconds)" TValue="int" @bind-Value="appSettings.PollingIntervalSeconds" />
+					</HxFormState>
+				</BodyTemplate>
+			</HxCard>
+		</div>
+	</div>
+
+	<br />
+	<HxSwitch Text="Check for new P2G Releases" @bind-Value="appSettings.CheckForUpdates" />
+	<br />
+	<HxSubmit Color="ThemeColor.Primary" OnClick="SaveAppSettings">Save</HxSubmit>
+
+</EditForm>
+
+@code {
+	private Common.App appSettings;
+
+	public AppSettingsForm()
+	{
+		var settings = new SettingsGetResponse();
+		appSettings = settings.App;
+	}
+
+	protected override Task OnInitializedAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(AppSettingsForm)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+		return LoadDataAsync();
+	}
+
+	private async Task LoadDataAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(SettingsGetResponse)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
+		var settings = await _apiClient.SettingsGetAsync();
+
+		appSettings = settings.App;
+	}
+
+	protected async Task SaveAppSettings()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(AppSettingsForm)}.{nameof(SaveAppSettings)}", kind: ActivityKind.Client);
+
+		_toaster.Clear();
+
+		try
+		{
+			appSettings = await _apiClient.SettingsAppPostAsync(appSettings);
+			_toaster.AddInformation("App Settings Saved!");
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to save App Settings - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to save App settings.", e);
+		}
+	}
+}

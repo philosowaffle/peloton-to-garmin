@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
 	<PackageId>PelotonToGarmin.Api</PackageId>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -26,20 +26,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Philosowaffle.Capability.ReleaseChecks" Version="1.0.0" />
-    <PackageReference Include="prometheus-net" Version="8.0.1" />
-    <PackageReference Include="prometheus-net.DotNetRuntime" Version="4.4.0" />
-    <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
-    <PackageReference Include="Serilog.Enrichers.Span" Version="3.1.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="7.0.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="Serilog.Sinks.Grafana.Loki" Version="8.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\Api.Service\Api.Service.csproj" />
     <ProjectReference Include="..\Sync\Sync.csproj" />
   </ItemGroup>
 

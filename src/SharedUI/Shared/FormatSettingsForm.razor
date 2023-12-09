@@ -1,0 +1,100 @@
+﻿@inject IApiClient _apiClient
+@inject IHxMessengerService _toaster;
+
+<EditForm Model="@formatSettings">
+	<div class="row gy-5">
+		<div class="col-md-12">
+			<HxSwitch Text="Convert to FIT" @bind-Value="formatSettings.Fit" />
+			<HxSwitch Text="Convert to TCX" @bind-Value="formatSettings.Tcx" />
+			<HxSwitch Text="Convert to JSON" @bind-Value="formatSettings.Json" />
+		</div>
+		<div class="col-md-4">
+			<HxInputNumber Label="Strength: Estimated seconds per rep" TValue="int" @bind-Value="formatSettings.Strength.DefaultSecondsPerRep" />
+		</div>
+		<div class="col-md-8"></div>
+		<div class="col-md-4">
+			<HxSelect Label="Cycling Lap Type"
+					  Data="@lapTypes"
+					  Nullable="false"
+					  NullDataText="Loading info..."
+					  @bind-Value="formatSettings.Cycling.PreferredLapType" />
+		</div>
+		<div class="col-md-4">
+			<HxSelect Label="Running Lap Type"
+					  Data="@lapTypes"
+					  Nullable="false"
+					  NullDataText="Loading info..."
+					  @bind-Value="formatSettings.Running.PreferredLapType" />
+		</div>
+		<div class="col-md-4">
+			<HxSelect Label="Rowing Lap Type"
+					  Data="@lapTypes"
+					  Nullable="false"
+					  NullDataText="Loading info..."
+					  @bind-Value="formatSettings.Rowing.PreferredLapType" />
+		</div>
+		<div class="md-col-12">
+			<HxAccordion>
+				<HxAccordionItem>
+					<HeaderTemplate>Advanced</HeaderTemplate>
+					<BodyTemplate>
+						<HxInputText Label="Path to custom deviceInfo.xml file" @bind-Value="formatSettings.DeviceInfoPath" /><br />
+						<HxSwitch Text="Include Time In HR Zones" @bind-Value="formatSettings.IncludeTimeInHRZones" />
+						<HxSwitch Text="Include Time in Power Zones" @bind-Value="formatSettings.IncludeTimeInPowerZones" />
+						<HxSwitch Text="Save a backup copy of Converted files to output dir" @bind-Value="formatSettings.SaveLocalCopy" />
+					</BodyTemplate>
+				</HxAccordionItem>
+			</HxAccordion>
+		</div>
+	</div>
+	<br />
+	<HxSubmit Color="ThemeColor.Primary" OnClick="SaveFormatSettings">Save</HxSubmit>
+</EditForm>
+
+@code {
+	private static ICollection<PreferredLapType> lapTypes = Enum.GetValues(typeof(PreferredLapType)).Cast<PreferredLapType>().ToList();
+
+    private Format formatSettings;
+
+	public FormatSettingsForm()
+	{
+		var settings = new SettingsGetResponse();
+		formatSettings = settings.Format;
+	}
+
+	protected override Task OnInitializedAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(FormatSettingsForm)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+		return LoadDataAsync();
+	}
+
+	private async Task LoadDataAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(FormatSettingsForm)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
+		var settings = await _apiClient.SettingsGetAsync();
+
+		formatSettings = settings.Format;
+	}
+
+	protected async Task SaveFormatSettings()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(FormatSettingsForm)}.{nameof(SaveFormatSettings)}", kind: ActivityKind.Client);
+
+		_toaster.Clear();
+		try
+		{
+			formatSettings = await _apiClient.SettingsFormatPostAsync(formatSettings);
+			_toaster.AddInformation("Format Settings Saved!");
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to save Format Settings - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to save Format settings.", e);
+		}
+	}
+}

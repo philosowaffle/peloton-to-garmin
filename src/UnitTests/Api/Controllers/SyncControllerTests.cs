@@ -1,6 +1,7 @@
-﻿using Api.Controllers;
+﻿using Api.Contract;
+using Api.Controllers;
 using Common;
-using Common.Dto.Api;
+using Common.Dto;
 using Common.Service;
 using Common.Stateful;
 using FluentAssertions;
@@ -14,8 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ErrorResponse = Common.Dto.Api.ErrorResponse;
-using SyncErrorResponse = Sync.ErrorResponse;
+using ErrorResponse = Api.Contract.ErrorResponse;
 
 namespace UnitTests.Api.Controllers
 {
@@ -27,12 +27,19 @@ namespace UnitTests.Api.Controllers
 			var autoMocker = new AutoMocker();
 			var controller = autoMocker.CreateInstance<SyncController>();
 
+			var settings = autoMocker.GetMock<ISettingsService>();
+			settings.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settings.Object.GetSettingsAsync))
+				.ReturnsAsync(new Settings());
+
+			settings.SetupWithAny<ISettingsService, GarminApiAuthentication>(nameof(settings.Object.GetGarminAuthentication))
+				.Returns((GarminApiAuthentication)null);
+
 			var response = await controller.SyncAsync(null);
 
 			var result = response.Result as BadRequestObjectResult;
 			result.Should().NotBeNull();
 			var value = result.Value as ErrorResponse;
-			value.Message.Should().Be("PostRequest must not be null.");
+			value.Message.Should().Be("Request must not be null.");
 		}
 
 		[Test]
@@ -44,6 +51,9 @@ namespace UnitTests.Api.Controllers
 
 			settings.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settings.Object.GetSettingsAsync))
 				.ReturnsAsync(new Settings());
+
+			settings.SetupWithAny<ISettingsService, GarminApiAuthentication>(nameof(settings.Object.GetGarminAuthentication))
+				.Returns((GarminApiAuthentication)null);
 
 			var request = new SyncPostRequest();
 
@@ -64,6 +74,9 @@ namespace UnitTests.Api.Controllers
 
 			settings.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settings.Object.GetSettingsAsync))
 				.ReturnsAsync(new Settings());
+
+			settings.SetupWithAny<ISettingsService, GarminApiAuthentication>(nameof(settings.Object.GetGarminAuthentication))
+				.Returns((GarminApiAuthentication)null);
 
 			var request = new SyncPostRequest() { WorkoutIds = new List<string>() };
 
@@ -220,9 +233,9 @@ namespace UnitTests.Api.Controllers
 			{
 				SyncSuccess = false,
 			};
-			syncResult.Errors.Add(new SyncErrorResponse() { Message = "error 1" });
-			syncResult.Errors.Add(new SyncErrorResponse() { Message = "error 2" });
-			syncResult.Errors.Add(new SyncErrorResponse() { Message = "error 3" });
+			syncResult.Errors.Add(new ServiceError() { Message = "error 1" });
+			syncResult.Errors.Add(new ServiceError() { Message = "error 2" });
+			syncResult.Errors.Add(new ServiceError() { Message = "error 3" });
 			service.SetReturnsDefault(Task.FromResult(syncResult));
 
 			var request = new SyncPostRequest() { WorkoutIds = new List<string>() { "someId" } };
