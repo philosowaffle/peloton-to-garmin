@@ -1,18 +1,16 @@
 
 # Home
 
-Sync workouts from Peloton to Garmin.
+Sync your Peloton workouts to Garmin locally and for free.
+
+![P2G UI Demo](img/p2g_demo.gif "P2G UI Demo")
 
 * Fetch latest workouts from Peloton
-  * Bike, Tread, Rower, Meditation, Strength, Outdoor, and more
-* Automatically upload TCX or FIT workout to Garmin
-* Convert Peloton workouts to a variety of formats for offline backup
-* Earn Badges and credit for Garmin Challenges
-* Counts towards VO2 Max [1](faq.md) and Training Stress Scores
-* Supports Garmin accounts protected by Two Step Verification
-* Supports mapping Exercises from Strength workouts
+* Create backups
+* Automatically upload your workouts to Garmin
+* [And more...](features.md)
 
-Head on over to the [Install](install/index.md) page to get started!
+### Head on over to the [Install](install/index.md) page to get started!
 
 ## Example Usage
 
@@ -24,12 +22,12 @@ Head on over to the [Install](install/index.md) page to get started!
 
 ![Example Cycling Workout](https://github.com/philosowaffle/peloton-to-garmin/blob/master/images/example_cycle.png?raw=true "Example Cycling Workout")
 
-## Supported Platforms
+!!!note "Supported Platforms"
 
-* Windows
-* Mac
-* Linux
-* Docker
+    * Windows
+    * Mac
+    * Linux
+    * Docker
 
 ## Contributors
 

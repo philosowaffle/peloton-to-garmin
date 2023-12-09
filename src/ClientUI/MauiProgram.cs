@@ -17,6 +17,7 @@ public static class MauiProgram
 		Statics.AppType = Constants.ClientUIName;
 		Statics.MetricPrefix = Constants.ClientUIName;
 		Statics.TracingService = Constants.ClientUIName;
+		Statics.ConfigPath = Path.Join(Environment.CurrentDirectory, "configuration.local.json");
 
 		Directory.CreateDirectory(Statics.DefaultOutputDirectory);
 
@@ -31,7 +32,7 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 			});
 
-		var observabilityConfigFilePath = Path.Join(Statics.DefaultDataDirectory, "configuration.local.json");
+		var observabilityConfigFilePath = Statics.ConfigPath;
 		if (!File.Exists(observabilityConfigFilePath))
 			InitObservabilityConfigFile("configuration.local.json", observabilityConfigFilePath);
 

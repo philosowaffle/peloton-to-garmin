@@ -1,30 +1,43 @@
 
 # Features
 
-Convert, Backup, and Sync.
+Convert, Backup, and Sync your Peloton workouts to Garmin Connect locally and for free.
 
-## Feature List
+## Workout Data
 
-1. Syncs workout data from Peloton to Garmin Connect
-1. Supports all Peloton workout types (Biking, Tread, Core, Meditation, Rower etc.)
+1. Workout Types Supported
+    1. Bike
+    1. Tread
+    1. Rower
+    1. Meditation
+    1. Strength
+    1. Outdoor
+    1. and more
+1. Workout Data
+    1. Heart Rate
+    1. Cadence
+    1. Target Cadence
+    1. Distance
+    1. Power
+    1. Laps
+    1. and more
+1. Strength Data
+    1. Exercise Name
+    1. Rep count
+    1. Weight
+
+## Garmin Sync
+
 1. Supports Garmin accounts protected by Two Step Verification
-1. Syncs all available metric data from Peloton over to Garmin Connect
-1. Syncs laps and target cadence
 1. Synced workouts count towards Garmin Badges and Challenges
 1. Synced workouts count towards VO2 Max [1](faq.md) and Training Stress Scores
-1. Syncs Exercise information (including reps and weight) for Strength and Core workouts (when available)
-1. Syncs on demand or on a schedule
-1. Highly Configurable
+
+## P2G
+
+1. Syncs on-demand or on a schedule
+1. Highly configurable
 1. Docker-ized
 1. OpenTelemetry for the data nerds
-
-### Data Synced
-
-1. HR
-1. Cadence
-1. Target Cadence
-1. Distance
-1. Power
 
 ## Typical Usage
 
@@ -55,4 +68,4 @@ Convert, Backup, and Sync.
 
 ### UI
 
-![Web UI Demo](https://github.com/philosowaffle/peloton-to-garmin/raw/master/images/p2g_webui_demo.gif?raw=true "Web UI Demo")
+![P2G UI Demo](img/p2g_demo.gif "P2G UI Demo")

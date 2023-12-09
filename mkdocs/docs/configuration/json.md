@@ -179,11 +179,14 @@ This section provides settings related to fetching workouts from Peloton.
   }
 ```
 
-⚠️ Console or Docker Headless: Your username and password for Peloton and Garmin Connect are stored in clear text, which **is not secure**. Please be aware of the risks. ⚠️
+!!! warning
 
-⚠️ WebUI version 3.3.0: Credentials are stored **encrypted**.
+    Console or Docker Headless: Your username and password for Peloton and Garmin Connect are stored in clear text, which **is not secure**. Please be aware of the risks.
 
-⚠️ GitHub Actions: Credentials are stored **encrypted**.
+
+!!! success "WebUI version 3.3.0: Credentials are stored **encrypted**."
+
+!!! success "GitHub Actions: Credentials are stored **encrypted**."
 
 | Field      | Required | Default | UI Setting Location | Description |
 |:-----------|:---------|:--------|:--------------------|:------------|
@@ -234,11 +237,13 @@ This section provides settings related to uploading workouts to Garmin.
   }
 ```
 
-⚠️ Console or Docker Headless: Your username and password for Peloton and Garmin Connect are stored in clear text, which **is not secure**. Please be aware of the risks. ⚠️
+!!! warning
 
-⚠️ WebUI version 3.3.0: Credentials are stored **encrypted**.
+    Console or Docker Headless: Your username and password for Peloton and Garmin Connect are stored in clear text, which **is not secure**. Please be aware of the risks.
 
-⚠️ GitHub Actions: Credentials are stored **encrypted**.
+!!! success "WebUI version 3.3.0: Credentials are stored **encrypted**."
+
+!!! success "GitHub Actions: Credentials are stored **encrypted**."
 
 | Field      | Required | Default | UI Setting Location | Description |
 |:-----------|:---------|:--------|:--------------------|:------------|

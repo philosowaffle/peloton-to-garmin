@@ -8,6 +8,8 @@ With P2G v4, there is now a Windows GUI application available for download. P2G 
 1. To uninstall P2G simply delete its folder
 1. You may wish to create a Desktop shortcut to the application for convenience
 
+![P2G UI Demo](../img/p2g_demo.gif "P2G UI Demo")
+
 ## Install
 
 1. Download and unzip the [latest stable release](https://github.com/philosowaffle/peloton-to-garmin/releases)
@@ -33,7 +35,9 @@ You can learn more about customizing your configuration over in the [Configurati
 1. Find the `ClientUI.exe`
 1. Double click to run it!
 
-⚠️ WARNING: Attempting to use configuration or data from a later version of P2G with an older version is not guaranteed to work. You may need to reconfigure your instance.
+!!! warning
+
+    Attempting to use configuration or data from a later version of P2G with an older version is not guaranteed to work. You may need to reconfigure your instance.
 
 ## Available Versions
 

@@ -8,7 +8,7 @@ P2G provides a website user interface. Some key features include:
 1. Sync service can still run in the background, syncing periodically
 1. OpenApi for custom scripts and workflows
 
-![Web UI Demo](https://github.com/philosowaffle/peloton-to-garmin/raw/master/images/p2g_webui_demo.gif?raw=true "Web UI Demo")
+![P2G UI Demo](../img/p2g_demo.gif "P2G UI Demo")
 
 ## docker-compose
 

@@ -2,9 +2,6 @@
 
 Below are a list of commonly asked questions. For even more help head on over to the [discussion forum](https://github.com/philosowaffle/peloton-to-garmin/discussions).
 
-1. TOC
-{:toc}
-
 ## VO2 Max and TSS
 
 Garmin will only generate a VO2 max for your workouts if all of the following criteria are met:

@@ -10,9 +10,9 @@ P2G offers two main flavors of docker images:
 | [Web UI](docker-webui.md) | yes | only when Garmin 2fa is disabled |
 | [Docker Headless](docker-headless.md) | partial | only when Garmin 2fa is disabled |
 
-## Image Repositories
+!!! info "Image Repositories"
 
-P2G publishes Docker images to both [DockerHub](https://hub.docker.com/r/philosowaffle/peloton-to-garmin) and [GitHub Package](https://github.com/philosowaffle/peloton-to-garmin/pkgs/container/peloton-to-garmin).
+    P2G publishes Docker images to both [DockerHub](https://hub.docker.com/r/philosowaffle/peloton-to-garmin) and [GitHub Package](https://github.com/philosowaffle/peloton-to-garmin/pkgs/container/peloton-to-garmin).
 
 ## Tags
 

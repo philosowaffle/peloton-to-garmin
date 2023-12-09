@@ -2,7 +2,7 @@
 
 P2G can be run on all major operating systems.
 
-| Choose your system | Support Garmin 2-Step Verification |
+| Operating System | Support Garmin 2-Step Verification |
 |:-------------------|:-----------------------------------|
 | [Windows](#windows-quick-start) | yes |
 | [Mac](#mac-quick-start) | yes |

@@ -3,17 +3,17 @@
 
 This flavor of P2G runs without any user interface and relies on configuration from `configuration.local.json` file.
 
-### [DockerHub](https://hub.docker.com/r/philosowaffle/peloton-to-garmin)
+!!! info "[DockerHub](https://hub.docker.com/r/philosowaffle/peloton-to-garmin)"
 
-```bash
-docker run -i -v /full/path/to/configuration.local.json:/app/configuration.local.json -v /full/path/to/output:/app/output philosowaffle/peloton-to-garmin:stable
-```
+    ```bash
+    docker run -i -v /full/path/to/configuration.local.json:/app/configuration.local.json -v /full/path/to/output:/app/output philosowaffle/peloton-to-garmin:stable
+    ```
 
-### [GitHub Package](https://github.com/philosowaffle/peloton-to-garmin/pkgs/container/peloton-to-garmin)
+!!! info "[GitHub Package](https://github.com/philosowaffle/peloton-to-garmin/pkgs/container/peloton-to-garmin)"
 
-```bash
-docker run -i -v /full/path/to/configuration.local.json:/app/configuration.local.json -v /full/path/to/output:/app/output ghcr.io/philosowaffle/peloton-to-garmin:stable
-```
+    ```bash
+    docker run -i -v /full/path/to/configuration.local.json:/app/configuration.local.json -v /full/path/to/output:/app/output ghcr.io/philosowaffle/peloton-to-garmin:stable
+    ```
 
 ## docker-compose
 

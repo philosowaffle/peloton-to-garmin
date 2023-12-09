@@ -7,17 +7,17 @@ If you are encountering a problem, here are some resources that may help you.
 
 [Search the Discussion Forum](https://github.com/philosowaffle/peloton-to-garmin/discussions) to see if your topic has already been discussed before.  Take note that the search bar lets you filter by `open` and `closed` discussions, it is beneficial to check both.
 
-### Have a question? Need help with something?
+!!! tip "Have a question? Need help with something?"
 
-The [Discussion Forum](https://github.com/philosowaffle/peloton-to-garmin/discussions) is the best place to post.  When posting please ensure you are [providing the right details](#providing-the-right-details).
+    The [Discussion Forum](https://github.com/philosowaffle/peloton-to-garmin/discussions) is the best place to post.  When posting please ensure you are [providing the right details](#providing-the-right-details).
 
 ## Issues
 
 Bugs, feature requests, and more often get tracked in the [Issues](https://github.com/philosowaffle/peloton-to-garmin/issues) tab in Github. This is also a great place to search for information.  Particularly important issues that impact many people will usually be pinned and highly visible.  Take note that the search bar lets you filter by `open` and `closed` issues, it is beneficial to check both.
 
-### Have a feature idea? Encountered a bug?
+!!! tip "Have a feature idea? Encountered a bug?"
 
-Creating a new [Issue](https://github.com/philosowaffle/peloton-to-garmin/issues) is the best place to post.  When posting please ensure you are [providing the right details](#providing-the-right-details).
+    Creating a new [Issue](https://github.com/philosowaffle/peloton-to-garmin/issues) is the best place to post.  When posting please ensure you are [providing the right details](#providing-the-right-details).
 
 ## Providing the right details
 

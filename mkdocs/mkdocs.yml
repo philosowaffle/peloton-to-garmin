@@ -1,6 +1,7 @@
 site_name: Peloton To Garmin
 site_description: Convert workout data from Peloton into JSON/TCX/FIT files that can be uploaded to Garmin Connect
 site_author: philosowaffle
+site_url: 'https://philosowaffle.github.io/peloton-to-garmin/'
 
 repo_url: https://github.com/philosowaffle/peloton-to-garmin
 edit_uri: /tree/master/mkdocs/docs
@@ -22,14 +23,23 @@ theme:
     - naviation.sections
     - navigation.indexes
 
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+
 nav:
  - Home: index.md
  - Features: features.md
  - Install:
     - Install: install/index.md
-    - Docker: install/docker.md
-    - Windows: install/windows.md
+    - Docker:
+      - Docker: install/docker.md
+      - 'Web UI': install/docker-webui.md
+      - Headless: install/docker-headless.md
+    - 'Windows App': install/windows.md
     - Source: install/source.md
+    - 'GitHub Actions': install/github-action.md
  - Configuration: 
     - Configuration: configuration/index.md
     - 'User Interface and Json': configuration/json.md
