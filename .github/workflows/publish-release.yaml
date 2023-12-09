@@ -33,7 +33,7 @@ jobs:
 
    steps:
     
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Publish Docker Images
         uses: ./.github/actions/publish-docker-images
         with:
@@ -58,7 +58,7 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Publish UI Distribution
         uses: ./.github/actions/publish-ui-dist
         id: win-ui-create-artifact
@@ -77,6 +77,8 @@ jobs:
           files: ${{ needs.publish-ui-dist.outputs.artifact }}
           dest: /dist/ui_win_${{ github.event.inputs.version }}.zip
     
+      - uses: actions/checkout@v4
+
       - name: Create Release and Upload Artifacts
         uses: ncipollo/release-action@v1
         with:
