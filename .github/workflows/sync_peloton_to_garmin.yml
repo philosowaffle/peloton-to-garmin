@@ -13,7 +13,7 @@ on:
         type: boolean
         default: false
   schedule:
-    - cron: '0 1 * * *'
+    - cron: '0 15,23 * * *'
 
 jobs:
   sync:
@@ -53,6 +53,7 @@ jobs:
           },
           "Peloton": {
             "NumWorkoutsToDownload": ${{ github.event.inputs.workoutsToDownload || env.DEFAULT_WORKOUT_NUM }},
+            "ExcludeWorkoutTypes": [ "Meditation", "OutdoorWalking", "OutdoorRunning", "Strength" ],
           },
           "Garmin": {
             "Upload": true,
