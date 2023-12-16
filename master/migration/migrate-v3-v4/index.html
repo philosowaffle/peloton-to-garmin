@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.1">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.2">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.45e1311d.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -899,6 +899,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#github-action" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitHub Action
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#docker-headless" class="md-nav__link">
     <span class="md-ellipsis">
       Docker Headless
@@ -957,6 +966,13 @@
 <h2 id="windows-exe">Windows Exe</h2>
 <p>The P2G windows exe now provides a proper user interface. You can migrate to this new version simply by following the <a href="../../install/windows/">install steps</a>.  You will need to re-configure P2G using the user interface as your settings will not migrate over.</p>
 <p>There is no risk installing v4 and trying it out. Your previous install will continue to work while you test out v4.  When you're satisfied with v4 you can delete your previous version of P2G.</p>
+<h2 id="github-action">GitHub Action</h2>
+<p>Follow the <a href="../../install/github-action/#updating">updating instructions for GitHub Actions</a>.  A couple notable changes that will be pulled in:</p>
+<ol>
+<li><a href="https://github.com/philosowaffle/peloton-to-garmin/blob/v4.0.0/.github/workflows/sync_peloton_to_garmin.yml#L23">Container Image tag</a> has changed to <code>console-stable</code>, you may wish to edit this to be <code>console-v4</code></li>
+<li>The <a href="https://github.com/philosowaffle/peloton-to-garmin/blob/v4.0.0/.github/workflows/sync_peloton_to_garmin.yml#L40">configuration options</a> have changed slightly with some fields being deprecated and removed</li>
+<li>The <a href="https://github.com/philosowaffle/peloton-to-garmin/blob/v4.0.0/.github/workflows/sync_peloton_to_garmin.yml#L75">command to run p2g</a> has changed to <code>/app/ConsoleClient</code>.</li>
+</ol>
 <h2 id="docker-headless">Docker Headless</h2>
 <p>No specific migration steps are needed, however please take note of the <a href="https://github.com/philosowaffle/peloton-to-garmin/releases/tag/v3.6.0">breaking changes</a> in case any of these impact your setup.</p>
 <h2 id="docker-webui">Docker WebUI</h2>
