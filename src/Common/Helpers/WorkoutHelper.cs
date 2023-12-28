@@ -1,4 +1,5 @@
-﻿using Common.Dto.Peloton;
+﻿using Common.Dto;
+using Common.Dto.Peloton;
 using System.IO;
 
 namespace Common.Helpers;
@@ -9,15 +10,16 @@ public static class WorkoutHelper
 
 	private static readonly char[] InvalidFileNameChars = Path.GetInvalidFileNameChars();	
 
-	public static string GetTitle(Workout workout)
+	public static string GetTitle(Workout workout, Format settings)
 	{
 		var rideTitle = workout.Ride?.Title ?? workout.Id;
 		var instructorName = workout.Ride?.Instructor?.Name;
+		var prefix = settings.WorkoutTitlePrefix ?? string.Empty;
 
 		if (instructorName is object)
 			instructorName = $" with {instructorName}";
 
-		var title = $"{rideTitle}{instructorName}"
+		var title = $"{prefix}{rideTitle}{instructorName}"
 			.Replace(' ', SpaceSeparator);
 
 		foreach (var c in InvalidFileNameChars)
@@ -28,9 +30,9 @@ public static class WorkoutHelper
 		return title;
 	}
 
-	public static string GetUniqueTitle(Workout workout)
+	public static string GetUniqueTitle(Workout workout, Format settings)
 	{
-		return $"{workout.Id}_{GetTitle(workout)}";
+		return $"{workout.Id}_{GetTitle(workout, settings)}";
 	}
 
 	public static string GetWorkoutIdFromFileName(string filePath)

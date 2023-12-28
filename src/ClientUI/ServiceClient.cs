@@ -190,7 +190,7 @@ public class ServiceClient : IApiClient
 		}
 	}
 
-	public async Task<Common.App> SettingsAppPostAsync(Common.App appSettings)
+	public async Task<Common.Dto.App> SettingsAppPostAsync(Common.Dto.App appSettings)
 	{
 		try
 		{

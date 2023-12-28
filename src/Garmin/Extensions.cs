@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Common.Dto;
+using System;
 
 namespace Garmin
 {
 	public static class Extensions
 	{
-		public static void EnsureGarminCredentialsAreProvided(this Common.Garmin settings)
+		public static void EnsureGarminCredentialsAreProvided(this GarminSettings settings)
 		{
 			if (string.IsNullOrEmpty(settings.Email))
 				throw new ArgumentException("Garmin Email must be set.", nameof(settings.Email));

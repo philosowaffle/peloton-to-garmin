@@ -60,7 +60,7 @@ namespace Peloton
 			_failedCount = 0;
 		}
 
-		public static void ValidateConfig(Common.Peloton config)
+		public static void ValidateConfig(PelotonSettings config)
 		{
 			if (string.IsNullOrEmpty(config.Email))
 			{

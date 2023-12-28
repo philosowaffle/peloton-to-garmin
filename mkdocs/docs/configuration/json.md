@@ -110,7 +110,8 @@ This section provides settings related to conversions and what formats should be
     },
     "Strength": {
       "DefaultSecondsPerRep": 3
-    }
+    },
+    "WorkoutTitlePrefix": "Peloton - "
   }
 ```
 
@@ -131,6 +132,7 @@ This section provides settings related to conversions and what formats should be
 | Rowing.PreferredLapType | no | `Default` | `Conversion Tab` | The preferred [lap type to use](#lap-types). |
 | Strength | no | `null` | `Conversion Tab` | Configuration specific to Strength workouts. |
 | Strength.DefaultSecondsPerRep | no | `3` | `Conversion Tab` | For exercises that are done for time instead of reps, P2G can estimate how many reps you completed using this value. Ex. If `DefaultSecondsPerRep=3` and you do Curls for 15s, P2G will estimate you completed 5 reps. |
+| WorkoutTitlePrefix | no | `null` | `Conversion Tab` | A Title Prefix to apply to all workouts.  By default applies no prefix. |
 
 ### Understanding Custom Zones
 

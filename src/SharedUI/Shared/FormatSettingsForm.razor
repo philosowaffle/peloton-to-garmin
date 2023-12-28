@@ -9,6 +9,10 @@
 			<HxSwitch Text="Convert to JSON" @bind-Value="formatSettings.Json" />
 		</div>
 		<div class="col-md-4">
+			<HxInputText Label="Workout Title Prefix" @bind-Value="formatSettings.WorkoutTitlePrefix" />
+		</div>
+		<div class="col-md-8"></div>
+		<div class="col-md-4">
 			<HxInputNumber Label="Strength: Estimated seconds per rep" TValue="int" @bind-Value="formatSettings.Strength.DefaultSecondsPerRep" />
 		</div>
 		<div class="col-md-8"></div>

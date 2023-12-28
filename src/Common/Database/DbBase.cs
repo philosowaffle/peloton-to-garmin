@@ -1,4 +1,5 @@
-﻿using Common.Observe;
+﻿using Common.Dto;
+using Common.Observe;
 using JsonFlatFileDataStore;
 using Serilog;
 using System;

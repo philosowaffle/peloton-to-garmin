@@ -1,4 +1,5 @@
-﻿using Common.Dto.Garmin;
+﻿using Common.Dto;
+using Common.Dto.Garmin;
 using Common.Stateful;
 using System.Threading.Tasks;
 

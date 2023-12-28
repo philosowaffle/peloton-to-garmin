@@ -1,4 +1,5 @@
-﻿using Common.Dto.Garmin;
+﻿using Common.Dto;
+using Common.Dto.Garmin;
 using Common.Observe;
 using Common.Stateful;
 using Microsoft.Extensions.Caching.Memory;

@@ -2,6 +2,7 @@
 using Api.Service;
 using Api.Service.Helpers;
 using Common;
+using Common.Dto;
 using Common.Service;
 using FluentAssertions;
 using Moq;

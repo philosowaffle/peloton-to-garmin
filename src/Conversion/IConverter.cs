@@ -113,7 +113,7 @@ namespace Conversion
 
 			// call internal convert method
 			T converted = default;
-			var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout);
+			var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout, settings.Format);
 			try
 			{
 				converted = await ConvertInternalAsync(workoutData, settings);
