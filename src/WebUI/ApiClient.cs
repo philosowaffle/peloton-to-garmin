@@ -1,5 +1,6 @@
 ﻿using Api.Contract;
 using Common;
+using Common.Dto;
 using Flurl;
 using Flurl.Http;
 using SharedUI;
@@ -45,13 +46,13 @@ public class ApiClient : IApiClient
 		}
 	}
 
-	public async Task<Common.App> SettingsAppPostAsync(Common.App appSettings)
+	public async Task<Common.Dto.App> SettingsAppPostAsync(Common.Dto.App appSettings)
 	{
 		try
 		{
 			return await $"{_apiUrl}/api/settings/app"
 				.PostJsonAsync(appSettings)
-				.ReceiveJson<Common.App>();
+				.ReceiveJson<Common.Dto.App>();
 		}
 		catch (FlurlHttpException e)
 		{

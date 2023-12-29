@@ -1,4 +1,5 @@
-﻿using Common.Dto.Peloton;
+﻿using Common.Dto;
+using Common.Dto.Peloton;
 using Common.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
@@ -27,7 +28,7 @@ public class WorkoutHelperTests
 			}
 		};
 
-		return WorkoutHelper.GetTitle(workout);
+		return WorkoutHelper.GetTitle(workout, new Format());
 	}
 
 	[Test]
@@ -38,7 +39,7 @@ public class WorkoutHelperTests
 			Id = "someId"
 		};
 
-		var title = WorkoutHelper.GetTitle(workout);
+		var title = WorkoutHelper.GetTitle(workout, new Format());
 		title.Should().Be("someId");
 	}
 
@@ -53,7 +54,7 @@ public class WorkoutHelperTests
 			}
 		};
 
-		var title = WorkoutHelper.GetTitle(workout);
+		var title = WorkoutHelper.GetTitle(workout, new Format());
 		title.Should().Be("My_Title");
 	}
 
@@ -69,7 +70,44 @@ public class WorkoutHelperTests
 			}
 		};
 
-		var title = WorkoutHelper.GetTitle(workout);
+		var title = WorkoutHelper.GetTitle(workout, new Format());
 		title.Should().Be("My_Title");
+	}
+
+	[Test]
+	public void GetTitle_NullPrefix_ShouldReturn_EmptyPrefix()
+	{
+		var workout = new Workout()
+		{
+			Ride = new Ride()
+			{
+				Title = "My Title",
+				Instructor = new Instructor() { Name = "Instructor"}
+			}
+		};
+
+		var title = WorkoutHelper.GetTitle(workout, new Format());
+		title.Should().Be("My_Title_with_Instructor");
+	}
+
+	[Test]
+	public void GetTitle_With_Prefix_ShouldReturn_Title_With_Prefix()
+	{
+		var format = new Format()
+		{
+			WorkoutTitlePrefix = "Peloton - "
+		};
+
+		var workout = new Workout()
+		{
+			Ride = new Ride()
+			{
+				Title = "My Title",
+				Instructor = new Instructor() { Name = "Instructor" }
+			}
+		};
+
+		var title = WorkoutHelper.GetTitle(workout, format);
+		title.Should().Be("Peloton_-_My_Title_with_Instructor");
 	}
 }

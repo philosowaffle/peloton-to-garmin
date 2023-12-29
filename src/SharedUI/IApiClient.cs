@@ -1,5 +1,5 @@
 ﻿using Api.Contract;
-using Common;
+using Common.Dto;
 using Flurl.Http;
 
 namespace SharedUI;
@@ -9,7 +9,7 @@ public interface IApiClient
 	Task<PelotonWorkoutsGetAllResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetAllRequest request);
 
 	Task<SettingsGetResponse> SettingsGetAsync();
-	Task<Common.App> SettingsAppPostAsync(Common.App appSettings);
+	Task<Common.Dto.App> SettingsAppPostAsync(Common.Dto.App appSettings);
 	Task<Format> SettingsFormatPostAsync(Format formatSettings);
 	Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(SettingsPelotonPostRequest pelotonSettings);
 	Task<SettingsGarminGetResponse> SettingsGarminPostAsync(SettingsGarminPostRequest garminSettings);
