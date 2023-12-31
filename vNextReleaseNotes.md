@@ -4,6 +4,7 @@
 ## Features
 
 - [#564] Set a custom title prefix on Workouts
+- [#559] Ability to exclude Outdoor Cycling workouts from sycning
 
 ## Docker Tags
 

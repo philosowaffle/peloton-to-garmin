@@ -34,6 +34,7 @@ namespace Common.Dto
 				FitnessDiscipline.Caesar => WorkoutType.Rowing,
 				FitnessDiscipline.Cardio => WorkoutType.Cardio,
 				FitnessDiscipline.Circuit => WorkoutType.Circuit,
+				FitnessDiscipline.Cycling when workout.Is_Outdoor => WorkoutType.OutdoorCycling,
 				FitnessDiscipline.Cycling => WorkoutType.Cycling,
 				FitnessDiscipline.Meditation => WorkoutType.Meditation,
 				FitnessDiscipline.Strength => WorkoutType.Strength,

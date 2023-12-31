@@ -212,6 +212,7 @@ The available values are:
 
 ```json
   Cycling
+  Outdoor Cycling
   BikeBootcamp
   TreadmillRunning
   OutdoorRunning
