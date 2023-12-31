@@ -9,8 +9,8 @@ public static class ConfigurationSetup
 	{
 		provider.GetSection(nameof(App)).Bind(config.App);
 		provider.GetSection(nameof(Format)).Bind(config.Format);
-		provider.GetSection(nameof(PelotonSettings)).Bind(config.Peloton);
-		provider.GetSection(nameof(GarminSettings)).Bind(config.Garmin);
+		provider.GetSection("Peloton").Bind(config.Peloton);
+		provider.GetSection("Garmin").Bind(config.Garmin);
 	}
 
 	public static void LoadConfigValues(IConfiguration provider, AppConfiguration config)
