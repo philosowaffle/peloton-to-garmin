@@ -6,6 +6,10 @@
 - [#564] Set a custom title prefix on Workouts
 - [#559] Ability to exclude Outdoor Cycling workouts from sycning
 
+## Fixes
+
+- [#581] Fix broken Documentation link in UI
+
 ## Docker Tags
 
 - Console

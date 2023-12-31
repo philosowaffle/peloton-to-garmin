@@ -56,8 +56,10 @@
 	private async Task LoadDataAsync()
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
-		var systemInfo =  await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = false });
 
-		configDocumentation = systemInfo.Documentation + "/configuration/json.html";
+		var settings = await _apiClient.SettingsGetAsync();
+		var systemInfo =  await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = settings.App.CheckForUpdates });
+
+		configDocumentation = systemInfo.Documentation + "/configuration/json";
 	}
 }
