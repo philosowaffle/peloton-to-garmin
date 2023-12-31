@@ -5,6 +5,10 @@
 
 - [#564] Set a custom title prefix on Workouts
 
+## Fixes
+
+- [#581] Fix broken Documentation link in UI
+
 ## Docker Tags
 
 - Console

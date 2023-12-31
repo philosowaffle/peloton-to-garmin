@@ -1,9 +1,9 @@
 ﻿using Api.Contract;
+using Api.Service;
 using Common;
 using Common.Dto;
 using Common.Observe;
 using Common.Service;
-using Core.GitHub;
 using Philosowaffle.Capability.ReleaseChecks.Model;
 
 namespace Api.Services;
@@ -16,12 +16,12 @@ public interface ISystemInfoService
 
 public class SystemInfoService : ISystemInfoService
 {
-	private readonly IGitHubReleaseCheckService _gitHubService;
+	private readonly IVersionInformationService _versionInformationService;
 	private readonly ISettingsService _settingsService;
 
-	public SystemInfoService(IGitHubReleaseCheckService gitHubService, ISettingsService settingsService)
+	public SystemInfoService(ISettingsService settingsService, IVersionInformationService versionInformationService)
 	{
-		_gitHubService = gitHubService;
+		_versionInformationService = versionInformationService;
 		_settingsService = settingsService;
 	}
 
@@ -30,7 +30,9 @@ public class SystemInfoService : ISystemInfoService
 		LatestReleaseInformation? versionInformation = null;
 
 		if (request.CheckForUpdate)
-			versionInformation = await _gitHubService.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion);
+			versionInformation = await _versionInformationService.GetLatestReleaseInformationAsync();
+
+		var documentationVersion = versionInformation?.IsInstalledVersionReleaseCandidate ?? true ? "master" : $"v{Constants.AppVersion}";
 
 		var settings = await _settingsService.GetSettingsAsync();
 
@@ -52,7 +54,7 @@ public class SystemInfoService : ISystemInfoService
 			} : null,
 
 			GitHub = "https://github.com/philosowaffle/peloton-to-garmin",
-			Documentation = "https://philosowaffle.github.io/peloton-to-garmin/",
+			Documentation = $"https://philosowaffle.github.io/peloton-to-garmin/{documentationVersion}",
 			Forums = "https://github.com/philosowaffle/peloton-to-garmin/discussions",
 			Donate = "https://www.buymeacoffee.com/philosowaffle",
 			Issues = "https://github.com/philosowaffle/peloton-to-garmin/issues",

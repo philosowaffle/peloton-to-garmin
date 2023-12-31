@@ -56,6 +56,7 @@ public static class ApiStartupServices
 		services.AddSingleton<ISyncService, SyncService>();
 
 		// SYSTEM INFO
+		services.AddSingleton<IVersionInformationService, VersionInformationService>();
 		services.AddSingleton<ISystemInfoService, SystemInfoService>();
 
 		// USERS
