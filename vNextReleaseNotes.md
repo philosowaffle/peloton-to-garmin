@@ -9,6 +9,11 @@
 ## Fixes
 
 - [#581] Fix broken Documentation link in UI
+- [#580] Console Client couldn't load configuration file correctly (introduced by #564)
+
+## Docs
+
+- [#521] Called out that `\` special character is not currently supported in passwords
 
 ## Docker Tags
 
