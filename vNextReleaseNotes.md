@@ -10,6 +10,7 @@
 
 - [#581] Fix broken Documentation link in UI
 - [#580] Console Client couldn't load configuration file correctly (introduced by #564)
+- [#588] Fix Annual Challenge page still trying to load 2023
 
 ## Docs
 

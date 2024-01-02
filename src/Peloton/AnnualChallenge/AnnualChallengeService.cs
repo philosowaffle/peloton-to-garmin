@@ -12,7 +12,7 @@ public interface IAnnualChallengeService
 
 public class AnnualChallengeService : IAnnualChallengeService
 {
-	private const string AnnualChallengeId = "66863eacd9d04447979d5dba7bf0e766";
+	private const string AnnualChallengeId = "5101dfaa50d441d682a432acd313c706";
 
 	private IPelotonApi _pelotonApi;
 
@@ -30,7 +30,7 @@ public class AnnualChallengeService : IAnnualChallengeService
 		if (joinedChallenges == null || joinedChallenges.Challenges.Length <= 0)
 			return result;
 
-		var annualChallenge = joinedChallenges.Challenges.FirstOrDefault(c => c.Challenge_Summary.Id == AnnualChallengeId || c.Challenge_Summary.Title == "The Annual 2023");
+		var annualChallenge = joinedChallenges.Challenges.FirstOrDefault(c => c.Challenge_Summary.Id == AnnualChallengeId || c.Challenge_Summary.Title.StartsWith("The Annual"));
 		if (annualChallenge is null)
 			return result;
 
