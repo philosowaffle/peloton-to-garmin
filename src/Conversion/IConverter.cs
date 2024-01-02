@@ -52,7 +52,7 @@ namespace Conversion
 			Name = "TacxTrainingAppWin", // Max 20 Chars
 			ProductID = GarminProduct.TacxTrainingAppWin,
 			UnitId = 1,
-			ManufacturerId = 1, // Garmin
+			ManufacturerId = 89, // Tacx
 			Version = new GarminDeviceVersion()
 			{
 				VersionMajor = 1,
