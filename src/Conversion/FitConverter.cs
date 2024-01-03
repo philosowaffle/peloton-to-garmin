@@ -129,7 +129,7 @@ namespace Conversion
 			AddMetrics(messages, workoutSamples, sport, startTime);
 
 			var workoutMesg = new WorkoutMesg();
-			workoutMesg.SetWktName(title.Replace(WorkoutHelper.SpaceSeparator, ' '));
+			workoutMesg.SetWktName(title.Replace(WorkoutHelper.SpaceSeparator, WorkoutHelper.Space));
 			workoutMesg.SetCapabilities(32);
 			workoutMesg.SetSport(sport);
 			workoutMesg.SetSubSport(subSport);

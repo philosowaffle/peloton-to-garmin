@@ -64,7 +64,7 @@ public class Format
 	public bool IncludeTimeInHRZones { get; set; }
 	public bool IncludeTimeInPowerZones { get; set; }
 	public string DeviceInfoPath { get; set; }
-	public string? WorkoutTitlePrefix { get; set; }
+	public string? WorkoutTitleTemplate { get; set; } = "{{PelotonWorkoutTitle}} with {{PelotonInstructorName}}";
 	public Cycling Cycling { get; set; }
 	public Running Running { get; set; }
 	public Rowing Rowing { get; init; }

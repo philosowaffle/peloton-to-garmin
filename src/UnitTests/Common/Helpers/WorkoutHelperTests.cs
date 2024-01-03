@@ -90,24 +90,24 @@ public class WorkoutHelperTests
 		title.Should().Be("My_Title_with_Instructor");
 	}
 
-	[Test]
-	public void GetTitle_With_Prefix_ShouldReturn_Title_With_Prefix()
-	{
-		var format = new Format()
-		{
-			WorkoutTitlePrefix = "Peloton - "
-		};
+	//[Test]
+	//public void GetTitle_With_Prefix_ShouldReturn_Title_With_Prefix()
+	//{
+	//	var format = new Format()
+	//	{
+	//		WorkoutTitlePrefix = "Peloton - "
+	//	};
 
-		var workout = new Workout()
-		{
-			Ride = new Ride()
-			{
-				Title = "My Title",
-				Instructor = new Instructor() { Name = "Instructor" }
-			}
-		};
+	//	var workout = new Workout()
+	//	{
+	//		Ride = new Ride()
+	//		{
+	//			Title = "My Title",
+	//			Instructor = new Instructor() { Name = "Instructor" }
+	//		}
+	//	};
 
-		var title = WorkoutHelper.GetTitle(workout, format);
-		title.Should().Be("Peloton_-_My_Title_with_Instructor");
-	}
+	//	var title = WorkoutHelper.GetTitle(workout, format);
+	//	title.Should().Be("Peloton_-_My_Title_with_Instructor");
+	//}
 }

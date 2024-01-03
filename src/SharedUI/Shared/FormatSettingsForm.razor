@@ -9,7 +9,7 @@
 			<HxSwitch Text="Convert to JSON" @bind-Value="formatSettings.Json" />
 		</div>
 		<div class="col-md-4">
-			<HxInputText Label="Workout Title Prefix" @bind-Value="formatSettings.WorkoutTitlePrefix" />
+			<HxInputText Label="Workout Title Template" @bind-Value="formatSettings.WorkoutTitleTemplate" @BindEvent="updateExample" />
 		</div>
 		<div class="col-md-8"></div>
 		<div class="col-md-4">
@@ -58,7 +58,8 @@
 @code {
 	private static ICollection<PreferredLapType> lapTypes = Enum.GetValues(typeof(PreferredLapType)).Cast<PreferredLapType>().ToList();
 
-    private Format formatSettings;
+	private Format formatSettings;
+	private string example = "test";
 
 	public FormatSettingsForm()
 	{
