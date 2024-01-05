@@ -812,6 +812,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#workout-title-templating" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workout Title Templating
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1199,6 +1208,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#workout-title-templating" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workout Title Templating
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1520,7 +1538,7 @@
 <span class="w">    </span><span class="nt">&quot;Strength&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;DefaultSecondsPerRep&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;WorkoutTitlePrefix&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Peloton - &quot;</span>
+<span class="w">    </span><span class="nt">&quot;WorkoutTitleTemplate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;{{PelotonWorkoutTitle}} with {{PelotonInstructorName}}&quot;</span>
 <span class="w">  </span><span class="p">}</span>
 </code></pre></div>
 <table>
@@ -1640,17 +1658,21 @@
 <td style="text-align: left;">For exercises that are done for time instead of reps, P2G can estimate how many reps you completed using this value. Ex. If <code>DefaultSecondsPerRep=3</code> and you do Curls for 15s, P2G will estimate you completed 5 reps.</td>
 </tr>
 <tr>
-<td style="text-align: left;">WorkoutTitlePrefix</td>
+<td style="text-align: left;">WorkoutTitleTemplate</td>
 <td style="text-align: left;">no</td>
-<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;"><code>{{PelotonWorkoutTitle}} with {{PelotonInstructorName}}</code></td>
 <td style="text-align: left;"><code>Conversion Tab</code></td>
-<td style="text-align: left;">A Title Prefix to apply to all workouts.  By default applies no prefix.</td>
+<td style="text-align: left;">Allows you to customize how your workout title will appear in Garmin Connect using <a href="https://github.com/Handlebars-Net/Handlebars.Net">Handlebars templates</a>. <a href="#workout-title-templating">Read More...</a></td>
 </tr>
 </tbody>
 </table>
 <h3 id="understanding-custom-zones">Understanding Custom Zones</h3>
-<p>Garmin Connect expects that users have a registered device and they expect users have set up their HR and Power Zones on that device. However, this presents a problem if you either A) do not have a device capable of tracking Power or B) do not have a Garmin device at all.</p>
-<p>The most common scenario for Peloton users is A, where they do not own a Power capable Garmin device and therefore are not able to configure their Power Zones in Garmin Connect.  If you do not have Power or HR zones configured in Garmin Connect then you are not able to view accurate <code>Time In Zones</code> charts for a given workout.</p>
+<p>Garmin Connect expects that users have a registered device and they expect users have set up their HR and Power Zones on that device. However, this presents a problem if you either:</p>
+<ul>
+<li>A) do not have a device capable of tracking Power</li>
+<li>B) do not have a Garmin device at all.</li>
+</ul>
+<p>The most common scenario for Peloton users is scenario <code>A</code>, where they do not own a Power capable Garmin device and therefore are not able to configure their Power Zones in Garmin Connect.  If you do not have Power or HR zones configured in Garmin Connect then you are not able to view accurate <code>Time In Zones</code> charts for a given workout.</p>
 <p>P2G provides a work around for this by optionally enriching the workout with the <code>Time In Zones</code> data with one caveat: the chart will not display the range value for the zone.</p>
 <p><img alt="Example Cycling Workout" src="https://github.com/philosowaffle/peloton-to-garmin/blob/master/images/missing_zone_values.png?raw=true" title="Example Missing Zone Values" /></p>
 <p>This is only available when generating and uploading the <a href="#garmin-config">FIT</a> format.</p>
@@ -1691,6 +1713,13 @@
 </tr>
 </tbody>
 </table>
+<h3 id="workout-title-templating">Workout Title Templating</h3>
+<p>Some characters are not allowed to be used in the workout titles. If you use these characters in your configuration they will automatically be replaced with <code>-</code>.  Additionally, Garmin has a limit on how long a title will be. If the title exceeds this limit (~45 characters) then the title will be truncated.</p>
+<p>The below data fields are available for use in the template:</p>
+<ul>
+<li><code>PelotonWorkoutTitle</code> - Peloton provides this usually in the form of "10 min HITT Ride"</li>
+<li><code>PelotonInstructorName</code> - Peloton provides this as the full instructors name: "Ally Love"</li>
+</ul>
 <h2 id="peloton-config">Peloton Config</h2>
 <p>This section provides settings related to fetching workouts from Peloton.</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&quot;Peloton&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
