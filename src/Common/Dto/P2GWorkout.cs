@@ -1,6 +1,5 @@
 ﻿using Common.Dto.Peloton;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Common.Dto
 {

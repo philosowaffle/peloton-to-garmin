@@ -75,7 +75,7 @@ public class WorkoutHelperTests
 	}
 
 	[Test]
-	public void GetTitle_NullPrefix_ShouldReturn_EmptyPrefix()
+	public void GetTitle_NullTemplate_ShouldReturn_DefaultTemplate()
 	{
 		var workout = new Workout()
 		{
@@ -91,11 +91,11 @@ public class WorkoutHelperTests
 	}
 
 	[Test]
-	public void GetTitle_With_Prefix_ShouldReturn_Title_With_Prefix()
+	public void GetTitle_With_Template_ShouldReturn_TemplateAppliedToTitle()
 	{
 		var format = new Format()
 		{
-			WorkoutTitlePrefix = "Peloton - "
+			WorkoutTitleTemplate = "{{PelotonInstructorName}} - {{PelotonWorkoutTitle}}"
 		};
 
 		var workout = new Workout()
@@ -108,6 +108,6 @@ public class WorkoutHelperTests
 		};
 
 		var title = WorkoutHelper.GetTitle(workout, format);
-		title.Should().Be("Peloton_-_My_Title_with_Instructor");
+		title.Should().Be("Instructor_-_My_Title");
 	}
 }

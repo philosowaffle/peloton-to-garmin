@@ -3,7 +3,7 @@
 
 ## Features
 
-- [#564] Set a custom title prefix on Workouts
+- [#564] [#591] Set a custom title on Workouts using templating
 - [#559] Ability to exclude Outdoor Cycling workouts from sycning
 
 ## Fixes
