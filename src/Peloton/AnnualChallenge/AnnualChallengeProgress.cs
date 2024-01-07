@@ -19,6 +19,21 @@ public record Tier
 	public bool IsOnTrackToEarndByEndOfYear { get; set; }
 	public double MinutesBehindPace { get; set; }
 	public double MinutesAheadOfPace { get; set; }
+
+	/// <summary>
+	/// Assuming working evenly throughout the whole year, this is the amount of time to plan to spend per day.
+	/// </summary>
 	public double MinutesNeededPerDay { get; set; }
+	/// <summary>
+	/// Assuming working evenly throughout the whole year, this is the amount of time to plan to spend per week.
+	/// </summary>
 	public double MinutesNeededPerWeek { get; set; }
+	/// <summary>
+	/// Assuming working evenly throughout the remainder of the year, this is the amount of time to plan to spend per day. 
+	/// </summary>
+	public double MinutesNeededPerDayToFinishOnTime { get; set; }
+	/// <summary>
+	/// Assuming working evenly throughout the remainder of the year, this is the amount of time to plan to spend per week.
+	/// </summary>
+	public double MinutesNeededPerWeekToFinishOnTime { get; set; }
 }

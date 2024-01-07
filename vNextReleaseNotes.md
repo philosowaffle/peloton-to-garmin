@@ -5,6 +5,7 @@
 
 - [#564] [#591] Set a custom title on Workouts using templating
 - [#559] Ability to exclude Outdoor Cycling workouts from sycning
+- [#600] Annual Challenge page now let's you know how many minutes you will need per day/week in order to meet the goal by the end of the year (based on the remaining time left)
 
 ## Fixes
 
