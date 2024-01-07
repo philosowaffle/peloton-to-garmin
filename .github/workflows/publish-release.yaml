@@ -82,7 +82,7 @@ jobs:
       - name: Create Release and Upload Artifacts
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "${{ github.workspace }}/dist/console_win_${{ github.event.inputs.version }}.zip,${{ github.workspace }}/dist/ui_win_${{ github.event.inputs.version }}.zip"
+          artifacts: "${{ github.workspace }}/dist/ui_win_${{ github.event.inputs.version }}.zip"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: v${{ github.event.inputs.version }}
           allowUpdates: true
