@@ -13,7 +13,7 @@ inputs:
 outputs:
   artifact:
     description: 'Path to the published artifact'
-    value: ${{ github.workspace }}/dist/${{ inputs.os }}-ui
+    value: ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os }}
 runs:
   using: "composite"
   steps:
