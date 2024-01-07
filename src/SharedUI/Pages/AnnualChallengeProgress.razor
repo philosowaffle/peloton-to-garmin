@@ -19,11 +19,12 @@
                     @if (!tier.HasEarned)
                     {
                         <ul style="list-style: none; padding-left: 0;">
-                        <li>Badge requires averaging <b>@Math.Round(tier.MinutesNeededPerDay, 2)</b> min/day or <b>@Math.Round(tier.MinutesNeededPerWeek, 2)</b> min/week.</li>
-                            @if (!tier.IsOnTrackToEarndByEndOfYear)
-                            {
-                                <li>You are <b>@Math.Round(tier.MinutesBehindPace, 2)</b> minutes behind pace.</li>
-                            }
+                            <li>Badge requires averaging <b>@Math.Round(tier.MinutesNeededPerDay, 2)</b> min/day or <b>@Math.Round(tier.MinutesNeededPerWeek, 2)</b> min/week.</li>
+                                @if (!tier.IsOnTrackToEarndByEndOfYear)
+                                {
+                                    <li>You are <b>@Math.Round(tier.MinutesBehindPace, 2)</b> minutes behind pace.</li>
+                                }
+                            <li>You need <b>@Math.Round(tier.MinutesNeededPerDayToFinishOnTime, 2)</b> min/day or <b>@Math.Round(tier.MinutesNeededPerWeekToFinishOnTime, 2)</b> min/week in order to finish in time.</li>
                         </ul>
                     }
                 

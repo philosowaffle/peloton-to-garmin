@@ -18,6 +18,8 @@ public static class AnnualChallengeMapper
 			MinutesAheadOfPace = t.MinutesAheadOfPace,
 			MinutesNeededPerDay = t.MinutesNeededPerDay,
 			MinutesNeededPerWeek = t.MinutesNeededPerWeek,
+			MinutesNeededPerDayToFinishOnTime = t.MinutesNeededPerDayToFinishOnTime,
+			MinutesNeededPerWeekToFinishOnTime = t.MinutesNeededPerWeekToFinishOnTime
 		};
 	}
 }

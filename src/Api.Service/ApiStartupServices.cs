@@ -41,6 +41,7 @@ public static class ApiStartupServices
 		// PELOTON
 		services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
 		services.AddSingleton<IPelotonService, PelotonService>();
+		services.AddSingleton<IPelotonAnnualChallengeService, PelotonAnnualChallengeService>();
 		services.AddSingleton<IAnnualChallengeService, AnnualChallengeService>();
 
 		// RELEASE CHECKS
