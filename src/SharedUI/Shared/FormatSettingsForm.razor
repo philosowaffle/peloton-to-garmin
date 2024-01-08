@@ -1,0 +1,220 @@
+﻿@using HandlebarsDotNet;
+@inject IApiClient _apiClient
+@inject IHxMessengerService _toaster;
+
+<EditForm Model="@formatSettings">
+	<div class="row g-3">
+		<div class="col-md-12">
+			<HxCard>
+				<HeaderTemplate>
+					Format Types 
+					<HxPopover 
+						Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus" 
+						Title="<b>Convert to various Format Types</b>"
+						Content="@FormatSettingsDocumentation"
+						Html="true">
+						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+					</HxPopover>
+				</HeaderTemplate>
+				<BodyTemplate>
+					<HxSwitch Text="Convert to FIT" @bind-Value="formatSettings.Fit" />
+					<HxSwitch Text="Convert to TCX" @bind-Value="formatSettings.Tcx" />
+					<HxSwitch Text="Convert to JSON" @bind-Value="formatSettings.Json" />
+				</BodyTemplate>
+			</HxCard>
+		</div>
+	</div>
+	<br />
+	<div class="row g-3">
+		<div class="col-md-12">
+			<HxCard>
+				<HeaderTemplate>
+					Workout Title
+					<HxPopover 
+						Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus" 
+						Title="<b>Workout Title Templating</b>"
+						Content="@WorkoutTitleDocumentation"
+						Html="true">
+						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+					</HxPopover>
+				</HeaderTemplate>
+				<BodyTemplate>
+					<HxInputText Hint="@workoutTemplateExample" ValueChanged="ValueChanged" ValueExpression="() => formatSettings.WorkoutTitleTemplate" Value="@formatSettings.WorkoutTitleTemplate" />
+				</BodyTemplate>
+			</HxCard>
+		</div>
+	</div>
+	<br />
+	<div class="row g-3">
+		<div class="col-md-12">
+			<HxCard>
+				<HeaderTemplate>
+					Lap Types
+					<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+							   Title="<b>Customzing Lap Types</b>"
+							   Content="@LapTypesDocumentation"
+							   Html="true">
+						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+					</HxPopover>
+				</HeaderTemplate>
+				<BodyTemplate>
+					<div class="row">
+                        <div class="col-md-4">
+                            <HxSelect Label="Cycling Lap Type"
+                                      Data="@lapTypes"
+                                      Nullable="false"
+                                      NullDataText="Loading info..."
+                            @bind-Value="formatSettings.Cycling.PreferredLapType" />
+                        </div>
+                        <div class="col-md-4">
+                            <HxSelect Label="Running Lap Type"
+                                      Data="@lapTypes"
+                                      Nullable="false"
+                                      NullDataText="Loading info..."
+                            @bind-Value="formatSettings.Running.PreferredLapType" />
+                        </div>
+                        <div class="col-md-4">
+                            <HxSelect Label="Rowing Lap Type"
+                                      Data="@lapTypes"
+                                      Nullable="false"
+                                      NullDataText="Loading info..."
+                            @bind-Value="formatSettings.Rowing.PreferredLapType" />
+                        </div>
+					</div>
+				</BodyTemplate>
+			</HxCard>
+		</div>
+	</div>
+	<br />
+	<div class="row g-3">
+		<div class="col-md-12">
+			<HxCard>
+				<HeaderTemplate>
+					Strength
+					<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+							   Title="<b>Strength Workouts</b>"
+							   Content="@StrengthDocumentation"
+							   Html="true">
+						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+					</HxPopover>
+				</HeaderTemplate>
+				<BodyTemplate>
+					<HxInputNumber Label="Estimated seconds per rep" TValue="int" @bind-Value="formatSettings.Strength.DefaultSecondsPerRep" Hint="Example: A value of 3 means 1 rep will be counted every 3 seconds.  A 30 second exercise would yield 10 reps." />
+				</BodyTemplate>
+			</HxCard>
+		</div>
+	</div>
+	<br />
+	<div class="row gy-5">
+
+		<div class="md-col-12">
+			<HxAccordion>
+				<HxAccordionItem>
+					<HeaderTemplate>
+						Advanced
+						<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+								   Title="<b>Advanced Settings</b>"
+								   Content="@AdvancedDocumentation"
+								   Html="true">
+							<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+						</HxPopover>
+					</HeaderTemplate>
+					<BodyTemplate>
+						<HxInputText Label="Path to custom deviceInfo.xml file" @bind-Value="formatSettings.DeviceInfoPath" /><br />
+						<HxSwitch Text="Include Time In HR Zones" @bind-Value="formatSettings.IncludeTimeInHRZones" />
+						<HxSwitch Text="Include Time in Power Zones" @bind-Value="formatSettings.IncludeTimeInPowerZones" />
+						<HxSwitch Text="Save a backup copy of Converted files to output dir" @bind-Value="formatSettings.SaveLocalCopy" />
+					</BodyTemplate>
+				</HxAccordionItem>
+			</HxAccordion>
+		</div>
+	</div>
+	<br />
+	<HxSubmit Color="ThemeColor.Primary" OnClick="SaveFormatSettings">Save</HxSubmit>
+</EditForm>
+
+@code {
+	private static ICollection<PreferredLapType> lapTypes = Enum.GetValues(typeof(PreferredLapType)).Cast<PreferredLapType>().ToList();
+
+	private Format formatSettings;
+
+	private string workoutTemplateExample;
+	private string configDocumentation;
+
+	public FormatSettingsForm()
+	{
+		var settings = new SettingsGetResponse();
+		formatSettings = settings.Format;
+
+		workoutTemplateExample = string.Empty;
+		configDocumentation = string.Empty;
+	}
+
+	protected override Task OnInitializedAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(FormatSettingsForm)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+		return LoadDataAsync();
+	}
+
+	private async Task LoadDataAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(FormatSettingsForm)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
+
+		var settings = await _apiClient.SettingsGetAsync();
+		formatSettings = settings.Format;
+		ValueChanged(formatSettings!.WorkoutTitleTemplate);
+
+		var systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = settings.App.CheckForUpdates });
+		configDocumentation = systemInfo.Documentation + "/configuration/json/#format-config";
+	}
+
+	protected async Task SaveFormatSettings()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(FormatSettingsForm)}.{nameof(SaveFormatSettings)}", kind: ActivityKind.Client);
+
+		_toaster.Clear();
+		try
+		{
+			formatSettings = await _apiClient.SettingsFormatPostAsync(formatSettings);
+			_toaster.AddInformation("Format Settings Saved!");
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to save Format Settings - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to save Format settings.", e);
+		}
+	}
+
+	protected void ValueChanged(string newValue)
+	{
+		formatSettings.WorkoutTitleTemplate = newValue;
+
+		var template = formatSettings.WorkoutTitleTemplate;
+		var sampleData = new
+		{
+			PelotonWorkoutTitle = "15 minute HIIT Ride",
+			PelotonInstructorName = "Ally Love"
+		};
+
+		var compiledTemplate = Handlebars.Compile(template);
+		var titleExample = compiledTemplate(sampleData);
+
+		foreach (var c in Path.GetInvalidFileNameChars())
+		{
+			titleExample = titleExample.Replace(c, '-');
+		}
+
+		workoutTemplateExample = $"Example: {titleExample}";
+	}
+
+	private string FormatSettingsDocumentation => $"<ul><li>FIT is the recommended format</li><li>FIT and TCX are the only types that can be uploaded to Garmin</li><li>If you enable JSON, you'll also need to enable saving a local copy in the Advanced settings below.</li></ul><br /><a href='{configDocumentation}'>Documentation</a><br ?><small>(click the <b>?</b> to pin this window)</small>";
+	private string WorkoutTitleDocumentation => $"Allows you to customize how your workout title will appear in Garmin Connect using <a href='https://github.com/Handlebars-Net/Handlebars.Net'>Handlebars templates</a>. Some characters are not allowed, these characters will automatically be replaced with `-`.  Below are the data fields you can use in the template:<br /><br /> <ul><li>PelotonWorkoutTitle</li><li>PelotonInstructorName</li></ul><br /><a href='{configDocumentation}'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
+	private string LapTypesDocumentation => $"Lap type defines how/when P2G will create a new Lap within a workout.  This can be customized per Cardio type.  To read more about each Lap Type please see the documentation.<br /><br /><a href='{configDocumentation}'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
+	private string StrengthDocumentation => $"Some Strength workouts have you do an exercise for time rather than for a specific number of reps. This setting allows you to customize how P2G should estimate the number of reps that were done in a time based exercise.<br /><br /><a href='{configDocumentation}'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
+	private string AdvancedDocumentation => $"Most users should not need to modify these settings.  These settings should only be modified if you are trying to solve a specific problem.  Please be sure you've read the documentation about these before modifying.<br /><br /><a href='{configDocumentation}'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
+}

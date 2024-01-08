@@ -26,6 +26,7 @@ public class P2GWorkoutTests
 				case FitnessDiscipline.Cardio: workoutType.Should().Be(WorkoutType.Cardio); break;
 				case FitnessDiscipline.Caesar: workoutType.Should().Be(WorkoutType.Rowing); break;
 				case FitnessDiscipline.Circuit: workoutType.Should().Be(WorkoutType.Circuit); break;
+				case FitnessDiscipline.Cycling when isOutdoor: workoutType.Should().Be(WorkoutType.OutdoorCycling); break;
 				case FitnessDiscipline.Cycling: workoutType.Should().Be(WorkoutType.Cycling); break;
 				case FitnessDiscipline.Meditation: workoutType.Should().Be(WorkoutType.Meditation); break;
 				case FitnessDiscipline.Strength: workoutType.Should().Be(WorkoutType.Strength); break;

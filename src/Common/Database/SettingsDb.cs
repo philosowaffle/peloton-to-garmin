@@ -1,4 +1,5 @@
-﻿using Common.Helpers;
+﻿using Common.Dto;
+using Common.Helpers;
 using Common.Observe;
 using JsonFlatFileDataStore;
 using Prometheus;
@@ -29,6 +30,23 @@ namespace Common.Database
 		public SettingsDb(IFileHandling fileHandler) : base("Settings", fileHandler)
 		{
 			_db = new DataStore(DbPath);
+			Init();
+		}
+
+		private void Init()
+		{
+			try
+			{
+				var settings = _db.GetItem<Settings>("1");
+			}
+			catch (KeyNotFoundException)
+			{
+				var success = _db.InsertItem("1", _defaultSettings);
+				if (!success)
+				{
+					_logger.Error($"Failed to init default Settings to Db for default user.");
+				}
+			}
 		}
 
 		public Settings GetLegacySettings()
@@ -53,7 +71,7 @@ namespace Common.Database
 			}
 		}
 
-		public async Task<Settings> GetSettingsAsync(int userId)
+		public Task<Settings> GetSettingsAsync(int userId)
 		{
 			using var metrics = DbMetrics.DbActionDuration
 									.WithLabels("get", DbName)
@@ -67,20 +85,7 @@ namespace Common.Database
 				settings.Peloton.Decrypt();
 				settings.Garmin.Decrypt();
 
-				return settings;
-			}
-			catch (KeyNotFoundException k)
-			{
-				_logger.Verbose(k, $"Settings key not found in DB for user {userId}. Creating default Settings.");
-
-				var success = await _db.InsertItemAsync(userId.ToString(), _defaultSettings);
-				if (!success)
-				{
-					_logger.Error($"Failed to save default Settings to Db for user {userId}");
-					throw;
-				}
-
-				return _defaultSettings;
+				return Task.FromResult(settings);
 			}
 			catch (Exception e)
 			{

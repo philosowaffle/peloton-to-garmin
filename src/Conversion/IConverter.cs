@@ -52,7 +52,7 @@ namespace Conversion
 			Name = "TacxTrainingAppWin", // Max 20 Chars
 			ProductID = GarminProduct.TacxTrainingAppWin,
 			UnitId = 1,
-			ManufacturerId = 1, // Garmin
+			ManufacturerId = 89, // Tacx
 			Version = new GarminDeviceVersion()
 			{
 				VersionMajor = 1,
@@ -113,7 +113,7 @@ namespace Conversion
 
 			// call internal convert method
 			T converted = default;
-			var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout);
+			var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout, settings.Format);
 			try
 			{
 				converted = await ConvertInternalAsync(workoutData, settings);
@@ -194,7 +194,7 @@ namespace Conversion
 
 				var backupDest = Path.Join(localSaveDir, $"{workoutTitle}.{formatString}");
 				_fileHandler.Copy(sourcePath, backupDest, overwrite: true);
-				_logger.Information("[@Format] Backed up file {@File}", Format, backupDest);
+				_logger.Information("[{@Format}] Backed up file {@File}", Format, backupDest);
 			}
 			catch (Exception e)
 			{

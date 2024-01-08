@@ -16,5 +16,6 @@
 		Yoga = 11,
 		Meditation = 12,
 		Rowing = 13,
+		OutdoorCycling = 14,
 	}
 }

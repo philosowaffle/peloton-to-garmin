@@ -1,6 +1,8 @@
-﻿using Common;
-using Common.Dto.Api;
-using Common.Helpers;
+﻿using Api.Contract;
+using Api.Service;
+using Api.Service.Helpers;
+using Common;
+using Common.Dto;
 using Common.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,11 +16,13 @@ public class SettingsController : Controller
 {
 	private readonly ISettingsService _settingsService;
 	private readonly IFileHandling _fileHandler;
+	private readonly ISettingsUpdaterService _settingsUpdaterService;
 
-	public SettingsController(ISettingsService settingsService, IFileHandling fileHandler)
+	public SettingsController(ISettingsService settingsService, IFileHandling fileHandler, ISettingsUpdaterService settingsUpdaterService)
 	{
 		_settingsService = settingsService;
 		_fileHandler = fileHandler;
+		_settingsUpdaterService = settingsUpdaterService;
 	}
 
 	/// <summary>
@@ -59,29 +63,14 @@ public class SettingsController : Controller
 	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<App>> AppPost([FromBody] App updatedAppSettings)
 	{
-		if (updatedAppSettings.CheckIsNull("PostRequest", out var result))
-			return result;
-
-		if (!string.IsNullOrWhiteSpace(updatedAppSettings.OutputDirectory)
-			&& !_fileHandler.DirExists(updatedAppSettings.OutputDirectory))
-			return new BadRequestObjectResult(new ErrorResponse($"Output Directory path is either not accessible or does not exist."));
-
-		if (updatedAppSettings.EnablePolling 
-			&& updatedAppSettings.PollingIntervalSeconds.CheckIsLessThanOrEqualTo(0, "PollingIntervalSeconds", out result))
-			return result;
-
 		try
 		{
-			var settings = await _settingsService.GetSettingsAsync();
-			settings.App = updatedAppSettings;
+			var result = await _settingsUpdaterService.UpdateAppSettingsAsync(updatedAppSettings);
 
-			if (settings.Garmin.TwoStepVerificationEnabled && settings.App.EnablePolling)
-				return new BadRequestObjectResult(new ErrorResponse($"Automatic Syncing cannot be enabled when Garmin TwoStepVerification is enabled."));
+			if (result.IsErrored())
+				return result.GetResultForError();
 
-			await _settingsService.UpdateSettingsAsync(settings);
-			var updatedSettings = await _settingsService.GetSettingsAsync();
-
-			return Ok(updatedSettings.App);
+			return Ok(result.Result);
 		} catch (Exception e)
 		{
 			return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));
@@ -101,22 +90,14 @@ public class SettingsController : Controller
 	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<Format>> FormatPost([FromBody] Format updatedFormatSettings)
 	{
-		if (updatedFormatSettings.CheckIsNull("PostRequest", out var result))
-			return result;
-
-		if (!string.IsNullOrWhiteSpace(updatedFormatSettings.DeviceInfoPath)
-			&& !_fileHandler.FileExists(updatedFormatSettings.DeviceInfoPath))
-			return new BadRequestObjectResult(new ErrorResponse($"DeviceInfo path is either not accessible or does not exist."));
-
 		try
 		{
-			var settings = await _settingsService.GetSettingsAsync();
-			settings.Format = updatedFormatSettings;
+			var result = await _settingsUpdaterService.UpdateFormatSettingsAsync(updatedFormatSettings);
 
-			await _settingsService.UpdateSettingsAsync(settings);
-			var updatedSettings = await _settingsService.GetSettingsAsync();
+			if (result.IsErrored())
+				return result.GetResultForError();
 
-			return Ok(updatedSettings.Format);
+			return Ok(result.Result);
 		} catch (Exception e)
 		{
 			return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));
@@ -136,23 +117,14 @@ public class SettingsController : Controller
 	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<SettingsPelotonGetResponse>> PelotonPost([FromBody] SettingsPelotonPostRequest updatedPelotonSettings)
 	{
-		if (updatedPelotonSettings.CheckIsNull("PostRequest", out var result))
-			return result;
-
-		if (updatedPelotonSettings.NumWorkoutsToDownload.CheckIsLessThanOrEqualTo(0, "NumWorkoutsToDownload", out result))
-			return result;
-
 		try
 		{
-			var settings = await _settingsService.GetSettingsAsync();
-			settings.Peloton = updatedPelotonSettings.Map();
+			var result = await _settingsUpdaterService.UpdatePelotonSettingsAsync(updatedPelotonSettings);
 
-			await _settingsService.UpdateSettingsAsync(settings);
-			var updatedSettings = await _settingsService.GetSettingsAsync();
+			if (result.IsErrored())
+				return result.GetResultForError();
 
-			var settingsResponse = new SettingsGetResponse(updatedSettings);
-
-			return Ok(settingsResponse.Peloton);
+			return Ok(result.Result);
 		} catch (Exception e)
 		{
 			return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));
@@ -172,23 +144,14 @@ public class SettingsController : Controller
 	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<SettingsGarminGetResponse>> GarminPost([FromBody] SettingsGarminPostRequest updatedGarminSettings)
 	{
-		if (updatedGarminSettings.CheckIsNull("PostRequest", out var result))
-			return result;
-
 		try
 		{
-			var settings = await _settingsService.GetSettingsAsync();
-			settings.Garmin = updatedGarminSettings.Map();
+			var result = await _settingsUpdaterService.UpdateGarminSettingsAsync(updatedGarminSettings);
 
-			if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled && settings.App.EnablePolling)
-				return new BadRequestObjectResult(new ErrorResponse($"Garmin TwoStepVerification cannot be enabled while Automatic Syncing is enabled. Please disable Automatic Syncing first."));
+			if (result.IsErrored())
+				return result.GetResultForError();
 
-			await _settingsService.UpdateSettingsAsync(settings);
-			var updatedSettings = await _settingsService.GetSettingsAsync();
-
-			var settingsResponse = new SettingsGetResponse(updatedSettings);
-
-			return Ok(settingsResponse.Garmin);
+			return Ok(result.Result);
 		} catch (Exception e)
 		{
 			return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));

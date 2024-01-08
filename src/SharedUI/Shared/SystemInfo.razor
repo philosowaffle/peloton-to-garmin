@@ -1,0 +1,67 @@
+﻿@inherits TracingComponentBase
+@inject IApiClient _apiClient
+
+<div class="row mb-3">
+    <label for="version" class="col-sm-2 col-form-label bold-label">Version:</label>
+    <div class="col-sm-10">
+        @systemInfo.Version @if (systemInfo.NewerVersionAvailable.GetValueOrDefault())
+        {
+            <p><small> (newer version available: @systemInfo.LatestVersionInformation?.LatestVersion)</small></p>
+        }
+    </div>
+
+    <label for="version" class="col-sm-2 col-form-label bold-label">OS:</label>
+    <div class="col-sm-10">
+        @systemInfo.OperatingSystem
+    </div>
+
+    <label for="version" class="col-sm-2 col-form-label bold-label">OS Version:</label>
+    <div class="col-sm-10">
+        @systemInfo.OperatingSystemVersion
+    </div>
+
+    <label for="version" class="col-sm-2 col-form-label bold-label">RunTime Version:</label>
+    <div class="col-sm-10">
+        @systemInfo.RunTimeVersion
+    </div>
+
+    <label for="outputDir" class="col-sm-2 col-form-label bold-label">Output Directory:</label>
+    <div class="col-sm-10">
+        @systemInfo.OutputDirectory
+    </div>
+
+    <label for="tempDir" class="col-sm-2 col-form-label bold-label">Temp Directory:</label>
+    <div class="col-sm-10">
+        @systemInfo.TempDirectory
+    </div>
+</div>
+
+
+<ul class="list-group list-group-flush">
+    @if (!string.IsNullOrWhiteSpace(systemInfo.Api))
+    {
+        <li class="list-group-item"><a href="@systemInfo.Api" target="_blank">Api</a></li>
+    }
+    <li class="list-group-item"><a href="@systemInfo.GitHub" target="_blank">Website</a></li>
+    <li class="list-group-item"><a href="@systemInfo.Documentation" target="_blank">Documentation</a></li>
+    <li class="list-group-item"><a href="@systemInfo.Forums" target="_blank">Forums</a></li>
+    <li class="list-group-item"><a href="@systemInfo.Issues" target="_blank">Report an Issue</a></li>
+    <li class="list-group-item"><a href="@systemInfo.Donate" target="_blank">Donate</a></li>
+</ul>
+
+@code {
+    private SystemInfoGetResponse systemInfo;
+
+    public SystemInfo() : base(nameof(SystemInfo))
+    {
+        systemInfo = new SystemInfoGetResponse();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var tracing = Tracing.ClientTrace($"{nameof(SystemInfo)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+
+        var settings = await _apiClient.SettingsGetAsync();
+        systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = settings.App.CheckForUpdates });
+    }
+}

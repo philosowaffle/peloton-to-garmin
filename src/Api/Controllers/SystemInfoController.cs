@@ -1,9 +1,7 @@
-﻿using Common;
-using Common.Dto;
-using Common.Dto.Api;
-using Core.GitHub;
+﻿using Api.Contract;
+using Api.Services;
+using Api.Service.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Philosowaffle.Capability.ReleaseChecks.Model;
 
 namespace WebApp.Controllers
 {
@@ -13,11 +11,11 @@ namespace WebApp.Controllers
 	[Consumes("application/json")]
 	public class SystemInfoController : Controller
 	{
-		private readonly IGitHubReleaseCheckService _gitHubService;
+		private readonly ISystemInfoService _systemInfoService;
 
-		public SystemInfoController(IGitHubReleaseCheckService gitHubService) 
+		public SystemInfoController(ISystemInfoService systemInforService) 
 		{
-			_gitHubService = gitHubService;
+			_systemInfoService = systemInforService;
 		}
 
 		/// <summary>
@@ -28,35 +26,29 @@ namespace WebApp.Controllers
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		public async Task<ActionResult<SystemInfoGetResponse>> GetAsync([FromQuery]SystemInfoGetRequest request)
 		{
-			LatestReleaseInformation? versionInformation = null;
+			var result = await _systemInfoService.GetAsync(request, this.Request.Scheme, this.Request.Host.ToString());
+			return Ok(result);
+		}
 
-			if (request.CheckForUpdate)
-				versionInformation = await _gitHubService.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion);
-
-			return new SystemInfoGetResponse()
+		[HttpGet]
+		[Route("/api/systeminfo/logs")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
+		public async Task<ActionResult> LogsGetAsync()
+		{
+			try
 			{
-				OperatingSystem = SystemInformation.OS,
-				OperatingSystemVersion = SystemInformation.OSVersion,
+				var result = await _systemInfoService.GetLogsAsync();
 
-				RunTimeVersion = SystemInformation.RunTimeVersion,
+				if (result.IsErrored())
+					return result.GetResultForError();
 
-				Version = Constants.AppVersion,
-				NewerVersionAvailable = versionInformation?.IsReleaseNewerThanInstalledVersion,
-				LatestVersionInformation = request.CheckForUpdate ? new LatestVersionInformation()
-				{
-					LatestVersion = versionInformation?.LatestVersion,
-					ReleaseDate = versionInformation?.ReleaseDate.ToString(),
-					ReleaseUrl = versionInformation?.ReleaseUrl,
-					Description = versionInformation?.Description
-				} : null,
+				return Ok(result.Result);
 
-				GitHub = "https://github.com/philosowaffle/peloton-to-garmin",
-				Documentation = "https://philosowaffle.github.io/peloton-to-garmin/",
-				Forums = "https://github.com/philosowaffle/peloton-to-garmin/discussions",
-				Donate = "https://www.buymeacoffee.com/philosowaffle",
-				Issues = "https://github.com/philosowaffle/peloton-to-garmin/issues",
-				Api = $"{this.Request.Scheme}://{this.Request.Host}/swagger"
-			};
+			} catch (Exception e)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));
+			}
 		}
 	}
 }

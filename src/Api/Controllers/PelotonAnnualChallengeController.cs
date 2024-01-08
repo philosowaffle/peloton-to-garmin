@@ -1,7 +1,7 @@
-﻿using Common.Dto;
-using Common.Dto.Api;
+﻿using Api.Contract;
+using Api.Service;
+using Api.Service.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Peloton.AnnualChallenge;
 
 namespace Api.Controllers;
 
@@ -10,9 +10,9 @@ namespace Api.Controllers;
 [Consumes("application/json")]
 public class PelotonAnnualChallengeController : Controller
 {
-	private readonly IAnnualChallengeService _annualChallengeService;
+	private readonly IPelotonAnnualChallengeService _annualChallengeService;
 
-	public PelotonAnnualChallengeController(IAnnualChallengeService annualChallengeService)
+	public PelotonAnnualChallengeController(IPelotonAnnualChallengeService annualChallengeService)
 	{
 		_annualChallengeService = annualChallengeService;
 	}
@@ -30,34 +30,14 @@ public class PelotonAnnualChallengeController : Controller
 	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<ProgressGetResponse>> GetProgressSummaryAsync()
 	{
-		var userId = 1;
 		try
 		{
-			var serviceResult = await _annualChallengeService.GetAnnualChallengeProgressAsync(userId);
+			var serviceResult = await _annualChallengeService.GetProgressAsync();
 
 			if (serviceResult.IsErrored())
 				return serviceResult.GetResultForError();
 
-			var data = serviceResult.Result;
-			var tiers = data.Tiers?.Select(t => new Common.Dto.Api.Tier()
-			{
-				BadgeUrl = t.BadgeUrl,
-				Title = t.Title,
-				RequiredMinutes = t.RequiredMinutes,
-				HasEarned = t.HasEarned,
-				PercentComplete = Convert.ToSingle(t.PercentComplete * 100),
-				IsOnTrackToEarndByEndOfYear = t.IsOnTrackToEarndByEndOfYear,
-				MinutesBehindPace = t.MinutesBehindPace,
-				MinutesAheadOfPace = t.MinutesAheadOfPace,
-				MinutesNeededPerDay = t.MinutesNeededPerDay,
-				MinutesNeededPerWeek = t.MinutesNeededPerWeek,
-			}).ToList();
-
-			return Ok(new ProgressGetResponse()
-			{
-				EarnedMinutes = data.EarnedMinutes,
-				Tiers = tiers ?? new List<Common.Dto.Api.Tier>(),
-			});
+			return Ok(serviceResult.Result);
 		}
 		catch (Exception e)
 		{

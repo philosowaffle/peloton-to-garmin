@@ -1,0 +1,81 @@
+name: Publish Latest
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - master
+    paths:
+    - 'src/**'
+    - 'docker/**'
+    - 'mkdocs/**'
+    - 'PelotonToGarmin.sln'
+    - 'configuration.example.json'
+
+jobs:
+  publish-docker-images:
+        name: Publish Docker Images
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                dockerfile: ['Dockerfile.console', 'Dockerfile.api', 'Dockerfile.webui']
+                include:
+                    - dockerfile: 'Dockerfile.console'
+                      tag: 'console-latest'
+                    - dockerfile: 'Dockerfile.api'
+                      tag: 'api-latest'
+                    - dockerfile: 'Dockerfile.webui'
+                      tag: 'webui-latest'
+    
+        steps:
+    
+            - uses: actions/checkout@v3
+            - name: Publish Docker Images
+              uses: ./.github/actions/publish-docker-images
+              with:
+                dockerfile: ${{ matrix.dockerfile }}
+                tag: ${{ matrix.tag }}
+                secret_docker_username: ${{ secrets.DOCKER_USERNAME }}
+                secret_docker_password: ${{ secrets.DOCKER_PASSWORD }}
+                secret_github_package: ${{ secrets.GH_PACKAGE_SECRET}}
+
+  publish-ui-dist:
+    name: Publish UI Distribution
+    runs-on: 'windows-latest'
+    strategy:
+      matrix:
+        dotnet: [ '7.0.400' ]
+        framework: ['net7.0-windows10.0.22621.0']
+        os: [ 'win10-x64' ]
+
+    steps:
+
+      - uses: actions/checkout@v3
+      - name: Publish UI Distribution
+        uses: ./.github/actions/publish-ui-dist
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+          os: ${{ matrix.os }}
+          framework: ${{ matrix.framework }}
+  
+  publish-gh-pages:
+    name: Publish GH Pages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure Git user
+        run: |
+          git config --local user.email "philosowaffle@gmail.com"
+          git config --local user.name "philosowaffle"
+
+      - name: Fetch gh-pages
+        run: git fetch origin gh-pages --depth=1
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+
+      - run: pip install mkdocs-material mike
+      - run: mike deploy --push master
+        working-directory: ./mkdocs

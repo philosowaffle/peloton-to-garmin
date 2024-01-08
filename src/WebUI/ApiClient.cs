@@ -1,32 +1,11 @@
-﻿using Common;
-using Common.Dto.Api;
+﻿using Api.Contract;
+using Common;
+using Common.Dto;
 using Flurl;
 using Flurl.Http;
+using SharedUI;
 
 namespace WebUI;
-
-public interface IApiClient
-{
-	Task<PelotonWorkoutsGetResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetRequest request);
-	Task<PelotonWorkoutsGetAllResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetAllRequest request);
-
-	Task<SettingsGetResponse> SettingsGetAsync();
-	Task<Common.App> SettingsAppPostAsync(Common.App appSettings);
-	Task<Format> SettingsFormatPostAsync(Format formatSettings);
-	Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(SettingsPelotonPostRequest pelotonSettings);
-	Task<SettingsGarminGetResponse> SettingsGarminPostAsync(SettingsGarminPostRequest garminSettings);
-
-	Task<SyncGetResponse> SyncGetAsync();
-	Task<SyncPostResponse> SyncPostAsync(SyncPostRequest syncPostRequest);
-
-	Task<SystemInfoGetResponse> SystemInfoGetAsync(SystemInfoGetRequest systemInfoGetRequest);
-
-	Task<ProgressGetResponse> GetAnnualProgressAsync();
-
-	Task<GarminAuthenticationGetResponse> GetGarminAuthenticationAsync();
-	Task<IFlurlResponse> SignInToGarminAsync();
-	Task SendGarminMfaTokenAsync(GarminAuthenticationMfaTokenPostRequest request);
-}
 
 public class ApiClient : IApiClient
 {
@@ -37,84 +16,190 @@ public class ApiClient : IApiClient
 		_apiUrl = apiUrl;
 	}
 
-	public Task<PelotonWorkoutsGetResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetRequest request)
+	public async Task<PelotonWorkoutsGetResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetRequest request)
 	{
-		return $"{_apiUrl}/api/peloton/workouts"
-				.SetQueryParams(request)
-				.GetJsonAsync<PelotonWorkoutsGetResponse>();
+		try
+		{
+			return await $"{_apiUrl}/api/peloton/workouts"
+						.SetQueryParams(request)
+						.GetJsonAsync<PelotonWorkoutsGetResponse>();
+
+		}
+		catch (FlurlHttpException e)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
 	}
 
-	public Task<SettingsGetResponse> SettingsGetAsync()
+	public async Task<SettingsGetResponse> SettingsGetAsync()
 	{
-		return $"{_apiUrl}/api/settings"
+		try
+		{
+			return await $"{_apiUrl}/api/settings"
 				.GetJsonAsync<SettingsGetResponse>();
+		}
+		catch (FlurlHttpException e)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
 	}
 
-	public Task<Common.App> SettingsAppPostAsync(Common.App appSettings)
+	public async Task<Common.Dto.App> SettingsAppPostAsync(Common.Dto.App appSettings)
 	{
-		return $"{_apiUrl}/api/settings/app"
+		try
+		{
+			return await $"{_apiUrl}/api/settings/app"
 				.PostJsonAsync(appSettings)
-				.ReceiveJson<Common.App>();
+				.ReceiveJson<Common.Dto.App>();
+		}
+		catch (FlurlHttpException e)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
 	}
 
-	public Task<Format> SettingsFormatPostAsync(Format formatSettings)
+	public async Task<Format> SettingsFormatPostAsync(Format formatSettings)
 	{
-		return $"{_apiUrl}/api/settings/format"
+		try
+		{
+			return await $"{_apiUrl}/api/settings/format"
 				.PostJsonAsync(formatSettings)
 				.ReceiveJson<Format>();
+		}
+		catch (FlurlHttpException e)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
 	}
-	
-	public Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(SettingsPelotonPostRequest pelotonSettings)
+
+	public async Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(SettingsPelotonPostRequest pelotonSettings)
 	{
-		return $"{_apiUrl}/api/settings/peloton"
+		try
+		{
+			return await $"{_apiUrl}/api/settings/peloton"
 				.PostJsonAsync(pelotonSettings)
 				.ReceiveJson<SettingsPelotonGetResponse>();
+		}
+		catch (FlurlHttpException e)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
 	}
 
-	public Task<SettingsGarminGetResponse> SettingsGarminPostAsync(SettingsGarminPostRequest garminSettings)
+	public async Task<SettingsGarminGetResponse> SettingsGarminPostAsync(SettingsGarminPostRequest garminSettings)
 	{
-		return $"{_apiUrl}/api/settings/garmin"
+		try
+		{
+			return await $"{_apiUrl}/api/settings/garmin"
 				.PostJsonAsync(garminSettings)
 				.ReceiveJson<SettingsGarminGetResponse>();
+		}
+		catch (FlurlHttpException e)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
 	}
 
-	public Task<SyncGetResponse> SyncGetAsync()
+	public async Task<SyncGetResponse> SyncGetAsync()
 	{
-		return $"{_apiUrl}/api/sync"
+		try
+		{
+			return await $"{_apiUrl}/api/sync"
 				.GetJsonAsync<SyncGetResponse>();
+		}
+		catch (FlurlHttpTimeoutException te)
+		{
+			throw new SyncTimeoutException(te.Message, te);
+		}
+		catch (FlurlHttpException e)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
 	}
 
-	public Task<SyncPostResponse> SyncPostAsync(SyncPostRequest syncPostRequest)
+	public async Task<SyncPostResponse> SyncPostAsync(SyncPostRequest syncPostRequest)
 	{
-		return $"{_apiUrl}/api/sync"
+		try
+		{
+			return await $"{_apiUrl}/api/sync"
+				.WithTimeout(30)
 				.PostJsonAsync(syncPostRequest)
 				.ReceiveJson<SyncPostResponse>();
+		}
+		catch (FlurlHttpTimeoutException te)
+		{
+			throw new SyncTimeoutException(te.Message, te);
+		}
+		catch (FlurlHttpException e)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
 	}
 
-	public Task<SystemInfoGetResponse> SystemInfoGetAsync(SystemInfoGetRequest systemInfoGetRequest)
+	public async Task<SystemInfoGetResponse> SystemInfoGetAsync(SystemInfoGetRequest systemInfoGetRequest)
 	{
-		return $"{_apiUrl}/api/systemInfo"
+		try
+		{
+			return await $"{_apiUrl}/api/systemInfo"
 				.SetQueryParams(systemInfoGetRequest)
 				.GetJsonAsync<SystemInfoGetResponse>();
+		}
+		catch (FlurlHttpException e)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
 	}
 
-	public Task<PelotonWorkoutsGetAllResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetAllRequest request)
+	public async Task<PelotonWorkoutsGetAllResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetAllRequest request)
 	{
-		return $"{_apiUrl}/api/peloton/workouts/all"
+		try
+		{
+			return await $"{_apiUrl}/api/peloton/workouts/all"
 				.SetQueryParams(request)
 				.GetJsonAsync<PelotonWorkoutsGetAllResponse>();
+		}
+		catch (FlurlHttpException e)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
 	}
 
-	public Task<ProgressGetResponse> GetAnnualProgressAsync()
+	public async Task<ProgressGetResponse> GetAnnualProgressAsync()
 	{
-		return $"{_apiUrl}/api/pelotonannualchallenge/progress"
+		try
+		{
+			return await $"{_apiUrl}/api/pelotonannualchallenge/progress"
 				.GetJsonAsync<ProgressGetResponse>();
+		}
+		catch (FlurlHttpException e)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
 	}
 
-	public Task<GarminAuthenticationGetResponse> GetGarminAuthenticationAsync()
+	public async Task<GarminAuthenticationGetResponse> GetGarminAuthenticationAsync()
 	{
-		return $"{_apiUrl}/api/garminauthentication"
+		try
+		{
+			return await $"{_apiUrl}/api/garminauthentication"
 				.GetJsonAsync<GarminAuthenticationGetResponse>();
+		}
+		catch (FlurlHttpException e)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
 	}
 
 	public Task<IFlurlResponse> SignInToGarminAsync()
@@ -123,9 +208,35 @@ public class ApiClient : IApiClient
 			.PostAsync();
 	}
 
-	public Task SendGarminMfaTokenAsync(GarminAuthenticationMfaTokenPostRequest request)
+	public async Task SendGarminMfaTokenAsync(GarminAuthenticationMfaTokenPostRequest request)
 	{
-		return $"{_apiUrl}/api/garminauthentication/mfaToken"
+		try
+		{
+			await $"{_apiUrl}/api/garminauthentication/mfaToken"
 			.PostJsonAsync(request);
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
+		catch (Exception e)
+		{
+			throw new ApiClientException($"Failed to submit Garmin MFA Code - {e.Message} - See logs for details.", e);
+		}
+	}
+
+	public async Task<SystemInfoLogsGetResponse> SystemInfoGetLogsAsync()
+	{
+		try
+		{
+			return await $"{_apiUrl}/api/systemInfo/logs"
+				.GetJsonAsync<SystemInfoLogsGetResponse>();
+		}
+		catch (FlurlHttpException e)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
 	}
 }

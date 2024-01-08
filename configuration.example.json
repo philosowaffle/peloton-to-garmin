@@ -1,9 +1,7 @@
 {
   "App": {
-    "OutputDirectory": "./output",
     "EnablePolling": true,
     "PollingIntervalSeconds": 86400,
-    "CloseWindowOnFinish": false,
     "CheckForUpdates": true
   },
 
@@ -29,8 +27,7 @@
     "Password": "",
     "TwoStepVerificationEnabled": false,
     "Upload": false,
-    "FormatToUpload": "fit",
-    "UploadStrategy": 2
+    "FormatToUpload": "fit"
   },
 
   "Observability": {
@@ -54,18 +51,7 @@
           "Microsoft": "Error",
           "System": "Error"
         }
-      },
-      "WriteTo": [
-        { "Name": "Console" },
-        {
-          "Name": "File",
-          "Args": {
-            "path": "./output/log.txt",
-            "rollingInterval": "Day",
-            "retainedFileCountLimit": 7
-          }
-        }
-      ]
+      }
     }
   }
 }

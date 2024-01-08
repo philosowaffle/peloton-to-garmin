@@ -1,4 +1,6 @@
-﻿namespace Common.Stateful
+﻿using Common.Dto;
+
+namespace Common.Stateful
 {
 	public interface IApiAuthentication
 	{

@@ -1,14 +1,10 @@
 using Common;
-using Havit.Blazor.Components.Web;
 using WebUI;
 using Serilog;
-using Serilog.Enrichers.Span;
 using Serilog.Events;
 using Prometheus;
-using Common.Observe;
 using Common.Stateful;
-using Common.Http;
-using Serilog.Settings.Configuration;
+using SharedUI;
 
 ///////////////////////////////////////////////////////////
 /// STATICS
@@ -32,35 +28,18 @@ ConfigurationSetup.LoadConfigValues(builder.Configuration, config);
 
 builder.WebHost.UseUrls(config.WebUI.HostUrl);
 
-builder.Host.UseSerilog((ctx, logConfig) =>
-{
-	logConfig
-	.ReadFrom.Configuration(ctx.Configuration, new ConfigurationReaderOptions() { SectionName = $"{nameof(Observability)}:Serilog" })
-	.Enrich.WithSpan()
-	.Enrich.FromLogContext();
-});
-
 ///////////////////////////////////////////////////////////
 /// SERVICES
 ///////////////////////////////////////////////////////////
 
 builder.Services.AddScoped<IApiClient>(sp => new ApiClient(config.Api.HostUrl));
-builder.Services.AddHxServices();
-builder.Services.AddHxMessenger();
+builder.Services.ConfigureSharedUIServices();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-FlurlConfiguration.Configure(config.Observability, 30);
-Tracing.EnableWebUITracing(builder.Services, config.Observability.Jaeger);
-
-Log.Logger = new LoggerConfiguration()
-				.ReadFrom.Configuration(builder.Configuration, new ConfigurationReaderOptions() { SectionName = $"{nameof(Observability)}:Serilog" })
-				.Enrich.FromLogContext()
-				.CreateLogger();
-
-Logging.LogSystemInformation();
+ObservabilityStartup.ConfigureWebUI(builder.Services, builder.Configuration, config);
 Common.Observe.Metrics.CreateAppInfo();
 
 ///////////////////////////////////////////////////////////
@@ -69,16 +48,8 @@ Common.Observe.Metrics.CreateAppInfo();
 
 var app = builder.Build();
 
-// Setup initial Tracing Source
-Tracing.Source = new(Statics.TracingService);
-
 if (Log.IsEnabled(LogEventLevel.Verbose))
 	app.UseSerilogRequestLogging();
-
-app.Use((context, next) =>
-{
-	return next.Invoke();
-});
 
 if (config.Observability.Prometheus.Enabled)
 {
@@ -88,6 +59,11 @@ if (config.Observability.Prometheus.Enabled)
 	app.MapMetrics();
 	app.UseHttpMetrics();
 }
+
+app.Use((context, next) =>
+{
+	return next.Invoke();
+});
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

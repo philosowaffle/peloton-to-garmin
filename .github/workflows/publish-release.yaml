@@ -1,0 +1,115 @@
+name: Publish Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release Version'
+        required: true
+      majorVersion:
+        description: 'Major Version Tag'
+        required: true
+
+jobs:
+  publish-docker-images:
+   name: Publish Docker Images
+   runs-on: ubuntu-latest
+   strategy:
+    matrix:
+        dockerfile: ['Dockerfile.console', 'Dockerfile.api', 'Dockerfile.webui']
+        include:
+            - dockerfile: 'Dockerfile.console'
+              tag: console-stable
+              versionTag: console-v${{ github.event.inputs.version }}
+              majorVersionTag: console-v${{ github.event.inputs.majorVersion }}
+            - dockerfile: 'Dockerfile.api'
+              tag: api-stable
+              versionTag: api-v${{ github.event.inputs.version }}
+              majorVersionTag: api-v${{ github.event.inputs.majorVersion }}
+            - dockerfile: 'Dockerfile.webui'
+              tag: webui-stable
+              versionTag: webui-v${{ github.event.inputs.version }}
+              majorVersionTag: webui-v${{ github.event.inputs.majorVersion }}
+
+   steps:
+    
+      - uses: actions/checkout@v4
+      - name: Publish Docker Images
+        uses: ./.github/actions/publish-docker-images
+        with:
+          dockerfile: ${{ matrix.dockerfile }}
+          tag: ${{ matrix.tag }}
+          version_tag: ${{ matrix.versionTag }}
+          major_version_tag: ${{ matrix.majorVersionTag }}
+          secret_docker_username: ${{ secrets.DOCKER_USERNAME }}
+          secret_docker_password: ${{ secrets.DOCKER_PASSWORD }}
+          secret_github_package: ${{ secrets.GH_PACKAGE_SECRET}}
+
+  publish-ui-dist:
+    name: Publish UI Distribution
+    runs-on: 'windows-latest'
+    outputs:
+      artifact: ${{ steps.win-ui-create-artifact.outputs.artifact }}
+    strategy:
+      matrix:
+        dotnet: [ '7.0.400' ]
+        framework: ['net7.0-windows10.0.22621.0']
+        os: [ 'win10-x64' ]
+
+    steps:
+
+      - uses: actions/checkout@v4
+      - name: Publish UI Distribution
+        uses: ./.github/actions/publish-ui-dist
+        id: win-ui-create-artifact
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+          os: ${{ matrix.os }}
+          framework: ${{ matrix.framework }}
+  
+  create-gh-release:
+    runs-on: ubuntu-latest
+    needs: [publish-ui-dist, publish-docker-images]
+    steps:
+      - name: Create Zip for Win UI Release Artifact
+        uses: papeloto/action-zip@v1
+        with:
+          files: ${{ needs.publish-ui-dist.outputs.artifact }}
+          dest: /dist/ui_win_${{ github.event.inputs.version }}.zip
+    
+      - uses: actions/checkout@v4
+
+      - name: Create Release and Upload Artifacts
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "${{ github.workspace }}/dist/ui_win_${{ github.event.inputs.version }}.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: v${{ github.event.inputs.version }}
+          allowUpdates: true
+          replacesArtifacts: true
+          bodyFile:  ${{ github.workspace }}/vNextReleaseNotes.md
+  
+  publish-gh-pages:
+    name: Publish GH Pages
+    runs-on: ubuntu-latest
+    needs: [create-gh-release]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure Git user
+        run: |
+          git config --local user.email "philosowaffle@gmail.com"
+          git config --local user.name "philosowaffle"
+
+      - name: Fetch gh-pages
+        run: git fetch origin gh-pages --depth=1
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+
+      - run: pip install mkdocs-material mike
+      - run: mike deploy --push --update-aliases v${{ github.event.inputs.version }} latest
+        working-directory: ./mkdocs
+      - run: mike set-default --push latest
+        working-directory: ./mkdocs

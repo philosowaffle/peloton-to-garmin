@@ -1,7 +1,7 @@
-﻿using Common.Dto;
-using Common.Dto.Api;
+﻿using Api.Contract;
+using Api.Service.Helpers;
+using Common.Dto;
 using Common.Dto.Peloton;
-using Common.Helpers;
 using Flurl.Http;
 using Microsoft.AspNetCore.Mvc;
 using Peloton;
@@ -35,7 +35,7 @@ namespace Api.Controllers
 		public async Task<ActionResult<PelotonWorkoutsGetResponse>> GetAsync([FromQuery]PelotonWorkoutsGetRequest request)
 		{
 			if (!request.IsValid(out var result))
-				return result;
+				return new BadRequestObjectResult(result);
 
 			PagedPelotonResponse<Workout>? recentWorkouts = null;
 
@@ -82,7 +82,7 @@ namespace Api.Controllers
 		public async Task<ActionResult<PelotonWorkoutsGetAllResponse>> GetAsync([FromQuery] PelotonWorkoutsGetAllRequest request)
 		{
 			if (request.SinceDate.IsAfter(DateTime.UtcNow, nameof(request.SinceDate), out var result))
-				return result;
+				return new BadRequestObjectResult(result!);
 
 			ICollection<Workout> workoutsToReturn = new List<Workout>();
 			var completedOnly = request.WorkoutStatusFilter == WorkoutStatus.Completed;

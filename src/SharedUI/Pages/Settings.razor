@@ -1,0 +1,65 @@
+﻿@page "/settings"
+@inherits TracingComponentBase
+@inject IApiClient _apiClient
+@inject IHxMessengerService _toaster;
+
+<PageTitle>Settings</PageTitle>
+
+<h1>Settings</h1>
+<a href="@configDocumentation">Documentation</a>
+<br />
+<br />
+
+<HxTabPanel InitialActiveTabId="tab0">
+	<HxTab Id="tab0" Title="App">
+		<Content>
+			<br />
+			<SharedUI.Shared.AppSettingsForm />
+		</Content>
+	</HxTab>
+	<HxTab Id="tab1" Title="Conversion">
+		<Content>
+			<br />
+			<SharedUI.Shared.FormatSettingsForm />
+		</Content>
+	</HxTab>
+	<HxTab Id="tab2" Title="Peloton">
+		<Content>
+			<br />
+			<SharedUI.Shared.PelotonSettingsForm />
+		</Content>
+	</HxTab>
+	<HxTab Id="tab3" Title="Garmin">
+		<Content>
+			<br />
+			<SharedUI.Shared.GarminSettingsForm />
+		</Content>
+	</HxTab>
+</HxTabPanel>
+
+@code {
+
+	private string configDocumentation;
+
+	public Settings() : base(nameof(Settings))
+	{
+		var settings = new SettingsGetResponse();
+		configDocumentation = string.Empty;
+	}
+
+	protected override Task OnInitializedAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+		return LoadDataAsync();
+	}
+
+	private async Task LoadDataAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
+
+		var settings = await _apiClient.SettingsGetAsync();
+		var systemInfo =  await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = settings.App.CheckForUpdates });
+
+		configDocumentation = systemInfo.Documentation + "/configuration/json";
+	}
+}
