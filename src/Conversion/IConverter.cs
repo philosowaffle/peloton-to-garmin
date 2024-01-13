@@ -565,17 +565,22 @@ namespace Conversion
 
 		protected async Task<GarminDeviceInfo> GetDeviceInfoAsync(FitnessDiscipline sport, Settings settings)
 		{
-			GarminDeviceInfo userProvidedDeviceInfo = await _settingsService.GetCustomDeviceInfoAsync(settings.Garmin.Email);
+			GarminDeviceInfo deviceInfo = null;
+			deviceInfo = await _settingsService.GetCustomDeviceInfoAsync(settings.Garmin.Email);
 
-			if (userProvidedDeviceInfo is object) return userProvidedDeviceInfo;
+			if (deviceInfo is null)
+			{
+				if (sport == FitnessDiscipline.Cycling)
+					deviceInfo = CyclingDevice;
+				else if (sport == FitnessDiscipline.Caesar)
+					deviceInfo = RowingDevice;
+				else
+					deviceInfo = DefaultDevice;
+			}
 
-			if(sport == FitnessDiscipline.Cycling)
-				return CyclingDevice;
+			_logger.Debug("Using device: {@DeviceName}, {@DeviceProdId}, {@DeviceManufacturerId}, {@DeviceVersion}", deviceInfo.Name, deviceInfo.ProductID, deviceInfo.ManufacturerId, deviceInfo.Version);
 
-			if (sport == FitnessDiscipline.Caesar)
-				return RowingDevice;
-
-			return DefaultDevice;
+			return deviceInfo;
 		}
 
 		protected ushort? GetCyclingFtp(Workout workout, UserData userData)
