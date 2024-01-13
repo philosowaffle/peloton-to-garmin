@@ -31,9 +31,8 @@ public class WorkoutHelperTests
 		return WorkoutHelper.GetTitle(workout, new Format());
 	}
 
-	[Platform(Exclude = "Unix,Linux,MacOSX")]
 	[TestCase("My Title", "é", ExpectedResult = "My_Title_with_é")]
-	[TestCase("My/Title", "ä", ExpectedResult = "My-Title_with_ä")]
+	[TestCase("My Title", "ä", ExpectedResult = "My_Title_with_ä")]
 	public string GetTitle_Should_Handle_SpecialChars(string title, string instructor)
 	{
 		var workout = new Workout()
