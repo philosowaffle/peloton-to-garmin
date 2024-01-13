@@ -3,6 +3,7 @@
 
 ## Features
 
+- [#610] UI - Add more workout data to Sync page
 
 ## Fixes
 
