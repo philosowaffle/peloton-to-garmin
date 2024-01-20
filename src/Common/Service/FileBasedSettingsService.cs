@@ -1,5 +1,6 @@
 ﻿using Common.Dto;
 using Common.Dto.Garmin;
+using Common.Dto.Peloton;
 using Common.Observe;
 using Common.Stateful;
 using Microsoft.Extensions.Caching.Memory;
@@ -92,28 +93,32 @@ namespace Common.Service
 			return _next.GetAppConfigurationAsync();
 		}
 
-		public async Task<GarminDeviceInfo> GetCustomDeviceInfoAsync(string garminEmail)
+		public Task<GarminDeviceInfo> GetCustomDeviceInfoAsync(Workout workout)
 		{
-			using var tracing = Tracing.Trace($"{nameof(FileBasedSettingsService)}.{nameof(GetCustomDeviceInfoAsync)}");
+			using var tracing = Tracing.Trace($"{nameof(SettingsService)}.{nameof(GetCustomDeviceInfoAsync)}ByFitnessDiscipline");
 
-			GarminDeviceInfo userProvidedDeviceInfo = null;
-
-			var settings = await GetSettingsAsync();
-			var userDevicePath = settings.Format.DeviceInfoPath;
-
-			if (string.IsNullOrEmpty(userDevicePath))
-				return null;
+			var workoutType = workout.GetWorkoutType();
 
 			lock (_lock)
 			{
-				var key = $"{GarminDeviceInfoKey}:{garminEmail}";
-				return _cache.GetOrCreate(key, (cacheEntry) =>
+				var key = $"{GarminDeviceInfoKey}:{workoutType}:1";
+				return _cache.GetOrCreateAsync(key, async (cacheEntry) =>
 				{
 					cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(5);
-					if (_fileHandler.TryDeserializeXml(userDevicePath, out userProvidedDeviceInfo))
-						return userProvidedDeviceInfo;
 
-					return null;
+					GarminDeviceInfo userProvidedDeviceInfo = null;
+
+					var settings = await GetSettingsAsync();
+					var userDevicePath = settings?.Format?.DeviceInfoPath;
+
+					_fileHandler.TryDeserializeXml(userDevicePath, out userProvidedDeviceInfo);
+
+					if (userProvidedDeviceInfo != null) return userProvidedDeviceInfo;
+
+					if (settings?.Format?.DeviceInfoSettings is object)
+						settings.Format.DeviceInfoSettings.TryGetValue(workoutType, out userProvidedDeviceInfo);
+
+					return userProvidedDeviceInfo;
 				});
 			}
 		}

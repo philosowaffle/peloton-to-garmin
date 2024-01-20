@@ -563,16 +563,15 @@ namespace Conversion
 			return metric;
 		}
 
-		protected async Task<GarminDeviceInfo> GetDeviceInfoAsync(FitnessDiscipline sport, Settings settings)
+		protected async Task<GarminDeviceInfo> GetDeviceInfoAsync(Workout workout)
 		{
-			GarminDeviceInfo deviceInfo = null;
-			deviceInfo = await _settingsService.GetCustomDeviceInfoAsync(settings.Garmin.Email);
+			GarminDeviceInfo deviceInfo = await _settingsService.GetCustomDeviceInfoAsync(workout);
 
 			if (deviceInfo is null)
 			{
-				if (sport == FitnessDiscipline.Cycling)
+				if (workout.Fitness_Discipline == FitnessDiscipline.Cycling)
 					deviceInfo = CyclingDevice;
-				else if (sport == FitnessDiscipline.Caesar)
+				else if (workout.Fitness_Discipline == FitnessDiscipline.Caesar)
 					deviceInfo = RowingDevice;
 				else
 					deviceInfo = DefaultDevice;

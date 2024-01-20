@@ -1,4 +1,6 @@
-﻿using Common.Stateful;
+﻿using Common.Dto.Garmin;
+using Common.Stateful;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -55,6 +57,8 @@ public class Format
 		Running = new Running();
 		Rowing = new Rowing();
 		Strength = new Strength();
+
+		DeviceInfoSettings = new Dictionary<WorkoutType, GarminDeviceInfo>();
 	}
 
 	public bool Fit { get; set; }
@@ -63,7 +67,9 @@ public class Format
 	public bool SaveLocalCopy { get; set; }
 	public bool IncludeTimeInHRZones { get; set; }
 	public bool IncludeTimeInPowerZones { get; set; }
+	[Obsolete("Use DeviceInfoSettings instead.  Will be removed in P2G v5.")]
 	public string DeviceInfoPath { get; set; }
+	public Dictionary<WorkoutType, GarminDeviceInfo> DeviceInfoSettings { get; set; }
 	public string WorkoutTitleTemplate { get; set; } = "{{PelotonWorkoutTitle}}{{#if PelotonInstructorName}} with {{PelotonInstructorName}}{{/if}}";
 	public Cycling Cycling { get; set; }
 	public Running Running { get; set; }

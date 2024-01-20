@@ -1,0 +1,114 @@
+﻿@using System.Globalization;
+@using Common.Dto.Garmin;
+@inject IApiClient _apiClient
+
+<HxModal @ref="MfaModal" Title="Device Info" Backdrop="ModalBackdrop.Static" CloseOnEscape="true" OnClosed="OnClosed">
+	<EditForm Model="@DeviceInfo">
+	<BodyTemplate>
+			<HxSelect Label="Workout Type"
+						   Data="@workoutTypes"
+			@bind-Value="@DeviceInfo.N"
+						   EmptyText="- none -"
+						   TextSelector="(v) => v.ToString()"
+						   GenerateChip=true
+						   NullDataText="Loading workout types..." />
+	</BodyTemplate>
+	<FooterTemplate>
+		<HxSubmit Color="ThemeColor.Primary" OnClick="SubmitMfaCodeAsync">Save</HxSubmit>
+	</FooterTemplate>
+	</EditForm>
+</HxModal>
+
+@code {
+	private ICollection<WorkoutType> workoutTypes = Enum.GetValues(typeof(WorkoutType)).Cast<WorkoutType>().ToList();
+
+	private HxModal? MfaModal;
+	private GarminDeviceInfo DeviceInfo = new GarminDeviceInfo();
+
+	private string _mfaCode = "";
+	private bool _isAuthenticated = false;
+	private bool _mfaEnabled = false;
+	private bool _isErrored = false;
+	private Func<Task>? _successCallBack;
+
+
+	public async Task ShowAsync(GarminDeviceInfo? editDeviceInfo, Func<Task>? successCallBack = null)
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(DeviceInfoModal)}.{nameof(ShowAsync)}", kind: ActivityKind.Client);
+
+		_isErrored = false;
+		_successCallBack = null;
+
+		DeviceInfo = editDeviceInfo;
+
+		if (!_isErrored && successCallBack is object)
+			await successCallBack.Invoke();
+	}
+
+	private async Task<bool> SignInToGarminAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(GarminMfaModal)}.{nameof(SignInToGarminAsync)}", kind: ActivityKind.Client);
+
+		try
+		{
+			var result = await _apiClient.SignInToGarminAsync();
+			if (result?.StatusCode == StatusCodes.Status202Accepted)
+				return true;
+
+			_isAuthenticated = true;
+			return false;
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+			_isErrored = true;
+			return false;
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to signin to Garmin - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to signin to Garmin.", e);
+			_isErrored = true;
+			return false;
+		}
+	}
+
+	protected async Task SubmitMfaCodeAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(GarminMfaModal)}.{nameof(SubmitMfaCodeAsync)}", kind: ActivityKind.Client);
+
+		try
+		{
+			await _apiClient.SendGarminMfaTokenAsync(new GarminAuthenticationMfaTokenPostRequest() { MfaToken = _mfaCode.ToString(CultureInfo.InvariantCulture) });
+			_isAuthenticated = true;
+			_isErrored = false;
+			if (_successCallBack is object)
+			{
+				await _successCallBack.Invoke();
+				_successCallBack = null;
+			}
+
+			await MfaModal!.HideAsync();
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+			_isAuthenticated = false;
+			_isErrored = true;
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to submit Garmin MFA Code - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to submit Garmin MFA Code.", e);
+			_isAuthenticated = false;
+			_isErrored = true;
+		}
+	}
+
+	protected void OnClosed()
+	{
+		_successCallBack = null;
+	}
+}

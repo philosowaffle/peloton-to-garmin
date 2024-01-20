@@ -1,4 +1,5 @@
-﻿@using HandlebarsDotNet;
+﻿@using Common.Dto.Garmin;
+@using HandlebarsDotNet;
 @inject IApiClient _apiClient
 @inject IHxMessengerService _toaster;
 
@@ -106,24 +107,90 @@
 	</div>
 	<br />
 	<div class="row gy-5">
-
 		<div class="md-col-12">
+			
 			<HxAccordion>
 				<HxAccordionItem>
 					<HeaderTemplate>
 						Advanced
-						<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
-								   Title="<b>Advanced Settings</b>"
-								   Content="@AdvancedDocumentation"
-								   Html="true">
-							<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
-						</HxPopover>
 					</HeaderTemplate>
 					<BodyTemplate>
-						<HxInputText Label="Path to custom deviceInfo.xml file" @bind-Value="formatSettings.DeviceInfoPath" /><br />
-						<HxSwitch Text="Include Time In HR Zones" @bind-Value="formatSettings.IncludeTimeInHRZones" />
-						<HxSwitch Text="Include Time in Power Zones" @bind-Value="formatSettings.IncludeTimeInPowerZones" />
-						<HxSwitch Text="Save a backup copy of Converted files to output dir" @bind-Value="formatSettings.SaveLocalCopy" />
+						<HxAlert Color="ThemeColor.Warning">
+							<HxIcon Icon="@BootstrapIcon.ExclamationTriangleFill" />
+							<strong>Most users should not need to modify these settings.  Please be sure you've read the documentation before changing.</strong>
+						</HxAlert>
+						<br />
+						<HxCard>
+							<HeaderTemplate>
+								Custom Device Info
+								<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+										   Title="<b>Custom Zone Handling</b>"
+										   Content="@CustomZoneHandlingDocumentation"
+										   Html="true">
+									<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+								</HxPopover>
+							</HeaderTemplate>
+							<BodyTemplate>
+								@if (!string.IsNullOrWhiteSpace(formatSettings.DeviceInfoPath))
+								{
+									<HxInputText Label="Path to custom deviceInfo.xml file" @bind-Value="formatSettings.DeviceInfoPath" Hint="This setting is deprecated and will be removed in v5, please switch to using the below settings." />
+									<br />
+								}
+								<HxListLayout @bind-FilterModel="formatSettings.DeviceInfoSettings">
+									<CommandsTemplate>
+										<HxButton Text="Create new Device Info" Color="ThemeColor.Primary" Icon="BootstrapIcon.PlusLg" OnClick="HandleNewItemClicked" />
+									</CommandsTemplate>
+									<DataTemplate>
+										<HxGrid TItem="KeyValuePair<WorkoutType, GarminDeviceInfo>"
+												DataProvider="GetGridData"
+												PageSize="5"
+												Responsive="true">
+											<Columns>
+												<HxGridColumn HeaderText="Exercise Type" ItemTextSelector="employee => employee.Key.ToString()" />
+												<HxGridColumn HeaderText="Device Name" ItemTextSelector="employee => employee.Value.Name" />
+												<HxGridColumn HeaderText="UnitId" ItemTextSelector="employee => employee.Value.UnitId.ToString()" />
+												<HxGridColumn HeaderText="ProductId" ItemTextSelector="employee => employee.Value.ProductID.ToString()" />
+												<HxGridColumn HeaderText="ManufacturerId" ItemTextSelector="employee => employee.Value.ManufacturerId.ToString()" />
+												<HxGridColumn HeaderText="Version Major" ItemTextSelector="employee => employee.Value.Version.VersionMajor.ToString()" />
+												<HxGridColumn HeaderText="Version Minor" ItemTextSelector="employee => employee.Value.Version.VersionMinor.ToString()" />
+												<HxGridColumn HeaderText="Build Version Major" ItemTextSelector="employee => employee.Value.Version.BuildMajor.ToString()" />
+												<HxGridColumn HeaderText="Build Version Minor" ItemTextSelector="employee => employee.Value.Version.BuildMinor.ToString()" />
+												<HxContextMenuGridColumn Context="employee">
+													<HxContextMenu>
+														<HxContextMenuItem Text="Delete" Icon="BootstrapIcon.Trash" OnClick="async () => await HandleDeleteClick(employee)" ConfirmationQuestion="@($"Are you sure you want to delete {employee.Value.Name}?")" />
+													</HxContextMenu>
+												</HxContextMenuGridColumn>
+											</Columns>
+										</HxGrid>
+									</DataTemplate>
+								</HxListLayout>
+							</BodyTemplate>
+						</HxCard>
+						<br />
+						<HxCard>
+							<HeaderTemplate>
+								Custom Zone Handling
+								<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+											Title="<b>Custom Zone Handling</b>"
+											Content="@CustomZoneHandlingDocumentation"
+											Html="true">
+									<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+								</HxPopover>
+							</HeaderTemplate>
+							<BodyTemplate>
+								<HxSwitch Text="Include Time In HR Zones" @bind-Value="formatSettings.IncludeTimeInHRZones" />
+								<HxSwitch Text="Include Time in Power Zones" @bind-Value="formatSettings.IncludeTimeInPowerZones" />
+							</BodyTemplate>
+						</HxCard>
+						<br />
+						<HxCard>
+							<HeaderTemplate>
+								Misc
+							</HeaderTemplate>
+							<BodyTemplate>
+								<HxSwitch Text="Save a backup copy of Converted files to output dir" @bind-Value="formatSettings.SaveLocalCopy" Hint=@SaveLocalCopyHint />
+							</BodyTemplate>
+						</HxCard>
 					</BodyTemplate>
 				</HxAccordionItem>
 			</HxAccordion>
@@ -140,6 +207,8 @@
 
 	private string workoutTemplateExample;
 	private string configDocumentation;
+	private string configDocumentationBase;
+	private string outputDirectory;
 
 	public FormatSettingsForm()
 	{
@@ -165,7 +234,9 @@
 		ValueChanged(formatSettings!.WorkoutTitleTemplate);
 
 		var systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = settings.App.CheckForUpdates });
+		configDocumentationBase = systemInfo.Documentation;
 		configDocumentation = systemInfo.Documentation + "/configuration/json/#format-config";
+		outputDirectory = systemInfo.OutputDirectory;
 	}
 
 	protected async Task SaveFormatSettings()
@@ -212,9 +283,42 @@
 		workoutTemplateExample = $"Example: {titleExample}";
 	}
 
+	private async Task<GridDataProviderResult<KeyValuePair<WorkoutType, GarminDeviceInfo>>> GetGridData(GridDataProviderRequest<KeyValuePair<WorkoutType, GarminDeviceInfo>> request)
+	{
+		return new GridDataProviderResult<KeyValuePair<WorkoutType,GarminDeviceInfo>>()
+			{
+				// Data = await DemoDataService.GetEmployeesDataFragmentAsync(filterModel, request.StartIndex, request.Count, request.CancellationToken),
+				// TotalCount = await DemoDataService.GetEmployeesCountAsync(filterModel, request.CancellationToken)
+				Data = formatSettings.DeviceInfoSettings.AsEnumerable(),
+				TotalCount = formatSettings.DeviceInfoSettings.Count
+			};
+	}
+
+	private async Task HandleDeleteClick(KeyValuePair<WorkoutType, GarminDeviceInfo> employee)
+	{
+		// await DemoDataService.DeleteEmployeeAsync(employee.Id);
+		// await gridComponent.RefreshDataAsync();
+	}
+
+	private Task HandleSelectedDataItemChanged()
+	{
+		// open or navigate to employee detail here (currentEmployee is set)
+		// await dataItemEditComponent.ShowAsync();
+		return Task.CompletedTask;
+	}
+
+	private Task HandleNewItemClicked()
+	{
+		// currentEmployee = new();
+		// open or navigate to employee detail here
+		// await dataItemEditComponent.ShowAsync();
+		return Task.CompletedTask;
+	}
+
 	private string FormatSettingsDocumentation => $"<ul><li>FIT is the recommended format</li><li>FIT and TCX are the only types that can be uploaded to Garmin</li><li>If you enable JSON, you'll also need to enable saving a local copy in the Advanced settings below.</li></ul><br /><a href='{configDocumentation}'>Documentation</a><br ?><small>(click the <b>?</b> to pin this window)</small>";
 	private string WorkoutTitleDocumentation => $"Allows you to customize how your workout title will appear in Garmin Connect using <a href='https://github.com/Handlebars-Net/Handlebars.Net'>Handlebars templates</a>. Some characters are not allowed, these characters will automatically be replaced with `-`.  Below are the data fields you can use in the template:<br /><br /> <ul><li>PelotonWorkoutTitle</li><li>PelotonInstructorName</li></ul><br /><a href='{configDocumentation}'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
 	private string LapTypesDocumentation => $"Lap type defines how/when P2G will create a new Lap within a workout.  This can be customized per Cardio type.  To read more about each Lap Type please see the documentation.<br /><br /><a href='{configDocumentation}'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
 	private string StrengthDocumentation => $"Some Strength workouts have you do an exercise for time rather than for a specific number of reps. This setting allows you to customize how P2G should estimate the number of reps that were done in a time based exercise.<br /><br /><a href='{configDocumentation}'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
-	private string AdvancedDocumentation => $"Most users should not need to modify these settings.  These settings should only be modified if you are trying to solve a specific problem.  Please be sure you've read the documentation about these before modifying.<br /><br /><a href='{configDocumentation}'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
+	private string CustomZoneHandlingDocumentation => $"If you are able to set your HR and Power Zones in Garmin Connect, then you do not need to enable these settings, Garmin will automatically calculate your time in zones correctly.  If you are not able to configure your zones in Garmin Connect, then you can enable these settings to have P2G calculate time in zone information.<br /><br />If these are enabled, its likely Garmin will not calculate Training Load, Effect, or related data points.<br /><br /><a href='{configDocumentationBase}/configuration/json/#understanding-custom-zones'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
+	private string SaveLocalCopyHint => $"Files will be saved to: {outputDirectory}.";
 }

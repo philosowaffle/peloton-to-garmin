@@ -481,10 +481,10 @@ namespace UnitTests.Conversion
 					BuildMinor = 0,
 				}
 			};
-			settingsService.Setup(s => s.GetCustomDeviceInfoAsync(It.IsAny<string>())).ReturnsAsync(outDevice);
+			settingsService.Setup(s => s.GetCustomDeviceInfoAsync(It.IsAny<Workout>())).ReturnsAsync(outDevice);
 
 			// ACT
-			var deviceInfo = await converter.GetDeviceInfo1(sport, new Settings());
+			var deviceInfo = await converter.GetDeviceInfo1(new Workout() { Fitness_Discipline = sport });
 
 			// ASSERT
 			deviceInfo.Name.Should().Be("UserDevice");
@@ -517,7 +517,7 @@ namespace UnitTests.Conversion
 				.Returns(false);
 
 			// ACT
-			var deviceInfo = await converter.GetDeviceInfo1(FitnessDiscipline.Bike_Bootcamp, config);
+			var deviceInfo = await converter.GetDeviceInfo1( new Workout() { Fitness_Discipline = FitnessDiscipline.Bike_Bootcamp });
 
 			// ASSERT
 			deviceInfo.Name.Should().Be("Forerunner 945");
@@ -539,7 +539,7 @@ namespace UnitTests.Conversion
 			var config = new Settings();
 
 			// ACT
-			var deviceInfo = await converter.GetDeviceInfo1(FitnessDiscipline.Cycling, config);
+			var deviceInfo = await converter.GetDeviceInfo1(new Workout() { Fitness_Discipline = FitnessDiscipline.Cycling });
 
 			// ASSERT
 			deviceInfo.Name.Should().Be("TacxTrainingAppWin");
@@ -569,7 +569,7 @@ namespace UnitTests.Conversion
 			var config = new Settings();
 
 			// ACT
-			var deviceInfo = await converter.GetDeviceInfo1(sport, config);
+			var deviceInfo = await converter.GetDeviceInfo1(new Workout() { Fitness_Discipline = sport });
 
 			// ASSERT
 			deviceInfo.Name.Should().Be("Forerunner 945");
@@ -712,9 +712,9 @@ namespace UnitTests.Conversion
 			{
 				return base.GetHeartRateSummary(workoutSamples);
 			}
-			public Task<GarminDeviceInfo> GetDeviceInfo1(FitnessDiscipline sport, Settings settings)
+			public Task<GarminDeviceInfo> GetDeviceInfo1(Workout workout)
 			{
-				return base.GetDeviceInfoAsync(sport, settings);
+				return base.GetDeviceInfoAsync(workout);
 			}
 
 			public ushort? GetCyclingFtp1(Workout workout, UserData userData)
