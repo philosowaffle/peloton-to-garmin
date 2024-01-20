@@ -180,6 +180,11 @@ The below data fields are available for use in the template:
 * `PelotonWorkoutTitle` - Peloton provides this usually in the form of "10 min HITT Ride"
 * `PelotonInstructorName` - Peloton provides this as the full instructors name: "Ally Love"
 
+**Note:**
+
+For this setting to take effect, your Garmin Connect account must be set to allow custom workout names.  In the Garmin Connect web interface click on the user icon in the top right, select `Account Settings` then `Display Preferences` ([shortcut](https://connect.garmin.com/modern/settings/displayPreferences)). 
+Change the `Activity Name` setting to `Workout Name (when available)`.  This will allow the custom workout name to sync, and should still allow the standard behavior when syncing non-P2G activities directly.
+
 ## Peloton Config
 
 This section provides settings related to fetching workouts from Peloton.
