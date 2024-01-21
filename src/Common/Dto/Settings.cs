@@ -58,7 +58,12 @@ public class Format
 		Rowing = new Rowing();
 		Strength = new Strength();
 
-		DeviceInfoSettings = new Dictionary<WorkoutType, GarminDeviceInfo>();
+		DeviceInfoSettings = new Dictionary<WorkoutType, GarminDeviceInfo>()
+		{
+			{ WorkoutType.None, GarminDevices.Forerunner945 },
+			{ WorkoutType.Cycling, GarminDevices.TACXDevice },
+			{ WorkoutType.Rowing, GarminDevices.EpixDevice },
+		};
 	}
 
 	public bool Fit { get; set; }

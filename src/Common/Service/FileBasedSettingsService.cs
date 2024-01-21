@@ -64,6 +64,23 @@ namespace Common.Service
 			var settings = new Settings();
 			ConfigurationSetup.LoadConfigValues(_configurationLoader, settings);
 
+			if (settings.Format is null)
+				settings.Format = new Settings().Format;
+
+			if (settings.Format.DeviceInfoSettings is null)
+				settings.Format.DeviceInfoSettings = new Settings().Format.DeviceInfoSettings;
+
+			if (!settings.Format.DeviceInfoSettings.TryGetValue(WorkoutType.None, out var _))
+			{
+				settings.Format.DeviceInfoSettings.Add(WorkoutType.None, GarminDevices.Forerunner945);
+
+				if (!settings.Format.DeviceInfoSettings.TryGetValue(WorkoutType.Cycling, out var _))
+					settings.Format.DeviceInfoSettings.Add(WorkoutType.Cycling, GarminDevices.TACXDevice);
+
+				if (!settings.Format.DeviceInfoSettings.TryGetValue(WorkoutType.Rowing, out var _))
+					settings.Format.DeviceInfoSettings.Add(WorkoutType.Rowing, GarminDevices.EpixDevice);
+			}
+
 			return Task.FromResult(settings);
 		}
 
@@ -95,7 +112,7 @@ namespace Common.Service
 
 		public Task<GarminDeviceInfo> GetCustomDeviceInfoAsync(Workout workout)
 		{
-			using var tracing = Tracing.Trace($"{nameof(SettingsService)}.{nameof(GetCustomDeviceInfoAsync)}ByFitnessDiscipline");
+			using var tracing = Tracing.Trace($"{nameof(SettingsService)}.{nameof(GetCustomDeviceInfoAsync)}");
 
 			var workoutType = workout.GetWorkoutType();
 
@@ -116,7 +133,22 @@ namespace Common.Service
 					if (userProvidedDeviceInfo != null) return userProvidedDeviceInfo;
 
 					if (settings?.Format?.DeviceInfoSettings is object)
+					{
 						settings.Format.DeviceInfoSettings.TryGetValue(workoutType, out userProvidedDeviceInfo);
+
+						if (userProvidedDeviceInfo is null)
+							settings.Format.DeviceInfoSettings.TryGetValue(WorkoutType.None, out userProvidedDeviceInfo);
+					}
+
+					if (userProvidedDeviceInfo is null)
+					{
+						if (workout.Fitness_Discipline == FitnessDiscipline.Cycling)
+							userProvidedDeviceInfo = GarminDevices.TACXDevice;
+						else if (workout.Fitness_Discipline == FitnessDiscipline.Caesar)
+							userProvidedDeviceInfo = GarminDevices.EpixDevice;
+						else
+							userProvidedDeviceInfo = GarminDevices.Forerunner945;
+					}
 
 					return userProvidedDeviceInfo;
 				});
