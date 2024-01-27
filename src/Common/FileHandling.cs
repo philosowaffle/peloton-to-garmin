@@ -2,6 +2,7 @@
 using Serilog;
 using System;
 using System.IO;
+using System.Reflection.PortableExecutable;
 using System.Text.Json;
 using System.Xml.Serialization;
 
@@ -15,6 +16,7 @@ public interface IFileHandling
 	string[] GetFiles(string path);
 
 	T DeserializeJson<T>(string file);
+	string SerializeToJson(object data);
 	bool TryDeserializeXml<T>(string file, out T result) where T : new();
 	void MoveFailedFile(string fromPath, string toPath);
 	void Copy(string from, string to, bool overwrite);
@@ -74,6 +76,13 @@ public class IOWrapper : IFileHandling
 		{
 			return JsonSerializer.Deserialize<T>(reader.ReadToEnd(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 		}
+	}
+
+	public string SerializeToJson(object data)
+	{
+		using var trace1 = Tracing.Trace(nameof(SerializeToJson), "io");
+
+		return JsonSerializer.Serialize(data, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 	}
 
 	public bool TryDeserializeXml<T>(string file, out T result) where T : new()

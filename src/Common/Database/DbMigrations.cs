@@ -71,15 +71,6 @@ public class DbMigrations : IDbMigrations
 		{
 			_logger.Error(e, "[MIGRATION] Failed to migrate existing data to Admin user.");
 		}
-
-		try
-		{
-			await _syncStatusDb!.DeleteLegacySyncStatusAsync();
-		}
-		catch (Exception e)
-		{
-			_logger.Warning(e, "[MIGRATION Failed to delete LegacySyncStatus.");
-		}
 		#pragma warning restore CS0612 // Type or member is obsolete
 	}
 

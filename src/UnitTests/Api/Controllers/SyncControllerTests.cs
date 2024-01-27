@@ -1,10 +1,10 @@
 ﻿using Api.Contract;
 using Api.Controllers;
-using Common;
 using Common.Dto;
 using Common.Service;
-using Common.Stateful;
 using FluentAssertions;
+using Garmin.Auth;
+using Garmin.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -31,8 +31,9 @@ namespace UnitTests.Api.Controllers
 			settings.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settings.Object.GetSettingsAsync))
 				.ReturnsAsync(new Settings());
 
-			settings.SetupWithAny<ISettingsService, GarminApiAuthentication>(nameof(settings.Object.GetGarminAuthentication))
-				.Returns((GarminApiAuthentication)null);
+			var garminAuthService = autoMocker.GetMock<IGarminAuthenticationService>();
+			garminAuthService.SetupWithAny<IGarminAuthenticationService, Task<GarminApiAuthentication>>(nameof(garminAuthService.Object.GetGarminAuthenticationAsync))
+				.ReturnsAsync((GarminApiAuthentication)null);
 
 			var response = await controller.SyncAsync(null);
 
@@ -52,8 +53,9 @@ namespace UnitTests.Api.Controllers
 			settings.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settings.Object.GetSettingsAsync))
 				.ReturnsAsync(new Settings());
 
-			settings.SetupWithAny<ISettingsService, GarminApiAuthentication>(nameof(settings.Object.GetGarminAuthentication))
-				.Returns((GarminApiAuthentication)null);
+			var garminAuthService = autoMocker.GetMock<IGarminAuthenticationService>();
+			garminAuthService.SetupWithAny<IGarminAuthenticationService, Task<GarminApiAuthentication>>(nameof(garminAuthService.Object.GetGarminAuthenticationAsync))
+				.ReturnsAsync((GarminApiAuthentication)null);
 
 			var request = new SyncPostRequest();
 
@@ -75,8 +77,9 @@ namespace UnitTests.Api.Controllers
 			settings.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settings.Object.GetSettingsAsync))
 				.ReturnsAsync(new Settings());
 
-			settings.SetupWithAny<ISettingsService, GarminApiAuthentication>(nameof(settings.Object.GetGarminAuthentication))
-				.Returns((GarminApiAuthentication)null);
+			var garminAuthService = autoMocker.GetMock<IGarminAuthenticationService>();
+			garminAuthService.SetupWithAny<IGarminAuthenticationService, Task<GarminApiAuthentication>>(nameof(garminAuthService.Object.GetGarminAuthenticationAsync))
+				.ReturnsAsync((GarminApiAuthentication)null);
 
 			var request = new SyncPostRequest() { WorkoutIds = new List<string>() };
 
@@ -98,8 +101,9 @@ namespace UnitTests.Api.Controllers
 			settings.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settings.Object.GetSettingsAsync))
 				.ReturnsAsync(new Settings() { Garmin = new() { Upload = true, TwoStepVerificationEnabled = true } });
 
-			settings.SetupWithAny<ISettingsService, GarminApiAuthentication>(nameof(settings.Object.GetGarminAuthentication))
-				.Returns((GarminApiAuthentication)null);
+			var garminAuthService = autoMocker.GetMock<IGarminAuthenticationService>();
+			garminAuthService.SetupWithAny<IGarminAuthenticationService, Task<GarminApiAuthentication>>(nameof(garminAuthService.Object.GetGarminAuthenticationAsync))
+				.ReturnsAsync((GarminApiAuthentication)null);
 
 			var request = new SyncPostRequest() { WorkoutIds = new List<string>() { "someId" } };
 

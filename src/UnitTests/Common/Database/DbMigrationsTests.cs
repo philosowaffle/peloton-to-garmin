@@ -7,6 +7,7 @@ using Common.Dto.P2G;
 using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
+using Sync.Database;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

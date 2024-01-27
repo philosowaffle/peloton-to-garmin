@@ -1,6 +1,4 @@
-﻿using Common.Database;
-
-namespace Api.Contract;
+﻿namespace Api.Contract;
 
 public record SyncGetResponse
 {
@@ -25,6 +23,13 @@ public record SyncGetResponse
 	public DateTime? NextSyncTime { get; init; }
 }
 
+public enum Status : byte
+{
+	NotRunning = 0,
+	Running = 1,
+	UnHealthy = 2,
+	Dead = 3
+}
 public record SyncPostRequest
 {
 	public SyncPostRequest()
