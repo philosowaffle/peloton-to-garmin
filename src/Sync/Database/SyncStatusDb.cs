@@ -1,12 +1,15 @@
-﻿using Common.Observe;
+﻿using Common;
+using Common.Database;
+using Common.Observe;
 using JsonFlatFileDataStore;
 using Prometheus;
 using Serilog;
+using Sync.Dto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Common.Database
+namespace Sync.Database
 {
 	public interface ISyncStatusDb
 	{
@@ -18,7 +21,7 @@ namespace Common.Database
 	public class SyncStatusDb : DbBase<SyncServiceStatus>, ISyncStatusDb
 	{
 		private static readonly ILogger _logger = LogContext.ForClass<SyncStatusDb>();
-		
+
 		private readonly DataStore _db;
 		private readonly SyncServiceStatus _defaultSyncServiceStatus = new SyncServiceStatus();
 
@@ -61,7 +64,7 @@ namespace Common.Database
 			{
 				return Task.FromResult(_db.GetItem<SyncServiceStatus>("1")); // hardcode to admin for now
 			}
-			catch(KeyNotFoundException k)
+			catch (KeyNotFoundException k)
 			{
 				_logger.Verbose("syncServiceStatus key not found in DB for user 1.", k);
 				return Task.FromResult(new SyncServiceStatus());

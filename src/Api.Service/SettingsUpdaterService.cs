@@ -2,7 +2,7 @@
 using Common;
 using Common.Dto;
 using Common.Service;
-using Common.Stateful;
+using Garmin.Auth;
 
 namespace Api.Service;
 
@@ -17,11 +17,13 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 {
 	private readonly IFileHandling _fileHandler;
 	private readonly ISettingsService _settingsService;
+	private readonly IGarminAuthenticationService _garminAuthService;
 
-	public SettingsUpdaterService(IFileHandling fileHandler, ISettingsService settingsService)
+	public SettingsUpdaterService(IFileHandling fileHandler, ISettingsService settingsService, IGarminAuthenticationService garminAuthService)
 	{
 		_fileHandler = fileHandler;
 		_settingsService = settingsService;
+		_garminAuthService = garminAuthService;
 	}
 
 	public async Task<ServiceResult<App>> UpdateAppSettingsAsync(App updatedAppSettings)
@@ -93,6 +95,11 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 		}
 
 		var settings = await _settingsService.GetSettingsAsync();
+
+		if (settings.Garmin.Password != updatedGarminSettings.Password
+			|| settings.Garmin.Email != updatedGarminSettings.Email)
+			await _garminAuthService.SignOutAsync();
+
 		settings.Garmin = updatedGarminSettings.Map();
 
 		if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled && settings.App.EnablePolling)

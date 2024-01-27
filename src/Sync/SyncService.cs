@@ -1,5 +1,4 @@
 ﻿using Common;
-using Common.Database;
 using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Observe;
@@ -11,6 +10,8 @@ using Garmin.Auth;
 using Peloton;
 using Prometheus;
 using Serilog;
+using Sync.Database;
+using Sync.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;

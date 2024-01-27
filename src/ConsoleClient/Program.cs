@@ -20,6 +20,8 @@ using Philosowaffle.Capability.ReleaseChecks;
 using Garmin.Auth;
 using Serilog.Settings.Configuration;
 using Common.Observe;
+using Garmin.Database;
+using Sync.Database;
 
 Statics.AppType = Constants.ConsoleAppName;
 Statics.MetricPrefix = Constants.ConsoleAppName;
@@ -89,6 +91,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
 			services.AddSingleton<IGarminAuthenticationService, GarminAuthenticationService>();
 			services.AddSingleton<IGarminUploader, GarminUploader>();
 			services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
+			services.AddSingleton<IGarminDb, GarminDb>();
 
 			// RELEASE CHECKS
 			services.AddGitHubReleaseChecker();

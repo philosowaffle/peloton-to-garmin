@@ -1,5 +1,4 @@
-﻿using Common;
-using Common.Dto;
+﻿using Common.Dto;
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
@@ -84,12 +83,17 @@ namespace Garmin
 
 			var auth = await _authService.GetGarminAuthenticationAsync();
 
+			var userAgent = string.Empty;
+			var appConfig = await _settingsService.GetAppConfigurationAsync();
+			if (!string.IsNullOrEmpty(appConfig.Developer.UserAgent))
+				userAgent = appConfig.Developer.UserAgent;
+
 			foreach (var file in files)
 			{
 				try
 				{
 					_logger.Information("Uploading to Garmin: {@file}", file);
-					await _api.UploadActivity(file, settings.Format.Fit ? ".fit" : ".tcx", auth);
+					await _api.UploadActivity(file, settings.Format.Fit ? ".fit" : ".tcx", auth, userAgent);
 					await RateLimit();
 				} catch (Exception e)
 				{
