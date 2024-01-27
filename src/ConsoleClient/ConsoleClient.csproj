@@ -46,7 +46,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Sync\Sync.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\Conversion\Conversion.csproj" />
     <ProjectReference Include="..\Garmin\Garmin.csproj" />
     <ProjectReference Include="..\Peloton\Peloton.csproj" />
   </ItemGroup>
