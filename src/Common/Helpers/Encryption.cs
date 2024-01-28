@@ -40,6 +40,8 @@ public static class Encryption
 
 	public static string DecryptString(this string cipherText, byte[] key, byte[] iv)
 	{
+		if (string.IsNullOrWhiteSpace(cipherText)) return cipherText;
+
 		var encrypted = Convert.FromBase64String(cipherText);
 		var encryptedByteArray = encrypted.ToArray();
 
