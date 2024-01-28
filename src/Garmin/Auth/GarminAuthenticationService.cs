@@ -51,7 +51,11 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 	public async Task<bool> GarminAuthTokenExistsAndIsValidAsync()
 	{
 		var oAuth2Token = await _garminDb.GetGarminOAuth2TokenAsync(1);
-		return oAuth2Token is object && !oAuth2Token.IsExpired();
+		var oAuth1Token = await _garminDb.GetGarminOAuth1TokenAsync(1);
+
+		// we either already have an oAuth2Token, or we think we are capable of getting one without
+		// user intervention
+		return (oAuth2Token is object && !oAuth2Token.IsExpired()) || (oAuth1Token is object);
 	}
 
 	public async Task<GarminApiAuthentication> GetGarminAuthenticationAsync()

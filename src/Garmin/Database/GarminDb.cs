@@ -7,6 +7,7 @@ using JsonFlatFileDataStore;
 using Prometheus;
 using Serilog;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Garmin.Database;
@@ -26,6 +27,7 @@ public interface IGarminDb
 public class GarminDb : DbBase<P2GGarminData>, IGarminDb
 {
 	private static readonly ILogger _logger = LogContext.ForClass<GarminDb>();
+	private static readonly P2GGarminData _defaultData = new P2GGarminData();
 
 	private readonly DataStore _db;
 
@@ -44,11 +46,11 @@ public class GarminDb : DbBase<P2GGarminData>, IGarminDb
 
 		try
 		{
-			var data = _db.GetItem<P2GGarminData>(userId.ToString());
+			_db.TryGetItem<P2GGarminData>(userId, out var data);
 
 			if (data is null
 				|| data.PartialGarminAuthentication is null
-				|| data.PartialGarminAuthentication.ExpiresAt < DateTime.Now) return null;
+				|| data.PartialGarminAuthentication.ExpiresAt < DateTime.Now) return Task.FromResult((StagedPartialGarminAuthentication)null);
 
 			return Task.FromResult(data.PartialGarminAuthentication);
 		}
@@ -69,9 +71,9 @@ public class GarminDb : DbBase<P2GGarminData>, IGarminDb
 
 		try
 		{
-			var data = _db.GetItem<P2GGarminData>(userId.ToString());
+			_db.TryGetItem<P2GGarminData>(userId, out var data);
 
-			if (string.IsNullOrWhiteSpace(data?.OAuth1Token)) return null;
+			if (string.IsNullOrWhiteSpace(data?.OAuth1Token)) return Task.FromResult((OAuth1Token)null);
 
 			var decrytedTokenString = data.OAuth1Token.Decrypt();
 			var token = _fileHandler.DeserializeJson<OAuth1Token>(decrytedTokenString);
@@ -94,9 +96,9 @@ public class GarminDb : DbBase<P2GGarminData>, IGarminDb
 
 		try
 		{
-			var data = _db.GetItem<P2GGarminData>(userId.ToString());
+			_db.TryGetItem<P2GGarminData>(userId, out var data);
 
-			if (string.IsNullOrWhiteSpace(data?.OAuth1Token)) return null;
+			if (string.IsNullOrWhiteSpace(data?.OAuth1Token)) return Task.FromResult((OAuth2Token)null);
 
 			var decrytedTokenString = data.OAuth2Token.Decrypt();
 			var token = _fileHandler.DeserializeJson<OAuth2Token>(decrytedTokenString);
@@ -109,7 +111,7 @@ public class GarminDb : DbBase<P2GGarminData>, IGarminDb
 		}
 	}
 
-	public Task UpsertPartialGarminAuthenticationAsync(int userId, StagedPartialGarminAuthentication cookieJar)
+	public Task UpsertPartialGarminAuthenticationAsync(int userId, StagedPartialGarminAuthentication partialGarminAuthentication)
 	{
 		using var metrics = DbMetrics.DbActionDuration
 									.WithLabels("upsertPartialGarminAuthentication", DbName)
@@ -118,12 +120,12 @@ public class GarminDb : DbBase<P2GGarminData>, IGarminDb
 									.WithTable(DbName);
 		try
 		{
-			var data = _db.GetItem<P2GGarminData>(userId.ToString());
+			_db.TryGetItem<P2GGarminData>(userId, out var data);
 
 			if (data is null)
 				data = new P2GGarminData();
 
-			data.PartialGarminAuthentication = cookieJar;
+			data.PartialGarminAuthentication = partialGarminAuthentication;
 
 			return _db.ReplaceItemAsync(userId.ToString(), data, upsert: true);
 		}
@@ -143,7 +145,7 @@ public class GarminDb : DbBase<P2GGarminData>, IGarminDb
 									.WithTable(DbName);
 		try
 		{
-			var data = _db.GetItem<P2GGarminData>(userId.ToString());
+			_db.TryGetItem<P2GGarminData>(userId, out var data);
 
 			if (data is null)
 				data = new P2GGarminData();
@@ -172,7 +174,7 @@ public class GarminDb : DbBase<P2GGarminData>, IGarminDb
 									.WithTable(DbName);
 		try
 		{
-			var data = _db.GetItem<P2GGarminData>(userId.ToString());
+			_db.TryGetItem<P2GGarminData>(userId, out var data);
 
 			if (data is null)
 				data = new P2GGarminData();

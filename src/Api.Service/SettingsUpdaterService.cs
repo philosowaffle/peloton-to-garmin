@@ -40,13 +40,6 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 		var settings = await _settingsService.GetSettingsAsync();
 		settings.App = updatedAppSettings;
 
-		if (settings.Garmin.TwoStepVerificationEnabled && settings.App.EnablePolling)
-		{
-			result.Successful = false;
-			result.Error = new ServiceError() { Message = "Automatic Syncing cannot be enabled when Garmin TwoStepVerification is enabled." };
-			return result;
-		}
-
 		await _settingsService.UpdateSettingsAsync(settings);
 		var updatedSettings = await _settingsService.GetSettingsAsync();
 
@@ -101,13 +94,6 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 			await _garminAuthService.SignOutAsync();
 
 		settings.Garmin = updatedGarminSettings.Map();
-
-		if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled && settings.App.EnablePolling)
-		{
-			result.Successful = false;
-			result.Error = new ServiceError() { Message = "Garmin TwoStepVerification cannot be enabled while Automatic Syncing is enabled. Please disable Automatic Syncing first." };
-			return result;
-		}
 
 		await _settingsService.UpdateSettingsAsync(settings);
 		var updatedSettings = await _settingsService.GetSettingsAsync();

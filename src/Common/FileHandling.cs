@@ -15,7 +15,7 @@ public interface IFileHandling
 	bool FileExists(string path);
 	string[] GetFiles(string path);
 
-	T DeserializeJson<T>(string file);
+	T DeserializeJson<T>(string file) where T : class;
 	string SerializeToJson(object data);
 	bool TryDeserializeXml<T>(string file, out T result) where T : new();
 	void MoveFailedFile(string fromPath, string toPath);
@@ -67,9 +67,19 @@ public class IOWrapper : IFileHandling
 		return files;
 	}
 
-	public T DeserializeJson<T>(string file)
+	public T DeserializeJson<T>(string content) where T : class
 	{
-		using var trace1 = Tracing.Trace(nameof(DeserializeJson), "io")
+		using var trace1 = Tracing.Trace(nameof(DeserializeJson), "io");
+
+		if (string.IsNullOrWhiteSpace(content)) return (T)null;
+
+		return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
+	}
+
+	public T DeserializeJsonFile<T>(string file)
+	{
+		using var trace1 = Tracing.Trace(nameof(DeserializeJsonFile), "io")
 									.WithTag("path", file);
 
 		using (var reader = new StreamReader(file))
