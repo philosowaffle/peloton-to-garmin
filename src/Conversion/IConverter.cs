@@ -522,7 +522,7 @@ namespace Conversion
 		{
 			GarminDeviceInfo deviceInfo = await _settingsService.GetCustomDeviceInfoAsync(workout);
 
-			_logger.Debug("Using device: {@DeviceName}, {@DeviceProdId}, {@DeviceManufacturerId}, {@DeviceVersion}", deviceInfo.Name, deviceInfo.ProductID, deviceInfo.ManufacturerId, deviceInfo.Version);
+			_logger.Debug("Using device: {@DeviceName}, {@DeviceProdId}, {@DeviceManufacturerId}, {@DeviceVersion}", deviceInfo?.Name, deviceInfo?.ProductID, deviceInfo?.ManufacturerId, deviceInfo?.Version);
 
 			return deviceInfo;
 		}

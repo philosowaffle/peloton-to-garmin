@@ -3,6 +3,7 @@ using Common.Stateful;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 namespace Common.Dto;
 
@@ -57,14 +58,15 @@ public class Format
 		Running = new Running();
 		Rowing = new Rowing();
 		Strength = new Strength();
-
-		DeviceInfoSettings = new Dictionary<WorkoutType, GarminDeviceInfo>()
-		{
-			{ WorkoutType.None, GarminDevices.Forerunner945 },
-			{ WorkoutType.Cycling, GarminDevices.TACXDevice },
-			{ WorkoutType.Rowing, GarminDevices.EpixDevice },
-		};
 	}
+
+	[JsonIgnore]
+	public static readonly Dictionary<WorkoutType, GarminDeviceInfo> DefaultDeviceInfoSettings = new Dictionary<WorkoutType, GarminDeviceInfo>()
+	{
+		{ WorkoutType.None, GarminDevices.Forerunner945 },
+		{ WorkoutType.Cycling, GarminDevices.TACXDevice },
+		{ WorkoutType.Rowing, GarminDevices.EpixDevice },
+	};
 
 	public bool Fit { get; set; }
 	public bool Json { get; set; }
