@@ -25,14 +25,6 @@ jobs:
     - name: Set env
       run: echo "OUTPUT_DIR=/app/output" >> $GITHUB_ENV
     - run: mkdir -p ${{ env.OUTPUT_DIR }}
-    - name: Create device info file
-      env: 
-        DEVICE_INFO: ${{ secrets.DEVICE_INFO }}
-      if: ${{ env.DEVICE_INFO }}
-      run: |
-        cat <<EOT > /app/deviceInfo.xml
-        ${{secrets.DEVICE_INFO}}
-        EOT
     - name: Create config file
       env:
         DEFAULT_WORKOUT_NUM: 5
@@ -48,8 +40,7 @@ jobs:
             "Tcx": false,
             "SaveLocalCopy": ${{ github.event.inputs.saveLocalCopy || false }},
             "IncludeTimeInHRZones": false,
-            "IncludeTimeInPowerZones": false,
-            "DeviceInfoPath": "./deviceInfo.xml"
+            "IncludeTimeInPowerZones": false
           },
           "Peloton": {
             "NumWorkoutsToDownload": ${{ github.event.inputs.workoutsToDownload || env.DEFAULT_WORKOUT_NUM }},

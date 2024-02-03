@@ -4,6 +4,8 @@
 ## Features
 
 - [#610] UI - Add more workout data to Sync page
+- [#606] Robust support for configuring what Devices are used on uploaded Garmin Workouts to increase flexibility for users to fix issues with TE/TSS/V02 not updating on Garmin
+    - If you have previously configured a custom `Format.DeviceInfoPath`, on startup this device config will be migrated to the new settings format automatically
 
 ## Fixes
 
