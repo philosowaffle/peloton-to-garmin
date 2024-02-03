@@ -6,7 +6,6 @@ using Prometheus;
 using Serilog;
 using Sync.Dto;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Sync.Database
@@ -23,7 +22,6 @@ namespace Sync.Database
 		private static readonly ILogger _logger = LogContext.ForClass<SyncStatusDb>();
 
 		private readonly DataStore _db;
-		private readonly SyncServiceStatus _defaultSyncServiceStatus = new SyncServiceStatus();
 
 		public SyncStatusDb(IFileHandling fileHandling) : base("SyncStatus", fileHandling)
 		{
@@ -52,7 +50,7 @@ namespace Sync.Database
 			return _db.DeleteItemAsync("syncServiceStatus");
 		}
 
-		public Task<SyncServiceStatus> GetSyncStatusAsync()
+		public async Task<SyncServiceStatus> GetSyncStatusAsync()
 		{
 			using var metrics = DbMetrics.DbActionDuration
 									.WithLabels("get", DbName)
@@ -62,17 +60,19 @@ namespace Sync.Database
 
 			try
 			{
-				return Task.FromResult(_db.GetItem<SyncServiceStatus>("1")); // hardcode to admin for now
-			}
-			catch (KeyNotFoundException k)
-			{
-				_logger.Verbose("syncServiceStatus key not found in DB for user 1.", k);
-				return Task.FromResult(new SyncServiceStatus());
+				if (_db.TryGetItem<SyncServiceStatus>(1, out var syncStatus))
+					return syncStatus;
+
+				if (await _db.InsertItemAsync("1", new SyncServiceStatus()))
+					return new SyncServiceStatus();
+
+				_logger.Error("Failed to save default SyncServiceStatus to Sync DB.");
+				return new SyncServiceStatus();
 			}
 			catch (Exception e)
 			{
 				_logger.Error(e, "Failed to get syncServiceStatus from db for user 1");
-				return Task.FromResult(_defaultSyncServiceStatus);
+				return new SyncServiceStatus();
 			}
 		}
 
