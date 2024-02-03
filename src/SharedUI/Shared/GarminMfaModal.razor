@@ -26,12 +26,6 @@
 	private bool _isErrored = false;
 	private Func<Task>? _successCallBack;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await InitializeFieldsAsync();
-		await base.OnInitializedAsync();
-	}
-
 	public async Task ShowAsync(Func<Task>? successCallBack = null)
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(GarminMfaModal)}.{nameof(ShowAsync)}", kind: ActivityKind.Client);
