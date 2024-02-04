@@ -60,6 +60,6 @@
 		var settings = await _apiClient.SettingsGetAsync();
 		var systemInfo =  await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = settings.App.CheckForUpdates });
 
-		configDocumentation = systemInfo.Documentation + "/configuration/json";
+		configDocumentation = systemInfo.Documentation + "/configuration";
 	}
 }

@@ -54,7 +54,7 @@
 		appSettings = settings.App;
 
 		var systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = settings.App.CheckForUpdates });
-		configDocumentation = systemInfo.Documentation + "/configuration/json/#app-config";
+		configDocumentation = systemInfo.Documentation + "/configuration/app";
 	}
 
 	protected async Task SaveAppSettings()

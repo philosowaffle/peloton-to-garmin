@@ -25,6 +25,23 @@ namespace Common.Database
 		public SyncStatusDb(IFileHandling fileHandling) : base("SyncStatus", fileHandling)
 		{
 			_db = new DataStore(DbPath);
+			Init();
+		}
+
+		private void Init()
+		{
+			try
+			{
+				var settings = _db.GetItem<SyncServiceStatus>("1");
+			}
+			catch (KeyNotFoundException)
+			{
+				var success = _db.InsertItem("1", _defaultSyncServiceStatus);
+				if (!success)
+				{
+					_logger.Error($"Failed to init default Sync Status to Db for default user.");
+				}
+			}
 		}
 
 		public Task DeleteLegacySyncStatusAsync()

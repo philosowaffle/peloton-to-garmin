@@ -1,5 +1,6 @@
 ﻿using Common.Dto;
 using Common.Dto.Garmin;
+using Common.Dto.Peloton;
 using Common.Observe;
 using Common.Stateful;
 using Microsoft.Extensions.Caching.Memory;
@@ -63,6 +64,15 @@ namespace Common.Service
 			var settings = new Settings();
 			ConfigurationSetup.LoadConfigValues(_configurationLoader, settings);
 
+			if (settings.Format is null)
+				settings.Format = new Settings().Format;
+
+			if (settings.Format.DeviceInfoSettings is null)
+				settings.Format.DeviceInfoSettings = Format.DefaultDeviceInfoSettings;
+
+			if (!settings.Format.DeviceInfoSettings.TryGetValue(WorkoutType.None, out var _))
+				settings.Format.DeviceInfoSettings.Add(WorkoutType.None, Format.DefaultDeviceInfoSettings[WorkoutType.None]);
+
 			return Task.FromResult(settings);
 		}
 
@@ -92,30 +102,43 @@ namespace Common.Service
 			return _next.GetAppConfigurationAsync();
 		}
 
-		public async Task<GarminDeviceInfo> GetCustomDeviceInfoAsync(string garminEmail)
+		public async Task<GarminDeviceInfo> GetCustomDeviceInfoAsync(Workout workout)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FileBasedSettingsService)}.{nameof(GetCustomDeviceInfoAsync)}");
+
+			var workoutType = WorkoutType.None;
+			if (workout is object)
+				workoutType = workout.GetWorkoutType();
 
 			GarminDeviceInfo userProvidedDeviceInfo = null;
 
 			var settings = await GetSettingsAsync();
-			var userDevicePath = settings.Format.DeviceInfoPath;
+#pragma warning disable CS0618 // Type or member is obsolete
+			var userDevicePath = settings?.Format?.DeviceInfoPath;
+#pragma warning restore CS0618 // Type or member is obsolete
 
-			if (string.IsNullOrEmpty(userDevicePath))
-				return null;
+			_fileHandler.TryDeserializeXml(userDevicePath, out userProvidedDeviceInfo);
 
-			lock (_lock)
+			if (userProvidedDeviceInfo != null) return userProvidedDeviceInfo;
+
+			if (settings?.Format?.DeviceInfoSettings is object)
 			{
-				var key = $"{GarminDeviceInfoKey}:{garminEmail}";
-				return _cache.GetOrCreate(key, (cacheEntry) =>
-				{
-					cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(5);
-					if (_fileHandler.TryDeserializeXml(userDevicePath, out userProvidedDeviceInfo))
-						return userProvidedDeviceInfo;
+				settings.Format.DeviceInfoSettings.TryGetValue(workoutType, out userProvidedDeviceInfo);
 
-					return null;
-				});
+				if (userProvidedDeviceInfo is null)
+					settings.Format.DeviceInfoSettings.TryGetValue(WorkoutType.None, out userProvidedDeviceInfo);
 			}
+
+			if (userProvidedDeviceInfo is null)
+			{
+				Format.DefaultDeviceInfoSettings.TryGetValue(workoutType, out userProvidedDeviceInfo);
+
+				if (userProvidedDeviceInfo is null)
+					Format.DefaultDeviceInfoSettings.TryGetValue(WorkoutType.None, out userProvidedDeviceInfo);
+			}
+
+			return userProvidedDeviceInfo;
+
 		}
 	}
 }

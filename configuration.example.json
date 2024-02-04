@@ -11,8 +11,7 @@
     "Tcx": false,
     "SaveLocalCopy": true,
     "IncludeTimeInHRZones": false,
-    "IncludeTimeInPowerZones": false,
-    "DeviceInfoPath": "./deviceInfo.xml"
+    "IncludeTimeInPowerZones": false
   },
 
   "Peloton": {

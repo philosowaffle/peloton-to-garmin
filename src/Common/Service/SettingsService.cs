@@ -1,6 +1,7 @@
 ﻿using Common.Database;
 using Common.Dto;
 using Common.Dto.Garmin;
+using Common.Dto.Peloton;
 using Common.Observe;
 using Common.Stateful;
 using Microsoft.Extensions.Caching.Memory;
@@ -36,7 +37,18 @@ public class SettingsService : ISettingsService
 	{
 		using var tracing = Tracing.Trace($"{nameof(SettingsService)}.{nameof(GetSettingsAsync)}");
 
-		return (await _db.GetSettingsAsync(1)) ?? new Settings(); // hardcode to admin user for now
+		var settings = (await _db.GetSettingsAsync(1)) ?? new Settings(); // hardcode to admin user for now
+
+		if (settings.Format is null)
+			settings.Format = new Settings().Format;
+
+		if (settings.Format.DeviceInfoSettings is null)
+			settings.Format.DeviceInfoSettings = Format.DefaultDeviceInfoSettings;
+
+		if (!settings.Format.DeviceInfoSettings.TryGetValue(WorkoutType.None, out var _))
+			settings.Format.DeviceInfoSettings.Add(WorkoutType.None, Format.DefaultDeviceInfoSettings[WorkoutType.None]);
+
+		return settings;
 	}
 
 	public async Task UpdateSettingsAsync(Settings updatedSettings)
@@ -56,9 +68,6 @@ public class SettingsService : ISettingsService
 
 		ClearGarminAuthentication(originalSettings.Garmin.Email);
 		ClearGarminAuthentication(originalSettings.Garmin.Password);
-
-		ClearCustomDeviceInfoAsync(originalSettings.Garmin.Email);
-		ClearCustomDeviceInfoAsync(updatedSettings.Garmin.Email);
 
 		await _db.UpsertSettingsAsync(1, updatedSettings); // hardcode to admin user for now
 	}
@@ -139,40 +148,41 @@ public class SettingsService : ISettingsService
 		return Task.FromResult(appConfiguration);
 	}
 
-	public async Task<GarminDeviceInfo> GetCustomDeviceInfoAsync(string garminEmail)
+	public async Task<GarminDeviceInfo> GetCustomDeviceInfoAsync(Workout workout)
 	{
 		using var tracing = Tracing.Trace($"{nameof(SettingsService)}.{nameof(GetCustomDeviceInfoAsync)}");
+
+		var workoutType = WorkoutType.None;
+		if (workout is object)
+			workoutType = workout.GetWorkoutType();
 
 		GarminDeviceInfo userProvidedDeviceInfo = null;
 
 		var settings = await GetSettingsAsync();
-		var userDevicePath = settings.Format.DeviceInfoPath;
+#pragma warning disable CS0618 // Type or member is obsolete
+		var userDevicePath = settings?.Format?.DeviceInfoPath;
+#pragma warning restore CS0618 // Type or member is obsolete
 
-		if (string.IsNullOrEmpty(userDevicePath))
-			return null;
+		_fileHandler.TryDeserializeXml(userDevicePath, out userProvidedDeviceInfo);
 
-		lock (_lock)
+		if (userProvidedDeviceInfo != null) return userProvidedDeviceInfo;
+
+		if (settings?.Format?.DeviceInfoSettings is object)
 		{
-			var key = $"{GarminDeviceInfoKey}:{garminEmail}";
-			return _cache.GetOrCreate(key, (cacheEntry) => 
-			{
-				cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(5);
-				if (_fileHandler.TryDeserializeXml(userDevicePath, out userProvidedDeviceInfo))
-					return userProvidedDeviceInfo;
+			settings.Format.DeviceInfoSettings.TryGetValue(workoutType, out userProvidedDeviceInfo);
 
-				return null;
-			});
+			if (userProvidedDeviceInfo is null)
+				settings.Format.DeviceInfoSettings.TryGetValue(WorkoutType.None, out userProvidedDeviceInfo);
 		}
-	}
 
-	private void ClearCustomDeviceInfoAsync(string garminEmail)
-	{
-		using var tracing = Tracing.Trace($"{nameof(SettingsService)}.{nameof(ClearCustomDeviceInfoAsync)}");
-
-		lock (_lock)
+		if (userProvidedDeviceInfo is null)
 		{
-			var key = $"{GarminDeviceInfoKey}:{garminEmail}";
-			_cache.Remove(key);
+			Format.DefaultDeviceInfoSettings.TryGetValue(workoutType, out userProvidedDeviceInfo);
+
+			if (userProvidedDeviceInfo is null)
+				Format.DefaultDeviceInfoSettings.TryGetValue(WorkoutType.None, out userProvidedDeviceInfo);
 		}
+
+		return userProvidedDeviceInfo;
 	}
 }
