@@ -12,9 +12,13 @@
         <meta name="author" content="philosowaffle">
       
       
-        <link rel="canonical" href="https://philosowaffle.github.io/peloton-to-garmin/master/migration/migrate-v1-v2/">
+        <link rel="canonical" href="https://philosowaffle.github.io/peloton-to-garmin/master/configuration/observability/">
       
       
+        <link rel="prev" href="../webui/">
+      
+      
+        <link rel="next" href="../exercise-types/">
       
       
       <link rel="icon" href="../../img/favicon.ico">
@@ -22,7 +26,7 @@
     
     
       
-        <title>Migrating from V1 to V2 - Peloton To Garmin</title>
+        <title>Observability File Configuration - Peloton To Garmin</title>
       
     
     
@@ -72,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#migrating-from-v1-to-v2" class="md-skip">
+        <a href="#observability-file-configuration" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Migrating from V1 to V2
+              Observability File Configuration
             
           </span>
         </div>
@@ -242,11 +246,13 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../configuration/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
           
   
     
@@ -617,6 +623,8 @@
       
   
   
+    
+  
   
   
     
@@ -639,17 +647,17 @@
       
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../configuration/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -666,7 +674,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             Configuration
@@ -729,7 +737,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/app/" class="md-nav__link">
+      <a href="../app/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -750,7 +758,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/format/" class="md-nav__link">
+      <a href="../format/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -771,7 +779,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/garmin/" class="md-nav__link">
+      <a href="../garmin/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -792,7 +800,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/peloton/" class="md-nav__link">
+      <a href="../peloton/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -818,8 +826,10 @@
                 
   
   
+    
   
   
+  
     
     
       
@@ -833,12 +843,12 @@
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" checked>
         
           
           <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
@@ -852,7 +862,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4_3">
             <span class="md-nav__icon md-icon"></span>
             Low Level Settings
@@ -866,7 +876,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/api/" class="md-nav__link">
+      <a href="../api/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -887,7 +897,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/webui/" class="md-nav__link">
+      <a href="../webui/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -905,10 +915,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../configuration/observability/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Observability File Configuration
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -917,6 +947,92 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#observability-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Observability Config
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Observability Config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prometheus-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prometheus Config
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prometheus Config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-prometheus-scraper-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Prometheus scraper config
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jaeger-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Jaeger Config
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serilog-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Serilog Config
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -937,7 +1053,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/exercise-types/" class="md-nav__link">
+      <a href="../exercise-types/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1057,7 +1173,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../migrations/" class="md-nav__link">
+      <a href="../../migration/migrations/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1126,92 +1242,38 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#steps" class="md-nav__link">
+  <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
-      Steps
+      Overview
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Steps">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#observability-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Observability Config
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Observability Config">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-backup-your-current-config" class="md-nav__link">
+  <a href="#prometheus-config" class="md-nav__link">
     <span class="md-ellipsis">
-      1. Backup your current config
+      Prometheus Config
     </span>
   </a>
   
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-download-v2" class="md-nav__link">
-    <span class="md-ellipsis">
-      2. Download v2
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-migrate-your-config" class="md-nav__link">
-    <span class="md-ellipsis">
-      3. Migrate your config
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. Migrate your config">
+    <nav class="md-nav" aria-label="Prometheus Config">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#peloton-section" class="md-nav__link">
+  <a href="#example-prometheus-scraper-config" class="md-nav__link">
     <span class="md-ellipsis">
-      Peloton section
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#garmin-section" class="md-nav__link">
-    <span class="md-ellipsis">
-      Garmin section
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ptog-section" class="md-nav__link">
-    <span class="md-ellipsis">
-      PTOG Section
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#output-section" class="md-nav__link">
-    <span class="md-ellipsis">
-      Output Section
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#logger-section" class="md-nav__link">
-    <span class="md-ellipsis">
-      Logger Section
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#debug-section" class="md-nav__link">
-    <span class="md-ellipsis">
-      Debug Section
+      Example Prometheus scraper config
     </span>
   </a>
   
@@ -1219,6 +1281,24 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jaeger-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Jaeger Config
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serilog-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Serilog Config
+    </span>
+  </a>
   
 </li>
         
@@ -1245,237 +1325,185 @@
   
 
 
-<h1 id="migrating-from-v1-to-v2">Migrating from V1 to V2</h1>
-<p>Version 2 of P2G is a complete rewrite of Version 1 into dotnet. Version 2 has feature parity with Version 1 and additional new features. One of the key benefits of Version 2 over Version 1 is the ability to generate and upload FIT files. FIT files are able to capture more data than the TCX format used in Version 1.</p>
-<p>Version 2 will not interfere with your Version 1 install, so if anything doesn't work for you on V2, you can always return to using V1.</p>
-<h2 id="steps">Steps</h2>
-<h3 id="1-backup-your-current-config">1. Backup your current config</h3>
+<h1 id="observability-file-configuration">Observability File Configuration</h1>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>These are advanced settings for those who like to play around with Logs, Metrics, and Traces.</p>
+</div>
+<h2 id="overview">Overview</h2>
+<p>P2G supports publishing Open Telemetry metrics. P2G publishes the following:</p>
 <ol>
-<li>Navigate to where you currently have version 1 installed</li>
-<li>Rename the folder to something like <code>p2g_v1</code></li>
+<li>Logs via Serilog. Logs can be sunk to a variety of sources including Console, File, ElasticSearch, and Grafana Loki.</li>
+<li>Metrics via Prometheus. Metrics are exposed on a standard <code>/metrics</code> endpoint and the port is configurable.</li>
+<li>Traces via Jaeger. Traces can be collected via an agent of your choice. Some options include Jaeger Agent/Jaeger Query, or Grafana Tempo.</li>
+<li>P2G also provides a sample Grafana dashboard which can be found <a href="https://github.com/philosowaffle/peloton-to-garmin/tree/master/grafana">in the repository</a>.</li>
 </ol>
-<h3 id="2-download-v2">2. Download v2</h3>
+<p>The grafana dashboard assumes you have the following datasources setup but can be easily modified to meet your needs:</p>
 <ol>
-<li>Download and install v2, see <a href="../../install/">Install</a></li>
+<li>Prometheus</li>
+<li>Loki</li>
+<li>If running as a docker image a docker metrics exporter</li>
 </ol>
-<h3 id="3-migrate-your-config">3. Migrate your config</h3>
-<ol>
-<li>Find your original v1 <code>config.ini</code> file and open it</li>
-<li>In a new window, find the v2 <code>configuration.local.json</code> file and open it</li>
-<li>Below walks through section by section how the old config maps to the new config values.</li>
-</ol>
-<h4 id="peloton-section">Peloton section</h4>
-<div class="highlight"><pre><span></span><code><span class="o">[</span>PELOTON<span class="o">]</span>
-<span class="nv">Email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>pelotonEmail@example.com
-<span class="nv">Password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>pelotonPassword
-<span class="nv">WorkoutTypes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>cycling,<span class="w"> </span>strength<span class="w"> </span>
-</code></pre></div>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Property</th>
-<th style="text-align: left;">New Config</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">Email</td>
-<td style="text-align: left;"><a href="../../configuration/peloton/">Peloton Config</a>.Email</td>
-<td></td>
-</tr>
-<tr>
-<td style="text-align: left;">Password</td>
-<td style="text-align: left;"><a href="../../configuration/peloton/">Peloton Config</a>.Password</td>
-<td></td>
-</tr>
-<tr>
-<td style="text-align: left;">WorkoutTypes</td>
-<td style="text-align: left;"><a href="../../configuration/peloton/">Peloton Config</a>.ExcludeWorkoutTypes</td>
-<td>In v1 this was a list of workout types to <strong>include</strong>, in v2 this changes to a list of workout types to <strong>exclude</strong>.</td>
-</tr>
-</tbody>
-</table>
-<h4 id="garmin-section">Garmin section</h4>
-<div class="highlight"><pre><span></span><code><span class="o">[</span>GARMIN<span class="o">]</span>
-<span class="nv">UploadEnabled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span>
-<span class="nv">Email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>garminEmail@example.com
-<span class="nv">Password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>garminPassword
-</code></pre></div>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Property</th>
-<th style="text-align: left;">New Config</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">Email</td>
-<td style="text-align: left;"><a href="../../configuration/garmin/">Garmin Config</a>.Email</td>
-<td></td>
-</tr>
-<tr>
-<td style="text-align: left;">Password</td>
-<td style="text-align: left;"><a href="../../configuration/garmin/">Garmin Config</a>.Password</td>
-<td></td>
-</tr>
-<tr>
-<td style="text-align: left;">UploadEnabled</td>
-<td style="text-align: left;"><a href="../../configuration/garmin/">Garmin Config</a>.Upload</td>
-<td>You will additionally need to specify <code>FormatToUpload</code> if you have this enabled.</td>
-</tr>
-</tbody>
-</table>
-<h4 id="ptog-section">PTOG Section</h4>
-<div class="highlight"><pre><span></span><code><span class="o">[</span>PTOG<span class="o">]</span>
-<span class="nv">EnablePolling</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span>
-<span class="nv">PollingIntervalSeconds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">600</span>
-</code></pre></div>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Property</th>
-<th style="text-align: left;">New Config</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">EnablePolling</td>
-<td style="text-align: left;"><a href="../../configuration/app/">App Config</a>.EnablePolling</td>
-<td></td>
-</tr>
-<tr>
-<td style="text-align: left;">PollingIntervalSeconds</td>
-<td style="text-align: left;"><a href="../../configuration/app/">App Config</a>.PollingIntervalSeconds</td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<h4 id="output-section">Output Section</h4>
-<div class="highlight"><pre><span></span><code><span class="o">[</span>OUTPUT<span class="o">]</span>
-<span class="nv">Directory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Output
-<span class="nv">WorkingDirectory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Working
-<span class="nv">ArchiveDirectory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Archive
-<span class="nv">RetainFiles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span>
-<span class="nv">ArchiveFiles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span>
-<span class="nv">SkipDownload</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span>
-<span class="nv">ArchiveByType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span>
-</code></pre></div>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Property</th>
-<th style="text-align: left;">New Config</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">Directory</td>
-<td style="text-align: left;">none</td>
-<td></td>
-</tr>
-<tr>
-<td style="text-align: left;">WorkingDirectory</td>
-<td style="text-align: left;"><a href="../../configuration/app/">App Config</a>.WorkingDirectory</td>
-<td></td>
-</tr>
-<tr>
-<td style="text-align: left;">ArchiveDirectory</td>
-<td style="text-align: left;"><a href="../../configuration/app/">App Config</a>.OutputDirectory</td>
-<td></td>
-</tr>
-<tr>
-<td style="text-align: left;">RetainFiles</td>
-<td style="text-align: left;"><a href="../../configuration/app/">Format Config</a>.SaveLocalCopy</td>
-<td></td>
-</tr>
-<tr>
-<td style="text-align: left;">ArchiveFiles</td>
-<td style="text-align: left;">none</td>
-<td></td>
-</tr>
-<tr>
-<td style="text-align: left;">SkipDownload</td>
-<td style="text-align: left;">none</td>
-<td></td>
-</tr>
-<tr>
-<td style="text-align: left;">ArchiveByType</td>
-<td style="text-align: left;"><a href="../../configuration/app/">Format Config</a>.[Fit,Tcx,Json]</td>
-<td>Set the formats you want to save to true and then set <code>SaveLocalCopy: true</code></td>
-</tr>
-</tbody>
-</table>
-<h4 id="logger-section">Logger Section</h4>
-<div class="highlight"><pre><span></span><code><span class="o">[</span>LOGGER<span class="o">]</span>
-<span class="nv">LogFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>peloton-to-garmin.log
-<span class="nv">LogLevel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INFO
-</code></pre></div>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Property</th>
-<th style="text-align: left;">New Config</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">LogFile</td>
-<td style="text-align: left;"><a href="../../configuration/observability/">Observability Config</a>.Serilog.WriteTo.Args.Path</td>
-<td></td>
-</tr>
-<tr>
-<td style="text-align: left;">LogLevel</td>
-<td style="text-align: left;"><a href="../../configuration/observability/">Observability Config</a>.Serilog.MinimumLevel</td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p>For the general use case, the below config should be sufficient.</p>
+<p><img alt="Grafana Dashboard" src="https://github.com/philosowaffle/peloton-to-garmin/raw/master/images/grafana_dashboard.png?raw=true" title="Grafana Dashboard" /></p>
+<h2 id="observability-config">Observability Config</h2>
+<p>P2G looks for a file named <code>configuration.local.json</code> in the same directory where it is run.  Within this file, P2G supports configuring an <code>Observability</code> section, as seen below.</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&quot;Observability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 
-<span class="w">    </span><span class="nt">&quot;Serilog&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;Using&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&quot;Serilog.Sinks.Console&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Serilog.Sinks.File&quot;</span><span class="w"> </span><span class="p">],</span>
-<span class="w">      </span><span class="nt">&quot;MinimumLevel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Information&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;Prometheus&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/**(1)!**/</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="c1">// Metrics</span>
+<span class="w">    </span><span class="nt">&quot;Jaeger&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/**(2)!**/</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="c1">// Traces</span>
+<span class="w">    </span><span class="nt">&quot;Serilog&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/**(3)!**/</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// Logs</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<ol>
+<li>Jump to <a href="#prometheus-config">Prometheus Config Documentation</a></li>
+<li>Jump to <a href="#jaeger-config">Jaeger Config Documentation</a></li>
+<li>Jump to <a href="#serilog-config">Serilog Config Documentation</a></li>
+</ol>
+<h3 id="prometheus-config">Prometheus Config</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Prometheus&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;Enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;Port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4000</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Enabled</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>false</code></td>
+<td style="text-align: left;">Whether or not to expose metrics. Metrics will be available at <code>http://localhost:{port}/metrics</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Port</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>80</code></td>
+<td style="text-align: left;">The port the metrics endpoint should be served on. Only valid for Console mode, not Api/WebUI</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you are using Docker, ensure you have exposed the port from your container.</p>
+</div>
+<h4 id="example-prometheus-scraper-config">Example Prometheus scraper config</h4>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;p2g&#39;</span>
+<span class="w">    </span><span class="nt">scrape_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span>
+<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">&lt;p2gIPaddress&gt;</span><span class="p p-Indicator">:</span><span class="nv">&lt;p2gPort&gt;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">tls_config</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">insecure_skip_verify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
+<h3 id="jaeger-config">Jaeger Config</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Jaeger&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;Enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;AgentHost&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;AgentPort&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">6831</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Enabled</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>false</code></td>
+<td style="text-align: left;">Whether or not to generate traces.</td>
+</tr>
+<tr>
+<td style="text-align: left;">AgentHost</td>
+<td style="text-align: left;"><strong>yes - if Enalbed=true</strong></td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;">The host address for your trace collector.</td>
+</tr>
+<tr>
+<td style="text-align: left;">AgentPort</td>
+<td style="text-align: left;"><strong>yes - if Enabled=true</strong></td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;">The port for your trace collector.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="serilog-config">Serilog Config</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Serilog&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;Using&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&quot;Serilog.Sinks.Console&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Serilog.Sinks.File&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Serilog.Sinks.Grafana.Loki&quot;</span><span class="w"> </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;MinimumLevel&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;Default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Information&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Override&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;Microsoft&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Error&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;System&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Error&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;WriteTo&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Console&quot;</span><span class="w"> </span><span class="p">},</span>
 <span class="w">        </span><span class="p">{</span>
 <span class="w">          </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;File&quot;</span><span class="p">,</span>
 <span class="w">          </span><span class="nt">&quot;Args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./peloton-to-garmin.txt&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./output/log.txt&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">&quot;rollingInterval&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Day&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">&quot;retainedFileCountLimit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span>
 <span class="w">          </span><span class="p">}</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">      </span><span class="p">]</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}</span>
-</code></pre></div>
-<h4 id="debug-section">Debug Section</h4>
-<div class="highlight"><pre><span></span><code><span class="o">[</span>DEBUG<span class="o">]</span>
-<span class="nv">PauseOnFinish</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GrafanaLoki&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;Args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://192.168.1.95:3100&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;textFormatter&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Serilog.Sinks.Grafana.Loki.LokiJsonTextFormatter, Serilog.Sinks.Grafana.Loki&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">              </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;app&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;p2g&quot;</span>
+<span class="w">              </span><span class="p">}</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}]</span>
+<span class="p">}</span>
 </code></pre></div>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Property</th>
-<th style="text-align: left;">New Config</th>
-<th>Notes</th>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">PauseOnFinish</td>
-<td style="text-align: left;"><a href="../../configuration/app/">App Config</a>.CloseWindowOnFinish</td>
-<td></td>
+<td style="text-align: left;">Using</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;">A list of sinks you would like use. The valid sinks are listed in the examplea above.</td>
+</tr>
+<tr>
+<td style="text-align: left;">MinimumLevel</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;">The minimum level to write. <code>[Verbose, Debug, Information, Warning, Error, Fatal]</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">WriteTo</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;">Additional config for various sinks you are writing to.</td>
 </tr>
 </tbody>
 </table>
+<p>More detailed information about configuring Logging can be found on the <a href="https://github.com/serilog/serilog-settings-configuration#serilogsettingsconfiguration--">Serilog Config Repo</a>.</p>
 
 
 
