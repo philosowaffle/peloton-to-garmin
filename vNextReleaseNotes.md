@@ -16,15 +16,15 @@
 - Console
     - `console-stable`
     - `console-latest`
-    - `console-v4.1.0`
+    - `console-v4.2.0`
     - `console-v4`
 - Api
     - `api-stable`
     - `api-latest`
-    - `api-v4.1.0`
+    - `api-v4.2.0`
     - `api-v4`
 - WebUI
     - `webui-stable`
     - `webui-latest`
-    - `webui-v4.1.0`
+    - `webui-v4.2.0`
     - `webui-v4`
