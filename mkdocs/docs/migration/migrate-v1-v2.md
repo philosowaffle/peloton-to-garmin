@@ -33,9 +33,9 @@ WorkoutTypes = cycling, strength
 
 | Property      | New Config       | Notes |
 |:-------------|:------------------|-------|
-| Email | [Peloton Config](../configuration/json.md#peloton-config).Email | |
-| Password | [Peloton Config](../configuration/json.md#peloton-config).Password | |
-| WorkoutTypes | [Peloton Config](../configuration/json.md#peloton-config).ExcludeWorkoutTypes | In v1 this was a list of workout types to **include**, in v2 this changes to a list of workout types to **exclude**. |
+| Email | [Peloton Config](../configuration/peloton.md).Email | |
+| Password | [Peloton Config](../configuration/peloton.md).Password | |
+| WorkoutTypes | [Peloton Config](../configuration/peloton.md).ExcludeWorkoutTypes | In v1 this was a list of workout types to **include**, in v2 this changes to a list of workout types to **exclude**. |
 
 #### Garmin section
 
@@ -48,9 +48,9 @@ Password = garminPassword
 
 | Property      | New Config       | Notes |
 |:-------------|:------------------|-------|
-| Email | [Garmin Config](../configuration/json.md#garmin-config).Email | |
-| Password | [Garmin Config](../configuration/json.md#garmin-config).Password | |
-| UploadEnabled | [Garmin Config](../configuration/json.md#peloton-config).Upload | You will additionally need to specify `FormatToUpload` if you have this enabled. |
+| Email | [Garmin Config](../configuration/garmin.md).Email | |
+| Password | [Garmin Config](../configuration/garmin.md).Password | |
+| UploadEnabled | [Garmin Config](../configuration/garmin.md).Upload | You will additionally need to specify `FormatToUpload` if you have this enabled. |
 
 #### PTOG Section
 
@@ -62,8 +62,8 @@ PollingIntervalSeconds = 600
 
 | Property      | New Config       | Notes |
 |:-------------|:------------------|-------|
-| EnablePolling | [App Config](../configuration/json.md#app-config).EnablePolling | |
-| PollingIntervalSeconds | [App Config](../configuration/json.md#app-config).PollingIntervalSeconds | |
+| EnablePolling | [App Config](../configuration/app.md).EnablePolling | |
+| PollingIntervalSeconds | [App Config](../configuration/app.md).PollingIntervalSeconds | |
 
 #### Output Section
 
@@ -81,12 +81,12 @@ ArchiveByType = true
 | Property      | New Config       | Notes |
 |:-------------|:------------------|-------|
 | Directory | none | |
-| WorkingDirectory | [App Config](../configuration/json.md#app-config).WorkingDirectory | |
-| ArchiveDirectory | [App Config](../configuration/json.md#app-config).OutputDirectory | |
-| RetainFiles | [Format Config](../configuration/json.md#app-config).SaveLocalCopy | |
+| WorkingDirectory | [App Config](../configuration/app.md).WorkingDirectory | |
+| ArchiveDirectory | [App Config](../configuration/app.md).OutputDirectory | |
+| RetainFiles | [Format Config](../configuration/app.md).SaveLocalCopy | |
 | ArchiveFiles | none | |
 | SkipDownload | none | |
-| ArchiveByType | [Format Config](../configuration/json.md#app-config).[Fit,Tcx,Json] | Set the formats you want to save to true and then set `SaveLocalCopy: true` |
+| ArchiveByType | [Format Config](../configuration/app.md).[Fit,Tcx,Json] | Set the formats you want to save to true and then set `SaveLocalCopy: true` |
 
 #### Logger Section
 
@@ -98,8 +98,8 @@ LogLevel = INFO
 
 | Property      | New Config       | Notes |
 |:-------------|:------------------|-------|
-| LogFile | [Observability Config](../configuration/json.md#observability-config).Serilog.WriteTo.Args.Path | |
-| LogLevel | [Observability Config](../configuration/json.md#observability-config).Serilog.MinimumLevel | |
+| LogFile | [Observability Config](../configuration/observability.md).Serilog.WriteTo.Args.Path | |
+| LogLevel | [Observability Config](../configuration/observability.md).Serilog.MinimumLevel | |
 
 For the general use case, the below config should be sufficient.
 
@@ -133,4 +133,4 @@ PauseOnFinish = true
 
 | Property      | New Config       | Notes |
 |:-------------|:------------------|-------|
-| PauseOnFinish | [App Config](../configuration/json.md#app-config).CloseWindowOnFinish | |
+| PauseOnFinish | [App Config](../configuration/app.md).CloseWindowOnFinish | |
