@@ -11,9 +11,9 @@ inputs:
     description: 'The OS we are running on'
     required: true
 outputs:
-  artifact:
-    description: 'Path to the published artifact'
-    value: ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os }}
+  artifact_name:
+    description: 'Name of the uploaded artifact'
+    value: ui_${{ inputs.os }}_${{ env.BUILD_VERSION }}
 runs:
   using: "composite"
   steps:
