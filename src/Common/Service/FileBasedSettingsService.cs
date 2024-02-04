@@ -104,9 +104,11 @@ namespace Common.Service
 
 		public async Task<GarminDeviceInfo> GetCustomDeviceInfoAsync(Workout workout)
 		{
-			using var tracing = Tracing.Trace($"{nameof(SettingsService)}.{nameof(GetCustomDeviceInfoAsync)}");
+			using var tracing = Tracing.Trace($"{nameof(FileBasedSettingsService)}.{nameof(GetCustomDeviceInfoAsync)}");
 
-			var workoutType = workout.GetWorkoutType();
+			var workoutType = WorkoutType.None;
+			if (workout is object)
+				workoutType = workout.GetWorkoutType();
 
 			GarminDeviceInfo userProvidedDeviceInfo = null;
 
