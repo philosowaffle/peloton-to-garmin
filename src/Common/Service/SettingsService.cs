@@ -152,7 +152,9 @@ public class SettingsService : ISettingsService
 	{
 		using var tracing = Tracing.Trace($"{nameof(SettingsService)}.{nameof(GetCustomDeviceInfoAsync)}");
 
-		var workoutType = workout.GetWorkoutType();
+		var workoutType = WorkoutType.None;
+		if (workout is object)
+			workoutType = workout.GetWorkoutType();
 
 		GarminDeviceInfo userProvidedDeviceInfo = null;
 
