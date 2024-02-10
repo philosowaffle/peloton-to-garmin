@@ -18,9 +18,5 @@ namespace Common.Service
 		PelotonApiAuthentication GetPelotonApiAuthentication(string pelotonEmail);
 		void SetPelotonApiAuthentication(PelotonApiAuthentication authentication);
 		void ClearPelotonApiAuthentication(string pelotonEmail);
-
-		GarminApiAuthentication GetGarminAuthentication(string garminEmail);
-		void SetGarminAuthentication(GarminApiAuthentication authentication);
-		void ClearGarminAuthentication(string garminEmail);
 	}
 }

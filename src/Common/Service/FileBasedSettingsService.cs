@@ -31,25 +31,11 @@ namespace Common.Service
 			_fileHandler = fileHandler;
 		}
 
-		public void ClearGarminAuthentication(string garminEmail)
-		{
-			using var tracing = Tracing.Trace($"{nameof(FileBasedSettingsService)}.{nameof(ClearGarminAuthentication)}");
-
-			_next.ClearGarminAuthentication(garminEmail);
-		}
-
 		public void ClearPelotonApiAuthentication(string pelotonEmail)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FileBasedSettingsService)}.{nameof(ClearPelotonApiAuthentication)}");
 
 			_next.ClearPelotonApiAuthentication(pelotonEmail);
-		}
-
-		public GarminApiAuthentication GetGarminAuthentication(string garminEmail)
-		{
-			using var tracing = Tracing.Trace($"{nameof(FileBasedSettingsService)}.{nameof(GetGarminAuthentication)}");
-
-			return _next.GetGarminAuthentication(garminEmail);
 		}
 
 		public PelotonApiAuthentication GetPelotonApiAuthentication(string pelotonEmail)
@@ -74,13 +60,6 @@ namespace Common.Service
 				settings.Format.DeviceInfoSettings.Add(WorkoutType.None, Format.DefaultDeviceInfoSettings[WorkoutType.None]);
 
 			return Task.FromResult(settings);
-		}
-
-		public void SetGarminAuthentication(GarminApiAuthentication authentication)
-		{
-			using var tracing = Tracing.Trace($"{nameof(FileBasedSettingsService)}.{nameof(SetGarminAuthentication)}");
-
-			_next.SetGarminAuthentication(authentication);
 		}
 
 		public void SetPelotonApiAuthentication(PelotonApiAuthentication authentication)

@@ -1,5 +1,4 @@
 ﻿using Common;
-using Common.Database;
 using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Observe;
@@ -11,6 +10,8 @@ using Garmin.Auth;
 using Peloton;
 using Prometheus;
 using Serilog;
+using Sync.Database;
+using Sync.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -172,29 +173,38 @@ namespace Sync
 			}
 			catch (ArgumentException ae)
 			{
-				_logger.Error(ae, $"Failed to upload to Garmin Connect. {ae.Message}");
+				_logger.Error(ae, $"Sync failed to upload to Garmin Connect. {ae.Message}");
 
 				response.SyncSuccess = false;
 				response.UploadToGarminSuccess = false;
-				response.Errors.Add(new ServiceError() { Message = $"Failed to upload workouts to Garmin Connect. {ae.Message}" });
+				response.Errors.Add(new ServiceError() { Message = $"Failed to upload workouts to Garmin Connect. {ae.Message}", Exception = ae });
 				return response;
 			}
 			catch (GarminAuthenticationError gae)
 			{
-				_logger.Error(gae, $"Sync failed to authenticate with Garmin. {gae.Message}");
+				_logger.Error(gae, $"Garmin Uploader failed to authenticate with Garmin. {gae.Message}");
 
 				response.SyncSuccess = false;
 				response.UploadToGarminSuccess = false;
-				response.Errors.Add(new ServiceError() { Message = gae.Message });
+				response.Errors.Add(new ServiceError() { Message = gae.Message, Exception = gae });
+				return response;
+			}
+			catch (GarminUploadException gue)
+			{
+				_logger.Error(gue, $"Garmin Uploader failed to upload to Garmin Connect. {gue.Message}");
+
+				response.SyncSuccess = false;
+				response.UploadToGarminSuccess = false;
+				response.Errors.Add(new ServiceError() { Message = gue.Message, Exception = gue });
 				return response;
 			}
 			catch (Exception e)
 			{
-				_logger.Error(e, "Failed to upload workouts to Garmin Connect. You can find the converted files at {@Path} \\n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", settings.App.OutputDirectory);
+				_logger.Error(e, "Unexpected error. Failed to upload workouts to Garmin Connect. You can find the converted files at {@Path} \\n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", settings.App.OutputDirectory);
 
 				response.SyncSuccess = false;
 				response.UploadToGarminSuccess = false;
-				response.Errors.Add(new ServiceError() { Message = $"Failed to upload workouts to Garmin Connect. {e.Message}" });
+				response.Errors.Add(new ServiceError() { Message = $"Failed to upload workouts to Garmin Connect. {e.Message}", Exception = e });
 				return response;
 			}
 			finally
