@@ -34,14 +34,16 @@ namespace Sync.Database
 			try
 			{
 				var settings = _db.GetItem<SyncServiceStatus>("1");
+
+				if (_db.TryGetItem<SyncServiceStatus>(1, out var syncStatus))
+					return;
+
+				if (_db.InsertItem("1", new SyncServiceStatus()))
+					return;
 			}
-			catch (KeyNotFoundException)
+			catch (Exception e)
 			{
-				var success = _db.InsertItem("1", _defaultSyncServiceStatus);
-				if (!success)
-				{
-					_logger.Error($"Failed to init default Sync Status to Db for default user.");
-				}
+				_logger.Error($"Failed to init default Sync Status to Db for default user.", e);
 			}
 		}
 

@@ -66,12 +66,6 @@ public class SettingsService : ISettingsService
 		ClearPelotonApiAuthentication(originalSettings.Peloton.Email);
 		ClearPelotonApiAuthentication(updatedSettings.Peloton.Email);
 
-		ClearGarminAuthentication(originalSettings.Garmin.Email);
-		ClearGarminAuthentication(originalSettings.Garmin.Password);
-
-		ClearCustomDeviceInfoAsync(originalSettings.Garmin.Email);
-		ClearCustomDeviceInfoAsync(updatedSettings.Garmin.Email);
-
 		await _db.UpsertSettingsAsync(1, updatedSettings); // hardcode to admin user for now
 	}
 

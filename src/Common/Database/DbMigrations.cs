@@ -21,14 +21,12 @@ public class DbMigrations : IDbMigrations
 
 	private readonly ISettingsDb _settingsDb;
 	private readonly IUsersDb _usersDb;
-	private readonly ISyncStatusDb _syncStatusDb;
 	private readonly IFileHandling _fileHandler;
 
-	public DbMigrations(ISettingsDb settingsDb, IUsersDb usersDb, ISyncStatusDb syncStatusDb, IFileHandling fileHandler)
+	public DbMigrations(ISettingsDb settingsDb, IUsersDb usersDb, IFileHandling fileHandler)
 	{
 		_settingsDb = settingsDb;
 		_usersDb = usersDb;
-		_syncStatusDb = syncStatusDb;
 		_fileHandler = fileHandler;
 	}
 
