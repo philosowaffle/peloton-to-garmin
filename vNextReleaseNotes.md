@@ -10,6 +10,7 @@
 ## Fixes
 
 - [#604] Fix workout title template not handling special characters correctly
+- [#634] WebUI - Periodic Sync not working
 
 ## Docker Tags
 
