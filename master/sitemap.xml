@@ -2,127 +2,127 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/contributing/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/faq/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/features/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/help/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/configuration/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/configuration/api/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/configuration/app/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/configuration/exercise-types/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/configuration/format/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/configuration/garmin/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/configuration/observability/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/configuration/peloton/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/configuration/webui/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/install/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/install/docker-headless/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/install/docker-webui/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/install/docker/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/install/github-action/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/install/source/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/install/windows/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/migration/migrate-v1-v2/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/migration/migrate-v2-v3/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/migration/migrate-v3-v4/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://philosowaffle.github.io/peloton-to-garmin/master/migration/migrations/</loc>
-         <lastmod>2024-02-04</lastmod>
+         <lastmod>2024-02-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
