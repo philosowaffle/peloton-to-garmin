@@ -19,6 +19,9 @@ public static class ApiStartupServices
 {
 	public static void ConfigureP2GApiServices(this IServiceCollection services)
 	{
+		// HOSTED SERVICES
+		services.AddHostedService<BackgroundSyncJob>();
+
 		// CACHE
 		services.AddSingleton<IMemoryCache, MemoryCache>();
 

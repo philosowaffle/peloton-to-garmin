@@ -19,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solution", ".solution", "{
 		configuration.example.json = configuration.example.json
 		deviceInfo.sample.xml = deviceInfo.sample.xml
 		README.md = README.md
+		vNextReleaseNotes.md = vNextReleaseNotes.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{A7F642D9-7954-4547-84DB-67A04AE1043D}"

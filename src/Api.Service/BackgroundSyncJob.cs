@@ -1,9 +1,9 @@
-﻿using Common;
-using Common.Database;
+﻿using Common.Database;
 using Common.Dto;
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
+using Microsoft.Extensions.Hosting;
 using Prometheus;
 using Sync;
 using static Common.Observe.Metrics;
