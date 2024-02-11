@@ -35,7 +35,7 @@ The Peloton Settings provide settings related to how P2G should fetch workouts f
 | Email | **yes** | `null` | Your Peloton email used to sign in |
 | Password | **yes** | `null` | Your Peloton password used to sign in. **Note: Does not support `\` character in password** |
 | NumWorkoutsToDownload | no | 5 | The default number of workouts to download. See [choosing number of workouts to download](#choosing-number-of-workouts-to-download).  Set this to `0` if you would like P2G to prompt you each time for a number to download. |
-| ExcludeWorkoutTypes | no | none | A comma separated list of workout types that you do not want P2G to download/convert/upload. [Read more...](#exclude-workout-types) |
+| ExcludeWorkoutTypes | no | none | An array of workout types that you do not want P2G to download/convert/upload. [Read more...](#exclude-workout-types) |
 
 ## Choosing Number of Workouts To Download
 
