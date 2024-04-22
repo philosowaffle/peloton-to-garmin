@@ -99,7 +99,7 @@ namespace Peloton
 				limit = pageSize,
 				sort_by = "-created",
 				page = page,
-				joins= "ride"
+				joins= "ride,ride.instructor"
 			})
 			.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 			.GetJsonAsync<PagedPelotonResponse<Workout>>();

@@ -3,35 +3,29 @@
 
 ## Features
 
-- [#564] [#591] Set a custom title on Workouts using templating
-- [#559] Ability to exclude Outdoor Cycling workouts from sycning
-- [#600] Annual Challenge page now let's you know how many minutes you will need per day/week in order to meet the goal by the end of the year (based on the remaining time left)
+- [#610] UI - Add more workout data to Sync page
+- [#606] Robust support for configuring what Devices are used on uploaded Garmin Workouts to increase flexibility for users to fix issues with TE/TSS/V02 not updating on Garmin
+    - If you have previously configured a custom `Format.DeviceInfoPath`, on startup this device config will be migrated to the new settings format automatically
 
 ## Fixes
 
-- [#581] Fix broken Documentation link in UI
-- [#580] Console Client couldn't load configuration file correctly (introduced by #564)
-- [#588] Fix Annual Challenge page still trying to load 2023
-- [#578] Fix VO2 and TE not updating on Garmin Connect
-
-## Docs
-
-- [#521] Called out that `\` special character is not currently supported in passwords
+- [#604] Fix workout title template not handling special characters correctly
+- [#634] WebUI - Periodic Sync not working
 
 ## Docker Tags
 
 - Console
     - `console-stable`
     - `console-latest`
-    - `console-v4.1.0`
+    - `console-v4.2.0`
     - `console-v4`
 - Api
     - `api-stable`
     - `api-latest`
-    - `api-v4.1.0`
+    - `api-v4.2.0`
     - `api-v4`
 - WebUI
     - `webui-stable`
     - `webui-latest`
-    - `webui-v4.1.0`
+    - `webui-v4.2.0`
     - `webui-v4`

@@ -2,6 +2,7 @@
 using Common.Dto.Peloton;
 using HandlebarsDotNet;
 using System.IO;
+using System.Web;
 
 namespace Common.Helpers;
 
@@ -27,7 +28,7 @@ public static class WorkoutHelper
 		var template = settings.WorkoutTitleTemplate;
 		if (string.IsNullOrWhiteSpace(template))
 			template = new Format().WorkoutTitleTemplate;
-
+		
 		var compiledTemplate = Handlebars.Compile(settings.WorkoutTitleTemplate);
 		var title = compiledTemplate(templateData);
 
@@ -38,7 +39,8 @@ public static class WorkoutHelper
 			cleanedTitle = cleanedTitle.Replace(c, InvalidCharacterReplacer);
 		}
 
-		return cleanedTitle;
+		var result = HttpUtility.HtmlDecode(cleanedTitle);
+		return result;
 	}
 
 	public static string GetUniqueTitle(Workout workout, Format settings)

@@ -49,7 +49,7 @@ jobs:
     name: Publish UI Distribution
     runs-on: 'windows-latest'
     outputs:
-      artifact: ${{ steps.win-ui-create-artifact.outputs.artifact }}
+      artifact_name: ${{ steps.win-ui-create-artifact.outputs.artifact_name }}
     strategy:
       matrix:
         dotnet: [ '7.0.400' ]
@@ -71,10 +71,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: [publish-ui-dist, publish-docker-images]
     steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ needs.publish-ui-dist.outputs.artifact_name }}
+          path: /download
       - name: Create Zip for Win UI Release Artifact
         uses: papeloto/action-zip@v1
         with:
-          files: ${{ needs.publish-ui-dist.outputs.artifact }}
+          files: /download/${{ needs.publish-ui-dist.outputs.artifact_name }}
           dest: /dist/ui_win_${{ github.event.inputs.version }}.zip
     
       - uses: actions/checkout@v4

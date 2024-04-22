@@ -4,6 +4,7 @@ using SharedUI;
 using Common.Stateful;
 using Microsoft.Extensions.Configuration;
 using SharedStartup;
+using Common.Database;
 
 namespace ClientUI;
 

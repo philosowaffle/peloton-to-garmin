@@ -12,6 +12,11 @@ public class ErrorResponse : IErrorResponse
 	public ErrorCode Code { get; set; }
 	public Exception? Exception { get; set; }
 
+	public ErrorResponse() 
+	{
+		Message = string.Empty;
+	}
+
 	public ErrorResponse(string message, Exception? ex = null)
 	{
 		Message = message;
