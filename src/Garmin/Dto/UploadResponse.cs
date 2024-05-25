@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Garmin.Dto
 {
@@ -10,10 +9,10 @@ namespace Garmin.Dto
 
 	public class DetailedImportResult
 	{
-		public DateTime CreationDate { get; set; }
+		public string CreationDate { get; set; }
 		public string FileName { get; set; }
 		public int FileSize { get; set; }
-		public string IpAddress { get; set; }
+		public string? IpAddress { get; set; }
 		public int ProcessingTime { get; set; }
 		public string UploadId { get; set; }
 		public ICollection<Failure> Failures { get; set; }

@@ -89,7 +89,7 @@ namespace Common.Database
 			}
 			catch (Exception e)
 			{
-				_logger.Error(e, $"Failed to upsert settings to db for user {userId}");
+				_logger.Error(e, $"Failed to get settings to db for user {userId}");
 				throw;
 			}
 		}

@@ -259,16 +259,16 @@ public class ServiceClient : IApiClient
 			if (!settings.Garmin.TwoStepVerificationEnabled)
 			{
 				await _garminAuthService.SignInAsync();
-				return new FlurlResponse(new HttpResponseMessage() { StatusCode = System.Net.HttpStatusCode.Created });
+				return new FlurlResponse(new FlurlCall() { HttpResponseMessage = new HttpResponseMessage() { StatusCode = System.Net.HttpStatusCode.Created } });
 			}
 			else
 			{
 				var auth = await _garminAuthService.SignInAsync();
 
 				if (auth.AuthStage == AuthStage.NeedMfaToken)
-					return new FlurlResponse(new HttpResponseMessage() { StatusCode = System.Net.HttpStatusCode.Accepted });
+					return new FlurlResponse(new FlurlCall() { HttpResponseMessage = new HttpResponseMessage() { StatusCode = System.Net.HttpStatusCode.Accepted } });
 
-				return new FlurlResponse(new HttpResponseMessage() { StatusCode = System.Net.HttpStatusCode.Created });
+				return new FlurlResponse(new FlurlCall() { HttpResponseMessage = new HttpResponseMessage() { StatusCode = System.Net.HttpStatusCode.Created } });
 			}
 		}
 		catch (GarminAuthenticationError gae) when (gae.Code == Code.UnexpectedMfa)

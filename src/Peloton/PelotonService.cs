@@ -11,6 +11,7 @@ using Prometheus;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -273,7 +274,11 @@ namespace Peloton
 			var workout = await workoutTask;
 			var workoutSamples = await workoutSamplesTask;
 
-			var p2gWorkoutData = await BuildP2GWorkoutAsync(workoutId, workout, workoutSamples);
+			var p2gWorkoutData = new P2GWorkout()
+			{
+				Workout = workout,
+				WorkoutSamples = workoutSamples,
+			};
 
 			var classId = p2gWorkoutData?.Workout?.Ride?.Id;
 			if (!string.IsNullOrWhiteSpace(classId)
@@ -293,34 +298,6 @@ namespace Peloton
 			}
 
 			return p2gWorkoutData;
-		}
-
-		private async Task<P2GWorkout> BuildP2GWorkoutAsync(string workoutId, JObject workout, JObject workoutSamples)
-		{
-			using var tracing = Tracing.Trace($"{nameof(PelotonService)}.{nameof(BuildP2GWorkoutAsync)}")
-										.WithWorkoutId(workoutId);
-
-			dynamic data = new JObject();
-			data.Workout = workout;
-			data.WorkoutSamples = workoutSamples;
-
-			P2GWorkout deSerializedData = null;
-			try
-			{
-				deSerializedData = JsonSerializer.Deserialize<P2GWorkout>(data.ToString(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
-				deSerializedData.Raw = data;
-			}
-			catch (Exception e)
-			{
-				_failedCount++;
-
-				var title = "workout_failed_to_deserialize_" + workoutId;
-				await SaveRawDataAsync(data, title);
-
-				_logger.Error("Failed to deserialize workout from Peloton. You can find the raw data from the workout here: {@FileName}", title, e);
-			}
-
-			return deSerializedData;
 		}
 
 		private async Task SaveRawDataAsync(dynamic data, string workoutTitle)

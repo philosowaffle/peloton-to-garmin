@@ -44,9 +44,12 @@ namespace UnitTests
 					.CreateLogger();
 
 			// Allows using fiddler
-			FlurlHttp.Configure(cli =>
+			FlurlHttp.Clients.WithDefaults(cli =>
 			{
-				cli.HttpClientFactory = new UntrustedCertClientFactory();
+				cli.ConfigureInnerHandler(handler =>
+				{
+					handler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
+				});
 			});
 		}
 
@@ -218,17 +221,6 @@ namespace UnitTests
 			public new void Save(Tuple<string, ICollection<Mesg>> data, string path)
 			{
 				base.Save(data, path);
-			}
-		}
-
-		private class UntrustedCertClientFactory : DefaultHttpClientFactory
-		{
-			public override HttpMessageHandler CreateMessageHandler()
-			{
-				return new HttpClientHandler
-				{
-					ServerCertificateCustomValidationCallback = (_, _, _, _) => true
-				};
 			}
 		}
 	}

@@ -19,8 +19,8 @@ namespace Peloton
 	{
 		Task<PagedPelotonResponse<Workout>> GetWorkoutsAsync(int pageSize, int page);
 		Task<PelotonResponse<Workout>> GetWorkoutsAsync(DateTime fromUtc, DateTime toUtc);
-		Task<JObject> GetWorkoutByIdAsync(string id);
-		Task<JObject> GetWorkoutSamplesByIdAsync(string id);
+		Task<Workout> GetWorkoutByIdAsync(string id);
+		Task<WorkoutSamples> GetWorkoutSamplesByIdAsync(string id);
 		Task<UserData> GetUserDataAsync();
 		Task<PelotonChallenges> GetJoinedChallengesAsync(int userId);
 		Task<PelotonUserChallengeDetail> GetUserChallengeDetailsAsync(int userId, string challengeId);
@@ -152,7 +152,7 @@ namespace Peloton
 			.GetJsonAsync<UserData>();
 		}
 
-		public async Task<JObject> GetWorkoutByIdAsync(string id)
+		public async Task<Workout> GetWorkoutByIdAsync(string id)
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/workout/{id}"
@@ -163,10 +163,10 @@ namespace Peloton
 					joins = "ride,ride.instructor"
 				})
 				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
-				.GetJsonAsync<JObject>();
+				.GetJsonAsync<Workout>();
 		}
 
-		public async Task<JObject> GetWorkoutSamplesByIdAsync(string id)
+		public async Task<WorkoutSamples> GetWorkoutSamplesByIdAsync(string id)
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/workout/{id}/performance_graph"
@@ -177,7 +177,7 @@ namespace Peloton
 					every_n=1
 				})
 				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
-				.GetJsonAsync<JObject>();
+				.GetJsonAsync<WorkoutSamples>();
 		}
 
 		public async Task<PelotonChallenges> GetJoinedChallengesAsync(int userId)

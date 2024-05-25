@@ -181,7 +181,7 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 				ExpiresAt = DateTime.Now.AddMinutes(15),
 				AuthStage = AuthStage.NeedMfaToken,
 				MFACsrfToken = mfaCsrfToken,
-				CookieJar = jar,
+				CookieJar = jar, // make this a string and save it, then construct new jar on read
 				UserAgent = userAgent,
 			};
 			await _garminDb.UpsertPartialGarminAuthenticationAsync(1, partialAuthentication);
