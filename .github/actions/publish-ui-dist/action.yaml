@@ -13,7 +13,7 @@ inputs:
 outputs:
   artifact_name:
     description: 'Name of the uploaded artifact'
-    value: ui_${{ inputs.os }}_${{ env.BUILD_VERSION }}
+    value: ui_${{ inputs.os }}_${{ env.GITHUB_RUN_NUMBER }}-${{ env.GITHUB_RUN_ID }}
 runs:
   using: "composite"
   steps:
