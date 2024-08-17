@@ -9,7 +9,7 @@
 
 ## Web UI Configuration
 
-Most of the most common settings can be configured via the UI itself.  Additional lower level settings can be provided via config file.
+The most common settings can be configured via the UI itself.  Additional lower level settings can be provided via config file.
 
 1. Settings
     1. [App Settings](app.md)
@@ -22,7 +22,7 @@ Most of the most common settings can be configured via the UI itself.  Additiona
 
 ## Windows UI Configuration
 
-Most of the most common settings can be configured via the UI itself.
+The most common settings can be configured via the UI itself.
 
 1. Settings
     1. [App Settings](app.md)
