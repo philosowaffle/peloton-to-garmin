@@ -36,6 +36,7 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 		service = "https://sso.garmin.com/sso/embed",
 		source = "https://sso.garmin.com/sso/embed",
 	};
+	private static readonly string DefaultUserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148";
 
 	private readonly ISettingsService _settingsService;
 	private readonly IGarminApiClient _apiClient;
@@ -75,7 +76,7 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 			{
 				var consumerCredentials = await _apiClient.GetConsumerCredentialsAsync();
 				var appConfig = await _settingsService.GetAppConfigurationAsync();
-				var userAgent = string.Empty;
+				var userAgent = DefaultUserAgent;
 				if (!string.IsNullOrEmpty(appConfig.Developer.UserAgent))
 					userAgent = appConfig.Developer.UserAgent;
 
@@ -98,7 +99,7 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 		await SignOutAsync();
 
 		CookieJar jar = null;
-		var userAgent = string.Empty;
+		var userAgent = DefaultUserAgent;
 
 		var appConfig = await _settingsService.GetAppConfigurationAsync();
 		if (!string.IsNullOrEmpty(appConfig.Developer.UserAgent))
@@ -181,7 +182,7 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 				ExpiresAt = DateTime.Now.AddMinutes(15),
 				AuthStage = AuthStage.NeedMfaToken,
 				MFACsrfToken = mfaCsrfToken,
-				CookieJar = jar, // make this a string and save it, then construct new jar on read
+				CookieJarString = jar.ToString(),
 				UserAgent = userAgent,
 			};
 			await _garminDb.UpsertPartialGarminAuthenticationAsync(1, partialAuthentication);
@@ -240,7 +241,7 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 		}
 		catch (Exception e)
 		{
-			throw new GarminAuthenticationError("Auth appeared successful but failed to get the OAuth2 token.", e) { Code = Code.AuthAppearedSuccessful };
+			throw new GarminAuthenticationError("Auth appeared successful but failed to get the OAuth2 token.  If this persists, try clearing then re-entering your Garmin credentials in the Settings.", e) { Code = Code.AuthAppearedSuccessful };
 		}
 
 		return new GarminApiAuthentication()
@@ -274,7 +275,8 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 		try
 		{
 			SendMFAResult mfaResponse = new();
-			mfaResponse.RawResponseBody = await _apiClient.SendMfaCodeAsync(partialAuth.UserAgent, CommonQueryParams, mfaData, partialAuth.CookieJar);
+			var jar = CookieJar.LoadFromString(partialAuth.CookieJarString);
+			mfaResponse.RawResponseBody = await _apiClient.SendMfaCodeAsync(partialAuth.UserAgent, CommonQueryParams, mfaData, jar);
 			return await CompleteGarminAuthenticationAsync(mfaResponse.RawResponseBody, partialAuth.UserAgent);
 		}
 		catch (FlurlHttpException e) when (e.StatusCode is (int)HttpStatusCode.Forbidden)
