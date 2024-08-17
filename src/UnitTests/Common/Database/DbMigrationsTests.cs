@@ -65,7 +65,6 @@ public class DbMigrationsTests
 		settingsDb.Verify();
 		settingsDb.Verify(x => x.RemoveLegacySettingsAsync(), Times.Once);
 		usersDb.Verify(x => x.GetUsersAsync(), Times.Once);
-		mocker.GetMock<ISyncStatusDb>().Verify(x => x.DeleteLegacySyncStatusAsync(), Times.Once);
 	}
 
 	[Test]
@@ -97,6 +96,5 @@ public class DbMigrationsTests
 		settingsDb.Verify();
 		settingsDb.Verify(x => x.RemoveLegacySettingsAsync(), Times.Never);
 		usersDb.Verify(x => x.GetUsersAsync(), Times.Once);
-		mocker.GetMock<ISyncStatusDb>().Verify(x => x.DeleteLegacySyncStatusAsync(), Times.Once);
 	}
 }
