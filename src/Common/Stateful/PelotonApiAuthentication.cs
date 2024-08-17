@@ -2,7 +2,7 @@
 
 namespace Common.Stateful
 {
-	public class PelotonApiAuthentication : IApiAuthentication
+	public class PelotonApiAuthentication
 	{
 		public string Email { get; set; }
 		public string Password { get; set; }

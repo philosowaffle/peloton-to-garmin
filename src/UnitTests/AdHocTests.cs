@@ -44,9 +44,12 @@ namespace UnitTests
 					.CreateLogger();
 
 			// Allows using fiddler
-			FlurlHttp.Configure(cli =>
+			FlurlHttp.Clients.WithDefaults(cli =>
 			{
-				cli.HttpClientFactory = new UntrustedCertClientFactory();
+				cli.ConfigureInnerHandler(handler =>
+				{
+					handler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
+				});
 			});
 		}
 
@@ -201,7 +204,7 @@ namespace UnitTests
 
 			public async Task<ICollection<Mesg>> ConvertForTest(string path, Settings settings)
 			{
-				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
+				var workoutData = fileHandler.DeserializeJsonFile<P2GWorkout>(path);
 				var converted = await this.ConvertInternalAsync(workoutData, settings);
 
 				return converted.Item2;
@@ -209,7 +212,7 @@ namespace UnitTests
 
 			public async Task<Tuple<string, ICollection<Mesg>>> Convert(string path, Settings settings)
 			{
-				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
+				var workoutData = fileHandler.DeserializeJsonFile<P2GWorkout>(path);
 				var converted = await this.ConvertInternalAsync(workoutData, settings);
 
 				return converted;
@@ -218,17 +221,6 @@ namespace UnitTests
 			public new void Save(Tuple<string, ICollection<Mesg>> data, string path)
 			{
 				base.Save(data, path);
-			}
-		}
-
-		private class UntrustedCertClientFactory : DefaultHttpClientFactory
-		{
-			public override HttpMessageHandler CreateMessageHandler()
-			{
-				return new HttpClientHandler
-				{
-					ServerCertificateCustomValidationCallback = (_, _, _, _) => true
-				};
 			}
 		}
 	}

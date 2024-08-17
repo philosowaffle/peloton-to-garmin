@@ -3,7 +3,6 @@ using Api.Service;
 using Api.Service.Helpers;
 using Api.Service.Validators;
 using Api.Services;
-using Common.Database;
 using Common.Dto.Peloton;
 using Common.Dto;
 using Common.Service;
@@ -13,6 +12,8 @@ using Peloton;
 using Peloton.Dto;
 using SharedUI;
 using Sync;
+using Garmin.Dto;
+using Sync.Database;
 
 namespace ClientUI;
 
@@ -58,10 +59,9 @@ public class ServiceClient : IApiClient
 
 	public async Task<GarminAuthenticationGetResponse> GetGarminAuthenticationAsync()
 	{
-		var settings = await _settingsService.GetSettingsAsync();
-		var auth = _settingsService.GetGarminAuthentication(settings.Garmin.Email);
+		var auth = await _garminAuthService.GetGarminAuthenticationAsync();
 
-		var result = new GarminAuthenticationGetResponse() { IsAuthenticated = auth?.IsValid(settings) ?? false };
+		var result = new GarminAuthenticationGetResponse() { IsAuthenticated = auth?.IsValid() ?? false };
 		return result;
 	}
 
@@ -258,17 +258,17 @@ public class ServiceClient : IApiClient
 		{
 			if (!settings.Garmin.TwoStepVerificationEnabled)
 			{
-				await _garminAuthService.RefreshGarminAuthenticationAsync();
-				return new FlurlResponse(new HttpResponseMessage() { StatusCode = System.Net.HttpStatusCode.Created });
+				await _garminAuthService.SignInAsync();
+				return new FlurlResponse(new FlurlCall() { HttpResponseMessage = new HttpResponseMessage() { StatusCode = System.Net.HttpStatusCode.Created } });
 			}
 			else
 			{
-				var auth = await _garminAuthService.RefreshGarminAuthenticationAsync();
+				var auth = await _garminAuthService.SignInAsync();
 
-				if (auth.AuthStage == Common.Stateful.AuthStage.NeedMfaToken)
-					return new FlurlResponse(new HttpResponseMessage() { StatusCode = System.Net.HttpStatusCode.Accepted });
+				if (auth.AuthStage == AuthStage.NeedMfaToken)
+					return new FlurlResponse(new FlurlCall() { HttpResponseMessage = new HttpResponseMessage() { StatusCode = System.Net.HttpStatusCode.Accepted } });
 
-				return new FlurlResponse(new HttpResponseMessage() { StatusCode = System.Net.HttpStatusCode.Created });
+				return new FlurlResponse(new FlurlCall() { HttpResponseMessage = new HttpResponseMessage() { StatusCode = System.Net.HttpStatusCode.Created } });
 			}
 		}
 		catch (GarminAuthenticationError gae) when (gae.Code == Code.UnexpectedMfa)
@@ -298,7 +298,7 @@ public class ServiceClient : IApiClient
 		return new SyncGetResponse()
 		{
 			SyncEnabled = settings.App.EnablePolling,
-			SyncStatus = syncTime.SyncStatus,
+			SyncStatus = (Status)syncTime.SyncStatus,
 			LastSuccessfulSyncTime = syncTime.LastSuccessfulSyncTime,
 			LastSyncTime = syncTime.LastSyncTime,
 			NextSyncTime = syncTime.NextSyncTime
@@ -308,7 +308,7 @@ public class ServiceClient : IApiClient
 	public async Task<SyncPostResponse> SyncPostAsync(SyncPostRequest syncPostRequest)
 	{
 		var settings = await _settingsService.GetSettingsAsync();
-		var auth = _settingsService.GetGarminAuthentication(settings.Garmin.Email);
+		var auth = await _garminAuthService.GetGarminAuthenticationAsync();
 
 		var (isValid, result) = syncPostRequest.IsValid(settings, auth);
 		if (!isValid)

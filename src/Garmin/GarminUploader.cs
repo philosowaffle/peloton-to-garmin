@@ -1,5 +1,4 @@
-﻿using Common;
-using Common.Dto;
+﻿using Common.Dto;
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
@@ -84,12 +83,23 @@ namespace Garmin
 
 			var auth = await _authService.GetGarminAuthenticationAsync();
 
+			if (auth.AuthStage == Dto.AuthStage.NeedMfaToken)
+				throw new GarminUploadException("User needs to go through MFA flow to re-authenticate with Garmin. AuthStage: NeedMfaToken", -2);
+
+			if (auth.AuthStage == Dto.AuthStage.None)
+				throw new GarminUploadException("Expected user to be authenticated with Garmin at this point, but they are not. AuthStage: None.", -3);
+
+			var userAgent = Defaults.DefaultUserAgent;
+			var appConfig = await _settingsService.GetAppConfigurationAsync();
+			if (!string.IsNullOrEmpty(appConfig.Developer.UserAgent))
+				userAgent = appConfig.Developer.UserAgent;
+
 			foreach (var file in files)
 			{
 				try
 				{
 					_logger.Information("Uploading to Garmin: {@file}", file);
-					await _api.UploadActivity(file, settings.Format.Fit ? ".fit" : ".tcx", auth);
+					await _api.UploadActivity(file, settings.Format.Fit ? ".fit" : ".tcx", auth, userAgent);
 					await RateLimit();
 				} catch (Exception e)
 				{
