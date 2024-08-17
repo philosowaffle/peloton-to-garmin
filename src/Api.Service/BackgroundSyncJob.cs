@@ -68,7 +68,7 @@ public class BackgroundSyncJob : BackgroundService
 
 			if (await NeedToWaitForMFAToBeCompletedAsync())
 			{
-				_logger.Information("Can't start background syncing until MFA flow is completed for the first time via UI.");
+				_logger.Information("Can't start background syncing until MFA flow is completed for the first time.");
 				Thread.Sleep(stepIntervalSeconds * 1000);
 				continue;
 			}

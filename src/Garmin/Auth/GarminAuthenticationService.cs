@@ -36,7 +36,6 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 		service = "https://sso.garmin.com/sso/embed",
 		source = "https://sso.garmin.com/sso/embed",
 	};
-	private static readonly string DefaultUserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148";
 
 	private readonly ISettingsService _settingsService;
 	private readonly IGarminApiClient _apiClient;
@@ -76,7 +75,7 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 			{
 				var consumerCredentials = await _apiClient.GetConsumerCredentialsAsync();
 				var appConfig = await _settingsService.GetAppConfigurationAsync();
-				var userAgent = DefaultUserAgent;
+				var userAgent = Defaults.DefaultUserAgent;
 				if (!string.IsNullOrEmpty(appConfig.Developer.UserAgent))
 					userAgent = appConfig.Developer.UserAgent;
 
@@ -99,7 +98,7 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 		await SignOutAsync();
 
 		CookieJar jar = null;
-		var userAgent = DefaultUserAgent;
+		var userAgent = Defaults.DefaultUserAgent;
 
 		var appConfig = await _settingsService.GetAppConfigurationAsync();
 		if (!string.IsNullOrEmpty(appConfig.Developer.UserAgent))
@@ -260,6 +259,9 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 
 		if (partialAuth.AuthStage != AuthStage.NeedMfaToken)
 			throw new ArgumentException($"We're in the wrong GarminAuthStage, expected NeedMfaToken but found {partialAuth.AuthStage}");
+
+		if (string.IsNullOrEmpty(partialAuth.UserAgent))
+			partialAuth.UserAgent = Defaults.DefaultUserAgent;
 
 		var mfaData = new List<KeyValuePair<string, string>>()
 		{
