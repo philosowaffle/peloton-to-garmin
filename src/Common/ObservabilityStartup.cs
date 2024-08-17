@@ -16,6 +16,7 @@ public static class ObservabilityStartup
 	{
 		ConfigureLogging(configManager);
 		FlurlConfiguration.Configure(config.Observability);
+		Tracing.EnableWebUITracing(services, config.Observability.Jaeger);
 
 		// Setup initial Tracing Source
 		Tracing.Source = new(Statics.TracingService);
@@ -25,7 +26,7 @@ public static class ObservabilityStartup
 	{
 		ConfigureLogging(configManager);
 		FlurlConfiguration.Configure(config.Observability);
-		Tracing.EnableApiTracing(services, config.Observability.Jaeger);		
+		Tracing.EnableApiTracing(services, config.Observability.Jaeger);
 
 		// Setup initial Tracing Source
 		Tracing.Source = new(Statics.TracingService);
