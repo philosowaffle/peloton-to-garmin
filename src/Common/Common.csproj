@@ -21,7 +21,7 @@
     <PackageReference Include="Serilog.Sinks.File.Header" Version="1.0.2" />
     <PackageReference Include="System.Text.Json" Version="7.0.3" />
 
-	  <PackageReference Include="Serilog" Version="3.1.1" />
+	  <PackageReference Include="Serilog" Version="4.0.1" />
 	  <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
 	  <PackageReference Include="Serilog.Enrichers.Span" Version="3.1.0" />
 	  <PackageReference Include="Serilog.Settings.Configuration" Version="7.0.1" />
