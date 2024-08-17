@@ -3,7 +3,9 @@
 
 ## Features
 
-- 
+- [#585] 
+    - Garmin Authentication now saves and refreshes tokens. Users using MFA will now only need provide their MFA code once.
+    - For those running via Docker, automatic syncing now works for MFA users after you have entered your code the first time.
 
 ## Fixes
 
@@ -14,15 +16,15 @@
 - Console
     - `console-stable`
     - `console-latest`
-    - `console-v4.X.0`
+    - `console-v4.3.0`
     - `console-v4`
 - Api
     - `api-stable`
     - `api-latest`
-    - `api-v4.X.0`
+    - `api-v4.3.0`
     - `api-v4`
 - WebUI
     - `webui-stable`
     - `webui-latest`
-    - `webui-v4.X.0`
+    - `webui-v4.3.0`
     - `webui-v4`
