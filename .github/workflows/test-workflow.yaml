@@ -35,11 +35,17 @@ jobs:
       - name: Create Zip for Win UI Release Artifact
         uses: vimtor/action-zip@v1.2
         with:
-          files: /downloaded/ #relative to gh workspace
-          dest: ${{ github.workspace }}/dist/ui_win_${{ github.event.inputs.version }}.zip
+          files: /downloaded #relative to gh workspace
+          dest: ${{ github.workspace }}/dist/ui_win.zip
+      
+      - run: ls ${{ github.workspace }}/downloaded
+        shell: pwsh
+
+      - run: ls ${{ github.workspace }}/dist/
+        shell: pwsh
     
       - name: Upload Artifact 
         uses: actions/upload-artifact@v4
         with:
           name: my_zipped_artifact
-          path: ${{ github.workspace }}/dist/ui_win_${{ github.event.inputs.version }}.zip
+          path: ${{ github.workspace }}/dist/ui_win.zip
