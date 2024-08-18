@@ -32,6 +32,9 @@ jobs:
       - run: ls ${{ github.workspace }}/downloaded
         shell: pwsh
 
+      - run: mkdir ${{ github.workspace }}/dist
+        shell: pwsh
+
       - name: Create Zip for Win UI Release Artifact
         uses: vimtor/action-zip@v1.2
         with:
