@@ -41,7 +41,7 @@ jobs:
       - run: ls ${{ github.workspace }}/downloaded
         shell: pwsh
 
-      - run: ls ${{ github.workspace }}/dist/
+      - run: ls ${{ github.workspace }}/dist
         shell: pwsh
     
       - name: Upload Artifact 
