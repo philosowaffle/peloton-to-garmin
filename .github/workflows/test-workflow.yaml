@@ -51,4 +51,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: my_zipped_artifact
-          path: ${{ github.workspace }}/ui_win.zip
+          path: ${{ github.workspace }}/downloaded
