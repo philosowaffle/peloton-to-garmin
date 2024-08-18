@@ -32,10 +32,10 @@ jobs:
         uses: papeloto/action-zip@v1
         with:
           files: ${{ github.workspace }}/${{ needs.publish-ui-dist.outputs.artifact_name }}
-          dest: /dist/ui_win_${{ github.event.inputs.version }}.zip
+          dest: ${{ github.workspace }}/dist/ui_win_${{ github.event.inputs.version }}.zip
     
       - name: Upload Artifact 
         uses: actions/upload-artifact@v4
         with:
           name: my_zipped_artifact
-          path: /dist/ui_win_${{ github.event.inputs.version }}.zip
+          path: ${{ github.workspace }}/dist/ui_win_${{ github.event.inputs.version }}.zip
