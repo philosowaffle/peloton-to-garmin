@@ -39,16 +39,16 @@ jobs:
         uses: vimtor/action-zip@v1.2
         with:
           files: /downloaded #relative to gh workspace
-          dest: ${{ github.workspace }}/dist/ui_win.zip
+          dest: ui_win.zip
       
       - run: ls ${{ github.workspace }}/downloaded
         shell: pwsh
 
-      - run: ls ${{ github.workspace }}/dist
+      - run: ls ${{ github.workspace }}
         shell: pwsh
     
       - name: Upload Artifact 
         uses: actions/upload-artifact@v4
         with:
           name: my_zipped_artifact
-          path: ${{ github.workspace }}/dist/ui_win.zip
+          path: ${{ github.workspace }}/ui_win.zip
