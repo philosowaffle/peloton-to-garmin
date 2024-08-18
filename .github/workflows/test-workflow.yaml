@@ -27,15 +27,15 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: ${{ needs.publish-ui-dist.outputs.artifact_name }}
-          path: ${{ github.workspace }}
+          path: ${{ github.workspace }}/downloaded
 
-      - run: ls ${{ github.workspace }}
+      - run: ls ${{ github.workspace }}/downloaded
         shell: pwsh
 
       - name: Create Zip for Win UI Release Artifact
         uses: papeloto/action-zip@v1
         with:
-          files: ${{ github.workspace }}/${{ needs.publish-ui-dist.outputs.artifact_name }}
+          files: ${{ github.workspace }}/downloaded/
           dest: ${{ github.workspace }}/dist/ui_win_${{ github.event.inputs.version }}.zip
     
       - name: Upload Artifact 
