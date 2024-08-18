@@ -29,26 +29,14 @@ jobs:
           name: ${{ needs.publish-ui-dist.outputs.artifact_name }}
           path: ${{ github.workspace }}/downloaded
 
-      - run: ls ${{ github.workspace }}/downloaded
-        shell: pwsh
-
-      - run: mkdir ${{ github.workspace }}/dist
-        shell: pwsh
-
       - name: Create Zip for Win UI Release Artifact
         uses: vimtor/action-zip@v1.2
         with:
-          files: /downloaded #relative to gh workspace
-          dest: ui_win.zip
-      
-      - run: ls ${{ github.workspace }}/downloaded
-        shell: pwsh
-
-      - run: ls ${{ github.workspace }}
-        shell: pwsh
+          files: /downloaded # must be relative to gh workspace, does not support absolute paths :(
+          dest: ui_win.zip # this is hardecoded to output to ${{ github.workspace }}/ui_win.zip :(
     
       - name: Upload Artifact 
         uses: actions/upload-artifact@v4
         with:
           name: my_zipped_artifact
-          path: ${{ github.workspace }}/downloaded
+          path: ${{ github.workspace }}/ui_win.zip
