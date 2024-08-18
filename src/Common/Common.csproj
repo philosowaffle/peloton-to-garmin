@@ -15,8 +15,8 @@
     <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="1.5.1" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc9" />
     <PackageReference Include="Polly" Version="8.4.1" />
-    <PackageReference Include="prometheus-net" Version="8.1.0" />
-    <PackageReference Include="prometheus-net.AspNetCore" Version="8.1.0" />
+    <PackageReference Include="prometheus-net" Version="8.2.1" />
+    <PackageReference Include="prometheus-net.AspNetCore" Version="8.2.1" />
     <PackageReference Include="prometheus-net.DotNetRuntime" Version="4.4.0" />
     <PackageReference Include="Serilog.Sinks.File.Header" Version="1.0.2" />
     <PackageReference Include="System.Text.Json" Version="7.0.3" />
