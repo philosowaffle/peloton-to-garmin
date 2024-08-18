@@ -33,9 +33,9 @@ jobs:
         shell: pwsh
 
       - name: Create Zip for Win UI Release Artifact
-        uses: papeloto/action-zip@v1
+        uses: vimtor/action-zip@v1.2
         with:
-          files: ${{ github.workspace }}/downloaded/
+          files: /downloaded/ #relative to gh workspace
           dest: ${{ github.workspace }}/dist/ui_win_${{ github.event.inputs.version }}.zip
     
       - name: Upload Artifact 
