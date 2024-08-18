@@ -9,9 +9,13 @@ runs:
   using: "composite"
   steps:
     - run: mkdir ${{ github.workspace }}/src/myFolder
+      shell: pwsh
     - run: touch ${{ github.workspace }}/src/myFolder/myFile.txt
+      shell: pwsh
     - run: echo "here is some text" > ${{ github.workspace }}/src/myFolder/myFile.txt
+      shell: pwsh
     - run: ls ${{ github.workspace }}/src
+      shell: pwsh
 
     # Create Build Artifact
     - name: Upload Artifact my_artifact_${{ github.run_number }}-${{ github.run_id }}
