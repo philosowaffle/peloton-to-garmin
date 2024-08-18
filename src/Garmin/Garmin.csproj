@@ -7,24 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="FitSdk\Cookbook\**" />
-    <Compile Remove="FitSdk\Examples\**" />
-    <Compile Remove="FitSdk\plugins\examples\**" />
-    <Compile Remove="FitSdk_prev\**" />
-    <Compile Remove="Fit\**" />
-    <EmbeddedResource Remove="FitSdk\Cookbook\**" />
-    <EmbeddedResource Remove="FitSdk\Examples\**" />
-    <EmbeddedResource Remove="FitSdk\plugins\examples\**" />
-    <EmbeddedResource Remove="FitSdk_prev\**" />
-    <EmbeddedResource Remove="Fit\**" />
-    <None Remove="FitSdk\Cookbook\**" />
-    <None Remove="FitSdk\Examples\**" />
-    <None Remove="FitSdk\plugins\examples\**" />
-    <None Remove="FitSdk_prev\**" />
-    <None Remove="Fit\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="OAuth.DotNetCore" Version="3.0.1" />
   </ItemGroup>
 
