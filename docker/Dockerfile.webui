@@ -12,7 +12,7 @@ RUN apt-get update \
 
 RUN groupadd -g 1015 p2g && useradd -g p2g -u 1015 p2g
 
-USER p2g
+USER p2g:p2g
 
 WORKDIR /app
 
