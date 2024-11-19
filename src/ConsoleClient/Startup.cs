@@ -106,7 +106,7 @@ namespace ConsoleClient
 					settings.Peloton.NumWorkoutsToDownload = num;
 				}
 
-				if (settings.Garmin.Upload 
+				if (settings.Garmin.Upload
 					&& settings.Garmin.TwoStepVerificationEnabled
 					&& !(await _garminAuthService.GarminAuthTokenExistsAndIsValidAsync()))
 				{
@@ -171,7 +171,7 @@ namespace ConsoleClient
 			finally
 			{
 				_logger.Information("Done.");
-				Console.ReadLine();
+				//Console.ReadLine();
 				Environment.Exit(exitCode);
 			}
 		}
