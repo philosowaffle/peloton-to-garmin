@@ -56,4 +56,6 @@ If you're doing more than 5 activities a day, you will need to change the defaul
 
 ## Updating
 
-1. From the home page of your forked repository, there should be a button to `Sync fork`, click this to pull in the latest changes from the original repo
+1. Make note of your current configuration in `.github/workflows/sync_peloton_to_garmin.yml` as you may need to reapply these changes after updating.
+1. From the home page of your forked repository, there should be a button to `Sync fork`, click this to pull in the latest changes from the original repo.
+1. Go back to your `.github/workflows/sync_peloton_to_garmin.yml` and re-apply any changes from step 1.

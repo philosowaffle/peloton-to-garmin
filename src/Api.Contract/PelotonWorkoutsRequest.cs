@@ -52,8 +52,10 @@ public record PelotonWorkout
 	{
 		Id = workout.Id;
 		Status = workout.Status;
-		ClassTypeTitle = workout.Title;
+		PelotonFitnessDiscipline = workout.Fitness_Discipline.ToString();
+		IsOutdoor = workout.Is_Outdoor;
 		WorkoutTitle = workout.Ride?.Title;
+		InstructorName = workout.Ride?.Instructor?.Name;
 		Name = workout.Name;
 		CreatedAt = workout.Created_At;
 		ImageUrl = workout.Ride?.Image_Url;
@@ -61,8 +63,10 @@ public record PelotonWorkout
 
 	public string? Id { get; init; }
 	public string? Status { get; init; }
-	public string? ClassTypeTitle { get; init; }
+	public string? PelotonFitnessDiscipline { get; init; }
+	public bool IsOutdoor { get; init; }
 	public string? WorkoutTitle { get; init; }
+	public string? InstructorName { get; init; }
 	public string? Name { get; init; }
 	public long CreatedAt { get; init; }
 	public Uri? ImageUrl { get; set; }

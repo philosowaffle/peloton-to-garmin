@@ -12,7 +12,7 @@ public interface IAnnualChallengeService
 
 public class AnnualChallengeService : IAnnualChallengeService
 {
-	private const string AnnualChallengeId = "66863eacd9d04447979d5dba7bf0e766";
+	private const string AnnualChallengeId = "5101dfaa50d441d682a432acd313c706";
 
 	private IPelotonApi _pelotonApi;
 
@@ -30,7 +30,7 @@ public class AnnualChallengeService : IAnnualChallengeService
 		if (joinedChallenges == null || joinedChallenges.Challenges.Length <= 0)
 			return result;
 
-		var annualChallenge = joinedChallenges.Challenges.FirstOrDefault(c => c.Challenge_Summary.Id == AnnualChallengeId || c.Challenge_Summary.Title == "The Annual 2023");
+		var annualChallenge = joinedChallenges.Challenges.FirstOrDefault(c => c.Challenge_Summary.Id == AnnualChallengeId || c.Challenge_Summary.Title.StartsWith("The Annual"));
 		if (annualChallenge is null)
 			return result;
 
@@ -65,6 +65,8 @@ public class AnnualChallengeService : IAnnualChallengeService
 				MinutesAheadOfPace = onTrackDetails.MinutesBehindPace * -1,
 				MinutesNeededPerDay = onTrackDetails.MinutesNeededPerDay,
 				MinutesNeededPerWeek = onTrackDetails.MinutesNeededPerDay * 7,
+				MinutesNeededPerDayToFinishOnTime = onTrackDetails.MinutesNeededPerDayToFinishOnTime,
+				MinutesNeededPerWeekToFinishOnTime = onTrackDetails.MinutesNeededPerDayToFinishOnTime * 7
 			};
 		}).ToList();
 
@@ -83,6 +85,9 @@ public class AnnualChallengeService : IAnnualChallengeService
 
 		var neededMinutesToBeOnTrack = elapsedDays * minutesNeededPerDay;
 
+		var remainingDays = Math.Ceiling((endTimeUtc - now).TotalDays);
+		var minutesNeededPerDayToFinishOnTime = (requiredMinutes - earnedMinutes) / remainingDays;
+
 		return new OnTrackDetails()
 		{
 			IsOnTrackToEarnByEndOfYear = earnedMinutes >= neededMinutesToBeOnTrack,
@@ -90,6 +95,7 @@ public class AnnualChallengeService : IAnnualChallengeService
 			MinutesNeededPerDay = minutesNeededPerDay,
 			HasEarned = earnedMinutes >= requiredMinutes,
 			PercentComplete = earnedMinutes / requiredMinutes,
+			MinutesNeededPerDayToFinishOnTime = minutesNeededPerDayToFinishOnTime
 		};
 	}
 
@@ -100,5 +106,6 @@ public class AnnualChallengeService : IAnnualChallengeService
 		public double MinutesNeededPerDay { get; init; }
 		public bool HasEarned { get; init; }
 		public double PercentComplete { get; init; }
+		public double MinutesNeededPerDayToFinishOnTime { get; init; }
 	}
 }

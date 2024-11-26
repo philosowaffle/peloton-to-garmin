@@ -34,8 +34,6 @@ builder.WebHost.UseUrls(config.Api.HostUrl);
 /// SERVICES
 ///////////////////////////////////////////////////////////
 
-builder.Services.AddHostedService<BackgroundSyncJob>();
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

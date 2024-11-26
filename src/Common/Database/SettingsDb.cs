@@ -1,11 +1,11 @@
-﻿using Common.Helpers;
+﻿using Common.Dto;
+using Common.Helpers;
 using Common.Observe;
 using JsonFlatFileDataStore;
 using Prometheus;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Common.Database
@@ -89,7 +89,7 @@ namespace Common.Database
 			}
 			catch (Exception e)
 			{
-				_logger.Error(e, $"Failed to upsert settings to db for user {userId}");
+				_logger.Error(e, $"Failed to get settings to db for user {userId}");
 				throw;
 			}
 		}

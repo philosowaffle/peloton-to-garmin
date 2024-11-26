@@ -11,7 +11,6 @@ using Prometheus;
 using Serilog;
 using Sync;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using static Common.Observe.Metrics;
@@ -107,69 +106,61 @@ namespace ConsoleClient
 					settings.Peloton.NumWorkoutsToDownload = num;
 				}
 
-				if (settings.App.EnablePolling)
+				if (settings.Garmin.Upload 
+					&& settings.Garmin.TwoStepVerificationEnabled
+					&& !(await _garminAuthService.GarminAuthTokenExistsAndIsValidAsync()))
 				{
-					if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled && settings.App.EnablePolling)
+					await _garminAuthService.SignInAsync();
+
+					Console.WriteLine("Detected Garmin Two Factor Enabled. Please check your email or phone for the Security Passcode sent by Garmin.");
+					var mfaCode = string.Empty;
+					var retryCount = 5;
+					while (retryCount > 0 && string.IsNullOrWhiteSpace(mfaCode))
 					{
-						_logger.Error("Polling cannot be enabled when Garmin TwoStepVerification is enabled.");
-						_logger.Information("Sync Service stopped.");
-						return;
+						Console.WriteLine("Enter Code: ");
+						mfaCode = Console.ReadLine();
+						retryCount--;
 					}
 
-					while (!cancelToken.IsCancellationRequested)
-					{
-						settings = await _settingsService.GetSettingsAsync();
-
-						if (settings.App.CheckForUpdates)
-						{
-							var latestReleaseInformation = await _githubService.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion);
-							if (latestReleaseInformation.IsReleaseNewerThanInstalledVersion)
-							{
-								_logger.Information("*********************************************");
-								_logger.Information("A new version is available: {@Version}", latestReleaseInformation.LatestVersion);
-								_logger.Information("Release Date: {@ReleaseDate}", latestReleaseInformation.ReleaseDate);
-								_logger.Information("Release Information: {@ReleaseUrl}", latestReleaseInformation.ReleaseUrl);
-								_logger.Information("*********************************************");
-
-								AppMetrics.SyncUpdateAvailableMetric(latestReleaseInformation.IsReleaseNewerThanInstalledVersion, latestReleaseInformation.LatestVersion);
-							}
-						}
-
-						var syncResult = await _syncService.SyncAsync(settings.Peloton.NumWorkoutsToDownload);
-						Health.Set(syncResult.SyncSuccess ? HealthStatus.Healthy : HealthStatus.UnHealthy);
-
-						Log.Information("Done");
-						Log.Information("Sleeping for {@Seconds} seconds...", settings.App.PollingIntervalSeconds);
-
-						var now = DateTime.UtcNow;
-						var nextRunTime = now.AddSeconds(settings.App.PollingIntervalSeconds);
-						NextSyncTime.Set(new DateTimeOffset(nextRunTime).ToUnixTimeSeconds());
-						Thread.Sleep(settings.App.PollingIntervalSeconds * 1000);
-					}
-				} 
-				else
-				{
-					if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled)
-					{
-						await _garminAuthService.RefreshGarminAuthenticationAsync();
-						
-						Console.WriteLine("Detected Garmin Two Factor Enabled. Please check your email or phone for the Security Passcode sent by Garmin.");
-						var mfaCode = string.Empty;
-						var retryCount = 5;
-						while (retryCount > 0 && string.IsNullOrWhiteSpace(mfaCode))
-						{
-							Console.Write("Enter Code: ");
-							mfaCode = Console.ReadLine();
-							retryCount--;
-						}
-
-						await _garminAuthService.CompleteMFAAuthAsync(mfaCode);
-					}
-
-					await _syncService.SyncAsync(settings.Peloton.NumWorkoutsToDownload);
+					await _garminAuthService.CompleteMFAAuthAsync(mfaCode);
 				}
 
-				_logger.Information("Done.");
+				if (!settings.App.EnablePolling)
+				{
+					await _syncService.SyncAsync(settings.Peloton.NumWorkoutsToDownload);
+					return;
+				}
+
+				while (!cancelToken.IsCancellationRequested)
+				{
+					settings = await _settingsService.GetSettingsAsync();
+
+					if (settings.App.CheckForUpdates)
+					{
+						var latestReleaseInformation = await _githubService.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion);
+						if (latestReleaseInformation.IsReleaseNewerThanInstalledVersion)
+						{
+							_logger.Information("*********************************************");
+							_logger.Information("A new version is available: {@Version}", latestReleaseInformation.LatestVersion);
+							_logger.Information("Release Date: {@ReleaseDate}", latestReleaseInformation.ReleaseDate);
+							_logger.Information("Release Information: {@ReleaseUrl}", latestReleaseInformation.ReleaseUrl);
+							_logger.Information("*********************************************");
+
+							AppMetrics.SyncUpdateAvailableMetric(latestReleaseInformation.IsReleaseNewerThanInstalledVersion, latestReleaseInformation.LatestVersion);
+						}
+					}
+
+					var syncResult = await _syncService.SyncAsync(settings.Peloton.NumWorkoutsToDownload);
+					Health.Set(syncResult.SyncSuccess ? HealthStatus.Healthy : HealthStatus.UnHealthy);
+
+					Log.Information("Done");
+					Log.Information("Sleeping for {@Seconds} seconds...", settings.App.PollingIntervalSeconds);
+
+					var now = DateTime.UtcNow;
+					var nextRunTime = now.AddSeconds(settings.App.PollingIntervalSeconds);
+					NextSyncTime.Set(new DateTimeOffset(nextRunTime).ToUnixTimeSeconds());
+					Thread.Sleep(settings.App.PollingIntervalSeconds * 1000);
+				}
 			}
 			catch (Exception ex)
 			{
@@ -179,7 +170,7 @@ namespace ConsoleClient
 			}
 			finally
 			{
-				_logger.Verbose("Exit.");
+				_logger.Information("Done.");
 				Console.ReadLine();
 				Environment.Exit(exitCode);
 			}

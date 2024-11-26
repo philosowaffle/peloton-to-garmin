@@ -3,6 +3,7 @@ using System;
 using Common;
 using FluentAssertions;
 using System.IO;
+using Common.Dto;
 
 namespace UnitTests.Common
 {

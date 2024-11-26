@@ -1,9 +1,10 @@
 ﻿using Api.Contract;
 using Api.Service.Validators;
-using Common.Database;
 using Common.Service;
+using Garmin.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Sync;
+using Sync.Database;
 
 namespace Api.Controllers;
 
@@ -14,14 +15,16 @@ namespace Api.Controllers;
 public class SyncController : Controller
 {
 	private readonly ISettingsService _settingsService;
+	private readonly IGarminAuthenticationService _garminAuthService;
 	private readonly ISyncService _syncService;
 	private readonly ISyncStatusDb _db;
 
-	public SyncController(ISettingsService settingsService, ISyncService syncService, ISyncStatusDb db)
+	public SyncController(ISettingsService settingsService, ISyncService syncService, ISyncStatusDb db, IGarminAuthenticationService authService)
 	{
 		_settingsService = settingsService;
 		_syncService = syncService;
 		_db = db;
+		_garminAuthService = authService;
 	}
 
 	/// <summary>
@@ -41,7 +44,7 @@ public class SyncController : Controller
 	public async Task<ActionResult<SyncPostResponse>> SyncAsync([FromBody] SyncPostRequest request)
 	{
 		var settings = await _settingsService.GetSettingsAsync();
-		var auth = _settingsService.GetGarminAuthentication(settings.Garmin.Email);
+		var auth = await _garminAuthService.GetGarminAuthenticationAsync();
 
 		var (isValid, result) = request.IsValidHttp(settings, auth);
 		if (!isValid) return result!;
@@ -91,7 +94,7 @@ public class SyncController : Controller
 		var response = new SyncGetResponse()
 		{
 			SyncEnabled = settings.App.EnablePolling,
-			SyncStatus = syncTime.SyncStatus,
+			SyncStatus = (Status)syncTime.SyncStatus,
 			LastSuccessfulSyncTime = syncTime.LastSuccessfulSyncTime,
 			LastSyncTime = syncTime.LastSyncTime,
 			NextSyncTime = syncTime.NextSyncTime

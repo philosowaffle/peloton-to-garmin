@@ -71,3 +71,7 @@ a.nav-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.popover {
+    --bs-popover-max-width: 500px;
+}

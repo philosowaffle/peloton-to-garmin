@@ -98,9 +98,9 @@ public static class Mapping
 		};
 	}
 
-	public static Peloton Map(this SettingsPelotonPostRequest request)
+	public static PelotonSettings Map(this SettingsPelotonPostRequest request)
 	{
-		return new Peloton()
+		return new ()
 		{
 			Email = request.Email,
 			Password = request.Password,
@@ -121,9 +121,9 @@ public static class Mapping
 		};
 	}
 
-	public static Garmin Map(this SettingsGarminPostRequest request)
+	public static GarminSettings Map(this SettingsGarminPostRequest request)
 	{
-		return new Garmin()
+		return new ()
 		{
 			Email = request.Email,
 			Password = request.Password,

@@ -1,8 +1,7 @@
 ﻿using Api.Contract;
+using Api.Service;
 using Api.Service.Helpers;
-using Api.Service.Mappers;
 using Microsoft.AspNetCore.Mvc;
-using Peloton.AnnualChallenge;
 
 namespace Api.Controllers;
 
@@ -11,9 +10,9 @@ namespace Api.Controllers;
 [Consumes("application/json")]
 public class PelotonAnnualChallengeController : Controller
 {
-	private readonly IAnnualChallengeService _annualChallengeService;
+	private readonly IPelotonAnnualChallengeService _annualChallengeService;
 
-	public PelotonAnnualChallengeController(IAnnualChallengeService annualChallengeService)
+	public PelotonAnnualChallengeController(IPelotonAnnualChallengeService annualChallengeService)
 	{
 		_annualChallengeService = annualChallengeService;
 	}
@@ -31,22 +30,14 @@ public class PelotonAnnualChallengeController : Controller
 	[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<ProgressGetResponse>> GetProgressSummaryAsync()
 	{
-		var userId = 1;
 		try
 		{
-			var serviceResult = await _annualChallengeService.GetAnnualChallengeProgressAsync(userId);
+			var serviceResult = await _annualChallengeService.GetProgressAsync();
 
 			if (serviceResult.IsErrored())
 				return serviceResult.GetResultForError();
 
-			var data = serviceResult.Result;
-			var tiers = data.Tiers?.Select(t => t.Map()).ToList();
-
-			return Ok(new ProgressGetResponse()
-			{
-				EarnedMinutes = data.EarnedMinutes,
-				Tiers = tiers ?? new List<Contract.Tier>(),
-			});
+			return Ok(serviceResult.Result);
 		}
 		catch (Exception e)
 		{

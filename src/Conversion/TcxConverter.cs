@@ -53,7 +53,7 @@ public class TcxConverter : Converter<XElement>
 		var hrSummary = GetHeartRateSummary(samples);
 		var cadenceSummary = GetCadenceSummary(samples, GetGarminSport(workout));
 		var resistanceSummary = GetResistanceSummary(samples);
-		var deviceInfo = await GetDeviceInfoAsync(workout.Fitness_Discipline, settings);
+		var deviceInfo = await GetDeviceInfoAsync(workout);
 
 		var lx = new XElement(activityExtensions + "TPX");
 		lx.Add(new XElement(activityExtensions + "TotalPower", workout?.Total_Work));

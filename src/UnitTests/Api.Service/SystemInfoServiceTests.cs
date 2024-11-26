@@ -1,4 +1,5 @@
 ﻿using Api.Contract;
+using Api.Service;
 using Api.Services;
 using Common;
 using Core.GitHub;
@@ -42,9 +43,9 @@ public class SystemInfoServiceTests
 		// SETUP
 		var autoMocker = new AutoMocker();
 		var controller = autoMocker.CreateInstance<SystemInfoService>();
-		var ghService = autoMocker.GetMock<IGitHubReleaseCheckService>();
+		var ghService = autoMocker.GetMock<IVersionInformationService>();
 
-		ghService.Setup(x => x.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion))
+		ghService.Setup(x => x.GetLatestReleaseInformationAsync())
 			.ReturnsAsync(new LatestReleaseInformation()
 			{
 				IsReleaseNewerThanInstalledVersion = true,
@@ -64,6 +65,6 @@ public class SystemInfoServiceTests
 		response.NewerVersionAvailable.Should().NotBeNull();
 		response.LatestVersionInformation.Should().NotBeNull();
 
-		ghService.Verify(x => x.GetLatestReleaseInformationAsync("philosowaffle", "peloton-to-garmin", Constants.AppVersion), Times.Once());
+		ghService.Verify(x => x.GetLatestReleaseInformationAsync(), Times.Once());
 	}
 }

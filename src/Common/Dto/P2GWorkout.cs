@@ -1,6 +1,5 @@
 ﻿using Common.Dto.Peloton;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Common.Dto
 {
@@ -34,6 +33,7 @@ namespace Common.Dto
 				FitnessDiscipline.Caesar => WorkoutType.Rowing,
 				FitnessDiscipline.Cardio => WorkoutType.Cardio,
 				FitnessDiscipline.Circuit => WorkoutType.Circuit,
+				FitnessDiscipline.Cycling when workout.Is_Outdoor => WorkoutType.OutdoorCycling,
 				FitnessDiscipline.Cycling => WorkoutType.Cycling,
 				FitnessDiscipline.Meditation => WorkoutType.Meditation,
 				FitnessDiscipline.Strength => WorkoutType.Strength,
@@ -47,6 +47,28 @@ namespace Common.Dto
 			};
 		}
 
+		public static (FitnessDiscipline fitnessDiscipline, bool isOutdoor) ToFitnessDiscipline(this WorkoutType workoutType)
+		{
+			return workoutType switch
+			{
+				WorkoutType.None => (FitnessDiscipline.None, false),
+				WorkoutType.BikeBootcamp => (FitnessDiscipline.Bike_Bootcamp, false),
+				WorkoutType.Cardio => (FitnessDiscipline.Cardio, false),
+				WorkoutType.Circuit => (FitnessDiscipline.Circuit, false),
+				WorkoutType.Cycling => (FitnessDiscipline.Cycling, false),
+				WorkoutType.OutdoorCycling => (FitnessDiscipline.Cycling, true),
+				WorkoutType.Meditation => (FitnessDiscipline.Meditation, false),
+				WorkoutType.Rowing => (FitnessDiscipline.Caesar, false),
+				WorkoutType.OutdoorRunning => (FitnessDiscipline.Running, true),
+				WorkoutType.TreadmillRunning => (FitnessDiscipline.Running, false),
+				WorkoutType.Strength => (FitnessDiscipline.Strength, false),
+				WorkoutType.Stretching => (FitnessDiscipline.Stretching, false),
+				WorkoutType.TreadmillWalking => (FitnessDiscipline.Walking, false),
+				WorkoutType.OutdoorWalking => (FitnessDiscipline.Walking, true),
+				WorkoutType.Yoga => (FitnessDiscipline.Yoga, false),
+				_ => (FitnessDiscipline.None, false),
+			};
+		}
 	}
 
 	public record P2GExercise

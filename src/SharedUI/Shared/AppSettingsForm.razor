@@ -1,12 +1,20 @@
 ﻿@inject IApiClient _apiClient
 @inject IHxMessengerService _toaster;
 
+<GarminMfaModal @ref="_garminMfaModal" />
+
 <EditForm Model="@appSettings">
 	<div class="row g-3">
 		<div class="col-md-12">
 			<HxCard>
 				<HeaderTemplate>
 					<HxSwitch Text="Automatic Syncing" @bind-Value="appSettings.EnablePolling" Inline="true" />
+					<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+							   Title="<b>Automatic Syncing</b>"
+							   Content="@AutomaticSyncingDocumentation"
+							   Html="true">
+						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+					</HxPopover>
 				</HeaderTemplate>
 				<BodyTemplate>
 					<HxFormState Enabled="@appSettings.EnablePolling">
@@ -25,12 +33,16 @@
 </EditForm>
 
 @code {
-	private Common.App appSettings;
+	private App appSettings;
+	private SettingsGarminGetResponse garminSettings;
+	private string configDocumentation;
+	private GarminMfaModal? _garminMfaModal;
 
 	public AppSettingsForm()
 	{
 		var settings = new SettingsGetResponse();
 		appSettings = settings.App;
+		garminSettings = settings.Garmin;
 	}
 
 	protected override Task OnInitializedAsync()
@@ -45,6 +57,9 @@
 		var settings = await _apiClient.SettingsGetAsync();
 
 		appSettings = settings.App;
+
+		var systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = settings.App.CheckForUpdates });
+		configDocumentation = systemInfo.Documentation + "/configuration/app";
 	}
 
 	protected async Task SaveAppSettings()
@@ -53,6 +68,18 @@
 
 		_toaster.Clear();
 
+		if (appSettings.EnablePolling)
+		{
+			// If polling is enabled, check if we need the user to initialize a token
+			await _garminMfaModal!.ShowAsync(ContinueSaveAsync);
+			return;
+		}
+		
+		await ContinueSaveAsync();
+	}
+
+	private async Task ContinueSaveAsync()
+	{
 		try
 		{
 			appSettings = await _apiClient.SettingsAppPostAsync(appSettings);
@@ -69,4 +96,6 @@
 			Log.Error("UI - Failed to save App settings.", e);
 		}
 	}
+
+	private string AutomaticSyncingDocumentation => $"P2G can periodically and automatically sync workouts.  By enabling this setting, P2G will check for workouts every X seconds and sync them.  The number of workouts that P2G will fetch per sync can be configured on the <b>Peloton Settings</b> tab.<br /><br /><b>WARNING:</b> Setting this to a frequency of hourly or less may get you flagged by Peloton as a bad actor and they may reset your password. The default is set to Daily.<br /><br /><a href='{configDocumentation}'>Documentation</a><br ?><small>(click the <b>?</b> to pin this window)</small>";
 }

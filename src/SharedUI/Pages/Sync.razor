@@ -16,7 +16,9 @@
 	<Columns>
 		<HxGridColumn TItem="PelotonWorkout" HeaderText="Date" ItemTextSelector="@(item => DateTimeOffset.FromUnixTimeSeconds(item.CreatedAt).LocalDateTime.ToString())" />
 		<HxGridColumn TItem="PelotonWorkout" HeaderText="Title" ItemTextSelector="@(item => item.WorkoutTitle ?? item.Name)" />
-		<HxGridColumn TItem="PelotonWorkout" HeaderText="Status" ItemTextSelector="@(item => item.Status)" />
+		<HxGridColumn TItem="PelotonWorkout" HeaderText="Instructor" ItemTextSelector="@(item => item.InstructorName)" />
+		<HxGridColumn TItem="PelotonWorkout" HeaderText="Workout Type" ItemTextSelector="@(item => item.PelotonFitnessDiscipline)" />
+		<HxGridColumn TItem="PelotonWorkout" HeaderText="Is Outdoor?" ItemTextSelector="@(item => item.IsOutdoor.ToString())" />
 	</Columns>
 </HxGrid>
 
