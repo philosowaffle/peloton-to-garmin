@@ -125,7 +125,8 @@ namespace Garmin
 				.WithOAuthBearerToken(auth.OAuth2Token.Access_Token)
 				.WithHeader("NK", "NT")
 				.WithHeader("origin", ORIGIN)
-				.WithHeader("User-Agent", userAgent)
+				//.WithHeader("User-Agent", userAgent)
+				.WithHeader("User-Agent", "GCM-iOS-5.7.2.1") // 11/27/24 - Initial fix for upload api change: https://github.com/cyberjunky/python-garminconnect/commit/7c8670fc281f90183c2dcc5137cad09eab593df3
 				.AllowHttpStatus("2xx,409")
 				.PostMultipartAsync((data) =>
 				{
