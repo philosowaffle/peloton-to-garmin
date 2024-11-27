@@ -31,6 +31,9 @@ jobs:
       run: |
         cat <<EOT > /app/configuration.local.json 
         {
+           "Developer": {
+             "UserAgent": "GCM-iOS-5.7.2.1"
+          },
           "App": {
             "EnablePolling": false
           },
