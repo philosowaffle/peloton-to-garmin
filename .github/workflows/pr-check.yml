@@ -12,6 +12,7 @@ jobs:
       matrix:
         dotnet: ['7.0']
         os: [windows-latest]
+        framework: ['net7.0-windows10.0.19041.0']
 
     runs-on: ${{ matrix.os }}
 
@@ -34,7 +35,7 @@ jobs:
       run: dotnet restore
 
     - name: Build
-      run: dotnet build --no-restore --configuration Debug
+      run: dotnet build --no-restore --configuration Debug -f ${{ matrix.framework }}
 
     - name: Test
       run: dotnet test
