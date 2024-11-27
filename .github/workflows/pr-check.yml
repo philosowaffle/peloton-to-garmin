@@ -35,7 +35,7 @@ jobs:
       run: dotnet restore
 
     - name: Build
-      run: dotnet build --no-restore --configuration Debug -f ${{ matrix.framework }}
+      run: dotnet build --no-restore --configuration Debug
 
     - name: Test
       run: dotnet test
