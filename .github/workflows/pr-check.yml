@@ -22,6 +22,10 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ matrix.dotnet }}
+    
+    - name: List MAUI Workloads
+      run: dotnet workload list
+      shell: pwsh
 
     - name: Clean
       run: dotnet clean --configuration Debug && dotnet nuget locals all --clear
