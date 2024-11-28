@@ -29,7 +29,7 @@ jobs:
     
     - name: Restore MAUI Workloads
       #run: dotnet workload install maui --version 7.0.100 --source https://api.nuget.org/v3/index.json --ignore-failed-sources
-      run: dotnet workload install maui --sdk-version=7.0.302 --from-rollback-file https://maui.blob.core.windows.net/metadata/rollbacks/7.0.81.json
+      run: dotnet workload install maui --version=7.0.302 --from-rollback-file https://maui.blob.core.windows.net/metadata/rollbacks/7.0.81.json
       shell: pwsh
 
     - name: List MAUI Workloads
