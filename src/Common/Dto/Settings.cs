@@ -1,6 +1,9 @@
-﻿using Common.Stateful;
+﻿using Common.Dto.Garmin;
+using Common.Stateful;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 namespace Common.Dto;
 
@@ -57,13 +60,23 @@ public class Format
 		Strength = new Strength();
 	}
 
+	[JsonIgnore]
+	public static readonly Dictionary<WorkoutType, GarminDeviceInfo> DefaultDeviceInfoSettings = new Dictionary<WorkoutType, GarminDeviceInfo>()
+	{
+		{ WorkoutType.None, GarminDevices.Forerunner945 },
+		{ WorkoutType.Cycling, GarminDevices.TACXDevice },
+		{ WorkoutType.Rowing, GarminDevices.EpixDevice },
+	};
+
 	public bool Fit { get; set; }
 	public bool Json { get; set; }
 	public bool Tcx { get; set; }
 	public bool SaveLocalCopy { get; set; }
 	public bool IncludeTimeInHRZones { get; set; }
 	public bool IncludeTimeInPowerZones { get; set; }
+	[Obsolete("Use DeviceInfoSettings instead.  Will be removed in P2G v5.")]
 	public string DeviceInfoPath { get; set; }
+	public Dictionary<WorkoutType, GarminDeviceInfo> DeviceInfoSettings { get; set; }
 	public string WorkoutTitleTemplate { get; set; } = "{{PelotonWorkoutTitle}}{{#if PelotonInstructorName}} with {{PelotonInstructorName}}{{/if}}";
 	public Cycling Cycling { get; set; }
 	public Running Running { get; set; }

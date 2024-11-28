@@ -36,27 +36,27 @@ namespace UnitTests.Peloton
 			var pelotonApi = autoMocker.GetMock<IPelotonApi>();
 
 			pelotonApi.Setup(x => x.GetWorkoutByIdAsync("1"))
-					.ReturnsAsync(JObject.FromObject(new Workout() { Ride = new Ride() { Id = "12" } }))
+					.ReturnsAsync(new Workout() { Ride = new Ride() { Id = "12" } })
 					.Verifiable();
 
 			pelotonApi.Setup(x => x.GetWorkoutSamplesByIdAsync("1"))
-					.ReturnsAsync(new JObject())
+					.ReturnsAsync(new WorkoutSamples())
 					.Verifiable();
 
 			pelotonApi.Setup(x => x.GetWorkoutByIdAsync("2"))
-					.ReturnsAsync(JObject.FromObject(new Workout() { Ride = new Ride() { Id = "22" } }))
+					.ReturnsAsync(new Workout() { Ride = new Ride() { Id = "22" } })
 					.Verifiable();
 
 			pelotonApi.Setup(x => x.GetWorkoutSamplesByIdAsync("2"))
-					.ReturnsAsync(new JObject())
+					.ReturnsAsync(new WorkoutSamples())
 					.Verifiable();
 
 			pelotonApi.Setup(x => x.GetWorkoutByIdAsync("3"))
-					.ReturnsAsync(JObject.FromObject(new Workout() { Ride = new Ride() { Id = "32" } }))
+					.ReturnsAsync(new Workout() { Ride = new Ride() { Id = "32" } })
 					.Verifiable();
 
 			pelotonApi.Setup(x => x.GetWorkoutSamplesByIdAsync("3"))
-					.ReturnsAsync(new JObject())
+					.ReturnsAsync(new WorkoutSamples())
 					.Verifiable();
 
 			// ACT
@@ -122,7 +122,7 @@ namespace UnitTests.Peloton
 
 			var pelotonApi = autoMocker.GetMock<IPelotonApi>();
 			pelotonApi.Setup(x => x.GetWorkoutByIdAsync("someWorkoutId"))
-				.ReturnsAsync(JObject.FromObject(new Workout() { Ride = new Ride() { Id = rideId } }));
+				.ReturnsAsync(new Workout() { Ride = new Ride() { Id = rideId } });
 
 			var workouts = await pelotonService.GetWorkoutDetailsAsync("someWorkoutId");
 

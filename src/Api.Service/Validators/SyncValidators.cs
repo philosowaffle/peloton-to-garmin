@@ -1,8 +1,7 @@
 ﻿using Api.Contract;
 using Api.Service.Helpers;
-using Common;
 using Common.Dto;
-using Common.Stateful;
+using Garmin.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Service.Validators;
@@ -16,7 +15,7 @@ public static class SyncValidators
 
 		if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled)
 		{
-			if (garminAuth is null || !garminAuth.IsValid(settings))
+			if (garminAuth is null || !garminAuth.IsValid())
 			{
 				result = new ErrorResponse("Must initialize Garmin two factor auth token before sync can be preformed.", ErrorCode.NeedToInitGarminMFAAuth);
 				return (false, result);
@@ -38,7 +37,7 @@ public static class SyncValidators
 
 		if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled)
 		{
-			if (garminAuth is null || !garminAuth.IsValid(settings))
+			if (garminAuth is null || !garminAuth.IsValid())
 			{
 				result = new UnauthorizedObjectResult(new ErrorResponse("Must initialize Garmin two factor auth token before sync can be preformed.", ErrorCode.NeedToInitGarminMFAAuth));
 				return (false, result);

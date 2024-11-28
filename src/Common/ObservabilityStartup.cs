@@ -3,7 +3,6 @@ using Common.Observe;
 using Common.Stateful;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Enrichers.Span;
 using Serilog.Settings.Configuration;
@@ -15,8 +14,9 @@ public static class ObservabilityStartup
 {
 	public static void ConfigureClientUI(IServiceCollection services, ConfigurationManager configManager, AppConfiguration config)
 	{
-		FlurlConfiguration.Configure(config.Observability);
 		ConfigureLogging(configManager);
+		FlurlConfiguration.Configure(config.Observability);
+		Tracing.EnableWebUITracing(services, config.Observability.Jaeger);
 
 		// Setup initial Tracing Source
 		Tracing.Source = new(Statics.TracingService);
@@ -24,9 +24,9 @@ public static class ObservabilityStartup
 
 	public static void ConfigureApi(IServiceCollection services, ConfigurationManager configManager, AppConfiguration config)
 	{
+		ConfigureLogging(configManager);
 		FlurlConfiguration.Configure(config.Observability);
 		Tracing.EnableApiTracing(services, config.Observability.Jaeger);
-		ConfigureLogging(configManager);
 
 		// Setup initial Tracing Source
 		Tracing.Source = new(Statics.TracingService);
@@ -34,9 +34,9 @@ public static class ObservabilityStartup
 
 	public static void ConfigureWebUI(IServiceCollection services, ConfigurationManager configManager, AppConfiguration config)
 	{
-		FlurlConfiguration.Configure(config.Observability);
-		Tracing.EnableWebUITracing(services, config.Observability.Jaeger);
 		ConfigureLogging(configManager);
+		FlurlConfiguration.Configure(config.Observability);
+		Tracing.EnableWebUITracing(services, config.Observability.Jaeger);		
 
 		// Setup initial Tracing Source
 		Tracing.Source = new(Statics.TracingService);

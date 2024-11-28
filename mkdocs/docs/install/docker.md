@@ -1,7 +1,7 @@
 
 # Docker
 
-The recommended installation method is with Docker. If you're not familiar with Docker but would like to try it check out the [quick start guide](#quick-start-guide).
+The recommended installation method is with Docker. If you're not familiar with Docker you can [learn more here](#more-about-docker).
 
 P2G offers two main flavors of docker images:
 
@@ -47,7 +47,7 @@ The P2G images run the process under the user and group `p2g:p2g` with uid and g
 1. Create a group on the local machine `p2g` with group id `1015`
 1. Add your user on the local machine to the `p2g` group
 
-## Quick Start Guide
+## More about Docker
 
 Docker provides an easy and consistent way to install, update, and uninstall applications across multiple Operating Systems.  Docker is extremely popular in the self-hosted community, a group interested in minimizing dependencies on Cloud providers in favor of attempting to keep their data local, private, and free.  You can learn more about the ever growing list of self-hosted applications on the [awesome-selfhosted list](https://github.com/awesome-selfhosted/awesome-selfhosted).
 

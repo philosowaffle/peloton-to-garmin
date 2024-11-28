@@ -1,5 +1,4 @@
 ﻿using Common;
-using Common.Database;
 using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Service;
@@ -13,6 +12,8 @@ using NUnit.Framework;
 using Peloton;
 using Philosowaffle.Capability.ReleaseChecks.Model;
 using Sync;
+using Sync.Database;
+using Sync.Dto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

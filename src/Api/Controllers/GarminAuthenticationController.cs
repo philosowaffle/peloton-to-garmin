@@ -2,6 +2,7 @@
 using Api.Service.Helpers;
 using Common.Service;
 using Garmin.Auth;
+using Garmin.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -25,10 +26,9 @@ namespace Api.Controllers
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		public async Task<ActionResult<GarminAuthenticationGetResponse>> GetAsync()
 		{
-			var settings = await _settingsService.GetSettingsAsync();
-			var auth = _settingsService.GetGarminAuthentication(settings.Garmin.Email);
+			var auth = await _garminAuthService.GetGarminAuthenticationAsync();
+			var result = new GarminAuthenticationGetResponse() { IsAuthenticated = auth?.IsValid() ?? false };
 
-			var result = new GarminAuthenticationGetResponse() { IsAuthenticated = auth?.IsValid(settings) ?? false };
 			return Ok(result);
 		}
 
@@ -54,14 +54,14 @@ namespace Api.Controllers
 			{ 
 				if (!settings.Garmin.TwoStepVerificationEnabled)
 				{
-					await _garminAuthService.RefreshGarminAuthenticationAsync();
+					await _garminAuthService.SignInAsync();
 					return Created("api/garminauthentication", new GarminAuthenticationGetResponse() { IsAuthenticated = true });
 				}
 				else
 				{
-					var auth = await _garminAuthService.RefreshGarminAuthenticationAsync();
+					var auth = await _garminAuthService.SignInAsync();
 
-					if (auth.AuthStage == Common.Stateful.AuthStage.NeedMfaToken)
+					if (auth.AuthStage == AuthStage.NeedMfaToken)
 						return Accepted();
 
 					return Created("api/garminauthentication", new GarminAuthenticationGetResponse() { IsAuthenticated = true });

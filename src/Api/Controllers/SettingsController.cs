@@ -1,7 +1,6 @@
 ﻿using Api.Contract;
 using Api.Service;
 using Api.Service.Helpers;
-using Common;
 using Common.Dto;
 using Common.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -15,13 +14,11 @@ namespace Api.Controllers;
 public class SettingsController : Controller
 {
 	private readonly ISettingsService _settingsService;
-	private readonly IFileHandling _fileHandler;
 	private readonly ISettingsUpdaterService _settingsUpdaterService;
 
-	public SettingsController(ISettingsService settingsService, IFileHandling fileHandler, ISettingsUpdaterService settingsUpdaterService)
+	public SettingsController(ISettingsService settingsService, ISettingsUpdaterService settingsUpdaterService)
 	{
 		_settingsService = settingsService;
-		_fileHandler = fileHandler;
 		_settingsUpdaterService = settingsUpdaterService;
 	}
 

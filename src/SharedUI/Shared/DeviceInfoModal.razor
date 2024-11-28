@@ -1,0 +1,107 @@
+﻿@using System.Globalization;
+@using Common.Dto.Garmin;
+@using System.ComponentModel.DataAnnotations;
+@inject IHxMessengerService _toaster;
+
+<HxModal @ref="Modal" Title="Device Info" Backdrop="ModalBackdrop.Static" CloseOnEscape="true" OnClosed="OnClosed">
+	<BodyTemplate>
+			<HxSelect Label="Exercise Type"
+						   Data="@AvailableWorkoutTypes"
+						   @bind-Value="@ExerciseType"
+						   EmptyText="- none -"
+							TextSelector="(w) => w.ToString()"
+						   GenerateChip=true
+						   NullDataText="Loading workout types..." />
+			<HxInputText Label="Device Name"
+							@bind-Value="@DeviceInfo.Name"
+							MaxLength="20"/>
+			<HxInputNumber Label="Unit Id"
+							TValue="uint" 
+							@bind-Value="@DeviceInfo.UnitId"  />
+			<HxInputNumber Label="Product Id"
+						   TValue="ushort"
+							@bind-Value="@DeviceInfo.ProductID" />
+			<HxInputNumber Label="Manufacturer Id"
+						   TValue="ushort"
+							@bind-Value="@DeviceInfo.ManufacturerId" />
+			<HxInputNumber Label="Version Major"
+							TValue="int"
+							@bind-Value="@DeviceInfo.Version.VersionMajor" />
+			<HxInputNumber Label="Version Minor"
+						   TValue="double"
+							@bind-Value="@DeviceInfo.Version.VersionMinor" />
+			<HxInputNumber Label="Build Version Major"
+						   TValue="int"
+							@bind-Value="@DeviceInfo.Version.BuildMajor" />
+			<HxInputNumber Label="Build Version Minor"
+							TValue="double"
+							@bind-Value="@DeviceInfo.Version.BuildMinor" />
+	</BodyTemplate>
+	<FooterTemplate>
+		<HxSubmit Color="ThemeColor.Primary" OnClick="SubmitAsync">Submit</HxSubmit>
+	</FooterTemplate>
+</HxModal>
+
+@code {
+	private ICollection<WorkoutType> AvailableWorkoutTypes = Enum.GetValues(typeof(WorkoutType)).Cast<WorkoutType>().ToList();
+
+	[Required]
+	private WorkoutType ExerciseType = WorkoutType.None;
+	private GarminDeviceInfo DeviceInfo = new GarminDeviceInfo();
+
+	private HxModal? Modal;
+
+	private Func<KeyValuePair<WorkoutType, GarminDeviceInfo>, Task> _submitCallback = NoOpAsync;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+	}
+
+	public async Task ShowAsync(KeyValuePair<WorkoutType, GarminDeviceInfo>? editDeviceInfo, ICollection<WorkoutType> alreadyConfiguredTypes, Func<KeyValuePair<WorkoutType, GarminDeviceInfo>, Task> submitCallback)
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(DeviceInfoModal)}.{nameof(ShowAsync)}", kind: ActivityKind.Client);
+
+		_submitCallback = submitCallback;
+
+		AvailableWorkoutTypes = Enum.GetValues(typeof(WorkoutType)).Cast<WorkoutType>().Except(alreadyConfiguredTypes).ToList();
+		ExerciseType = AvailableWorkoutTypes.FirstOrDefault();
+
+		if (editDeviceInfo is object)
+		{
+			AvailableWorkoutTypes.Add(editDeviceInfo.Value.Key);
+			ExerciseType = editDeviceInfo.Value.Key;
+			DeviceInfo = editDeviceInfo.Value.Value;
+		}
+
+		await Modal!.ShowAsync();
+	}
+
+	protected async Task SubmitAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(GarminMfaModal)}.{nameof(SubmitAsync)}", kind: ActivityKind.Client);
+
+		try
+		{
+			await _submitCallback.Invoke(new KeyValuePair<WorkoutType, GarminDeviceInfo>(ExerciseType, DeviceInfo));
+			await Modal!.HideAsync();
+		}
+		catch (Exception e)
+		{
+			Log.Error("UI - Failed to submit Garmin Device Info.", e);
+			_toaster.AddInformation("Failed to update Garmin Device list.", "See logs for more info.");
+		}
+	}
+
+	protected void OnClosed()
+	{
+		_submitCallback = NoOpAsync;
+		ExerciseType = WorkoutType.None;
+		DeviceInfo = new GarminDeviceInfo();
+	}
+
+	public static Task NoOpAsync(KeyValuePair<WorkoutType, GarminDeviceInfo> deviceInfo)
+	{
+		return Task.CompletedTask;
+	}
+}

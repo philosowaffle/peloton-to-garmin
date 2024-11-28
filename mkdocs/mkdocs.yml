@@ -22,6 +22,8 @@ theme:
     - navigation.top
     - naviation.sections
     - navigation.indexes
+    - content.code.annotate
+    - content.code.copy
 
 markdown_extensions:
   - admonition
@@ -42,8 +44,16 @@ nav:
     - 'GitHub Actions': install/github-action.md
  - Configuration: 
     - Configuration: configuration/index.md
-    - 'User Interface and Json': configuration/json.md
-    - Observability: observability.md
+    - Settings:
+      - 'App Settings': configuration/app.md
+      - 'Format Settings': configuration/format.md
+      - 'Garmin Settings': configuration/garmin.md
+      - 'Peloton Settings': configuration/peloton.md
+    - 'Low Level Settings':
+      - 'Api File Configuration': configuration/api.md
+      - 'WebUI File Configuration': configuration/webui.md
+      - 'Observability File Configuration': configuration/observability.md
+    - 'Exercise Types': configuration/exercise-types.md
  - Help:
     - Help: help.md
     - 'F.A.Q': faq.md

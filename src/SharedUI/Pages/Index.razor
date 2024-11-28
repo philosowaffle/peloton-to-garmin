@@ -11,7 +11,7 @@
 <div class="row">
 	<div class="col">
 		<HxBadge Type="BadgeType.RoundedPill" Color="@GetPillThemeColor(syncStatus.SyncStatus)" TextColor="@GetPillTextThemeColor(syncStatus.SyncStatus)">Periodic syncing is @syncStatus.AutoSyncHealthString</HxBadge>
-		@if (syncStatus.SyncStatus != Common.Database.Status.NotRunning)
+		@if (syncStatus.SyncStatus != Api.Contract.Status.NotRunning)
 		{
 			<span> </span>
 			<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Secondary" TextColor="ThemeColor.Light">Next Sync: @syncStatus.NextSyncTime</HxBadge>
@@ -211,34 +211,34 @@
 		}
 	}
 
-	private ThemeColor GetPillThemeColor(Common.Database.Status status)
+	private ThemeColor GetPillThemeColor(Api.Contract.Status status)
 	{
 		switch (syncStatus.SyncStatus)
 		{
-			case Common.Database.Status.Running:
+			case Api.Contract.Status.Running:
 				return ThemeColor.Success;
-			case Common.Database.Status.NotRunning:
+			case Api.Contract.Status.NotRunning:
 				return ThemeColor.Secondary;
-			case Common.Database.Status.Dead:
+			case Api.Contract.Status.Dead:
 				return ThemeColor.Danger;
-			case Common.Database.Status.UnHealthy:
+			case Api.Contract.Status.UnHealthy:
 				return ThemeColor.Warning;
 		}
 
 		return ThemeColor.Light;
 	}
 
-	private ThemeColor GetPillTextThemeColor(Common.Database.Status status)
+	private ThemeColor GetPillTextThemeColor(Api.Contract.Status status)
 	{
 		switch (syncStatus.SyncStatus)
 		{
-			case Common.Database.Status.Running:
+			case Api.Contract.Status.Running:
 				return ThemeColor.Light;
-			case Common.Database.Status.NotRunning:
+			case Api.Contract.Status.NotRunning:
 				return ThemeColor.Light;
-			case Common.Database.Status.Dead:
+			case Api.Contract.Status.Dead:
 				return ThemeColor.Light;
-			case Common.Database.Status.UnHealthy:
+			case Api.Contract.Status.UnHealthy:
 				return ThemeColor.Dark;
 		}
 

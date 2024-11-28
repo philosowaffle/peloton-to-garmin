@@ -56,20 +56,23 @@ public static class FlurlConfiguration
 			LogError(call, request, response);
 		};
 
-		FlurlHttp.Configure(settings =>
+		FlurlHttp.Clients.WithDefaults(builder =>
 		{
-			settings.Timeout = new TimeSpan(0, 0, defaultTimeoutSeconds);
-			settings.BeforeCallAsync = beforeCallAsync;
-			settings.AfterCallAsync = afterCallAsync;
-			settings.OnErrorAsync = onErrorAsync;
-			settings.Redirects.ForwardHeaders = true;
+			builder.WithTimeout(new TimeSpan(0, 0, defaultTimeoutSeconds))
+			.BeforeCall(beforeCallAsync)
+			.AfterCall(afterCallAsync)
+			.OnError(onErrorAsync)
+			.WithAutoRedirect(true);
+
+			builder.Settings.Redirects.ForwardAuthorizationHeader = true;
 		});
 
-		FlurlHttp.ConfigureClient("https://api.onepeloton.com", client =>
-		{
-			var policies = Policy.WrapAsync(PollyPolicies.Retry, PollyPolicies.NoOp);
-			client.Settings.HttpClientFactory = new PollyHttpClientFactory(policies);
-		});
+		FlurlHttp.ConfigureClientForUrl("https://api.onepeloton.com")
+			.AddMiddleware(() => 
+			{
+				var policies = Policy.WrapAsync(PollyPolicies.Retry, PollyPolicies.NoOp);
+				return new PolicyHandler(policies);
+			});
 	}
 
 	public static void LogError(FlurlCall call, string requestPayload, string responsePayload)
@@ -213,10 +216,8 @@ public static class FlurlConfiguration
 
 	public static IFlurlRequest StripSensitiveDataFromLogging(this IFlurlRequest request, string sensitiveField, string sensitiveField2 = null)
 	{
-		return request.ConfigureRequest((c) =>
-		{
-			c.BeforeCallAsync = null;
-			c.BeforeCallAsync = (call) =>
+		return request
+			.BeforeCall((call) =>
 			{
 				if (Log.IsEnabled(LogEventLevel.Verbose))
 				{
@@ -227,10 +228,8 @@ public static class FlurlConfiguration
 					LogRequest(call, content);
 				}
 				return Task.CompletedTask;
-			};
-
-			c.AfterCallAsync = null;
-			c.AfterCallAsync = async (call) =>
+			})
+			.AfterCall(async (call) =>
 			{
 				if (Log.IsEnabled(LogEventLevel.Verbose))
 				{
@@ -242,10 +241,8 @@ public static class FlurlConfiguration
 				}
 
 				TrackMetrics(call);
-			};
-
-			c.OnErrorAsync = null;
-			c.OnErrorAsync = async (call) =>
+			})
+			.OnError(async (call) =>
 			{
 				var requestContent = call.GetRawRequestBody()
 									?.ToString()
@@ -257,8 +254,7 @@ public static class FlurlConfiguration
 								?.Replace(sensitiveField2, "<redacted2>") ?? string.Empty;
 
 				LogError(call, requestContent, responseContent);
-			};
-		});
+			});
 	}
 
 	private static string GetRawRequestBody(this FlurlCall call)
