@@ -23,6 +23,9 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ matrix.dotnet }}
+
+    - name: List SDKs
+      run: dotnet --list-sdks
     
     - name: Restore MAUI Workloads
       run: dotnet workload update --from-previous-sdk
