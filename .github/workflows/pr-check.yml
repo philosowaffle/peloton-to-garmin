@@ -28,7 +28,7 @@ jobs:
       run: dotnet --list-sdks
     
     - name: Restore MAUI Workloads
-      run: dotnet workload install maui --version 7.0.20
+      run: dotnet workload install maui --version 7.0.101 --source https://api.nuget.org/v3/index.json --ignore-failed-sources
       shell: pwsh
 
     - name: List MAUI Workloads
