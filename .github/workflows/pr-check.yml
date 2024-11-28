@@ -25,7 +25,7 @@ jobs:
         dotnet-version: ${{ matrix.dotnet }}
     
     - name: Restore MAUI Workloads
-      run: dotnet workload restore --from-previous-sdk
+      run: dotnet workload update --from-previous-sdk
       shell: pwsh
 
     - name: List MAUI Workloads
