@@ -1,0 +1,367 @@
+﻿@using Common.Dto.Garmin;
+@using HandlebarsDotNet;
+@inject IApiClient _apiClient
+@inject IHxMessengerService _toaster;
+
+<DeviceInfoModal @ref="_deviceInfoModal" />
+
+<EditForm Model="@formatSettings">
+	<div class="row g-3">
+		<div class="col-md-12">
+			<HxCard>
+				<HeaderTemplate>
+					Format Types 
+					<HxPopover 
+						Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus" 
+						Title="<b>Convert to various Format Types</b>"
+						Content="@FormatSettingsDocumentation"
+						Html="true">
+						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+					</HxPopover>
+				</HeaderTemplate>
+				<BodyTemplate>
+					<HxSwitch Text="Convert to FIT" @bind-Value="formatSettings.Fit" />
+					<HxSwitch Text="Convert to TCX" @bind-Value="formatSettings.Tcx" />
+					<HxSwitch Text="Convert to JSON" @bind-Value="formatSettings.Json" />
+				</BodyTemplate>
+			</HxCard>
+		</div>
+	</div>
+	<br />
+	<div class="row g-3">
+		<div class="col-md-12">
+			<HxCard>
+				<HeaderTemplate>
+					Workout Title
+					<HxPopover 
+						Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus" 
+						Title="<b>Workout Title Templating</b>"
+						Content="@WorkoutTitleDocumentation"
+						Html="true">
+						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+					</HxPopover>
+				</HeaderTemplate>
+				<BodyTemplate>
+					<HxInputText Hint="@workoutTemplateExample" ValueChanged="TitleTemplate_ValueChanged" ValueExpression="() => formatSettings.WorkoutTitleTemplate" Value="@formatSettings.WorkoutTitleTemplate" />
+				</BodyTemplate>
+			</HxCard>
+		</div>
+	</div>
+	<br />
+	<div class="row g-3">
+		<div class="col-md-12">
+			<HxCard>
+				<HeaderTemplate>
+					Lap Types
+					<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+							   Title="<b>Customzing Lap Types</b>"
+							   Content="@LapTypesDocumentation"
+							   Html="true">
+						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+					</HxPopover>
+				</HeaderTemplate>
+				<BodyTemplate>
+					<div class="row">
+                        <div class="col-md-4">
+                            <HxSelect Label="Cycling Lap Type"
+                                      Data="@lapTypes"
+                                      Nullable="false"
+                                      NullDataText="Loading info..."
+                            @bind-Value="formatSettings.Cycling.PreferredLapType" />
+                        </div>
+                        <div class="col-md-4">
+                            <HxSelect Label="Running Lap Type"
+                                      Data="@lapTypes"
+                                      Nullable="false"
+                                      NullDataText="Loading info..."
+                            @bind-Value="formatSettings.Running.PreferredLapType" />
+                        </div>
+                        <div class="col-md-4">
+                            <HxSelect Label="Rowing Lap Type"
+                                      Data="@lapTypes"
+                                      Nullable="false"
+                                      NullDataText="Loading info..."
+                            @bind-Value="formatSettings.Rowing.PreferredLapType" />
+                        </div>
+					</div>
+				</BodyTemplate>
+			</HxCard>
+		</div>
+	</div>
+	<br />
+	<div class="row g-3">
+		<div class="col-md-12">
+			<HxCard>
+				<HeaderTemplate>
+					Strength
+					<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+							   Title="<b>Strength Workouts</b>"
+							   Content="@StrengthDocumentation"
+							   Html="true">
+						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+					</HxPopover>
+				</HeaderTemplate>
+				<BodyTemplate>
+					<HxInputNumber Label="Estimated seconds per rep" TValue="int" @bind-Value="formatSettings.Strength.DefaultSecondsPerRep" Hint="Example: A value of 3 means 1 rep will be counted every 3 seconds.  A 30 second exercise would yield 10 reps." />
+				</BodyTemplate>
+			</HxCard>
+		</div>
+	</div>
+	<br />
+	<div class="row gy-5">
+		<div class="md-col-12">
+			
+			<HxAccordion>
+				<HxAccordionItem>
+					<HeaderTemplate>
+						Advanced
+					</HeaderTemplate>
+					<BodyTemplate>
+						<HxAlert Color="ThemeColor.Warning">
+							<HxIcon Icon="@BootstrapIcon.ExclamationTriangleFill" />
+							<strong>Most users should not need to modify these settings.  Please be sure you've read the documentation before changing.</strong>
+						</HxAlert>
+						<br />
+						<HxCard>
+							<HeaderTemplate>
+								Device Info Settings
+								<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+										   Title="<b>Device Info Settings</b>"
+										   Content="@CustomDeviceInfoDocumentation"
+										   Html="true">
+									<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+								</HxPopover>
+							</HeaderTemplate>
+							<BodyTemplate>
+								@if (!string.IsNullOrWhiteSpace(formatSettings.DeviceInfoPath))
+								{
+									<HxInputText Label="Path to custom deviceInfo.xml file" @bind-Value="formatSettings.DeviceInfoPath" Hint="This setting is deprecated and will be removed in v5, please switch to using the below settings." />
+									<br />
+								}
+								<HxListLayout @bind-FilterModel="formatSettings.DeviceInfoSettings">
+									<CommandsTemplate>
+										<HxDropdownButtonGroup Split="true">
+											<HxButton Color="ThemeColor.Primary" Icon="BootstrapIcon.PlusLg" OnClick="DeviceInfo_HandleNewItemClicked">Add</HxButton>
+											<HxDropdownToggleButton Color="ThemeColor.Primary">
+												<span class="visually-hidden">Toggle Dropdown</span>@* OPTIONAL (for accessibility) *@
+											</HxDropdownToggleButton>
+											<HxDropdownMenu>
+												<HxDropdownItem OnClick="() => DeviceInfo_HandleCreateFromDeviceClick(GarminDevices.TACXDevice)">TACX</HxDropdownItem>
+												<HxDropdownItem OnClick="() => DeviceInfo_HandleCreateFromDeviceClick(GarminDevices.EpixDevice)">Epix</HxDropdownItem>
+												<HxDropdownItem OnClick="() => DeviceInfo_HandleCreateFromDeviceClick(GarminDevices.Forerunner945)">Forerunner 945</HxDropdownItem>
+											</HxDropdownMenu>
+										</HxDropdownButtonGroup>
+									</CommandsTemplate>
+									<DataTemplate>
+										<HxGrid @ref="_gridComponent" TItem="KeyValuePair<WorkoutType, GarminDeviceInfo>"
+												DataProvider="DeviceInfo_GetGridData"
+												PageSize="100"
+												Responsive="true">
+											<Columns>
+												<HxGridColumn HeaderText="Exercise Type" ItemTextSelector="d => d.Key.ToString()" />
+												<HxGridColumn HeaderText="Device Name" ItemTextSelector="d => d.Value.Name" />
+												<HxGridColumn HeaderText="UnitId" ItemTextSelector="d => d.Value.UnitId.ToString()" />
+												<HxGridColumn HeaderText="ProductId" ItemTextSelector="d => d.Value.ProductID.ToString()" />
+												<HxGridColumn HeaderText="ManufacturerId" ItemTextSelector="d => d.Value.ManufacturerId.ToString()" />
+												<HxGridColumn HeaderText="Version Major" ItemTextSelector="d => d.Value.Version.VersionMajor.ToString()" />
+												<HxGridColumn HeaderText="Version Minor" ItemTextSelector="d => d.Value.Version.VersionMinor.ToString()" />
+												<HxGridColumn HeaderText="Build Version Major" ItemTextSelector="d => d.Value.Version.BuildMajor.ToString()" />
+												<HxGridColumn HeaderText="Build Version Minor" ItemTextSelector="d => d.Value.Version.BuildMinor.ToString()" />
+												<HxContextMenuGridColumn Context="deviceInfo">
+													<HxContextMenu>
+														<HxContextMenuItem Text="Edit" Icon="BootstrapIcon.Pen" OnClick="async () => await DeviceInfo_HandleEditClick(deviceInfo)" />
+														<HxContextMenuItem Text="Copy" Icon="BootstrapIcon.Clipboard2Plus" OnClick="async () => await DeviceInfo_HandleCopyClick(deviceInfo)" />
+														<HxContextMenuItem Text="Delete" Icon="BootstrapIcon.Trash" OnClick="async () => await DeviceInfo_HandleDeleteClick(deviceInfo)" ConfirmationQuestion="@($"Are you sure you want to delete {deviceInfo.Key}?")" />
+													</HxContextMenu>
+												</HxContextMenuGridColumn>
+											</Columns>
+										</HxGrid>
+									</DataTemplate>
+								</HxListLayout>
+							</BodyTemplate>
+						</HxCard>
+						<br />
+						<HxCard>
+							<HeaderTemplate>
+								Custom Zone Handling
+								<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+											Title="<b>Custom Zone Handling</b>"
+											Content="@CustomZoneHandlingDocumentation"
+											Html="true">
+									<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+								</HxPopover>
+							</HeaderTemplate>
+							<BodyTemplate>
+								<HxSwitch Text="Include Time In HR Zones" @bind-Value="formatSettings.IncludeTimeInHRZones" />
+								<HxSwitch Text="Include Time in Power Zones" @bind-Value="formatSettings.IncludeTimeInPowerZones" />
+							</BodyTemplate>
+						</HxCard>
+						<br />
+						<HxCard>
+							<HeaderTemplate>
+								Misc
+							</HeaderTemplate>
+							<BodyTemplate>
+								<HxSwitch Text="Save a backup copy of Converted files to output dir" @bind-Value="formatSettings.SaveLocalCopy" Hint=@SaveLocalCopyHint />
+							</BodyTemplate>
+						</HxCard>
+					</BodyTemplate>
+				</HxAccordionItem>
+			</HxAccordion>
+		</div>
+	</div>
+	<br />
+	<HxSubmit Color="ThemeColor.Primary" OnClick="SaveFormatSettings">Save</HxSubmit>
+</EditForm>
+
+@code {
+	private static ICollection<PreferredLapType> lapTypes = Enum.GetValues(typeof(PreferredLapType)).Cast<PreferredLapType>().ToList();
+
+	private Format formatSettings;
+	private DeviceInfoModal? _deviceInfoModal;
+	private HxGrid<KeyValuePair<WorkoutType, GarminDeviceInfo>> _gridComponent;
+
+	private string workoutTemplateExample;
+	private string configDocumentation;
+	private string configDocumentationBase;
+	private string outputDirectory;
+
+	public FormatSettingsForm()
+	{
+		var settings = new SettingsGetResponse();
+		formatSettings = settings.Format;
+
+		workoutTemplateExample = string.Empty;
+		configDocumentation = string.Empty;
+	}
+
+	protected override Task OnInitializedAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(FormatSettingsForm)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+		return LoadDataAsync();
+	}
+
+	private async Task LoadDataAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(FormatSettingsForm)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
+
+		var settings = await _apiClient.SettingsGetAsync();
+		formatSettings = settings.Format;
+		TitleTemplate_ValueChanged(formatSettings!.WorkoutTitleTemplate);
+
+		var systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = settings.App.CheckForUpdates });
+		configDocumentationBase = systemInfo.Documentation;
+		configDocumentation = systemInfo.Documentation + "/configuration/format";
+		outputDirectory = systemInfo.OutputDirectory;
+	}
+
+	protected async Task SaveFormatSettings()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(FormatSettingsForm)}.{nameof(SaveFormatSettings)}", kind: ActivityKind.Client);
+
+		_toaster.Clear();
+		try
+		{
+			formatSettings = await _apiClient.SettingsFormatPostAsync(formatSettings);
+			_toaster.AddInformation("Format Settings Saved!");
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to save Format Settings - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to save Format settings.", e);
+		}
+	}
+
+	protected void TitleTemplate_ValueChanged(string newValue)
+	{
+		formatSettings.WorkoutTitleTemplate = newValue;
+
+		var template = formatSettings.WorkoutTitleTemplate;
+		var sampleData = new
+		{
+			PelotonWorkoutTitle = "15 minute HIIT Ride",
+			PelotonInstructorName = "Ally Love"
+		};
+
+		var compiledTemplate = Handlebars.Compile(template);
+		var titleExample = compiledTemplate(sampleData);
+
+		foreach (var c in Path.GetInvalidFileNameChars())
+		{
+			titleExample = titleExample.Replace(c, '-');
+		}
+
+		workoutTemplateExample = $"Example: {titleExample}";
+	}
+
+	private async Task DeviceInfo_HandleCreatedEditedItem(KeyValuePair<WorkoutType, GarminDeviceInfo> deviceInfo)
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(FormatSettingsForm)}.{nameof(DeviceInfo_HandleCreatedEditedItem)}", kind: ActivityKind.Client);
+
+		if (formatSettings.DeviceInfoSettings.TryGetValue(deviceInfo.Key, out var existingDeviceConfig))
+		{
+			formatSettings.DeviceInfoSettings[deviceInfo.Key] = deviceInfo.Value;
+			await _gridComponent.RefreshDataAsync();
+			return;
+		}
+
+		formatSettings.DeviceInfoSettings.Add(deviceInfo.Key, deviceInfo.Value);
+		await _gridComponent.RefreshDataAsync();
+	}
+
+	private Task<GridDataProviderResult<KeyValuePair<WorkoutType, GarminDeviceInfo>>> DeviceInfo_GetGridData(GridDataProviderRequest<KeyValuePair<WorkoutType, GarminDeviceInfo>> request)
+	{
+		var items = formatSettings.DeviceInfoSettings
+					.AsEnumerable()
+					.OrderBy(i => i.Key);
+
+		return Task.FromResult(new GridDataProviderResult<KeyValuePair<WorkoutType,GarminDeviceInfo>>()
+			{
+				Data = items,
+				TotalCount = items.Count()
+			});
+	}
+
+	private Task DeviceInfo_HandleEditClick(KeyValuePair<WorkoutType, GarminDeviceInfo> deviceInfo)
+	{
+		return _deviceInfoModal!.ShowAsync(deviceInfo, formatSettings?.DeviceInfoSettings?.Keys?.ToList() ?? new List<WorkoutType>(0), DeviceInfo_HandleCreatedEditedItem);
+	}
+
+	private Task DeviceInfo_HandleCreateFromDeviceClick(GarminDeviceInfo deviceInfo)
+	{
+		var remainingTypes = Enum.GetValues(typeof(WorkoutType)).Cast<WorkoutType>().Except(formatSettings.DeviceInfoSettings.Keys).ToList();
+		var copy = new KeyValuePair<WorkoutType, GarminDeviceInfo>(remainingTypes.FirstOrDefault(), deviceInfo);
+		return _deviceInfoModal!.ShowAsync(copy, formatSettings?.DeviceInfoSettings?.Keys?.ToList() ?? new List<WorkoutType>(0), DeviceInfo_HandleCreatedEditedItem);
+	}
+
+	private Task DeviceInfo_HandleCopyClick(KeyValuePair<WorkoutType, GarminDeviceInfo> deviceInfo)
+	{
+		var remainingTypes = Enum.GetValues(typeof(WorkoutType)).Cast<WorkoutType>().Except(formatSettings.DeviceInfoSettings.Keys).ToList();
+		var copy = new KeyValuePair<WorkoutType, GarminDeviceInfo>(remainingTypes.FirstOrDefault(), deviceInfo.Value);
+		return _deviceInfoModal!.ShowAsync(copy, formatSettings?.DeviceInfoSettings?.Keys?.ToList() ?? new List<WorkoutType>(0), DeviceInfo_HandleCreatedEditedItem);
+	}
+
+	private async Task DeviceInfo_HandleDeleteClick(KeyValuePair<WorkoutType, GarminDeviceInfo> deviceInfo)
+	{
+		formatSettings?.DeviceInfoSettings?.Remove(deviceInfo.Key);
+		await _gridComponent.RefreshDataAsync();
+	}
+
+	private Task DeviceInfo_HandleNewItemClicked()
+	{
+		return _deviceInfoModal!.ShowAsync(null, formatSettings?.DeviceInfoSettings?.Keys?.ToList() ?? new List<WorkoutType>(0), DeviceInfo_HandleCreatedEditedItem);
+	}
+
+	private string FormatSettingsDocumentation => $"<ul><li>FIT is the recommended format</li><li>FIT and TCX are the only types that can be uploaded to Garmin</li><li>If you enable JSON, you'll also need to enable saving a local copy in the Advanced settings below.</li></ul><br /><a href='{configDocumentation}'>Documentation</a><br ?><small>(click the <b>?</b> to pin this window)</small>";
+	private string WorkoutTitleDocumentation => $"Allows you to customize how your workout title will appear in Garmin Connect using <a href='https://github.com/Handlebars-Net/Handlebars.Net'>Handlebars templates</a>. Some characters are not allowed, these characters will automatically be replaced with `-`.  Below are the data fields you can use in the template:<br /><br /> <ul><li>PelotonWorkoutTitle</li><li>PelotonInstructorName</li></ul><br /><a href='{configDocumentation}#workout-title-templating'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
+	private string LapTypesDocumentation => $"Lap type defines how/when P2G will create a new Lap within a workout.  This can be customized per Cardio type.  To read more about each Lap Type please see the documentation.<br /><br /><a href='{configDocumentation}'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
+	private string StrengthDocumentation => $"Some Strength workouts have you do an exercise for time rather than for a specific number of reps. This setting allows you to customize how P2G should estimate the number of reps that were done in a time based exercise.<br /><br /><a href='{configDocumentation}'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
+	private string CustomZoneHandlingDocumentation => $"If you are able to set your HR and Power Zones in Garmin Connect, then you do not need to enable these settings, Garmin will automatically calculate your time in zones correctly.  If you are not able to configure your zones in Garmin Connect, then you can enable these settings to have P2G calculate time in zone information.<br /><br />If these are enabled, its likely Garmin will not calculate Training Load, Effect, or related data points.<br /><br /><a href='{configDocumentationBase}#understanding-p2g-provided-zones'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
+	private string CustomDeviceInfoDocumentation => $"The device used for a given exercise type can impact what additional data Garmin Connect will calculate (like TE, TSS, and VO2).  P2G provides reasonable defaults, but you can customize what device you would like used here.<br /><br />The <strong>None</strong> Exercise Type serves as a global default. Meaning P2G will default to using this device if no more specific override is configured for a given Exercise type.<br /><br />If you delete all devices, P2G will restore its internal defaults.<br /><br /><a href='{configDocumentationBase}#customizing-the-garmin-device-associated-with-the-workout'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
+	private string SaveLocalCopyHint => $"Files will be saved to: {outputDirectory}.";
+}

@@ -1,10 +1,12 @@
 ﻿using Common;
 using Common.Dto;
 using Common.Dto.Garmin;
+using Common.Dto.Peloton;
 using Common.Service;
 using Conversion;
 using Dynastream.Fit;
 using FluentAssertions;
+using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -99,6 +101,10 @@ namespace UnitTests.Conversion
 			var autoMocker = new AutoMocker();
 			var converter = autoMocker.CreateInstance<ConverterInstance>();
 
+			autoMocker.GetMock<ISettingsService>()
+				.Setup(x => x.GetCustomDeviceInfoAsync(It.IsAny<Workout>()))
+				.ReturnsAsync(GarminDevices.TACXDevice);
+
 			var convertedMesgs = await converter.ConvertForTest(workoutPath, settings);
 
 			convertedMesgs.Should().NotBeNullOrEmpty();
@@ -174,7 +180,7 @@ namespace UnitTests.Conversion
 
 			public async Task<ICollection<Mesg>> ConvertForTest(string path, Settings settings)
 			{
-				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
+				var workoutData = fileHandler.DeserializeJsonFile<P2GWorkout>(path);
 				var converted = await this.ConvertInternalAsync(workoutData, settings);
 
 				return converted.Item2;

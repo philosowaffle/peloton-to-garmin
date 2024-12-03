@@ -8,6 +8,9 @@ using Conversion;
 using Dynastream.Fit;
 using Flurl;
 using Flurl.Http;
+using Flurl.Http.Configuration;
+using Garmin;
+using Garmin.Auth;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 using Moq;
@@ -19,6 +22,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -38,6 +42,15 @@ namespace UnitTests
 					.MinimumLevel.Verbose()
 					//.MinimumLevel.Information()
 					.CreateLogger();
+
+			// Allows using fiddler
+			FlurlHttp.Clients.WithDefaults(cli =>
+			{
+				cli.ConfigureInnerHandler(handler =>
+				{
+					handler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
+				});
+			});
 		}
 
 		//[Test]
@@ -191,7 +204,7 @@ namespace UnitTests
 
 			public async Task<ICollection<Mesg>> ConvertForTest(string path, Settings settings)
 			{
-				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
+				var workoutData = fileHandler.DeserializeJsonFile<P2GWorkout>(path);
 				var converted = await this.ConvertInternalAsync(workoutData, settings);
 
 				return converted.Item2;
@@ -199,7 +212,7 @@ namespace UnitTests
 
 			public async Task<Tuple<string, ICollection<Mesg>>> Convert(string path, Settings settings)
 			{
-				var workoutData = fileHandler.DeserializeJson<P2GWorkout>(path);
+				var workoutData = fileHandler.DeserializeJsonFile<P2GWorkout>(path);
 				var converted = await this.ConvertInternalAsync(workoutData, settings);
 
 				return converted;

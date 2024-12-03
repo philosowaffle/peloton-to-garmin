@@ -4,9 +4,7 @@ using Common.Dto.Garmin;
 using Common.Dto.Peloton;
 using Common.Service;
 using Conversion;
-using Dynastream.Fit;
 using FluentAssertions;
-using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
 using System;
@@ -451,137 +449,6 @@ namespace UnitTests.Conversion
 			hr.Average_Value.Should().Be(50);
 		}
 
-		[TestCase(FitnessDiscipline.Bike_Bootcamp)]
-		[TestCase(FitnessDiscipline.Circuit)]
-		[TestCase(FitnessDiscipline.Cardio)]
-		[TestCase(FitnessDiscipline.Cycling)]
-		[TestCase(FitnessDiscipline.Meditation)]
-		[TestCase(FitnessDiscipline.Running)]
-		[TestCase(FitnessDiscipline.Strength)]
-		[TestCase(FitnessDiscipline.Stretching)]
-		[TestCase(FitnessDiscipline.Walking)]
-		[TestCase(FitnessDiscipline.Yoga)]
-		public async Task GetDeviceInfo_ChoosesUserDevice_WhenProvided(FitnessDiscipline sport)
-		{
-			// SETUP
-			var mocker = new AutoMocker();
-			var converter = mocker.CreateInstance<ConverterInstance>();
-			var settingsService = mocker.GetMock<ISettingsService>();
-
-			GarminDeviceInfo outDevice = new GarminDeviceInfo()
-			{
-				Name = "UserDevice", // Max 20 Chars
-				ProductID = GarminProduct.Amx,
-				UnitId = 1,
-				Version = new GarminDeviceVersion()
-				{
-					VersionMajor = 11,
-					VersionMinor = 10,
-					BuildMajor = 0,
-					BuildMinor = 0,
-				}
-			};
-			settingsService.Setup(s => s.GetCustomDeviceInfoAsync(It.IsAny<string>())).ReturnsAsync(outDevice);
-
-			// ACT
-			var deviceInfo = await converter.GetDeviceInfo1(sport, new Settings());
-
-			// ASSERT
-			deviceInfo.Name.Should().Be("UserDevice");
-			deviceInfo.ProductID.Should().Be(GarminProduct.Amx);
-			deviceInfo.UnitId.Should().Be(1);
-			deviceInfo.Version.Should().NotBeNull();
-			deviceInfo.Version.VersionMajor.Should().Be(11);
-			deviceInfo.Version.VersionMinor.Should().Be(10);
-			deviceInfo.Version.BuildMajor.Should().Be(0);
-			deviceInfo.Version.BuildMinor.Should().Be(0);
-		}
-
-		[Test]
-		public async Task GetDeviceInfo_FallsBackToDefault_WhenUserDeviceFailsToDeserialize()
-		{
-			// SETUP
-			var mocker = new AutoMocker();
-			var config = new Settings() { Format = new Format() { DeviceInfoPath = "somePath" } };
-			mocker.Use(config);
-
-			var converter = mocker.CreateInstance<ConverterInstance>();
-
-			var fileHandler = mocker.GetMock<IFileHandling>();
-			GarminDeviceInfo outDevice = null;
-			fileHandler.Setup(x => x.TryDeserializeXml<GarminDeviceInfo>("somePath", out outDevice))
-				.Callback(() =>
-				{
-					outDevice = new GarminDeviceInfo(); ;
-				})
-				.Returns(false);
-
-			// ACT
-			var deviceInfo = await converter.GetDeviceInfo1(FitnessDiscipline.Bike_Bootcamp, config);
-
-			// ASSERT
-			deviceInfo.Name.Should().Be("Forerunner 945");
-			deviceInfo.ProductID.Should().Be(GarminProduct.Fr945);
-			deviceInfo.UnitId.Should().Be(1);
-			deviceInfo.Version.Should().NotBeNull();
-			deviceInfo.Version.VersionMajor.Should().Be(19);
-			deviceInfo.Version.VersionMinor.Should().Be(2);
-			deviceInfo.Version.BuildMajor.Should().Be(0);
-			deviceInfo.Version.BuildMinor.Should().Be(0);
-		}
-
-		[Test]
-		public async Task GetDeviceInfo_ForCycling_ShouldReturn_CyclingDevice()
-		{
-			// SETUP
-			var mocker = new AutoMocker();
-			var converter = mocker.CreateInstance<ConverterInstance>();
-			var config = new Settings();
-
-			// ACT
-			var deviceInfo = await converter.GetDeviceInfo1(FitnessDiscipline.Cycling, config);
-
-			// ASSERT
-			deviceInfo.Name.Should().Be("TacxTrainingAppWin");
-			deviceInfo.ProductID.Should().Be(GarminProduct.TacxTrainingAppWin);
-			deviceInfo.UnitId.Should().Be(1);
-			deviceInfo.Version.Should().NotBeNull();
-			deviceInfo.Version.VersionMajor.Should().Be(1);
-			deviceInfo.Version.VersionMinor.Should().Be(30);
-			deviceInfo.Version.BuildMajor.Should().Be(0);
-			deviceInfo.Version.BuildMinor.Should().Be(0);
-		}
-
-		[TestCase(FitnessDiscipline.Bike_Bootcamp)]
-		[TestCase(FitnessDiscipline.Circuit)]
-		[TestCase(FitnessDiscipline.Cardio)]
-		[TestCase(FitnessDiscipline.Meditation)]
-		[TestCase(FitnessDiscipline.Running)]
-		[TestCase(FitnessDiscipline.Strength)]
-		[TestCase(FitnessDiscipline.Stretching)]
-		[TestCase(FitnessDiscipline.Walking)]
-		[TestCase(FitnessDiscipline.Yoga)]
-		public async Task GetDeviceInfo_ForNonCycling_ShouldReturn_DefaultDevice(FitnessDiscipline sport)
-		{
-			// SETUP
-			var mocker = new AutoMocker();
-			var converter = mocker.CreateInstance<ConverterInstance>();
-			var config = new Settings();
-
-			// ACT
-			var deviceInfo = await converter.GetDeviceInfo1(sport, config);
-
-			// ASSERT
-			deviceInfo.Name.Should().Be("Forerunner 945");
-			deviceInfo.ProductID.Should().Be(GarminProduct.Fr945);
-			deviceInfo.UnitId.Should().Be(1);
-			deviceInfo.Version.Should().NotBeNull();
-			deviceInfo.Version.VersionMajor.Should().Be(19);
-			deviceInfo.Version.VersionMinor.Should().Be(2);
-			deviceInfo.Version.BuildMajor.Should().Be(0);
-			deviceInfo.Version.BuildMinor.Should().Be(0);
-		}
-
 		// Workout Object
 		// manual source
 		// workout source
@@ -712,9 +579,9 @@ namespace UnitTests.Conversion
 			{
 				return base.GetHeartRateSummary(workoutSamples);
 			}
-			public Task<GarminDeviceInfo> GetDeviceInfo1(FitnessDiscipline sport, Settings settings)
+			public Task<GarminDeviceInfo> GetDeviceInfo1(Workout workout)
 			{
-				return base.GetDeviceInfoAsync(sport, settings);
+				return base.GetDeviceInfoAsync(workout);
 			}
 
 			public ushort? GetCyclingFtp1(Workout workout, UserData userData)

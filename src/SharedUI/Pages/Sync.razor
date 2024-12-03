@@ -1,0 +1,126 @@
+﻿@page "/sync"
+@using SharedUI.Shared;
+@inherits TracingComponentBase
+@inject IApiClient _apiClient;
+@inject IHxMessengerService _toaster;
+
+<PageTitle>Sync</PageTitle>
+
+<GarminMfaModal @ref="_garminMfaModal" />
+
+<HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@IsSyncButtonEnabled()">
+	Sync <span class="badge bg-secondary">@selectedItems.Count()</span>
+</HxButton>
+
+<HxGrid TItem="PelotonWorkout" MultiSelectionEnabled="true" Responsive="true" DataProvider="LoadDataAsync" @bind-SelectedDataItems="selectedItems" PageSize="PageSize" SelectionEnabled="false">
+	<Columns>
+		<HxGridColumn TItem="PelotonWorkout" HeaderText="Date" ItemTextSelector="@(item => DateTimeOffset.FromUnixTimeSeconds(item.CreatedAt).LocalDateTime.ToString())" />
+		<HxGridColumn TItem="PelotonWorkout" HeaderText="Title" ItemTextSelector="@(item => item.WorkoutTitle ?? item.Name)" />
+		<HxGridColumn TItem="PelotonWorkout" HeaderText="Instructor" ItemTextSelector="@(item => item.InstructorName)" />
+		<HxGridColumn TItem="PelotonWorkout" HeaderText="Workout Type" ItemTextSelector="@(item => item.PelotonFitnessDiscipline)" />
+		<HxGridColumn TItem="PelotonWorkout" HeaderText="Is Outdoor?" ItemTextSelector="@(item => item.IsOutdoor.ToString())" />
+	</Columns>
+</HxGrid>
+
+<HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@IsSyncButtonEnabled()">
+	Sync <span class="badge bg-secondary">@selectedItems.Count()</span>
+</HxButton>
+
+@code {
+
+	private HashSet<PelotonWorkout> selectedItems = new();
+	private static int PageSize = 25;
+
+	private GarminMfaModal? _garminMfaModal;
+
+	public Sync() : base(nameof(Sync)) => _toaster?.Clear();
+
+	public override void Dispose()
+	{
+		_toaster.Clear();
+		base.Dispose();
+	}
+
+	private async Task<GridDataProviderResult<PelotonWorkout>> LoadDataAsync(GridDataProviderRequest<PelotonWorkout> request)
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Sync)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
+
+		_toaster.Clear();
+
+		try
+		{
+			var pageIndex = request.StartIndex / PageSize;
+			var recentWorkouts = await _apiClient.PelotonWorkoutsGetAsync(new PelotonWorkoutsGetRequest() { PageSize = PageSize, PageIndex = pageIndex });
+			return new GridDataProviderResult<PelotonWorkout>() { Data = recentWorkouts.Items, TotalCount = recentWorkouts.TotalItems };
+		}
+		catch (ApiClientException e)
+		{
+			_toaster.AddError(e.Message);
+			Log.Error("UI - Failed to load Peloton workouts.", e);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to load Peloton workouts - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to load Peloton workouts.", e);
+		}
+
+		return new GridDataProviderResult<PelotonWorkout>() { Data = new List<PelotonWorkout>(), TotalCount = 0 };
+	}
+
+	private async Task SyncAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Sync)}.{nameof(SyncAsync)}", kind: ActivityKind.Client);
+
+		_toaster.Clear();
+
+		await _garminMfaModal!.ShowAsync(ContinueSyncAsync);
+	}
+
+	private async Task ContinueSyncAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Sync)}.{nameof(ContinueSyncAsync)}", kind: ActivityKind.Client);
+
+		try
+		{
+			var result = await _apiClient.SyncPostAsync(new SyncPostRequest() { WorkoutIds = selectedItems.Select(i => i.Id!).ToList() });
+			selectedItems.Clear();
+
+			if (result.SyncSuccess)
+			{
+				_toaster.AddInformation("Successfully synced selected workouts.");
+			}
+			else
+			{
+				if (result.Errors is null || !result.Errors.Any())
+				{
+					_toaster.AddError("An unknown error occurred. Please check logs for more details.");
+					return;
+				}
+
+				foreach (var error in result.Errors)
+					_toaster.AddError(error.Message);
+			}
+
+		}
+		catch (SyncTimeoutException te)
+		{
+			_toaster.AddInformation("Long running sync will continue running in the background.");
+			Log.Information("UI - Sync timeout reached.", te);
+		}
+		catch (ApiClientException e)
+		{
+			_toaster.AddError(e.Message);
+			Log.Error("UI - Failed to sync Peloton workouts.", e);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to sync - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to sync.", e);
+		}
+	}
+
+	private bool IsSyncButtonEnabled()
+	{
+		return selectedItems.Any();
+	}
+}

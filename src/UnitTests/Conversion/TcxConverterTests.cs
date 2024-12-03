@@ -4,6 +4,7 @@ using Conversion;
 using Common;
 using Common.Service;
 using FluentAssertions;
+using Common.Dto;
 
 namespace UnitTests.Conversion;
 

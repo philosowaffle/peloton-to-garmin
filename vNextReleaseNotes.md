@@ -3,11 +3,28 @@
 
 ## Features
 
-- [#502] Partial support for Peloton Gym
-- [#497] Add minimal support for Rowing Bootcamp
-- More exercise mappings
-	- [#495] Open Lateral Raise, Pike Push Up, Dolphin
-	- [#499] Forearm Side Plank Rotation, Straight Leg Bicycle
+- [#585] 
+    - Garmin Authentication now saves and refreshes tokens. Users using MFA will now only need provide their MFA code once.
+    - For those running via Docker, automatic syncing now works for MFA users after you have entered your code the first time.
 
-## Fixes
-- `All converters were skipped.` - confusing log message when no workouts needed to be synced
+## Misc
+
+- [#587] Dependency updates + switched to the official Garmin FIT SDK nuget package
+
+## Docker Tags
+
+- Console
+    - `console-stable`
+    - `console-latest`
+    - `console-v4.3.0`
+    - `console-v4`
+- Api
+    - `api-stable`
+    - `api-latest`
+    - `api-v4.3.0`
+    - `api-v4`
+- WebUI
+    - `webui-stable`
+    - `webui-latest`
+    - `webui-v4.3.0`
+    - `webui-v4`
