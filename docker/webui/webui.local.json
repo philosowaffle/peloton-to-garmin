@@ -1,11 +1,7 @@
-"Developer": 
+{
+  "Developer": 
   {
     "UserAgent": "GCM-iOS-5.7.2.1"
-  },
-
-{
-  "Api": {
-    "HostUrl": "http://p2g-api:8080"
   },
 
   "Observability": {
