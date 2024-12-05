@@ -26,6 +26,9 @@ jobs:
 
     - name: List SDKs
       run: dotnet --list-sdks
+
+    - name: Set global.json
+      run: dotnet new globaljson --sdk-version 7.0.100
     
     - name: Restore MAUI Workloads
       #run: dotnet workload install maui --version 7.0.100 --source https://api.nuget.org/v3/index.json --ignore-failed-sources
