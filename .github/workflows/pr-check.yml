@@ -34,7 +34,7 @@ jobs:
       #run: dotnet workload install maui --version 7.0.100 --source https://api.nuget.org/v3/index.json --ignore-failed-sources
       #run: dotnet workload install maui --version=7.0.302 --from-rollback-file https://maui.blob.core.windows.net/metadata/rollbacks/7.0.81.json
       #run: dotnet workload restore
-      run: workload restore [D:\a\peloton-to-garmin\peloton-to-garmin\src\ClientUI\ClientUI.csproj::TargetFramework=net7.0-windows10.0.19041.0]
+      run: dotnet workload restore [D:\a\peloton-to-garmin\peloton-to-garmin\src\ClientUI\ClientUI.csproj::TargetFramework=net7.0-windows10.0.19041.0]
       shell: pwsh
 
     - name: List MAUI Workloads
