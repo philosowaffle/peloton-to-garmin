@@ -46,15 +46,66 @@
 					<HxAccordionItem>
 						<HeaderTemplate>Advanced</HeaderTemplate>
 						<BodyTemplate>
-							<div class="row">
-								<div class="col-md-6">
+							<HxAlert Color="ThemeColor.Warning">
+								<HxIcon Icon="@BootstrapIcon.ExclamationTriangleFill" />
+								<strong>Most users should not need to modify these settings.  Please be sure you've read the documentation before changing.</strong>
+							</HxAlert>
+							<br />
+							<HxCard>
+								<HeaderTemplate>
+									Upload Format Settings
+									<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+											   Title="<b>Upload Format</b>"
+											   Content="@UploadFormatDocumentation"
+											   Html="true">
+										<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+									</HxPopover>
+								</HeaderTemplate>
+								<BodyTemplate>
 									<HxSelect Label="Format to Upload"
-											  Data="@formatTypes"
-											  Nullable="false"
-											  NullDataText="Loading info..."
-											  @bind-Value="garminSettings.FormatToUpload" />
-								</div>
-							</div>
+												Data="@formatTypes"
+												Nullable="false"
+												NullDataText="Loading info..."
+												@bind-Value="garminSettings.FormatToUpload" />
+								</BodyTemplate>
+							</HxCard>
+
+							<HxCard>
+								<HeaderTemplate>
+									Garmin Api Settings
+									<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+											   Title="<b>Garmin Api Settings</b>"
+											   Content="@GarminApiDocumentation"
+											   Html="true">
+										<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+									</HxPopover>
+								</HeaderTemplate>
+								<BodyTemplate>
+									<div class="row">
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.SsoSignInUrl" Label="SSO Sign In Url" Type="InputType.Url" InputMode="InputMode.Url" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.SsoEmbedUrl" Label="SSO Embed Url" Type="InputType.Url" InputMode="InputMode.Url" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.SsoUserAgent" Label="SSO User Agent" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.UploadActivityUrl" Label="Upload Activity Url" Type="InputType.Url" InputMode="InputMode.Url" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.UploadActivityUserAgent" Label="Upload Activity UserAgent" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.Origin" Label="Origin" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.Referer" Label="Referer" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+									</div>
+								</BodyTemplate>
+							</HxCard>
 						</BodyTemplate>
 					</HxAccordionItem>
 				</HxAccordion>
@@ -120,4 +171,7 @@
 			Log.Error("UI - Failed to save Garmin settings.", e);
 		}
 	}
+
+	private string UploadFormatDocumentation => $"Garmin supports uploading either FIT files or TCX files.  FIT is the more modern format and in most case will result in the most data and features syncing to Garmin.";
+	private string GarminApiDocumentation = $"Please do not change these value unless you've been given explicit guidance to do so.";
 }

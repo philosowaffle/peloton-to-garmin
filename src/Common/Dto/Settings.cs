@@ -141,6 +141,22 @@ public class GarminSettings : ICredentials
 	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
+	public GarminApiSettings Api {  get; set; } = new GarminApiSettings();
+}
+
+public class GarminApiSettings
+{
+	public string SsoSignInUrl { get; set; } = "https://sso.garmin.com/sso/signin";
+	public string SsoEmbedUrl { get; set; } = "https://sso.garmin.com/sso/embed";
+	public string SsoUserAgent { get; set; } = "GCM-iOS-5.7.2.1";
+
+	public string UploadActivityUrl { get; set; } = "https://connectapi.garmin.com/upload-service/upload";
+	public string UploadActivityUserAgent { get; set; } = "GCM-iOS-5.7.2.1";
+
+	public string Origin { get; set; } = "https://sso.garmin.com";
+	public string Referer { get; set; } = "https://sso.garmin.com/sso/signin";
+
+
 }
 
 public enum FileFormat : byte
