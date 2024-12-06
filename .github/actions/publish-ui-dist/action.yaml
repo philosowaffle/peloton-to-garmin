@@ -21,6 +21,12 @@ runs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
+    
+    - name: Set global.json
+      run: dotnet new globaljson --sdk-version 7.0.100
+
+    - name: Restore MAUI Workloads
+      run: dotnet workload restore
 
     - name: List MAUI Workloads
       run: dotnet workload list
