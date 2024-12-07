@@ -8,108 +8,116 @@
 		</div>
 
 		<HxFormState Enabled="@garminSettings.Upload">
-			<div class="col-md-12">
-				<HxCard>
-					<HeaderTemplate>Auth</HeaderTemplate>
-					<BodyTemplate>
-						<div class="row">
-							<div class="col-md-6">
-								<HxInputText @bind-Value="garminSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
+			<div class="row gy-5">
+				<div class="col-md-12">
+								<HxCard>
+									<HeaderTemplate>Auth</HeaderTemplate>
+									<BodyTemplate>
+										<div class="row">
+											<div class="col-md-6">
+												<HxInputText @bind-Value="garminSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
+											</div>
+											<div class="col-md-6">
+												<HxInputText @bind-Value="garminSettings.Password" Label="Password" Type="InputType.Password">
+													<LabelTemplate>
+														Password
+														@if (garminSettings.IsPasswordSet)
+														{
+															<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success">Password is set</HxBadge>
+														}
+													</LabelTemplate>
+													<InputGroupEndTemplate>
+														@if (garminSettings.IsPasswordSet)
+														{
+															<HxButton Text="Clear" Color="ThemeColor.Secondary" Outline="true" OnClick="ClearGarminPassword" />
+														}
+													</InputGroupEndTemplate>
+												</HxInputText>
+											</div>
+										</div>
+									</BodyTemplate>
+									<FooterTemplate>
+										<HxSwitch Text="Two Step Verification Enabled" @bind-Value="garminSettings.TwoStepVerificationEnabled" />
+									</FooterTemplate>
+								</HxCard>
 							</div>
-							<div class="col-md-6">
-								<HxInputText @bind-Value="garminSettings.Password" Label="Password" Type="InputType.Password">
-									<LabelTemplate>
-										Password
-										@if (garminSettings.IsPasswordSet)
-										{
-											<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success">Password is set</HxBadge>
-										}
-									</LabelTemplate>
-									<InputGroupEndTemplate>
-										@if (garminSettings.IsPasswordSet)
-										{
-											<HxButton Text="Clear" Color="ThemeColor.Secondary" Outline="true" OnClick="ClearGarminPassword" />
-										}
-									</InputGroupEndTemplate>
-								</HxInputText>
+			</div>
+			
+			<div class="row gy-5">
+				<div class="col-md-12">
+								<HxAccordion>
+									<HxAccordionItem>
+										<HeaderTemplate>Advanced</HeaderTemplate>
+										<BodyTemplate>
+											<HxAlert Color="ThemeColor.Warning">
+												<HxIcon Icon="@BootstrapIcon.ExclamationTriangleFill" />
+												<strong>Most users should not need to modify these settings.  Please be sure you've read the documentation before changing.</strong>
+											</HxAlert>
+											<br />
+											<HxCard>
+												<HeaderTemplate>
+													Upload Format Settings
+													<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+															   Title="<b>Upload Format</b>"
+															   Content="@UploadFormatDocumentation"
+															   Html="true">
+														<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+													</HxPopover>
+												</HeaderTemplate>
+												<BodyTemplate>
+													<HxSelect Label="Format to Upload"
+																Data="@formatTypes"
+																Nullable="false"
+																NullDataText="Loading info..."
+																@bind-Value="garminSettings.FormatToUpload" />
+												</BodyTemplate>
+											</HxCard>
+											<br />
+											<HxCard>
+												<HeaderTemplate>
+													Garmin Api Settings
+													<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+															   Title="<b>Garmin Api Settings</b>"
+															   Content="@GarminApiDocumentation"
+															   Html="true">
+														<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Danger">?</HxBadge>
+													</HxPopover>
+												</HeaderTemplate>
+												<BodyTemplate>
+													<div class="row">
+														<div class="col-md-6">
+															<HxInputText @bind-Value="garminSettings.Api.SsoSignInUrl" Label="SSO Sign In Url" Type="InputType.Url" InputMode="InputMode.Text" />
+														</div>
+														<div class="col-md-6">
+															<HxInputText @bind-Value="garminSettings.Api.SsoEmbedUrl" Label="SSO Embed Url" Type="InputType.Url" InputMode="InputMode.Text" />
+														</div>
+														<br />
+														<div class="col-md-6">
+															<HxInputText @bind-Value="garminSettings.Api.SsoUserAgent" Label="SSO User Agent" Type="InputType.Text" InputMode="InputMode.Text" />
+														</div>
+														<div class="col-md-6">
+															<HxInputText @bind-Value="garminSettings.Api.UploadActivityUrl" Label="Upload Activity Url" Type="InputType.Url" InputMode="InputMode.Text" />
+														</div>
+														<br />
+														<div class="col-md-6">
+															<HxInputText @bind-Value="garminSettings.Api.UploadActivityUserAgent" Label="Upload Activity UserAgent" Type="InputType.Text" InputMode="InputMode.Text" />
+														</div>
+														<div class="col-md-6">
+															<HxInputText @bind-Value="garminSettings.Api.Origin" Label="Origin" Type="InputType.Text" InputMode="InputMode.Text" />
+														</div>
+														<br />
+														<div class="col-md-6">
+															<HxInputText @bind-Value="garminSettings.Api.Referer" Label="Referer" Type="InputType.Text" InputMode="InputMode.Text" />
+														</div>
+													</div>
+												</BodyTemplate>
+											</HxCard>
+										</BodyTemplate>
+									</HxAccordionItem>
+								</HxAccordion>
 							</div>
-						</div>
-					</BodyTemplate>
-					<FooterTemplate>
-						<HxSwitch Text="Two Step Verification Enabled" @bind-Value="garminSettings.TwoStepVerificationEnabled" />
-					</FooterTemplate>
-				</HxCard>
 			</div>
-
-			<div class="col-md-12">
-				<HxAccordion>
-					<HxAccordionItem>
-						<HeaderTemplate>Advanced</HeaderTemplate>
-						<BodyTemplate>
-							<HxAlert Color="ThemeColor.Warning">
-								<HxIcon Icon="@BootstrapIcon.ExclamationTriangleFill" />
-								<strong>Most users should not need to modify these settings.  Please be sure you've read the documentation before changing.</strong>
-							</HxAlert>
-							<br />
-							<HxCard>
-								<HeaderTemplate>
-									Upload Format Settings
-									<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
-											   Title="<b>Upload Format</b>"
-											   Content="@UploadFormatDocumentation"
-											   Html="true">
-										<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
-									</HxPopover>
-								</HeaderTemplate>
-								<BodyTemplate>
-									<HxSelect Label="Format to Upload"
-												Data="@formatTypes"
-												Nullable="false"
-												NullDataText="Loading info..."
-												@bind-Value="garminSettings.FormatToUpload" />
-								</BodyTemplate>
-							</HxCard>
-
-							<HxCard>
-								<HeaderTemplate>
-									Garmin Api Settings
-									<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
-											   Title="<b>Garmin Api Settings</b>"
-											   Content="@GarminApiDocumentation"
-											   Html="true">
-										<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
-									</HxPopover>
-								</HeaderTemplate>
-								<BodyTemplate>
-									<div class="row">
-										<div class="col-md-6">
-											<HxInputText @bind-Value="garminSettings.Api.SsoSignInUrl" Label="SSO Sign In Url" Type="InputType.Url" InputMode="InputMode.Url" />
-										</div>
-										<div class="col-md-6">
-											<HxInputText @bind-Value="garminSettings.Api.SsoEmbedUrl" Label="SSO Embed Url" Type="InputType.Url" InputMode="InputMode.Url" />
-										</div>
-										<div class="col-md-6">
-											<HxInputText @bind-Value="garminSettings.Api.SsoUserAgent" Label="SSO User Agent" Type="InputType.Text" InputMode="InputMode.Text" />
-										</div>
-										<div class="col-md-6">
-											<HxInputText @bind-Value="garminSettings.Api.UploadActivityUrl" Label="Upload Activity Url" Type="InputType.Url" InputMode="InputMode.Url" />
-										</div>
-										<div class="col-md-6">
-											<HxInputText @bind-Value="garminSettings.Api.UploadActivityUserAgent" Label="Upload Activity UserAgent" Type="InputType.Text" InputMode="InputMode.Text" />
-										</div>
-										<div class="col-md-6">
-											<HxInputText @bind-Value="garminSettings.Api.Origin" Label="Origin" Type="InputType.Text" InputMode="InputMode.Text" />
-										</div>
-										<div class="col-md-6">
-											<HxInputText @bind-Value="garminSettings.Api.Referer" Label="Referer" Type="InputType.Text" InputMode="InputMode.Text" />
-										</div>
-									</div>
-								</BodyTemplate>
-							</HxCard>
-						</BodyTemplate>
-					</HxAccordionItem>
-				</HxAccordion>
-			</div>
+			
 		</HxFormState>
 		<div class="col-md-3">
 			<HxSubmit Color="ThemeColor.Primary" OnClick="SaveGarminSettings">Save</HxSubmit>
@@ -172,6 +180,6 @@
 		}
 	}
 
-	private string UploadFormatDocumentation => $"Garmin supports uploading either FIT files or TCX files.  FIT is the more modern format and in most case will result in the most data and features syncing to Garmin.";
-	private string GarminApiDocumentation = $"Please do not change these value unless you've been given explicit guidance to do so.";
+	private string UploadFormatDocumentation => $"Garmin supports uploading either FIT files or TCX files.  FIT is the more modern format and in most cases will result in the most data and features syncing to Garmin.<br /><br />  You must use the FIT format in order to get extra fields calculated by Garmin such as TSS/VO2/TE.";
+	private string GarminApiDocumentation = $"These settings control how P2G communicates with the Garmin Api. <br /><br /><b>Please do not change these value unless you've been given explicit guidance to do so.</b>";
 }
