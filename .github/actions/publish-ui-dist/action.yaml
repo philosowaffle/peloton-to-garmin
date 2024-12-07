@@ -22,6 +22,10 @@ runs:
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
 
+    - name: Restore MAUI Workloads
+      run: dotnet workload restore
+      shell: pwsh
+
     - name: List MAUI Workloads
       run: dotnet workload list
       shell: pwsh

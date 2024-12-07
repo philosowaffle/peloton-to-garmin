@@ -12,6 +12,7 @@ jobs:
       matrix:
         dotnet: ['7.0']
         os: [windows-latest]
+        framework: ['net7.0-windows10.0.19041.0']
 
     runs-on: ${{ matrix.os }}
 
@@ -22,6 +23,17 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ matrix.dotnet }}
+
+    - name: List SDKs
+      run: dotnet --list-sdks
+    
+    - name: Restore MAUI Workloads
+      run: dotnet workload restore
+      shell: pwsh
+
+    - name: List MAUI Workloads
+      run: dotnet workload list
+      shell: pwsh
 
     - name: Clean
       run: dotnet clean --configuration Debug && dotnet nuget locals all --clear
@@ -41,7 +53,7 @@ jobs:
     needs: build-and-test
     strategy:
       matrix:
-        dotnet: [ '7.0.401' ]
+        dotnet: [ '7.0.410' ]
         framework: ['net7.0-windows10.0.19041.0']
         os: [ 'win10-x64' ]
 

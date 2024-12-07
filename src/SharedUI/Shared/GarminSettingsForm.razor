@@ -6,8 +6,11 @@
 		<div class="col-md-12">
 			<HxSwitch Text="Automatically upload to Garmin Connect" @bind-Value="garminSettings.Upload" Inline="true" />
 		</div>
+	</div>
+	<br />
 
-		<HxFormState Enabled="@garminSettings.Upload">
+	<HxFormState Enabled="@garminSettings.Upload">
+		<div class="row g-3">
 			<div class="col-md-12">
 				<HxCard>
 					<HeaderTemplate>Auth</HeaderTemplate>
@@ -40,36 +43,112 @@
 					</FooterTemplate>
 				</HxCard>
 			</div>
-
+		</div>
+		<br />
+		<div class="row g-3">
 			<div class="col-md-12">
 				<HxAccordion>
 					<HxAccordionItem>
 						<HeaderTemplate>Advanced</HeaderTemplate>
 						<BodyTemplate>
-							<div class="row">
-								<div class="col-md-6">
+							<HxAlert Color="ThemeColor.Warning">
+								<HxIcon Icon="@BootstrapIcon.ExclamationTriangleFill" />
+								<strong>Most users should not need to modify these settings.  Please be sure you've read the documentation before changing.</strong>
+							</HxAlert>
+							<br />
+							<HxCard>
+								<HeaderTemplate>
+									Upload Format Settings
+									<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+									Title="<b>Upload Format</b>"
+									Content="@UploadFormatDocumentation"
+									Html="true">
+										<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+									</HxPopover>
+								</HeaderTemplate>
+								<BodyTemplate>
 									<HxSelect Label="Format to Upload"
-											  Data="@formatTypes"
-											  Nullable="false"
-											  NullDataText="Loading info..."
-											  @bind-Value="garminSettings.FormatToUpload" />
-								</div>
-							</div>
+									Data="@formatTypes"
+									Nullable="false"
+									NullDataText="Loading info..."
+									@bind-Value="garminSettings.FormatToUpload" />
+								</BodyTemplate>
+							</HxCard>
+							<br />
+							<HxCard>
+								<HeaderTemplate>
+									Garmin Api Settings
+									<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+									Title="<b>Garmin Api Settings</b>"
+									Content="@GarminApiDocumentation"
+									Html="true">
+										<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Danger">?</HxBadge>
+									</HxPopover>
+									<HxButton Icon="BootstrapIcon.ArrowCounterclockwise" Color="ThemeColor.Light" OnClick="RestoreDefaultApiSettings" Tooltip="Restore Defaults" />
+								</HeaderTemplate>
+								<BodyTemplate>
+									<div class="row">
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.SsoSignInUrl" Label="SSO Sign In Url" Type="InputType.Text" InputMode="InputMode.Url" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.SsoEmbedUrl" Label="SSO Embed Url" Type="InputType.Text" InputMode="InputMode.Url" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.SsoMfaCodeUrl" Label="SSO Mfa Code Url" Type="InputType.Text" InputMode="InputMode.Url" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.SsoUserAgent" Label="SSO User Agent" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+										<div class="col-md-12"><br /></div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.OAuth1TokenUrl" Label="OAuth1 Token Url" Type="InputType.Text" InputMode="InputMode.Url" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.OAuth1LoginUrlParam" Label="OAuth1 Login Url Param" Type="InputType.Text" InputMode="InputMode.Url" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.OAuth2RequestUrl" Label="OAuth2 Request Url" Type="InputType.Text" InputMode="InputMode.Url" />
+										</div>
+										<div class="col-md-12"><br /></div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.UploadActivityUrl" Label="Upload Activity Url" Type="InputType.Text" InputMode="InputMode.Url" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.UploadActivityUserAgent" Label="Upload Activity UserAgent" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.UplaodActivityNkHeader" Label="Upload NK Header" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+										<div class="col-md-12"><br /></div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.Origin" Label="Origin" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.Referer" Label="Referer" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+									</div>
+								</BodyTemplate>
+							</HxCard>
 						</BodyTemplate>
 					</HxAccordionItem>
 				</HxAccordion>
 			</div>
-		</HxFormState>
-		<div class="col-md-3">
-			<HxSubmit Color="ThemeColor.Primary" OnClick="SaveGarminSettings">Save</HxSubmit>
 		</div>
+	</HxFormState>
+	<br />
+	<div class="col-md-3">
+		<HxSubmit Color="ThemeColor.Primary" OnClick="SaveGarminSettings">Save</HxSubmit>
 	</div>
+
 </EditForm>
 
 @code {
 	private static ICollection<FileFormat> formatTypes = Enum.GetValues(typeof(FileFormat)).Cast<FileFormat>().ToList();
 
 	private SettingsGarminGetResponse garminSettings;
+	private string configDocumentationBase;
+	private string configDocumentation;
 
 	public GarminSettingsForm()
 	{
@@ -89,6 +168,10 @@
 		var settings = await _apiClient.SettingsGetAsync();
 
 		garminSettings = settings.Garmin;
+
+		var systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = settings.App.CheckForUpdates });
+		configDocumentationBase = systemInfo.Documentation;
+		configDocumentation = systemInfo.Documentation + "/configuration/garmin";
 	}
 
 	protected void ClearGarminPassword()
@@ -120,4 +203,33 @@
 			Log.Error("UI - Failed to save Garmin settings.", e);
 		}
 	}
+
+	protected async Task RestoreDefaultApiSettings()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(GarminSettingsForm)}.{nameof(RestoreDefaultApiSettings)}", kind: ActivityKind.Client);
+
+		_toaster.Clear();
+
+		try
+		{
+			garminSettings.Api = new GarminApiSettings();
+
+			garminSettings = await _apiClient.SettingsGarminPostAsync(garminSettings.Map());
+			_toaster.AddInformation("Garmin Settings Saved!");
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to save Garmin Settings - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to save Garmin settings.", e);
+		}
+
+	}
+
+	private string UploadFormatDocumentation => $"Garmin supports uploading either FIT files or TCX files.  FIT is the more modern format and in most cases will result in the most data and features syncing to Garmin.<br /><br />  You must upload the FIT format in order to get extra fields calculated by Garmin such as TSS/VO2/TE.<br /><br /><a href='{configDocumentation}'>Documentation</a><br /><br /><small>(click the <b>?</b> to pin this window)</small>";
+	private string GarminApiDocumentation => $"These settings control how P2G communicates with the Garmin Api. <br /><br /><b>Please do not change these value unless you've been given explicit guidance to do so.</b><br /><br /><a href='{configDocumentation}'>Documentation</a><br /><br /><small>(click the <b>?</b> to pin this window)</small>";
 }

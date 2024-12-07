@@ -1,5 +1,6 @@
 ﻿using Common.Http;
 using Common.Observe;
+using Common.Service;
 using Flurl.Http;
 using Garmin.Auth;
 using Garmin.Dto;
@@ -13,27 +14,26 @@ namespace Garmin
 {
 	public interface IGarminApiClient
 	{
-		Task InitCookieJarAsync(object queryParams, string userAgent, out CookieJar jar);
-		Task<GarminResult> GetCsrfTokenAsync(object queryParams, CookieJar jar, string userAgent);
-		Task<SendCredentialsResult> SendCredentialsAsync(string email, string password, object queryParams, object loginData, string userAgent, CookieJar jar);
-		Task<string> SendMfaCodeAsync(string userAgent, object queryParams, object mfaData, CookieJar jar);
-		Task<string> GetOAuth1TokenAsync(ConsumerCredentials credentials, string ticket, string userAgent);
-		Task<OAuth2Token> GetOAuth2TokenAsync(OAuth1Token oAuth1Token, ConsumerCredentials credentials, string userAgent);
+		Task<CookieJar> InitCookieJarAsync(object queryParams);
+		Task<GarminResult> GetCsrfTokenAsync(object queryParams, CookieJar jar);
+		Task<SendCredentialsResult> SendCredentialsAsync(string email, string password, object queryParams, object loginData, CookieJar jar);
+		Task<string> SendMfaCodeAsync(object queryParams, object mfaData, CookieJar jar);
+		Task<string> GetOAuth1TokenAsync(ConsumerCredentials credentials, string ticket);
+		Task<OAuth2Token> GetOAuth2TokenAsync(OAuth1Token oAuth1Token, ConsumerCredentials credentials);
 		Task<ConsumerCredentials> GetConsumerCredentialsAsync();
-		Task<UploadResponse> UploadActivity(string filePath, string format, GarminApiAuthentication auth, string userAgent);
+		Task<UploadResponse> UploadActivity(string filePath, string format, GarminApiAuthentication auth);
 	}
 
 	public class ApiClient : IGarminApiClient
 	{
-		private const string SSO_SIGNIN_URL = "https://sso.garmin.com/sso/signin";
-		private const string SSO_EMBED_URL = "https://sso.garmin.com/sso/embed";
-
-		private static string UPLOAD_URL = $"https://connectapi.garmin.com/upload-service/upload";
-
-		private const string ORIGIN = "https://sso.garmin.com";
-		private const string REFERER = "https://sso.garmin.com/sso/signin";
+		private ISettingsService _settingsService;
 
 		private static readonly ILogger _logger = LogContext.ForClass<ApiClient>();
+
+		public ApiClient(ISettingsService settingsService)
+		{
+			_settingsService = settingsService;
+		}
 
 		public Task<ConsumerCredentials> GetConsumerCredentialsAsync()
 		{
@@ -41,23 +41,29 @@ namespace Garmin
 				.GetJsonAsync<ConsumerCredentials>();
 		}
 
-		public Task InitCookieJarAsync(object queryParams, string userAgent, out CookieJar jar)
+		public async Task<CookieJar> InitCookieJarAsync(object queryParams)
 		{
-			return SSO_EMBED_URL
-						.WithHeader("User-Agent", userAgent)
-						.WithHeader("origin", ORIGIN)
+			var setttings = await _settingsService.GetSettingsAsync();
+
+			await setttings.Garmin.Api.SsoEmbedUrl
+						.WithHeader("User-Agent", setttings.Garmin.Api.SsoUserAgent)
+						.WithHeader("origin", setttings.Garmin.Api.Origin)
 						.SetQueryParams(queryParams)
-						.WithCookies(out jar)
+						.WithCookies(out var jar)
 						.GetStringAsync();
+
+			return jar;
 		}
 
-		public async Task<SendCredentialsResult> SendCredentialsAsync(string email, string password, object queryParams, object loginData, string userAgent, CookieJar jar)
+		public async Task<SendCredentialsResult> SendCredentialsAsync(string email, string password, object queryParams, object loginData, CookieJar jar)
 		{
+			var setttings = await _settingsService.GetSettingsAsync();
+
 			var result = new SendCredentialsResult();
-			result.RawResponseBody = await SSO_SIGNIN_URL
-						.WithHeader("User-Agent", userAgent)
-						.WithHeader("origin", ORIGIN)
-						.WithHeader("referer", REFERER)
+			result.RawResponseBody = await setttings.Garmin.Api.SsoSignInUrl
+						.WithHeader("User-Agent", setttings.Garmin.Api.SsoUserAgent)
+						.WithHeader("origin", setttings.Garmin.Api.Origin)
+						.WithHeader("referer", setttings.Garmin.Api.Referer)
 						.WithHeader("NK", "NT")
 						.SetQueryParams(queryParams)
 						.WithCookies(jar)
@@ -69,12 +75,14 @@ namespace Garmin
 			return result;
 		}
 
-		public async Task<GarminResult> GetCsrfTokenAsync(object queryParams, CookieJar jar, string userAgent)
+		public async Task<GarminResult> GetCsrfTokenAsync(object queryParams, CookieJar jar)
 		{
+			var setttings = await _settingsService.GetSettingsAsync();
+
 			var result = new GarminResult();
-			result.RawResponseBody = await SSO_SIGNIN_URL
-						.WithHeader("User-Agent", userAgent)
-						.WithHeader("origin", ORIGIN)
+			result.RawResponseBody = await setttings.Garmin.Api.SsoSignInUrl
+						.WithHeader("User-Agent", setttings.Garmin.Api.SsoUserAgent)
+						.WithHeader("origin", setttings.Garmin.Api.Origin)
 						.SetQueryParams(queryParams)
 						.WithCookies(jar)
 						.GetAsync()
@@ -83,11 +91,13 @@ namespace Garmin
 			return result;
 		}
 
-		public Task<string> SendMfaCodeAsync(string userAgent, object queryParams, object mfaData, CookieJar jar)
+		public async Task<string> SendMfaCodeAsync(object queryParams, object mfaData, CookieJar jar)
 		{
-			return "https://sso.garmin.com/sso/verifyMFA/loginEnterMfaCode"
-						.WithHeader("User-Agent", userAgent)
-						.WithHeader("origin", ORIGIN)
+			var setttings = await _settingsService.GetSettingsAsync();
+
+			return await setttings.Garmin.Api.SsoMfaCodeUrl
+						.WithHeader("User-Agent", setttings.Garmin.Api.SsoUserAgent)
+						.WithHeader("origin", setttings.Garmin.Api.Origin)
 						.SetQueryParams(queryParams)
 						.WithCookies(jar)
 						.OnRedirect(redir => redir.Request.WithCookies(jar))
@@ -95,37 +105,43 @@ namespace Garmin
 						.ReceiveString();
 		}
 
-		public Task<string> GetOAuth1TokenAsync(ConsumerCredentials credentials, string ticket, string userAgent)
+		public async Task<string> GetOAuth1TokenAsync(ConsumerCredentials credentials, string ticket)
 		{
-			OAuthRequest oauthClient = OAuthRequest.ForRequestToken(credentials.Consumer_Key, credentials.Consumer_Secret);
-			oauthClient.RequestUrl = $"https://connectapi.garmin.com/oauth-service/oauth/preauthorized?ticket={ticket}&login-url=https://sso.garmin.com/sso/embed&accepts-mfa-tokens=true";
+			var setttings = await _settingsService.GetSettingsAsync();
 
-			return oauthClient.RequestUrl
-							.WithHeader("User-Agent", userAgent)
+			OAuthRequest oauthClient = OAuthRequest.ForRequestToken(credentials.Consumer_Key, credentials.Consumer_Secret);
+			oauthClient.RequestUrl = $"{setttings.Garmin.Api.OAuth1TokenUrl}?ticket={ticket}&login-url={setttings.Garmin.Api.OAuth1LoginUrlParam}";
+
+			return await oauthClient.RequestUrl
+							.WithHeader("User-Agent", setttings.Garmin.Api.SsoUserAgent)
 							.WithHeader("Authorization", oauthClient.GetAuthorizationHeader())
 							.GetStringAsync();
 		}
-		public Task<OAuth2Token> GetOAuth2TokenAsync(OAuth1Token oAuth1Token, ConsumerCredentials credentials, string userAgent)
+		public async Task<OAuth2Token> GetOAuth2TokenAsync(OAuth1Token oAuth1Token, ConsumerCredentials credentials)
 		{
-			OAuthRequest oauthClient2 = OAuthRequest.ForProtectedResource("POST", credentials.Consumer_Key, credentials.Consumer_Secret, oAuth1Token.Token, oAuth1Token.TokenSecret);
-			oauthClient2.RequestUrl = "https://connectapi.garmin.com/oauth-service/oauth/exchange/user/2.0";
+			var setttings = await _settingsService.GetSettingsAsync();
 
-			return oauthClient2.RequestUrl
-								.WithHeader("User-Agent", userAgent)
+			OAuthRequest oauthClient2 = OAuthRequest.ForProtectedResource("POST", credentials.Consumer_Key, credentials.Consumer_Secret, oAuth1Token.Token, oAuth1Token.TokenSecret);
+			oauthClient2.RequestUrl = setttings.Garmin.Api.OAuth2RequestUrl;
+			
+			return await oauthClient2.RequestUrl
+								.WithHeader("User-Agent", setttings.Garmin.Api.SsoUserAgent)
 								.WithHeader("Authorization", oauthClient2.GetAuthorizationHeader())
 								.WithHeader("Content-Type", "application/x-www-form-urlencoded") // this header is required, without it you get a 500
 								.PostUrlEncodedAsync(new object()) // hack: PostAsync() will drop the content-type header, by posting empty object we trick flurl into leaving the header
 								.ReceiveJson<OAuth2Token>();
 		}
 
-		public async Task<UploadResponse> UploadActivity(string filePath, string format, GarminApiAuthentication auth, string userAgent)
+		public async Task<UploadResponse> UploadActivity(string filePath, string format, GarminApiAuthentication auth)
 		{
+			var settings = await _settingsService.GetSettingsAsync();
+
 			var fileName = Path.GetFileName(filePath);
-			var response = await $"{UPLOAD_URL}/{format}"
+			var response = await $"{settings.Garmin.Api.UploadActivityUrl}/{format}"
 				.WithOAuthBearerToken(auth.OAuth2Token.Access_Token)
-				.WithHeader("NK", "NT")
-				.WithHeader("origin", ORIGIN)
-				.WithHeader("User-Agent", userAgent)
+				.WithHeader("NK", settings.Garmin.Api.UplaodActivityNkHeader)
+				.WithHeader("origin", settings.Garmin.Api.Origin)
+				.WithHeader("User-Agent", settings.Garmin.Api.UploadActivityUserAgent)
 				.AllowHttpStatus("2xx,409")
 				.PostMultipartAsync((data) =>
 				{

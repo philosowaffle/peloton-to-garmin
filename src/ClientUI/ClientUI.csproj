@@ -38,6 +38,10 @@
         <Product>P2G ClientUI</Product>
     </PropertyGroup>
 
+	<!--<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+		<WindowsSdkPackageVersion>10.0.19041.52</WindowsSdkPackageVersion>
+	</PropertyGroup>-->
+
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
@@ -58,6 +62,11 @@
 
     <ItemGroup>
       <Content Remove="Resources\Raw\configuration.local.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.20" />
+	<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
     </ItemGroup>
 
 	<ItemGroup>
