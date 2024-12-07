@@ -5,6 +5,10 @@
     "CheckForUpdates": true
   },
 
+  "Developer": {
+    "UserAgent": "GCM-iOS-5.7.2.1"
+  },
+
   "Format": {
     "Fit": true,
     "Json": false,
