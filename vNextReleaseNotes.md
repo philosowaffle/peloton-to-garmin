@@ -3,8 +3,7 @@
 
 ## Fixes
 
-- [#683] 
-    - Initial fix for Garmin Upload error
+- [#683] Initial fix for Garmin Upload error.  Additionally introduces new settings for configuring Garmin Api.
 
 ## Docker Tags
 
