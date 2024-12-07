@@ -22,9 +22,9 @@ runs:
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
     
-    - name: Set global.json
-      run: dotnet new globaljson --sdk-version 7.0.100
-      shell: pwsh
+    # - name: Set global.json
+    #   run: dotnet new globaljson --sdk-version 7.0.100
+    #   shell: pwsh
 
     - name: Restore MAUI Workloads
       run: dotnet workload restore

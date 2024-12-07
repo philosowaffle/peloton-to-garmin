@@ -38,9 +38,9 @@
         <Product>P2G ClientUI</Product>
     </PropertyGroup>
 
-	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+	<!--<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
 		<WindowsSdkPackageVersion>10.0.19041.52</WindowsSdkPackageVersion>
-	</PropertyGroup>
+	</PropertyGroup>-->
 
     <ItemGroup>
         <!-- App Icon -->
@@ -66,6 +66,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.20" />
+	<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
     </ItemGroup>
 
 	<ItemGroup>

@@ -103,7 +103,7 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 		////////////////////////////////
 		try
 		{
-			await _apiClient.InitCookieJarAsync(CommonQueryParams, out jar);
+			jar = await _apiClient.InitCookieJarAsync(CommonQueryParams);
 		}
 		catch (FlurlHttpException e)
 		{
@@ -117,11 +117,11 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 		{
 			id = "gauth-widget",
 			embedWidget = "true",
-			gauthHost = "https://sso.garmin.com/sso/embed",
-			service = "https://sso.garmin.com/sso/embed",
-			source = "https://sso.garmin.com/sso/embed",
-			redirectAfterAccountLoginUrl = "https://sso.garmin.com/sso/embed",
-			redirectAfterAccountCreationUrl = "https://sso.garmin.com/sso/embed",
+			gauthHost = settings.Garmin.Api.SsoEmbedUrl,
+			service = settings.Garmin.Api.SsoEmbedUrl,
+			source = settings.Garmin.Api.SsoEmbedUrl,
+			redirectAfterAccountLoginUrl = settings.Garmin.Api.SsoEmbedUrl,
+			redirectAfterAccountCreationUrl = settings.Garmin.Api.SsoEmbedUrl,
 		};
 
 		var csrfToken = string.Empty;
