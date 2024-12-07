@@ -5,6 +5,10 @@
 
 - [#683] Initial fix for Garmin Upload error.  Additionally introduces new settings for configuring Garmin Api.
 
+> [!CAUTION]
+> **Windows App Users**
+> When editing settings, you may encounter an issue where your mouse stops working within the P2G app.  Keyboard navigation continues to work.  If this happens, quit P2G and restart.  I will be investigating how to get a proper fix for this on a future release.
+
 ## Docker Tags
 
 - Console
