@@ -30,6 +30,7 @@ Statics.TracingService = Constants.ConsoleAppName;
 using IHost host = CreateHostBuilder(args).Build();
 await host.RunAsync();
 
+
 static IHostBuilder CreateHostBuilder(string[] args)
 {
 	return Host.CreateDefaultBuilder(args)
@@ -38,7 +39,11 @@ static IHostBuilder CreateHostBuilder(string[] args)
 			configBuilder.Sources.Clear();
 
 			var configPath = Environment.CurrentDirectory;
-			if (args.Length > 0) configPath = args[0];
+			String envSpecifiedConfigPath = Environment.GetEnvironmentVariable($"{Constants.EnvironmentVariablePrefix}_CONFIG");
+			if (!String.IsNullOrEmpty(envSpecifiedConfigPath))
+			{
+			  configPath = envSpecifiedConfigPath;
+			}
 
 			Statics.ConfigPath = Path.Join(configPath, "configuration.local.json");
 
