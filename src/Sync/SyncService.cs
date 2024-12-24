@@ -118,6 +118,10 @@ namespace Sync
 				return response;
 			}
 
+			// calculate stacked workouts
+			// if (combineStackedWorkouts)
+			// var stackedClasses = StackedClassesCalculator.GetStackedClasses()
+
 			var convertStatuses = new List<ConvertStatus>();
 			try
 			{
