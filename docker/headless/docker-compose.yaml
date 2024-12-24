@@ -6,6 +6,7 @@ services:
     image: philosowaffle/peloton-to-garmin:console-stable
     environment:
       - TZ=America/Chicago
+      - P2G_CONFIG_DIRECTORY=/app/config
     volumes:
-      - ./configuration.local.json:/app/configuration.local.json
+      - ./config:/app/config
       - ./output:/app/output

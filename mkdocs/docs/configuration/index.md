@@ -68,6 +68,9 @@ P2G supports configuration via
 
 By default, P2G looks for a file named `configuration.local.json` in the same directory where it is run.
 
+!!! tip
+    You can override where the config Directory is mounted in the docker container by setting the environment vairable `P2G_CONFIG_DIRECTORY`.  P2G will expect to find a `configuration.local.json` file in the specified directory.
+
 ### Config Precedence
 
 The following defines the precedence in which config definitions are honored. With the first items having higher precendence than the next items.
@@ -121,3 +124,10 @@ For nested config sections, continue to use the same naming convention of defini
 ```bash
 P2G_OBSERVABILITY__SERILOG__WRITETO__0__NAME="File"
 ```
+#### Additional Environment Variables
+
+In addition to overriding config values, the following extra environment variables are also supported.
+
+| ENV Variable | Required | Default | Description | 
+|:-------------|:---------|:--------|:--------------------------|
+| `P2G_CONFIG_DIRECTORY` | false | P2G Directory | Tells P2G where to look for the `configuration.local.json` file |
