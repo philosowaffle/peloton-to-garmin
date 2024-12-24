@@ -375,6 +375,18 @@ namespace Conversion
 			sessionMesg.SetMaxPosGrade(GetMaxGrade(workoutSamples));
 			sessionMesg.SetMaxNegGrade(0.0f);
 
+			var totalElevation = workoutSamples.Summaries.FirstOrDefault(s => s.Slug == "elevation")?.Value;
+			if (totalElevation > 0)
+			{
+				try
+				{
+					sessionMesg.SetTotalAscent((ushort)totalElevation);
+				} catch (Exception e)
+				{
+					_logger.Warning($"Failed to cast elevation of {totalElevation} to ushort. Skipping data point.");
+				}
+			}
+
 			if (sport == Sport.Rowing)
 			{
 				var strokeCountSummary = workoutSamples.Summaries.FirstOrDefault(m => m.Slug == "stroke_count");
