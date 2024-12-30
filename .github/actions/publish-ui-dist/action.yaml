@@ -7,7 +7,7 @@ inputs:
   framework:
     description: 'DotNet Framework'
     required: true
-  framework-path:
+  os-path:
     description: 'The folder pathname used when built'
     required: false
     default: 'win10-64'
@@ -46,11 +46,11 @@ runs:
       shell: pwsh
 
     - name: Rename Config
-      run: Rename-Item ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework-path }}/${{ inputs.os }}/configuration.example.json -NewName configuration.local.json
+      run: Rename-Item ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os-path }}/configuration.example.json -NewName configuration.local.json
       shell: pwsh
 
     - name: Remove nested Publish Dir
-      run: Remove-Item ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework-path }}/${{ inputs.os }}/publish -Recurse
+      run: Remove-Item ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os-path }}/publish -Recurse
       shell: pwsh
 
     # Create Build Artifact
@@ -58,7 +58,7 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: ui_${{ inputs.os }}_${{ github.run_number }}-${{ github.run_id }}
-        path: ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework-path }}/${{ inputs.os }}
+        path: ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os-path }}
 
 
 # Installed Workload Id      Manifest Version       Installation Source
