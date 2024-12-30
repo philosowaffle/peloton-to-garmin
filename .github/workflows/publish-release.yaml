@@ -72,6 +72,8 @@ jobs:
     needs: [publish-ui-dist, publish-docker-images]
     steps:
 
+      - uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v4
         with:
           name: ${{ needs.publish-ui-dist.outputs.artifact_name }}
@@ -82,8 +84,6 @@ jobs:
         with:
           files: /downloaded # must be relative to gh workspace, does not support absolute paths :(
           dest: ui_win_${{ github.event.inputs.version }}.zip # this is hardcoded to output to ${{ github.workspace }}/ :(
-    
-      - uses: actions/checkout@v4
 
       - name: Create Release and Upload Artifacts
         uses: ncipollo/release-action@v1
