@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Garmin.FIT.Sdk" Version="21.141.0" />
+    <PackageReference Include="Garmin.FIT.Sdk" Version="21.158.0" />
   </ItemGroup>
 
   <ItemGroup>

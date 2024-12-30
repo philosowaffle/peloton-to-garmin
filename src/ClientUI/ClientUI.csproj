@@ -11,7 +11,6 @@
 
 		<UseMaui>true</UseMaui>
         <WindowsPackageType>None</WindowsPackageType>
-        <!--<WindowsAppSDKSelfContained Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">true</WindowsAppSDKSelfContained>-->
         <PublishReadyToRun>false</PublishReadyToRun>
 
         <!-- Display name -->
@@ -31,10 +30,6 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
     </PropertyGroup>
-
-	<!--<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-		<WindowsSdkPackageVersion>10.0.19041.52</WindowsSdkPackageVersion>
-	</PropertyGroup>-->
 
     <ItemGroup>
         <!-- App Icon -->
@@ -66,17 +61,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.12" />
 	</ItemGroup>
-
-
-	<ItemGroup>
-        <!--<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0" />-->
-        <!--<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.12" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.maui" Version="9.0.12" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />-->
-    </ItemGroup>
 
     <ItemGroup>
       <None Update="Resources\Splash\P2G-Splash.png">
