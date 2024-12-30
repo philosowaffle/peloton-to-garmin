@@ -9,6 +9,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <EnableDefaultCssItems>false</EnableDefaultCssItems>
 
+		<UseMaui>true</UseMaui>
         <WindowsPackageType>None</WindowsPackageType>
         <!--<WindowsAppSDKSelfContained Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">true</WindowsAppSDKSelfContained>-->
         <PublishReadyToRun>false</PublishReadyToRun>
