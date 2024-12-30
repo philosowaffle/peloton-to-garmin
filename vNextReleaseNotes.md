@@ -11,7 +11,8 @@
     - `console-stable`
     - `console-latest`
     - `console-v5.0.0`
-    - `console-v0`
+    - `console-v5`
+
 - Api
     - `api-stable`
     - `api-latest`
