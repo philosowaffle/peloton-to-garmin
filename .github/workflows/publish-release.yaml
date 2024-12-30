@@ -52,9 +52,9 @@ jobs:
       artifact_name: ${{ steps.win-ui-create-artifact.outputs.artifact_name }}
     strategy:
       matrix:
-        dotnet: [ '7.0.410' ]
-        framework: ['net7.0-windows10.0.19041.0']
-        os: [ 'win10-x64' ]
+        dotnet: [ '9.0.101' ]
+        framework: ['net9.0-windows10.0.19041.0']
+        os: [ 'win-x64' ]
 
     steps:
 

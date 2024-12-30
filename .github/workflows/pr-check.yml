@@ -3,7 +3,7 @@ name: PR Check
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ master, v4-wip ]
+    branches: [ master, v5-wip ]
 
 jobs:
 
@@ -53,9 +53,9 @@ jobs:
     needs: build-and-test
     strategy:
       matrix:
-        dotnet: [ '7.0.410' ]
-        framework: ['net7.0-windows10.0.19041.0']
-        os: [ 'win10-x64' ]
+        dotnet: [ '9.0.101' ]
+        framework: ['net9.0-windows10.0.19041.0']
+        os: [ 'win-x64' ]
 
     steps:
 

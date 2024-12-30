@@ -36,7 +36,7 @@ runs:
           echo "RUNNER_TOOL_CACHE=$Env:RUNNER_TOOL_CACHE" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
       shell: pwsh
 
-    # dotnet publish src/ClientUI/ClientUI.csproj -c Release -f net7.0-windows10.0.19041.0 -p:RuntimeIdentifierOverride=win10-x64 -p:PublishSingleFile=true -p:SelfContained=true
+    # dotnet publish src/ClientUI/ClientUI.csproj -c Release -f net9.0-windows10.0.19041.0 -p:RuntimeIdentifierOverride=win-x64 -p:PublishSingleFile=true -p:SelfContained=true
     - name: Publish ${{ inputs.os }}
       run: dotnet publish ${{ github.workspace }}/src/ClientUI/ClientUI.csproj -c Release -f ${{ inputs.framework }} -p:RuntimeIdentifierOverride=${{ inputs.os }} -p:PublishSingleFile=true -p:SelfContained=true
       shell: pwsh
