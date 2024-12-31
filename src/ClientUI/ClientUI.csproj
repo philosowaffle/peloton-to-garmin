@@ -47,11 +47,10 @@
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-    </ItemGroup>
 
-    <ItemGroup>
-      <Content Remove="Resources\Raw\configuration.local.json" />
-    </ItemGroup>
+        <!-- Don't Copy extra Configuration file to output, what we need is already in "Resources/Raw" -->
+        <Content Remove="configuration.local.json;configuration.example.json" />
+      </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\SharedUI\SharedUI.csproj" />

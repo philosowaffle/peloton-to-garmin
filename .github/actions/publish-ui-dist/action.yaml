@@ -45,10 +45,6 @@ runs:
       run: dotnet publish ${{ github.workspace }}/src/ClientUI/ClientUI.csproj -c Release -f ${{ inputs.framework }} -p:RuntimeIdentifierOverride=${{ inputs.os }} -p:PublishSingleFile=true -p:SelfContained=true
       shell: pwsh
 
-    - name: Rename Config
-      run: Rename-Item ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os-path }}/configuration.example.json -NewName configuration.local.json
-      shell: pwsh
-
     - name: Remove nested Publish Dir
       run: Remove-Item ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os-path }}/publish -Recurse
       shell: pwsh

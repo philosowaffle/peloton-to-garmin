@@ -5,6 +5,10 @@
 
 - [#656] Uplift to .net 9
 
+## Housekeeping
+
+- [#672] Bump all dependencies
+
 ## Docker Tags
 
 - Console
