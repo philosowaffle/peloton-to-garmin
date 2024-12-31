@@ -10,7 +10,7 @@ inputs:
   os-path:
     description: 'The folder pathname used when built'
     required: false
-    default: 'win10-64'
+    default: 'win10-x64'
   os:
     description: 'The OS we are running on'
     required: true
