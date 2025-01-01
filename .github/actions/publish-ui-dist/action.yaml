@@ -44,10 +44,6 @@ runs:
     - name: List MAUI Workloads
       run: dotnet workload list
       shell: pwsh
-    
-    - name: Log Dependencies
-      run: dotnet list package --include-transitive
-      shell: pwsh
 
     - name: Prepare env
       run: |
@@ -61,6 +57,10 @@ runs:
     
     - name: Restore
       run: dotnet restore
+      shell: pwsh
+    
+    - name: Log Dependencies
+      run: dotnet list package --include-transitive
       shell: pwsh
 
     # dotnet publish src/ClientUI/ClientUI.csproj -c Release -f net9.0-windows10.0.19041.0 -p:RuntimeIdentifierOverride=win-x64 -p:PublishSingleFile=true -p:SelfContained=true
