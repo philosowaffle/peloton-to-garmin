@@ -45,9 +45,9 @@ runs:
       run: dotnet publish ${{ github.workspace }}/src/ClientUI/ClientUI.csproj -c Release -f ${{ inputs.framework }} -p:RuntimeIdentifierOverride=${{ inputs.os }} -p:PublishSingleFile=true -p:SelfContained=true
       shell: pwsh
 
-    - name: Remove nested Publish Dir
-      run: Remove-Item ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os-path }}/publish -Recurse
-      shell: pwsh
+    # - name: Remove nested Publish Dir
+    #   run: Remove-Item ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os-path }}/publish -Recurse
+    #   shell: pwsh
 
     # Create Build Artifact
     - name: Upload Artifact ui_${{ inputs.os }}_${{ github.run_number }}-${{ github.run_id }}
