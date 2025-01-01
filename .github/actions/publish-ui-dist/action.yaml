@@ -25,10 +25,17 @@ runs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
-
-    - name: Install MAUI Workloads
-      run: dotnet workload install maui
+    
+    - name: List SDKs
+      run: dotnet --list-sdks
       shell: pwsh
+
+    # I really shouldn't need to do this. The restore command below should be enough.
+    # However it seems the restore command does not install Maui base, which is needed
+    # to publish a running package.
+    # - name: Install MAUI Workloads
+    #   run: dotnet workload install maui
+    #   shell: pwsh
 
     - name: Restore MAUI Workloads
       run: dotnet workload restore
@@ -42,6 +49,14 @@ runs:
       run: |
           echo "BUILD_VERSION=$Env:GITHUB_RUN_NUMBER-$Env:GITHUB_RUN_ID" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
           echo "RUNNER_TOOL_CACHE=$Env:RUNNER_TOOL_CACHE" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
+      shell: pwsh
+
+    - name: Clean
+      run: dotnet clean --configuration Debug && dotnet nuget locals all --clear
+      shell: pwsh
+    
+    - name: Restore
+      run: dotnet restore
       shell: pwsh
 
     # dotnet publish src/ClientUI/ClientUI.csproj -c Release -f net9.0-windows10.0.19041.0 -p:RuntimeIdentifierOverride=win-x64 -p:PublishSingleFile=true -p:SelfContained=true
@@ -62,11 +77,10 @@ runs:
 
 
 # Installed Workload Id      Manifest Version       Installation Source
-# ---------------------------------------------------------------------
-# maui-android               7.0.92/7.0.100         VS 17.7.34031.279
-# android                    33.0.68/7.0.100        VS 17.7.34031.279
-# ios                        16.4.7098/7.0.100      VS 17.7.34031.279
-# maui-ios                   7.0.92/7.0.100         VS 17.7.34031.279
-# maui-windows               7.0.92/7.0.100         VS 17.7.34031.279
-# maui-maccatalyst           7.0.92/7.0.100         VS 17.7.34031.279
-# maccatalyst                16.4.7098/7.0.100      VS 17.7.34031.279
+# ---------------------------------------------------------------------------------
+# android                    35.0.7/9.0.100         SDK 9.0.100, VS 17.12.35527.113
+# aspire                     8.2.2/8.0.100          SDK 9.0.100, VS 17.12.35527.113
+# ios                        18.1.9163/9.0.100      SDK 9.0.100, VS 17.12.35527.113
+# maccatalyst                18.1.9163/9.0.100      SDK 9.0.100, VS 17.12.35527.113
+# maui                       9.0.0/9.0.100          SDK 9.0.100
+# maui-windows               9.0.0/9.0.100          SDK 9.0.100, VS 17.12.35527.113
