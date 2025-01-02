@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Dto;
+using Common.Dto.Garmin;
 using Common.Dto.Peloton;
 using Common.Helpers;
 using Common.Http;
@@ -26,6 +27,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
+using PelotonApiClient = Peloton.ApiClient;
 
 namespace UnitTests
 {
@@ -115,7 +117,7 @@ namespace UnitTests
 		//	var email = "";
 		//	var password = "";
 
-		//	var workoutId = "631fe107823048708d4c9f18a2888c6e";
+		//	var workoutId = "98c617d5c56f4f1ab6fc250afc9aea5f";
 
 		//	var settings = new Settings()
 		//	{
@@ -127,16 +129,26 @@ namespace UnitTests
 		//	};
 
 		//	var autoMocker = new AutoMocker();
-		//	var settingMock = autoMocker.GetMock<ISettingsService>();
-		//	settingMock.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
+		//	var settingsService = autoMocker.GetMock<ISettingsService>();
+		//	settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
+		//	settingsService.Setup(s => s.GetCustomDeviceInfoAsync(It.IsAny<Workout>())).ReturnsAsync(GarminDevices.EpixDevice);
 
 		//	var fileHandler = autoMocker.GetMock<IFileHandling>();
 
-		//	var client = new ApiClient(settingMock.Object);
-		//	var service = new PelotonService(settingMock.Object, client, fileHandler.Object);
+		//	var client = new PelotonApiClient(settingsService.Object);
+		//	var service = new PelotonService(settingsService.Object, client, fileHandler.Object);
 
 		//	var p2gWorkout = await service.GetWorkoutDetailsAsync(workoutId);
 		//	SaveData(p2gWorkout, workoutId, DataDirectory);
+
+		//	// CONVERT TO FIT & SAVE
+		//	//var fitConverter = new ConverterInstance(settingsService.Object, new IOWrapper());
+		//	//var file = Path.Join(DataDirectory, $"{workoutId}_workout.json");
+		//	//var messages = await fitConverter.Convert(file, settings);
+
+		//	//var output = Path.Join(DataDirectory, "output.fit");
+
+		//	//fitConverter.Save(messages, output);
 		//}
 
 		//[Test]
