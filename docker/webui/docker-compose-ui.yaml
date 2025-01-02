@@ -6,10 +6,11 @@ services:
     image: philosowaffle/peloton-to-garmin:api-stable
     environment:
       - TZ=America/Chicago
+      - P2G_CONFIG_DIRECTORY=/app/config
     # ports:
     #   - 8001:8080 # optional, only if you plan to interact with the API directly
     volumes:
-      - ./api.local.json:/app/configuration.local.json
+      - ./config/api/:/app/config
       - ./data:/app/data # recommended for saving settings across restarts
       - ./output:/app/output # optional, if you want access to the generated workout and log files
   
@@ -20,7 +21,8 @@ services:
       - 8002:8080
     environment:
       - TZ=America/Chicago
+      - P2G_CONFIG_DIRECTORY=/app/config
     volumes:
-      - ./webui.local.json:/app/configuration.local.json
+      - ./config/webui:/app/config
     depends_on:
       - p2g-api

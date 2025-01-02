@@ -14,7 +14,7 @@ using System.Reflection;
 Statics.AppType = Constants.ApiName;
 Statics.MetricPrefix = Constants.ApiName;
 Statics.TracingService = Constants.ApiName;
-Statics.ConfigPath = Path.Join(Environment.CurrentDirectory, "configuration.local.json");
+Statics.ConfigPath = Path.Join(Statics.DefaultConfigDirectory, "configuration.local.json");
 
 ///////////////////////////////////////////////////////////
 /// HOST
@@ -22,7 +22,7 @@ Statics.ConfigPath = Path.Join(Environment.CurrentDirectory, "configuration.loca
 var builder = WebApplication.CreateBuilder(args);
 
 var configProvider = builder.Configuration.AddJsonFile(Statics.ConfigPath, optional: true, reloadOnChange: true)
-				.AddEnvironmentVariables(prefix: "P2G_")
+				.AddEnvironmentVariables(prefix: $"{Constants.EnvironmentVariablePrefix}_")
 				.AddCommandLine(args);
 
 var config = new AppConfiguration();

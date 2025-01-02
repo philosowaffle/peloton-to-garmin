@@ -39,7 +39,7 @@ public class App
 	public int PollingIntervalSeconds { get; set; }
 	public bool CheckForUpdates { get; set; }
 
-	public static string DataDirectory => Path.GetFullPath(Path.Join(Statics.DefaultDataDirectory, "data"));
+	public static string DataDirectory => Statics.DefaultDataDirectory;
 
 	public string WorkingDirectory => Statics.DefaultTempDirectory;
 	public string OutputDirectory => Statics.DefaultOutputDirectory;

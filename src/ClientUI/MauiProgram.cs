@@ -18,7 +18,7 @@ public static class MauiProgram
 		Statics.AppType = Constants.ClientUIName;
 		Statics.MetricPrefix = Constants.ClientUIName;
 		Statics.TracingService = Constants.ClientUIName;
-		Statics.ConfigPath = Path.Join(Environment.CurrentDirectory, "configuration.local.json");
+		Statics.ConfigPath = Path.Join(Statics.DefaultConfigDirectory, "configuration.local.json");
 
 		Directory.CreateDirectory(Statics.DefaultOutputDirectory);
 
@@ -38,7 +38,7 @@ public static class MauiProgram
 			InitObservabilityConfigFile("configuration.local.json", observabilityConfigFilePath);
 
 		var configProvider = builder.Configuration.AddJsonFile(observabilityConfigFilePath, optional: true, reloadOnChange: true)
-				.AddEnvironmentVariables(prefix: "P2G_");
+				.AddEnvironmentVariables(prefix: $"{Constants.EnvironmentVariablePrefix}_");
 
 		var config = new AppConfiguration();
 		ConfigurationSetup.LoadConfigValues(builder.Configuration, config);

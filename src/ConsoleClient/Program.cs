@@ -37,10 +37,10 @@ static IHostBuilder CreateHostBuilder(string[] args)
 		{
 			configBuilder.Sources.Clear();
 
-			var configPath = Environment.CurrentDirectory;
-			if (args.Length > 0) configPath = args[0];
+			var configDirectory = Statics.DefaultConfigDirectory;
+			if (args.Length > 0) configDirectory = args[0];
 
-			Statics.ConfigPath = Path.Join(configPath, "configuration.local.json");
+			Statics.ConfigPath = Path.Join(configDirectory, "configuration.local.json");
 
 			configBuilder
 				.AddJsonFile(Statics.ConfigPath, optional: true, reloadOnChange: true)
