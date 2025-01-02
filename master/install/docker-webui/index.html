@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.47">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
@@ -1309,11 +1309,15 @@
 <ol>
 <li>Create a folder named <code>p2g-webui</code><ol>
 <li>Inside this folder create <a href="https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/docker-compose-ui.yaml">docker-compose.yaml</a></li>
-<li>Also create <a href="https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/api.local.json">api.local.json</a></li>
-<li>Also create <a href="https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/webui.local.json">webui.local.json</a></li>
+<li>Within this same directory, also create a folder called <code>config</code><ol>
+<li>Create two more folders within the <code>config</code> directory: <code>api</code> and <code>webui</code></li>
+<li>Within the <code>api</code> folder, create <a href="https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/api.local.json">api.local.json</a></li>
+<li>Within the <code>webui</code> folder, create <a href="https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/webui.local.json">webui.local.json</a></li>
 </ol>
 </li>
-<li>Open a terminal in this folder</li>
+</ol>
+</li>
+<li>Open a terminal in the <code>p2g-webui</code> folder</li>
 <li>Run: <code>docker-compose pull &amp;&amp; docker-compose up -d</code><ol>
 <li>This will pull the containers and start them up running in the background</li>
 <li>You can close the terminal at this time</li>
@@ -1340,34 +1344,7 @@
 <h2 id="configuration">Configuration</h2>
 <p>If you are migrating to the Web UI for the first time you will need to reconfigure most of your settings using the user interface.  The only settings that are carried over and still configured via the configuration file are the ones related to <code>Observability</code>.</p>
 <h2 id="open-api">Open Api</h2>
-<p>To access the Open API spec  for P2G you will need to expose the below port on the Api docker container.  The open API spec will be available at <code>http://localhost:8001/swagger</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.9&quot;</span>
-
-<span class="nt">services</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">p2g-api</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">p2g-api</span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">philosowaffle/peloton-to-garmin:api-stable</span>
-<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TZ=America/Chicago</span>
-<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8001:8080</span><span class="w"> </span><span class="c1"># to access the api or swagger docs</span>
-<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./api.local.json:/app/configuration.local.json</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./data:/app/data</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./output:/app/output</span>
-
-<span class="w">  </span><span class="nt">p2g-webui</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">p2g-webui</span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">philosowaffle/peloton-to-garmin:webui-stable</span>
-<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8002:8080</span>
-<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TZ=America/Chicago</span>
-<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./webui.local.json:/app/configuration.local.json</span>
-<span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">p2g-api</span>
-</code></pre></div>
+<p>To access the Open API spec  for P2G you will need to expose port <code>8080</code> on the Api docker container.  The open API spec will be available at <code>http://localhost:8001/swagger</code>.</p>
 
 
 
@@ -1423,7 +1400,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.path", "navigation.top", "naviation.sections", "navigation.indexes", "content.code.annotate", "content.code.copy"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.83f73b43.min.js"></script>
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
       
     
   </body>
