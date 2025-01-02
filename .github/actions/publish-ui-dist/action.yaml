@@ -58,14 +58,14 @@ runs:
     - name: Restore
       run: dotnet restore
       shell: pwsh
-    
-    - name: Log Dependencies
-      run: dotnet list package --include-transitive
-      shell: pwsh
 
     # dotnet publish src/ClientUI/ClientUI.csproj -c Release -f net9.0-windows10.0.19041.0 -p:RuntimeIdentifierOverride=win-x64 -p:PublishSingleFile=true -p:SelfContained=true
     - name: Publish ${{ inputs.os }}
       run: dotnet publish ${{ github.workspace }}/src/ClientUI/ClientUI.csproj -c Release -f ${{ inputs.framework }} -p:RuntimeIdentifierOverride=${{ inputs.os }} -p:PublishSingleFile=true -p:SelfContained=true
+      shell: pwsh
+    
+    - name: Log Dependencies
+      run: dotnet list package --include-transitive
       shell: pwsh
 
     # - name: Remove nested Publish Dir
