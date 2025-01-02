@@ -9,9 +9,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <EnableDefaultCssItems>false</EnableDefaultCssItems>
 
-		<UseMaui>true</UseMaui>
+		    <UseMaui>true</UseMaui>
         <WindowsPackageType>None</WindowsPackageType>
         <PublishReadyToRun>false</PublishReadyToRun>
+        <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 
         <!-- Display name -->
         <ApplicationTitle>PelotonToGarmin</ApplicationTitle>
