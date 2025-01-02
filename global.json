@@ -1,5 +1,8 @@
 {
   "sdk": {
-    "version": "7.0.410"
+    "version": "9.0.101"
+  },
+  "msbuild-sdks": {
+    "Microsoft.NET.Sdk.Maui": "9.0.100"
   }
 }

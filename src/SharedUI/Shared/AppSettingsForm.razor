@@ -10,9 +10,9 @@
 				<HeaderTemplate>
 					<HxSwitch Text="Automatic Syncing" @bind-Value="appSettings.EnablePolling" Inline="true" />
 					<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
-							   Title="<b>Automatic Syncing</b>"
-							   Content="@AutomaticSyncingDocumentation"
-							   Html="true">
+					Title="<b>Automatic Syncing</b>"
+					Content="@AutomaticSyncingDocumentation"
+					Html="true">
 						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
 					</HxPopover>
 				</HeaderTemplate>
@@ -43,6 +43,8 @@
 		var settings = new SettingsGetResponse();
 		appSettings = settings.App;
 		garminSettings = settings.Garmin;
+
+		configDocumentation = string.Empty;
 	}
 
 	protected override Task OnInitializedAsync()

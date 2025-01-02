@@ -13,7 +13,7 @@ Ensure that your code:
 
 ## Development
 
-1. Install [dotent 6.0 runtime](https://dotnet.microsoft.com/download/dotnet/6.0/runtime)
+1. Install [dotent 9.0 runtime](https://dotnet.microsoft.com/download/dotnet/9.0/runtime)
 
 ```
 > dotnet restore
@@ -23,27 +23,7 @@ Ensure that your code:
 
 ## Package Windows exe
 ```
-> dotnet publish ./src/ConsoleClient/ConsoleClient.csproj --no-restore -c Release -r win10-x64 -o ./dist --version-suffix local
-```
-
-## Developing against garmin-upload python library
-
-1. Install [Python 3](https://www.python.org/downloads/) and pip
-1. Set `"PythonAndGUploadInstalled": true`
-
-```bash
-> cd peloton-to-garmin
-> cd python
-> pip install -r requirements.txt
-```
-
-### Compile python exe
-
-``` bash
-> cd python
-> pip install -r requirements.txt
-> pip install pyinstaller
-> pyinstaller -n upload --distpath ./ --console --clean --noconfirm upload.py
+> dotnet publish ./src/ConsoleClient/ConsoleClient.csproj --no-restore -c Release -r win-x64 -o ./dist --version-suffix local
 ```
 
 ## Contribute to the docs
