@@ -63,7 +63,7 @@ public class SettingsGarminPostRequest
 	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
-	public GarminApiSettings Api { get; set; }
+	public GarminApiSettings Api { get; set; } = new GarminApiSettings();
 }
 
 public class SettingsPelotonGetResponse

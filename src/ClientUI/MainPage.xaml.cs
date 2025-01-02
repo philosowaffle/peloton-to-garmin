@@ -22,8 +22,15 @@ namespace ClientUI
 			///////////////////////////////////////////////////////////
 			/// MIGRATIONS
 			///////////////////////////////////////////////////////////
-			var migrationService = serviceProvider.GetService<IDbMigrations>();
-			migrationService!.MigrateDeviceInfoFileToListAsync().GetAwaiter().GetResult();
+			try
+			{
+				var migrationService = serviceProvider.GetService<IDbMigrations>();
+				migrationService!.MigrateDeviceInfoFileToListAsync().GetAwaiter().GetResult();
+			} catch (Exception e)
+			{
+				Console.Out.WriteLine(e.ToString());
+				throw;
+			}
 		}
 	}
 }

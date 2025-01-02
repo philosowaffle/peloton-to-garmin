@@ -3,24 +3,27 @@
 
 ## Features
 
-- [#698] If using docker, you can now mount the config directory instead of the config file itself. Additionally, the location of the config directory can be overriddien via environment variable: `P2G_CONFIG_DIRECTORY`.
-- [#476] Tread - Sync Total Ascent/Elevation to FIT file.
-- Update Peloton Annual Challenge for 2025 - @milleruk
+- [#656] Uplift to .net 9
+
+## Housekeeping
+
+- [#672] Bump all dependencies
 
 ## Docker Tags
 
 - Console
     - `console-stable`
     - `console-latest`
-    - `console-v4.4.0`
-    - `console-v4`
+    - `console-v5.0.0`
+    - `console-v5`
+
 - Api
     - `api-stable`
     - `api-latest`
-    - `api-v4.4.0`
-    - `api-v4`
+    - `api-v5.0.0`
+    - `api-v5`
 - WebUI
     - `webui-stable`
     - `webui-latest`
-    - `webui-v4.4.0`
-    - `webui-v4`
+    - `webui-v5.0.0`
+    - `webui-v5`

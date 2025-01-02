@@ -12,10 +12,10 @@
 				<HeaderTemplate>
 					Format Types 
 					<HxPopover 
-						Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus" 
-						Title="<b>Convert to various Format Types</b>"
-						Content="@FormatSettingsDocumentation"
-						Html="true">
+					Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus" 
+					Title="<b>Convert to various Format Types</b>"
+					Content="@FormatSettingsDocumentation"
+					Html="true">
 						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
 					</HxPopover>
 				</HeaderTemplate>
@@ -34,10 +34,10 @@
 				<HeaderTemplate>
 					Workout Title
 					<HxPopover 
-						Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus" 
-						Title="<b>Workout Title Templating</b>"
-						Content="@WorkoutTitleDocumentation"
-						Html="true">
+					Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus" 
+					Title="<b>Workout Title Templating</b>"
+					Content="@WorkoutTitleDocumentation"
+					Html="true">
 						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
 					</HxPopover>
 				</HeaderTemplate>
@@ -54,35 +54,35 @@
 				<HeaderTemplate>
 					Lap Types
 					<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
-							   Title="<b>Customzing Lap Types</b>"
-							   Content="@LapTypesDocumentation"
-							   Html="true">
+					Title="<b>Customzing Lap Types</b>"
+					Content="@LapTypesDocumentation"
+					Html="true">
 						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
 					</HxPopover>
 				</HeaderTemplate>
 				<BodyTemplate>
 					<div class="row">
-                        <div class="col-md-4">
-                            <HxSelect Label="Cycling Lap Type"
-                                      Data="@lapTypes"
-                                      Nullable="false"
-                                      NullDataText="Loading info..."
-                            @bind-Value="formatSettings.Cycling.PreferredLapType" />
-                        </div>
-                        <div class="col-md-4">
-                            <HxSelect Label="Running Lap Type"
-                                      Data="@lapTypes"
-                                      Nullable="false"
-                                      NullDataText="Loading info..."
-                            @bind-Value="formatSettings.Running.PreferredLapType" />
-                        </div>
-                        <div class="col-md-4">
-                            <HxSelect Label="Rowing Lap Type"
-                                      Data="@lapTypes"
-                                      Nullable="false"
-                                      NullDataText="Loading info..."
-                            @bind-Value="formatSettings.Rowing.PreferredLapType" />
-                        </div>
+						<div class="col-md-4">
+							<HxSelect Label="Cycling Lap Type"
+							Data="@lapTypes"
+							Nullable="false"
+							NullDataText="Loading info..."
+							@bind-Value="formatSettings.Cycling.PreferredLapType" />
+						</div>
+						<div class="col-md-4">
+							<HxSelect Label="Running Lap Type"
+							Data="@lapTypes"
+							Nullable="false"
+							NullDataText="Loading info..."
+							@bind-Value="formatSettings.Running.PreferredLapType" />
+						</div>
+						<div class="col-md-4">
+							<HxSelect Label="Rowing Lap Type"
+							Data="@lapTypes"
+							Nullable="false"
+							NullDataText="Loading info..."
+							@bind-Value="formatSettings.Rowing.PreferredLapType" />
+						</div>
 					</div>
 				</BodyTemplate>
 			</HxCard>
@@ -95,9 +95,9 @@
 				<HeaderTemplate>
 					Strength
 					<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
-							   Title="<b>Strength Workouts</b>"
-							   Content="@StrengthDocumentation"
-							   Html="true">
+					Title="<b>Strength Workouts</b>"
+					Content="@StrengthDocumentation"
+					Html="true">
 						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
 					</HxPopover>
 				</HeaderTemplate>
@@ -110,7 +110,7 @@
 	<br />
 	<div class="row gy-5">
 		<div class="md-col-12">
-			
+
 			<HxAccordion>
 				<HxAccordionItem>
 					<HeaderTemplate>
@@ -126,9 +126,9 @@
 							<HeaderTemplate>
 								Device Info Settings
 								<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
-										   Title="<b>Device Info Settings</b>"
-										   Content="@CustomDeviceInfoDocumentation"
-										   Html="true">
+								Title="<b>Device Info Settings</b>"
+								Content="@CustomDeviceInfoDocumentation"
+								Html="true">
 									<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
 								</HxPopover>
 							</HeaderTemplate>
@@ -154,9 +154,9 @@
 									</CommandsTemplate>
 									<DataTemplate>
 										<HxGrid @ref="_gridComponent" TItem="KeyValuePair<WorkoutType, GarminDeviceInfo>"
-												DataProvider="DeviceInfo_GetGridData"
-												PageSize="100"
-												Responsive="true">
+										DataProvider="DeviceInfo_GetGridData"
+										PageSize="100"
+										Responsive="true">
 											<Columns>
 												<HxGridColumn HeaderText="Exercise Type" ItemTextSelector="d => d.Key.ToString()" />
 												<HxGridColumn HeaderText="Device Name" ItemTextSelector="d => d.Value.Name" />
@@ -185,9 +185,9 @@
 							<HeaderTemplate>
 								Custom Zone Handling
 								<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
-											Title="<b>Custom Zone Handling</b>"
-											Content="@CustomZoneHandlingDocumentation"
-											Html="true">
+								Title="<b>Custom Zone Handling</b>"
+								Content="@CustomZoneHandlingDocumentation"
+								Html="true">
 									<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
 								</HxPopover>
 							</HeaderTemplate>
@@ -232,7 +232,11 @@
 		formatSettings = settings.Format;
 
 		workoutTemplateExample = string.Empty;
+
 		configDocumentation = string.Empty;
+		configDocumentationBase = string.Empty;
+
+		outputDirectory = string.Empty;
 	}
 
 	protected override Task OnInitializedAsync()
