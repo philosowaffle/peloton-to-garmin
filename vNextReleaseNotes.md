@@ -5,6 +5,7 @@
 
 - [#698] If using docker, you can now mount the config directory instead of the config file itself. Additionally, the location of the config directory can be overriddien via environment variable: `P2G_CONFIG_DIRECTORY`.
 - [#476] Tread - Sync Total Ascent/Elevation to FIT file.
+- Update Peloton Annual Challenge for 2025 - @milleruk
 
 ## Docker Tags
 
