@@ -9,3 +9,4 @@ services:
     volumes:
       - ./configuration.local.json:/app/configuration.local.json
       - ./output:/app/output
+      - ./data:/app/data

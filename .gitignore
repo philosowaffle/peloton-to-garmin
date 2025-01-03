@@ -126,3 +126,7 @@ configuration.local.json
 
 # docs
 /mkdocs/site
+
+# emacs backup files
+**/*~
+**/*.*~

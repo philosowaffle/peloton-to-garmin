@@ -4,17 +4,21 @@
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 as final
 
 RUN apt-get update \
-	&& apt-get -y install bash tzdata \
-	&& apt-get purge -y -f --force-yes $EXT_BUILD_DEPS \
-	&& apt-get autoremove -y \
-	&& apt-get clean \
-	&& rm -rf /var/lib/apt/lists/*
+        && apt-get -y install bash tzdata \
+        && apt-get purge -y -f --force-yes $EXT_BUILD_DEPS \
+        && apt-get autoremove -y \
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 1015 p2g && useradd -g p2g -u 1015 p2g
 
 WORKDIR /app
 
-RUN mkdir -m770 {output,data,working}
+RUN mkdir -m770 working
+RUN mkdir -m770 data
+RUN mkdir -m770 output
+# this last is for optionally mounting a directory for configuration
+RUN mkdir -m770 mounted-config
 
 ###################
 # BUILD LAYER
