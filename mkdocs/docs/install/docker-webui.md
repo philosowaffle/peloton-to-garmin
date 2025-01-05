@@ -18,8 +18,9 @@ P2G provides a website user interface. Some key features include:
     1. Inside this folder create [docker-compose.yaml](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/docker-compose-ui.yaml)
     1. Within this same directory, also create a folder called `config`
         1. Create two more folders within the `config` directory: `api` and `webui`
-        1. Within the `api` folder, create [api.local.json](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/api.local.json)
-        1. Within the `webui` folder, create [webui.local.json](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/webui.local.json)
+        1. Within the `api` folder, create [configuration.local.json](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/config/api/configuration.local.json)
+        1. Within the `webui` folder, also create a [configuration.local.json](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/config/webui/configuration.local.json) with slightly different content
+        1. Your final directory structure should look similar to [this](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui).
 1. Open a terminal in the `p2g-webui` folder
 1. Run: `docker-compose pull && docker-compose up -d`
     1. This will pull the containers and start them up running in the background
