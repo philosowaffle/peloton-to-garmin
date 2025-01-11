@@ -87,6 +87,14 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 			return result;
 		}
 
+		if (!string.IsNullOrWhiteSpace(updatedGarminSettings.Password)
+			&& updatedGarminSettings.Password.Contains('\\'))
+		{
+			result.Successful = false;
+			result.Error = new ServiceError() { Message = "P2G does not support the `\\` character in passwords." };
+			return result;
+		}
+
 		var settings = await _settingsService.GetSettingsAsync();
 
 		if (settings.Garmin.Password != updatedGarminSettings.Password
