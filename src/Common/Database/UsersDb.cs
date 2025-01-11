@@ -48,7 +48,7 @@ public class UsersDb : DbBase<P2GUser>, IUsersDb
 		}
 		catch (Exception e)
 		{
-			_logger.Error($"Failed to init default Settings to Db for default user. Exception: {e}");
+			_logger.Error($"Failed to init default User to Db. Exception: {e}");
 		}
 	}
 
