@@ -8,10 +8,6 @@ Please see the [Migration Guide](https://philosowaffle.github.io/peloton-to-garm
 - [#656] Uplift to .net 9
 - [#704] `DeviceInfoPath` fully removed and replaced by `DeviceInfoSettings`
 
-## Features
-
-- [#656] Uplift to .net 9
-
 ## Fixes
 
 - [#711] Friendlier error messages, especially on first start when nothing is configured yet
