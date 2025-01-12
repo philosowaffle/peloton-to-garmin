@@ -199,6 +199,10 @@
 			var error = await e.GetResponseJsonAsync<ErrorResponse>();
 			_toaster.AddError(error.Message);
 		}
+		catch (ApiClientException e)
+		{
+			_toaster.AddError(e.Message);
+		}
 		catch (Exception e)
 		{
 			_toaster.AddError($"Failed to save Garmin Settings - {e.Message} - See logs for details.");

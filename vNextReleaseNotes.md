@@ -5,6 +5,12 @@
 
 - [#656] Uplift to .net 9
 
+## Fixes
+
+- [#711] Friendlier error messages, especially on first start when nothing is configured yet
+- [#711] Fixed issue where Windows exe would somtimes fail to start on very first run, but would launch on second attempt
+- [#711] Prevent users from saving Passwords that use an unsupported character
+
 ## Housekeeping
 
 - [#672] Bump all dependencies

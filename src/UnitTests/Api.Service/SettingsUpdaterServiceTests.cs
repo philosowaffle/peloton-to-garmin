@@ -201,4 +201,64 @@ public class SettingsUpdaterServiceTests
 		response.Error.Should().BeNull();
 		response.Successful.Should().BeTrue();
 	}
+
+	[TestCase("valid", ExpectedResult = false)]
+	[TestCase("\\", ExpectedResult = true)]
+	[TestCase("a\\a", ExpectedResult = true)]
+	[TestCase("\\a", ExpectedResult = true)]
+	[TestCase("a\\", ExpectedResult = true)]
+	[TestCase("a\\ads\\adf", ExpectedResult = true)]
+	public async Task<bool> GarminPost_With_PasswordChange_Should_Validate_Characters(string password)
+	{
+		var autoMocker = new AutoMocker();
+		var service = autoMocker.CreateInstance<SettingsUpdaterService>();
+		var settingService = autoMocker.GetMock<ISettingsService>();
+
+		settingService
+			.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settingService.Object.GetSettingsAsync))
+			.ReturnsAsync(new Settings()
+			{
+				App = new() { EnablePolling = true },
+				Garmin = new() { Email = "ogEmail", Password = "ogPassword" }
+			});
+
+		SettingsGarminPostRequest request = new()
+		{
+			Password = password,
+		};
+
+		var response = await service.UpdateGarminSettingsAsync(request);
+
+		return response.IsErrored();
+	}
+
+	[TestCase("valid", ExpectedResult = false)]
+	[TestCase("\\", ExpectedResult = true)]
+	[TestCase("a\\a", ExpectedResult = true)]
+	[TestCase("\\a", ExpectedResult = true)]
+	[TestCase("a\\", ExpectedResult = true)]
+	[TestCase("a\\ads\\adf", ExpectedResult = true)]
+	public async Task<bool> PelotonPost_With_PasswordChange_Should_Validate_Characters(string password)
+	{
+		var autoMocker = new AutoMocker();
+		var service = autoMocker.CreateInstance<SettingsUpdaterService>();
+		var settingService = autoMocker.GetMock<ISettingsService>();
+
+		settingService
+			.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settingService.Object.GetSettingsAsync))
+			.ReturnsAsync(new Settings()
+			{
+				App = new() { EnablePolling = false },
+				Peloton = new() { Email = "ogEmail", Password = "ogPassword" }
+			});
+
+		SettingsPelotonPostRequest request = new()
+		{
+			Password = password,
+		};
+
+		var response = await service.UpdatePelotonSettingsAsync(request);
+
+		return response.IsErrored();
+	}
 }
