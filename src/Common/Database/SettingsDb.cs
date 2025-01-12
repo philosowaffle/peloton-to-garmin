@@ -13,9 +13,11 @@ namespace Common.Database
 	public interface ISettingsDb
 	{
 		[Obsolete]
-		Settings GetLegacySettings();
+		Settings DbMigrations_TryGetLegacy_Settings();
 		[Obsolete]
-		Task RemoveLegacySettingsAsync();
+		Task DbMigrations_TryRemoveLegacySettingsAsync();
+		[Obsolete]
+		Task<DbMigrations_LegacyDeviceInfo> DbMigrations_TryGetLegacy_DeviceInfoSettings(int userId);
 		Task<Settings> GetSettingsAsync(int userId);
 		Task<bool> UpsertSettingsAsync(int userId, Settings settings);
 	}
@@ -49,12 +51,12 @@ namespace Common.Database
 			}
 		}
 
-		public Settings GetLegacySettings()
+		public Settings DbMigrations_TryGetLegacy_Settings()
 		{
 			using var metrics = DbMetrics.DbActionDuration
 									.WithLabels("get", DbName)
 									.NewTimer();
-			using var tracing = Tracing.Trace($"{nameof(SettingsDb)}.{nameof(GetLegacySettings)}", TagValue.Db)
+			using var tracing = Tracing.Trace($"{nameof(SettingsDb)}.{nameof(DbMigrations_TryGetLegacy_Settings)}", TagValue.Db)
 										.WithTable(DbName);
 
 			try
@@ -68,6 +70,27 @@ namespace Common.Database
 			catch (KeyNotFoundException)
 			{
 				return null;
+			}
+		}
+
+		public Task<DbMigrations_LegacyDeviceInfo> DbMigrations_TryGetLegacy_DeviceInfoSettings(int userId)
+		{
+			using var metrics = DbMetrics.DbActionDuration
+									.WithLabels("get", DbName)
+									.NewTimer();
+			using var tracing = Tracing.Trace($"{nameof(SettingsDb)}.{nameof(DbMigrations_TryGetLegacy_DeviceInfoSettings)}.ByUserId", TagValue.Db)
+										.WithTable(DbName);
+
+			try
+			{
+				var settings = _db.GetItem<DbMigrations_LegacyDeviceInfo>(userId.ToString());
+
+				return Task.FromResult(settings);
+			}
+			catch (Exception e)
+			{
+				_logger.Error(e, $"Failed to get settings to db for user {userId}");
+				throw;
 			}
 		}
 
@@ -116,7 +139,7 @@ namespace Common.Database
 			}
 		}
 
-		public Task RemoveLegacySettingsAsync()
+		public Task DbMigrations_TryRemoveLegacySettingsAsync()
 		{
 			return _db.DeleteItemAsync("settings");
 		}

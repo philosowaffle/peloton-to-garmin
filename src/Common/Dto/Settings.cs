@@ -1,6 +1,5 @@
 ﻿using Common.Dto.Garmin;
 using Common.Stateful;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json.Serialization;
@@ -74,8 +73,6 @@ public class Format
 	public bool SaveLocalCopy { get; set; }
 	public bool IncludeTimeInHRZones { get; set; }
 	public bool IncludeTimeInPowerZones { get; set; }
-	[Obsolete("Use DeviceInfoSettings instead.  Will be removed in P2G v5.")]
-	public string DeviceInfoPath { get; set; }
 	public Dictionary<WorkoutType, GarminDeviceInfo> DeviceInfoSettings { get; set; }
 	public string WorkoutTitleTemplate { get; set; } = "{{PelotonWorkoutTitle}}{{#if PelotonInstructorName}} with {{PelotonInstructorName}}{{/if}}";
 	public Cycling Cycling { get; set; }

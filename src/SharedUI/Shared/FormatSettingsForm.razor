@@ -124,65 +124,6 @@
 						<br />
 						<HxCard>
 							<HeaderTemplate>
-								Device Info Settings
-								<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
-								Title="<b>Device Info Settings</b>"
-								Content="@CustomDeviceInfoDocumentation"
-								Html="true">
-									<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
-								</HxPopover>
-							</HeaderTemplate>
-							<BodyTemplate>
-								@if (!string.IsNullOrWhiteSpace(formatSettings.DeviceInfoPath))
-								{
-									<HxInputText Label="Path to custom deviceInfo.xml file" @bind-Value="formatSettings.DeviceInfoPath" Hint="This setting is deprecated and will be removed in v5, please switch to using the below settings." />
-									<br />
-								}
-								<HxListLayout @bind-FilterModel="formatSettings.DeviceInfoSettings">
-									<CommandsTemplate>
-										<HxDropdownButtonGroup Split="true">
-											<HxButton Color="ThemeColor.Primary" Icon="BootstrapIcon.PlusLg" OnClick="DeviceInfo_HandleNewItemClicked">Add</HxButton>
-											<HxDropdownToggleButton Color="ThemeColor.Primary">
-												<span class="visually-hidden">Toggle Dropdown</span>@* OPTIONAL (for accessibility) *@
-											</HxDropdownToggleButton>
-											<HxDropdownMenu>
-												<HxDropdownItem OnClick="() => DeviceInfo_HandleCreateFromDeviceClick(GarminDevices.TACXDevice)">TACX</HxDropdownItem>
-												<HxDropdownItem OnClick="() => DeviceInfo_HandleCreateFromDeviceClick(GarminDevices.EpixDevice)">Epix</HxDropdownItem>
-												<HxDropdownItem OnClick="() => DeviceInfo_HandleCreateFromDeviceClick(GarminDevices.Forerunner945)">Forerunner 945</HxDropdownItem>
-											</HxDropdownMenu>
-										</HxDropdownButtonGroup>
-									</CommandsTemplate>
-									<DataTemplate>
-										<HxGrid @ref="_gridComponent" TItem="KeyValuePair<WorkoutType, GarminDeviceInfo>"
-										DataProvider="DeviceInfo_GetGridData"
-										PageSize="100"
-										Responsive="true">
-											<Columns>
-												<HxGridColumn HeaderText="Exercise Type" ItemTextSelector="d => d.Key.ToString()" />
-												<HxGridColumn HeaderText="Device Name" ItemTextSelector="d => d.Value.Name" />
-												<HxGridColumn HeaderText="UnitId" ItemTextSelector="d => d.Value.UnitId.ToString()" />
-												<HxGridColumn HeaderText="ProductId" ItemTextSelector="d => d.Value.ProductID.ToString()" />
-												<HxGridColumn HeaderText="ManufacturerId" ItemTextSelector="d => d.Value.ManufacturerId.ToString()" />
-												<HxGridColumn HeaderText="Version Major" ItemTextSelector="d => d.Value.Version.VersionMajor.ToString()" />
-												<HxGridColumn HeaderText="Version Minor" ItemTextSelector="d => d.Value.Version.VersionMinor.ToString()" />
-												<HxGridColumn HeaderText="Build Version Major" ItemTextSelector="d => d.Value.Version.BuildMajor.ToString()" />
-												<HxGridColumn HeaderText="Build Version Minor" ItemTextSelector="d => d.Value.Version.BuildMinor.ToString()" />
-												<HxContextMenuGridColumn Context="deviceInfo">
-													<HxContextMenu>
-														<HxContextMenuItem Text="Edit" Icon="BootstrapIcon.Pen" OnClick="async () => await DeviceInfo_HandleEditClick(deviceInfo)" />
-														<HxContextMenuItem Text="Copy" Icon="BootstrapIcon.Clipboard2Plus" OnClick="async () => await DeviceInfo_HandleCopyClick(deviceInfo)" />
-														<HxContextMenuItem Text="Delete" Icon="BootstrapIcon.Trash" OnClick="async () => await DeviceInfo_HandleDeleteClick(deviceInfo)" ConfirmationQuestion="@($"Are you sure you want to delete {deviceInfo.Key}?")" />
-													</HxContextMenu>
-												</HxContextMenuGridColumn>
-											</Columns>
-										</HxGrid>
-									</DataTemplate>
-								</HxListLayout>
-							</BodyTemplate>
-						</HxCard>
-						<br />
-						<HxCard>
-							<HeaderTemplate>
 								Custom Zone Handling
 								<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
 								Title="<b>Custom Zone Handling</b>"

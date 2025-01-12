@@ -12,67 +12,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace UnitTests.Common.Service;
-#pragma warning disable CS0618 // Type or member is obsolete
+
 public class SettingServiceTests
 {
-	[Test]
-	public async Task GetCustomDeviceInfoAsync_Chooses_LegacyDeviceFile_First()
-	{
-		// SETUP
-		var mocker = new AutoMocker();
-		var settingsService = mocker.CreateInstance<SettingsService>();
-
-
-		var settings = new Settings()
-		{
-			Format = new Format()
-			{
-				DeviceInfoPath = "./some/path/to.xml",
-				DeviceInfoSettings = Format.DefaultDeviceInfoSettings
-			}
-		};
-		mocker.GetMock<ISettingsDb>().Setup(x => x.GetSettingsAsync(It.IsAny<int>())).ReturnsAsync(settings);
-
-		var userDeviceInfo = new GarminDeviceInfo() 
-		{
-			Name = "ThisDevice"
-		};
-		mocker.GetMock<IFileHandling>().Setup(x => x.TryDeserializeXml<GarminDeviceInfo>("./some/path/to.xml", out userDeviceInfo)).Returns(true);
-
-		// ACT
-		var chosenDeviceInfo = await settingsService.GetCustomDeviceInfoAsync(null);
-
-		// ASSERT
-		chosenDeviceInfo.Name.Should().Be("ThisDevice", because: "If the user still has a device file registered then we should honor that to stay backwards compatible.");
-	}
-
-	[Test]
-	public async Task GetCustomDeviceInfoAsync_When_LegacyDeviceFile_Fails_FallBackTo_NewSettings_IfAvailable()
-	{
-		// SETUP
-		var mocker = new AutoMocker();
-		var settingsService = mocker.CreateInstance<SettingsService>();
-
-		var settings = new Settings()
-		{
-			Format = new Format()
-			{
-				DeviceInfoPath = "./some/path/to.xml",
-				DeviceInfoSettings = new Dictionary<WorkoutType, GarminDeviceInfo>() { { WorkoutType.None, GarminDevices.TACXDevice } }
-			}
-		};
-		mocker.GetMock<ISettingsDb>().Setup(x => x.GetSettingsAsync(It.IsAny<int>())).ReturnsAsync(settings);
-
-		GarminDeviceInfo userDeviceInfo = null;
-		mocker.GetMock<IFileHandling>().Setup(x => x.TryDeserializeXml<GarminDeviceInfo>("./some/path/to.xml", out userDeviceInfo)).Returns(false);
-
-		// ACT
-		var chosenDeviceInfo = await settingsService.GetCustomDeviceInfoAsync(null);
-
-		// ASSERT
-		chosenDeviceInfo.Name.Should().Be("TacxTrainingAppWin", because: "If the legacy device fails to deserialize then we should fall back to the new Settings.");
-	}
-
 	[Test]
 	public async Task GetCustomDeviceInfoAsync_When_LegacyDeviceFile_Fails_And_NoNewSettings_FallsBackToDefaults()
 	{
@@ -80,17 +22,8 @@ public class SettingServiceTests
 		var mocker = new AutoMocker();
 		var settingsService = mocker.CreateInstance<SettingsService>();
 
-		var settings = new Settings()
-		{
-			Format = new Format()
-			{
-				DeviceInfoPath = "./some/path/to.xml",
-			}
-		};
+		var settings = new Settings();
 		mocker.GetMock<ISettingsDb>().Setup(x => x.GetSettingsAsync(It.IsAny<int>())).ReturnsAsync(settings);
-
-		GarminDeviceInfo userDeviceInfo = null;
-		mocker.GetMock<IFileHandling>().Setup(x => x.TryDeserializeXml<GarminDeviceInfo>("./some/path/to.xml", out userDeviceInfo)).Returns(false);
 
 		// ACT
 		var chosenDeviceInfo = await settingsService.GetCustomDeviceInfoAsync(null);
@@ -144,4 +77,3 @@ public class SettingServiceTests
 		}
 	}
 }
-#pragma warning restore CS0618 // Type or member is obsolete

@@ -92,13 +92,6 @@ namespace Common.Service
 			GarminDeviceInfo userProvidedDeviceInfo = null;
 
 			var settings = await GetSettingsAsync();
-#pragma warning disable CS0618 // Type or member is obsolete
-			var userDevicePath = settings?.Format?.DeviceInfoPath;
-#pragma warning restore CS0618 // Type or member is obsolete
-
-			_fileHandler.TryDeserializeXml(userDevicePath, out userProvidedDeviceInfo);
-
-			if (userProvidedDeviceInfo != null) return userProvidedDeviceInfo;
 
 			if (settings?.Format?.DeviceInfoSettings is object)
 			{
