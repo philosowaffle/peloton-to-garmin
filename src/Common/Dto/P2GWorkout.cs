@@ -13,8 +13,6 @@ namespace Common.Dto
 		public WorkoutSamples WorkoutSamples { get; set; }
 		public ICollection<P2GExercise> Exercises { get; set; }
 
-		public dynamic Raw { get; set; }
-
 		private WorkoutType GetWorkoutType()
 		{
 			if (Workout is null) return WorkoutType.None;

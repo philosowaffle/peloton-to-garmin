@@ -83,10 +83,15 @@ public static class StackedClassesCalculator
 			{
 				IsStackedWorkout = true,
 
-				Workout = new Common.Dto.Peloton.Workout()
+				UserData = firstWorkout.UserData,
+
+				Workout = new Workout()
 				{
 					Name = string.Concat(workoutsToStack.Select(w => w.Workout.Name), ","),
 					Title = string.Concat(workoutsToStack.Select(w => w.Workout.Title), ","),
+					Id = string.Concat(workoutsToStack.Select(w => w.Workout.Id), ","),
+
+					Status = lastWorkout.Workout.Status,
 
 					Created_At = firstWorkout.Workout.Created_At,
 					Start_Time = firstWorkout.Workout.Start_Time,
@@ -96,24 +101,30 @@ public static class StackedClassesCalculator
 					Ftp_Info = firstWorkout.Workout.Ftp_Info,
 					Is_Outdoor = firstWorkout.Workout.Is_Outdoor,
 
-					Movement_Tracker_Data = firstWorkout.Workout.Movement_Tracker_Data, // TODO
+					Movement_Tracker_Data = CombineMovementTrackerData(workoutsToStack),
 
-					Status = firstWorkout.Workout.Status,
 					Total_Work = workoutsToStack.Sum(w => w.Workout.Total_Work),
 
+					// TODO: May want to adjust this
 					Ride = firstWorkout.Workout.Ride, // Currently only referencing Title and Instructor
 				},
 
-				WorkoutSamples = new Common.Dto.Peloton.WorkoutSamples()
+				WorkoutSamples = new WorkoutSamples()
 				{
 					Average_Summaries = new List<AverageSummary>(), // not used
 					Duration = workoutsToStack.Sum(w => w.WorkoutSamples.Duration),
 					Is_Class_Plan_Shown = false, // not used
-					Has_Apple_Watch_Metrcis = false, // not used
-					Is_Location_Data_Accurate = false, // not used
+					Has_Apple_Watch_Metrcis = firstWorkout.WorkoutSamples.Has_Apple_Watch_Metrcis, // not used
+					Is_Location_Data_Accurate = firstWorkout.WorkoutSamples.Is_Location_Data_Accurate, // not used
 					Location_Data = CombineLocationData(workoutsToStack),
 					Metrics = CombineMetricsData(workoutsToStack),
-				}
+					Segment_List = CombineSegments(workoutsToStack),
+					Seconds_Since_Pedaling_Start = CombineSecondsArray(workoutsToStack),
+					Summaries = CombineSummaries(workoutsToStack),
+					Target_Performance_Metrics = CombineTargetPerformanceMetrics(workoutsToStack),
+				},
+
+				// Exercises - TODO
 			};
 
 			stackedWorkouts.Add(stackedWorkout);
@@ -199,5 +210,175 @@ public static class StackedClassesCalculator
 		}
 
 		return stackedMetricData;
+	}
+
+	public static MovementTrackerData CombineMovementTrackerData(ICollection<P2GWorkout> workoutsToStack)
+	{
+		var stackedRepitionData = new List<RepetitionSummaryData>();
+
+		var totalSecondsSoFar = 0;
+		foreach (var workout in workoutsToStack)
+		{
+			var repitionData = workout.Workout.Movement_Tracker_Data.Completed_Movements_Summary_Data.Repetition_Summary_Data;
+
+			var adjustedRepiritonData = repitionData
+										.Select(r =>
+										{
+											return new RepetitionSummaryData()
+											{
+												Movement_Id = r.Movement_Id,
+												Movement_Name = r.Movement_Name,
+												Is_Hold = r.Is_Hold,
+												Completed_Number = r.Completed_Number,
+												Offset = r.Offset + totalSecondsSoFar,
+												Length = r.Length,
+												Weight = r.Weight,
+											};
+										});
+
+			stackedRepitionData.AddRange(adjustedRepiritonData);
+			totalSecondsSoFar += workout.WorkoutSamples.Duration;
+		}
+
+		var stackedData = new MovementTrackerData()
+		{
+			Completed_Movements_Summary_Data = new CompletedMovementsSummaryData()
+			{
+				Repetition_Summary_Data = stackedRepitionData
+			}
+		};
+
+		return stackedData;
+	}
+
+	public static ICollection<Segment> CombineSegments(ICollection<P2GWorkout> workoutsToStack)
+	{
+		var stackedSegments = new List<Segment>();
+
+		var totalSecondsSoFar = 0;
+		foreach (var workout in workoutsToStack)
+		{
+			var segments = workout.WorkoutSamples.Segment_List;
+
+			var adjustedSegments = segments.Select(s =>
+			{
+				return new Segment()
+				{
+					Length = s.Length,
+					Start_Time_Offset = s.Start_Time_Offset + totalSecondsSoFar,
+					SubSegments_V2 = s.SubSegments_V2.Select(s2 =>
+					{
+						return new SubSegment()
+						{
+							Type = s2.Type,
+							Offset = s2.Offset + totalSecondsSoFar,
+							Length = s2.Length,
+							Rounds = s2.Rounds,
+							Movements = s2.Movements
+						};
+					}).ToList()
+				};
+			});
+
+			stackedSegments.AddRange(adjustedSegments);
+			totalSecondsSoFar += workout.WorkoutSamples.Duration;
+		}
+
+		return stackedSegments;
+	}
+
+	public static ICollection<int> CombineSecondsArray(ICollection<P2GWorkout> workoutsToStack)
+	{
+		var stackedSeconds = new List<int>();
+
+		var totalSecondsSoFar = 0;
+		foreach (var workout in workoutsToStack)
+		{
+			var secondsList = workout.WorkoutSamples.Seconds_Since_Pedaling_Start;
+
+			var adjustedSeconds = secondsList.Select(s =>
+			{
+				return s + totalSecondsSoFar;
+			});
+
+			stackedSeconds.AddRange(adjustedSeconds);
+			totalSecondsSoFar += workout.WorkoutSamples.Duration;
+		}
+
+		return stackedSeconds;
+	}
+
+	public static ICollection<Summary> CombineSummaries(ICollection<P2GWorkout> workoutsToStack)
+	{
+		var stackedSummaries = new List<Summary>();
+
+		foreach (var workout in workoutsToStack)
+		{
+			foreach (var summary in workout.WorkoutSamples.Summaries)
+			{
+				var aggregateSlug = stackedSummaries.FirstOrDefault(s => s.Slug == summary.Slug);
+
+				if (aggregateSlug is null)
+				{
+					aggregateSlug = new Summary()
+					{
+						Slug = summary.Slug,
+						Display_Name = summary.Display_Name,
+						Display_Unit = summary.Display_Unit,
+						Value = 0.0
+					};
+					stackedSummaries.Add(aggregateSlug);
+				}
+
+				aggregateSlug.Value = aggregateSlug.Value + summary.Value;
+			}
+		}
+
+		return stackedSummaries;
+	}
+
+	public static TargetPerformanceMetrics CombineTargetPerformanceMetrics(ICollection<P2GWorkout> workoutsToStack)
+	{
+		var stackedTargetPerformanceMetrics = new TargetPerformanceMetrics()
+		{
+			Cadence_Time_In_Range = workoutsToStack.Sum(w => w.WorkoutSamples.Target_Performance_Metrics.Cadence_Time_In_Range),
+			Resistance_Time_In_Range = workoutsToStack.Sum(w => w.WorkoutSamples.Target_Performance_Metrics.Resistance_Time_In_Range)
+		};
+
+		var stackedTargetGraphMetrics = new List<TargetGraphMetrics>();
+
+		foreach (var workout in workoutsToStack)
+		{
+			foreach (var graphMetric in workout.WorkoutSamples.Target_Performance_Metrics.Target_Graph_Metrics)
+			{
+				var aggregateSlug = stackedTargetGraphMetrics.FirstOrDefault(s => s.Type == graphMetric.Type);
+
+				if (aggregateSlug is null)
+				{
+					aggregateSlug = new TargetGraphMetrics()
+					{
+						Type = graphMetric.Type,
+						Max = 0, // not used
+						Min = 0, // not used
+						Average = 0, // not used
+						Graph_Data = new GraphData()
+						{
+							Upper = new int[0],
+							Lower = new int[0],
+							Average = new int[0],
+						}
+					};
+
+					stackedTargetGraphMetrics.Add(aggregateSlug);
+				}
+
+				aggregateSlug.Graph_Data.Upper = aggregateSlug.Graph_Data.Upper.Union(graphMetric.Graph_Data.Upper).ToArray();
+				aggregateSlug.Graph_Data.Lower = aggregateSlug.Graph_Data.Lower.Union(graphMetric.Graph_Data.Lower).ToArray();
+				aggregateSlug.Graph_Data.Average = aggregateSlug.Graph_Data.Average.Union(graphMetric.Graph_Data.Average).ToArray();
+			}
+		}
+
+		stackedTargetPerformanceMetrics.Target_Graph_Metrics = stackedTargetGraphMetrics;
+		return stackedTargetPerformanceMetrics;
 	}
 }
