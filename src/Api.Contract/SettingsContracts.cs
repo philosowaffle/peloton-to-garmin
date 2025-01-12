@@ -73,6 +73,7 @@ public class SettingsPelotonGetResponse
 		ExcludeWorkoutTypes = new List<WorkoutType>();
 	}
 
+	public bool IsConfigured => !string.IsNullOrWhiteSpace(Email) && IsPasswordSet;
 	public bool IsPasswordSet { get; set; }
 	public string? Email { get; set; }
 	public string? Password { get; set; }

@@ -28,6 +28,28 @@ public class UsersDb : DbBase<P2GUser>, IUsersDb
 	public UsersDb(IFileHandling fileHandler) : base("Users", fileHandler)
 	{
 		_db = new DataStore(DbPath);
+		Init();
+	}
+
+	private void Init()
+	{
+		try
+		{
+			var users = _db.GetCollection<P2GUser>(UsersCollections);
+
+			if (users.Count <= 0)
+			{
+				var success = users.InsertOne(_defaultUser);
+				if (!success)
+				{
+					_logger.Error("Failed to save default User to Db.");
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			_logger.Error($"Failed to init default User to Db. Exception: {e}");
+		}
 	}
 
 	public Task AddUserAsync(P2GUser user)
@@ -35,7 +57,7 @@ public class UsersDb : DbBase<P2GUser>, IUsersDb
 		throw new NotImplementedException();
 	}
 
-	public async Task<ICollection<P2GUser>> GetUsersAsync()
+	public Task<ICollection<P2GUser>> GetUsersAsync()
 	{
 		using var metrics = DbMetrics.DbActionDuration
 									.WithLabels("get", DbName)
@@ -47,17 +69,7 @@ public class UsersDb : DbBase<P2GUser>, IUsersDb
 		{
 			var users = _db.GetCollection<P2GUser>(UsersCollections);
 
-			if (users.Count <= 0)
-			{
-				var success = await users.InsertOneAsync(_defaultUser);
-				if (!success)
-				{
-					_logger.Error("Failed to save default User to Db.");
-					return new List<P2GUser>() { _defaultUser };
-				}
-			}
-
-			return users.AsQueryable().ToList();
+			return Task.FromResult<ICollection<P2GUser>>(users.AsQueryable().ToList());
 		}
 		catch (Exception e)
 		{

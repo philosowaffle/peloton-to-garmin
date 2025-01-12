@@ -8,6 +8,13 @@
 
 <GarminMfaModal @ref="_garminMfaModal" />
 
+@if (PelotonSettingNotConfiguredYet)
+{
+	<div class="row justify-content-start">
+		<HxAlert Color="ThemeColor.Primary"><HxIcon Icon="@BootstrapIcon.GearFill" /> Head on over to the <a href="settings">Settings</a> page to connect to Peloton.</HxAlert>
+	</div>
+}
+
 <HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@IsSyncButtonEnabled()">
 	Sync <span class="badge bg-secondary">@selectedItems.Count()</span>
 </HxButton>
@@ -30,6 +37,7 @@
 
 	private HashSet<PelotonWorkout> selectedItems = new();
 	private static int PageSize = 25;
+	private bool PelotonSettingNotConfiguredYet = false;
 
 	private GarminMfaModal? _garminMfaModal;
 
@@ -41,11 +49,22 @@
 		base.Dispose();
 	}
 
+	protected override async Task OnInitializedAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Sync)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+	
+		var settings = await _apiClient.SettingsGetAsync();
+		PelotonSettingNotConfiguredYet = !settings.Peloton.IsConfigured;
+	}
+
 	private async Task<GridDataProviderResult<PelotonWorkout>> LoadDataAsync(GridDataProviderRequest<PelotonWorkout> request)
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(Sync)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
 
 		_toaster.Clear();
+
+		if (PelotonSettingNotConfiguredYet)
+			return new GridDataProviderResult<PelotonWorkout>() { Data = new List<PelotonWorkout>(), TotalCount = 0 };
 
 		try
 		{
