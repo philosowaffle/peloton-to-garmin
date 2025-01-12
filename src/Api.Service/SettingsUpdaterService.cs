@@ -58,14 +58,6 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 			return result;
 		}
 
-		if (!string.IsNullOrWhiteSpace(updatedFormatSettings.DeviceInfoPath)
-			&& !_fileHandler.FileExists(updatedFormatSettings.DeviceInfoPath))
-		{
-			result.Successful = false;
-			result.Error = new ServiceError() { Message = "The DeviceInfo path is either not accessible or does not exist." };
-			return result;
-		}
-
 		var settings = await _settingsService.GetSettingsAsync();
 		settings.Format = updatedFormatSettings;
 

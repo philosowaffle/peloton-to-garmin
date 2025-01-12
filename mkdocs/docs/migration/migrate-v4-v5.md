@@ -1,36 +1,27 @@
 
 # Migrating from V4 to V5
 
-Version 3 only includes one breaking change that some users will need to account for. Based on your install type you can find what changes need to be made below.
+Version 4 introduces a few breaking changes.  Not every change will require action from you.  You can use the below table to see which changes may impact you based on your install method.
 
-## Windows Exe
+| Breaking Change | Build From Source | Docker Headless | Docker WebUI | GitHubAction | Windows Exe |
+|:----------------|:------------------|:----------------|:-------------|:-------------|:------------|
+| [.NET 9](#net-9) | ✔️ | ❌ | ❌ | ❌ | ❌ |
+| [DeviceInfoPath replaced by DeviceInfoSettings](#deviceinfopath-replaced-by-deviceinfosettings) | ❌ | ✔️ | ❌ | ❌ | ✔️ |
 
-The P2G windows exe now provides a proper user interface. You can migrate to this new version simply by following the [install steps](../install/windows.md).  You will need to re-configure P2G using the user interface as your settings will not migrate over.
+## Breaking Changes
 
-There is no risk installing v4 and trying it out. Your previous install will continue to work while you test out v4.  When you're satisfied with v4 you can delete your previous version of P2G.
+### .NET 9
 
-## GitHub Action
+1. Install the latest [dotnet 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
 
-Follow the [updating instructions for GitHub Actions](../install/github-action.md#updating).  A couple notable changes that will be pulled in:
+### DeviceInfoPath replaced by DeviceInfoSettings
 
-1. [Container Image tag](https://github.com/philosowaffle/peloton-to-garmin/blob/v4.0.0/.github/workflows/sync_peloton_to_garmin.yml#L23) has changed to `console-stable`, you may wish to edit this to be `console-v4`
-1. The [configuration options](https://github.com/philosowaffle/peloton-to-garmin/blob/v4.0.0/.github/workflows/sync_peloton_to_garmin.yml#L40) have changed slightly with some fields being deprecated and removed
-1. The [command to run p2g](https://github.com/philosowaffle/peloton-to-garmin/blob/v4.0.0/.github/workflows/sync_peloton_to_garmin.yml#L75) has changed to `/app/ConsoleClient`.
+If you have not configured or made use of the [DeviceInfoPath setting](https://philosowaffle.github.io/peloton-to-garmin/v4.1.0/configuration/json/#custom-device-info) then you likely do not need to make any changes.
 
-## Docker Headless
+If you are running P2G in a way that allows it to persist its settings across restarts, then you should not need to do anything specific, P2G will automatically migrate the old `DeviceInfoPath` setting into the new `DeviceInfoSettings` format.  For example if you are using the WebUI or the Windows Exe, then you likely do not need to do anything.
 
-No specific migration steps are needed, however please take note of the [breaking changes](https://github.com/philosowaffle/peloton-to-garmin/releases/tag/v3.6.0) in case any of these impact your setup.
+Additionally, if you are running P2G v4.2.0 or later then it is possible you have already made the needed changes as the new settings format was [introduced with that version](https://github.com/philosowaffle/peloton-to-garmin/issues/606#issuecomment-1925869262).
 
-## Docker WebUI
+If you are not persisting P2G settings across restarts then you will need to manually update your settings.  For example, if you use GitHub Actions to run P2G then your settings are defined in the action file and passed into P2G on each run.  If you have made use of the `DeviceInfoPath` setting then you will need to update it to follow the new format of `DeviceInfoSettings`.
 
-No specific migration steps are needed, however please take note of the [breaking changes](https://github.com/philosowaffle/peloton-to-garmin/releases/tag/v3.6.0) in case any of these impact your setup.
-
-## Docker API
-
-No specific migration steps are needed, however please take note of the [breaking changes](https://github.com/philosowaffle/peloton-to-garmin/releases/tag/v3.6.0) in case any of these impact your setup.
-
-## Source
-
-1. Install the latest [dotnet 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/7.0)
-
-Please take note of the [breaking changes](https://github.com/philosowaffle/peloton-to-garmin/releases/tag/v5.0.0) in case any of these impact your setup.
+The new settings structure is explained [here](https://philosowaffle.github.io/peloton-to-garmin/v5.0.0/configuration/format/#customizing-the-garmin-device-associated-with-the-workout).
