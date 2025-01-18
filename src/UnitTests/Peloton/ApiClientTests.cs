@@ -11,7 +11,7 @@ using System.IO;
 using System.Threading.Tasks;
 using UnitTests.UnitTestHelpers;
 
-namespace UnitTests.Peloton
+namespace UnitTests.PelotonTests
 {
 	public class ApiClientTests
 	{

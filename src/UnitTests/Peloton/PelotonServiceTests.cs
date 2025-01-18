@@ -11,7 +11,7 @@ using Peloton;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace UnitTests.Peloton
+namespace UnitTests.PelotonTests
 {
 	public class PelotonServiceTests
 	{

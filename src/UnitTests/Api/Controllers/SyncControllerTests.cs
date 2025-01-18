@@ -136,7 +136,7 @@ namespace UnitTests.Api.Controllers
 			var response = actionResult.Result as CreatedResult;
 			response.Should().NotBeNull();
 
-			service.Verify(s => s.SyncAsync(It.IsAny<ICollection<string>>(), null), Times.Once);
+			service.Verify(s => s.SyncAsync(It.IsAny<ICollection<string>>(), null, false), Times.Once);
 		}
 
 		[Test]
@@ -150,7 +150,7 @@ namespace UnitTests.Api.Controllers
 			settings.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settings.Object.GetSettingsAsync))
 				.ReturnsAsync(new Settings());
 
-			service.Setup(s => s.SyncAsync(It.IsAny<ICollection<string>>(), null))
+			service.Setup(s => s.SyncAsync(It.IsAny<ICollection<string>>(), null, false))
 				.Throws(new Exception("Some unhandled case."));
 
 			var request = new SyncPostRequest() { WorkoutIds = new List<string>() { "someId" } };
