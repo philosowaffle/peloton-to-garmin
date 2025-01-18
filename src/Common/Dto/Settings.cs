@@ -79,6 +79,24 @@ public class Format
 	public Running Running { get; set; }
 	public Rowing Rowing { get; init; }
 	public Strength Strength { get; init; }
+	public StackedWorkoutsSettings StackedWorkouts { get; init; } = new StackedWorkoutsSettings();
+}
+
+public record StackedWorkoutsSettings
+{
+	/// <summary>
+	/// True if P2G should automatically detect and stack workouts when
+	/// converting and syncing.  P2G will only stack workouts of the same type
+	/// and only within a default time gap of 5min.
+	/// </summary>
+	public bool AutomaticallyStackWorkouts { get; set; } = false;
+
+	/// <summary>
+	/// The maximum amount of time allowed between workouts that should be stacked.
+	/// If the gap of time is larger than this, then the workouts will not be stacked.
+	/// The default is 5min.
+	/// </summary>
+	public int MaxAllowedGapSeconds { get; set; } = 300;
 }
 
 public record Cycling

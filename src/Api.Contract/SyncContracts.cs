@@ -45,6 +45,14 @@ public record SyncPostRequest
 	/// - SinceDate
 	/// </summary>
 	public ICollection<string> WorkoutIds { get; init; }
+
+	/// <summary>
+	/// True if these workouts should be combined (stacked) into a single final workout.
+	/// When False, the sync will still honor any settings configured in StackedClassesSettings.
+	/// When True, the sync will ignore the StackedClassesSettings and attempt stack all classes of the same
+	/// type, regardless of the time gap between them.
+	/// </summary>
+	public bool ForceStackClasses { get; init; } = false;
 }
 
 public record SyncPostResponse

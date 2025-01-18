@@ -215,8 +215,8 @@ namespace UnitTests
 			var p2gWorkout1 = _fileHandler.DeserializeJsonFile<P2GWorkout>(p2gWorkout1Path);
 			var p2gWorkout2 = _fileHandler.DeserializeJsonFile<P2GWorkout>(p2gWorkout2Path);
 
-			var stacks = StackedClassesCalculator.GetStackedClasses(new List<P2GWorkout>() { p2gWorkout1,  p2gWorkout2 });
-			var stackedClasses = StackedClassesCalculator.CombineStackedClasses(stacks);
+			var stacks = StackedWorkoutsCalculator.GetStackedWorkouts(new List<P2GWorkout>() { p2gWorkout1,  p2gWorkout2 }, 300);
+			var stackedClasses = StackedWorkoutsCalculator.CombineStackedWorkouts(stacks);
 
 			var stackedWorkout = stackedClasses.FirstOrDefault();
 			SaveData(stackedWorkout, "stackedWorkout", DataDirectory);

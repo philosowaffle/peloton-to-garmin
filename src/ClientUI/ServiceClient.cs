@@ -303,7 +303,7 @@ public class ServiceClient : IApiClient
 		SyncResult syncResult = new();
 		try
 		{
-			syncResult = await _syncService.SyncAsync(syncPostRequest.WorkoutIds, exclude: null);
+			syncResult = await _syncService.SyncAsync(syncPostRequest.WorkoutIds, exclude: null, forceStackClasses: syncPostRequest.ForceStackClasses);
 		}
 		catch (Exception e)
 		{

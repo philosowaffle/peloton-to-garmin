@@ -22,7 +22,7 @@ namespace Sync
 	public interface ISyncService
 	{
 		Task<SyncResult> SyncAsync(int numWorkouts);
-		Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null);
+		Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null, bool forceStackClasses = false);
 	}
 
 	public class SyncService : ISyncService
@@ -57,7 +57,7 @@ namespace Sync
 			return await SyncWithWorkoutLoaderAsync(() => _pelotonService.GetRecentWorkoutsAsync(numWorkouts), settings.Peloton.ExcludeWorkoutTypes);
 		}
 
-		public async Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null)
+		public async Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null, bool forceStackClasses = false)
 		{
 			using var timer = SyncHistogram.NewTimer();
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.ByWorkoutIds");
@@ -119,8 +119,14 @@ namespace Sync
 			}
 
 			// calculate stacked workouts
-			// if (combineStackedWorkouts)
-			// var stackedClasses = StackedClassesCalculator.GetStackedClasses()
+			var stackedWorkouts = filteredWorkouts;
+			if (settings.Format.StackedWorkouts.AutomaticallyStackWorkouts || forceStackClasses)
+			{
+				_logger.Debug("Stacking classes.");
+				var stackedClassesMaxAllowedGapSeconds = forceStackClasses ? int.MaxValue : settings.Format.StackedWorkouts.MaxAllowedGapSeconds;
+				var stacks = StackedWorkoutsCalculator.GetStackedWorkouts(filteredWorkouts, stackedClassesMaxAllowedGapSeconds);
+				stackedWorkouts = StackedWorkoutsCalculator.CombineStackedWorkouts(stacks);
+			}
 
 			var convertStatuses = new List<ConvertStatus>();
 			try

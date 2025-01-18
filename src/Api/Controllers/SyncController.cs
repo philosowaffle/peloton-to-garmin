@@ -52,7 +52,7 @@ public class SyncController : Controller
 		SyncResult syncResult = new();
 		try
 		{
-			syncResult = await _syncService.SyncAsync(request.WorkoutIds, exclude: null);
+			syncResult = await _syncService.SyncAsync(request.WorkoutIds, exclude: null, forceStackClasses: request.ForceStackClasses);
 		}
 		catch (Exception e)
 		{
