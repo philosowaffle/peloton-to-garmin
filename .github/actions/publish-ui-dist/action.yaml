@@ -78,6 +78,7 @@ runs:
       with:
         name: ui_${{ inputs.os }}_${{ github.run_number }}-${{ github.run_id }}
         path: ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os-path }}
+        include-hidden-files: true
 
 
 # Installed Workload Id      Manifest Version       Installation Source
