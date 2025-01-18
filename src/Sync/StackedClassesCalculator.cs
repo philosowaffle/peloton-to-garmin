@@ -124,7 +124,7 @@ public static class StackedClassesCalculator
 					Target_Performance_Metrics = CombineTargetPerformanceMetrics(workoutsToStack),
 				},
 
-				// Exercises - TODO
+				Exercises = CombineExercises(workoutsToStack),
 			};
 
 			stackedWorkouts.Add(stackedWorkout);
@@ -190,19 +190,22 @@ public static class StackedClassesCalculator
 				aggregateSlug.Max_Value = aggregateSlug.Max_Value > metric.Max_Value ? aggregateSlug.Max_Value : metric.Max_Value;
 
 				// zones
-				foreach (var zone in metric.Zones)
+				if (metric.Zones is object)
 				{
-					var aggregateZoneSlug = aggregateSlug.Zones.FirstOrDefault(z => z.Slug == zone.Slug);
-
-					if (aggregateZoneSlug is null)
+					foreach (var zone in metric.Zones)
 					{
-						aggregateSlug.Zones.Add(zone);
-						continue;
-					}
+						var aggregateZoneSlug = aggregateSlug.Zones.FirstOrDefault(z => z.Slug == zone.Slug);
 
-					aggregateZoneSlug.Duration += zone.Duration;
-					aggregateZoneSlug.Max_Value = aggregateZoneSlug.Max_Value > zone.Max_Value ? aggregateZoneSlug.Max_Value : zone.Max_Value;
-					aggregateZoneSlug.Min_Value = aggregateZoneSlug.Min_Value < zone.Min_Value ? aggregateZoneSlug.Min_Value : zone.Min_Value;
+						if (aggregateZoneSlug is null)
+						{
+							aggregateSlug.Zones.Add(zone);
+							continue;
+						}
+
+						aggregateZoneSlug.Duration += zone.Duration;
+						aggregateZoneSlug.Max_Value = aggregateZoneSlug.Max_Value > zone.Max_Value ? aggregateZoneSlug.Max_Value : zone.Max_Value;
+						aggregateZoneSlug.Min_Value = aggregateZoneSlug.Min_Value < zone.Min_Value ? aggregateZoneSlug.Min_Value : zone.Min_Value;
+					}
 				}
 
 				// Alternatives - Won't Support for MVP
@@ -219,6 +222,12 @@ public static class StackedClassesCalculator
 		var totalSecondsSoFar = 0;
 		foreach (var workout in workoutsToStack)
 		{
+			if (workout.Workout.Movement_Tracker_Data is null)
+			{
+				totalSecondsSoFar += workout.WorkoutSamples.Duration;
+				continue;
+			}
+
 			var repitionData = workout.Workout.Movement_Tracker_Data.Completed_Movements_Summary_Data.Repetition_Summary_Data;
 
 			var adjustedRepiritonData = repitionData
@@ -266,7 +275,7 @@ public static class StackedClassesCalculator
 				{
 					Length = s.Length,
 					Start_Time_Offset = s.Start_Time_Offset + totalSecondsSoFar,
-					SubSegments_V2 = s.SubSegments_V2.Select(s2 =>
+					SubSegments_V2 = s.SubSegments_V2?.Select(s2 =>
 					{
 						return new SubSegment()
 						{
@@ -341,8 +350,8 @@ public static class StackedClassesCalculator
 	{
 		var stackedTargetPerformanceMetrics = new TargetPerformanceMetrics()
 		{
-			Cadence_Time_In_Range = workoutsToStack.Sum(w => w.WorkoutSamples.Target_Performance_Metrics.Cadence_Time_In_Range),
-			Resistance_Time_In_Range = workoutsToStack.Sum(w => w.WorkoutSamples.Target_Performance_Metrics.Resistance_Time_In_Range)
+			Cadence_Time_In_Range = workoutsToStack.Sum(w => w.WorkoutSamples.Target_Performance_Metrics?.Cadence_Time_In_Range ?? 0),
+			Resistance_Time_In_Range = workoutsToStack.Sum(w => w.WorkoutSamples.Target_Performance_Metrics?.Resistance_Time_In_Range ?? 0)
 		};
 
 		var stackedTargetGraphMetrics = new List<TargetGraphMetrics>();
@@ -380,5 +389,35 @@ public static class StackedClassesCalculator
 
 		stackedTargetPerformanceMetrics.Target_Graph_Metrics = stackedTargetGraphMetrics;
 		return stackedTargetPerformanceMetrics;
+	}
+
+	public static ICollection<P2GExercise> CombineExercises(ICollection<P2GWorkout> workoutsToStack)
+	{
+		var stackedExercises = new List<P2GExercise>();
+
+		var totalSecondsSoFar = 0;
+		foreach (var workout in workoutsToStack)
+		{
+			var exercises = workout.Exercises;
+
+			var adjustedExercises = exercises.Select(s =>
+			{
+				return new P2GExercise()
+				{
+					Id = s.Id,
+					Name = s.Name,
+					StartOffsetSeconds = s.StartOffsetSeconds + totalSecondsSoFar,
+					DurationSeconds = s.DurationSeconds,
+					Type = s.Type,
+					Reps = s.Reps,
+					Weight = s.Weight,
+				};
+			});
+
+			stackedExercises.AddRange(adjustedExercises);
+			totalSecondsSoFar += workout.WorkoutSamples.Duration;
+		}
+
+		return stackedExercises;
 	}
 }
