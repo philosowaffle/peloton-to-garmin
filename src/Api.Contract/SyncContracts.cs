@@ -52,7 +52,7 @@ public record SyncPostRequest
 	/// When True, the sync will ignore the StackedClassesSettings and attempt stack all classes of the same
 	/// type, regardless of the time gap between them.
 	/// </summary>
-	public bool ForceStackClasses { get; init; } = false;
+	public bool ForceStackWorkouts { get; init; } = false;
 }
 
 public record SyncPostResponse

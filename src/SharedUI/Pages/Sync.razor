@@ -122,7 +122,7 @@
 
 		try
 		{
-			var result = await _apiClient.SyncPostAsync(new SyncPostRequest() { WorkoutIds = selectedItems.Select(i => i.Id!).ToList() });
+			var result = await _apiClient.SyncPostAsync(new SyncPostRequest() { WorkoutIds = selectedItems.Select(i => i.Id!).ToList(), ForceStackWorkouts = forceStackWorkouts });
 			selectedItems.Clear();
 
 			if (result.SyncSuccess)

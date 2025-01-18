@@ -22,7 +22,7 @@ namespace Sync
 	public interface ISyncService
 	{
 		Task<SyncResult> SyncAsync(int numWorkouts);
-		Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null, bool forceStackClasses = false);
+		Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null, bool forceStackWorkouts = false);
 	}
 
 	public class SyncService : ISyncService
@@ -126,6 +126,7 @@ namespace Sync
 				var stackedClassesMaxAllowedGapSeconds = forceStackClasses ? int.MaxValue : settings.Format.StackedWorkouts.MaxAllowedGapSeconds;
 				var stacks = StackedWorkoutsCalculator.GetStackedWorkouts(filteredWorkouts, stackedClassesMaxAllowedGapSeconds);
 				stackedWorkouts = StackedWorkoutsCalculator.CombineStackedWorkouts(stacks);
+				_logger.Debug($"{filteredWorkoutsCount} workouts yielded {stacks.Count()} stacks.");
 			}
 
 			var convertStatuses = new List<ConvertStatus>();
@@ -133,7 +134,7 @@ namespace Sync
 			{
 				_logger.Information("Converting workouts...");
 				var tasks = new List<Task<ConvertStatus>>();
-				foreach (var workout in filteredWorkouts)
+				foreach (var workout in stackedWorkouts)
 				{
 					workout.UserData = userData;
 					tasks.AddRange(_converters.Select(c => c.ConvertAsync(workout)));
