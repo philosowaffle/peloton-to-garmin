@@ -87,9 +87,9 @@ public static class StackedClassesCalculator
 
 				Workout = new Workout()
 				{
-					Name = string.Concat(workoutsToStack.Select(w => w.Workout.Name), ","),
-					Title = string.Concat(workoutsToStack.Select(w => w.Workout.Title), ","),
-					Id = string.Concat(workoutsToStack.Select(w => w.Workout.Id), ","),
+					Name = string.Join(",", workoutsToStack.Select(w => w.Workout.Name)),
+					Title = string.Join(",", workoutsToStack.Select(w => w.Workout.Title)),
+					Id = string.Join(",", workoutsToStack.Select(w => w.Workout.Id)),
 
 					Status = lastWorkout.Workout.Status,
 
@@ -105,8 +105,14 @@ public static class StackedClassesCalculator
 
 					Total_Work = workoutsToStack.Sum(w => w.Workout.Total_Work),
 
-					// TODO: May want to adjust this
-					Ride = firstWorkout.Workout.Ride, // Currently only referencing Title and Instructor
+					Ride = new Ride() // Currently only referencing Title and Instructor
+					{
+						Title = string.Join(",", workoutsToStack.Select(w => w.Workout.Ride.Title)),
+						Instructor = new Instructor ()
+						{
+							Name = string.Join(",", workoutsToStack.Select(w => w.Workout.Ride?.Instructor?.Name))
+						}
+					}, 
 				},
 
 				WorkoutSamples = new WorkoutSamples()
@@ -185,7 +191,7 @@ public static class StackedClassesCalculator
 					stackedMetricData.Add(aggregateSlug);
 				}
 
-				aggregateSlug.Values = aggregateSlug.Values.Union(metric.Values).ToArray();
+				aggregateSlug.Values = aggregateSlug.Values.Concat(metric.Values).ToArray();
 				aggregateSlug.Missing_Data_Duration += metric.Missing_Data_Duration;
 				aggregateSlug.Max_Value = aggregateSlug.Max_Value > metric.Max_Value ? aggregateSlug.Max_Value : metric.Max_Value;
 
@@ -210,6 +216,11 @@ public static class StackedClassesCalculator
 
 				// Alternatives - Won't Support for MVP
 			}
+		}
+
+		foreach (var stackedMetric in stackedMetricData)
+		{
+			stackedMetric.Average_Value = stackedMetric.Values.Average();
 		}
 
 		return stackedMetricData;
@@ -358,6 +369,9 @@ public static class StackedClassesCalculator
 
 		foreach (var workout in workoutsToStack)
 		{
+			if (workout.WorkoutSamples?.Target_Performance_Metrics?.Target_Graph_Metrics is null)
+				continue;
+
 			foreach (var graphMetric in workout.WorkoutSamples.Target_Performance_Metrics.Target_Graph_Metrics)
 			{
 				var aggregateSlug = stackedTargetGraphMetrics.FirstOrDefault(s => s.Type == graphMetric.Type);

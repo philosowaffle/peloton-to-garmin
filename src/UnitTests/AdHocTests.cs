@@ -195,6 +195,7 @@ namespace UnitTests
 			var autoMocker = new AutoMocker();
 			var settingMock = autoMocker.GetMock<ISettingsService>();
 			settingMock.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
+			settingMock.Setup(s => s.GetCustomDeviceInfoAsync(It.IsAny<Workout>())).ReturnsAsync(Format.DefaultDeviceInfoSettings[WorkoutType.Cycling]);
 
 			var fileHandler = autoMocker.GetMock<IFileHandling>();
 
@@ -216,6 +217,9 @@ namespace UnitTests
 
 			var stacks = StackedClassesCalculator.GetStackedClasses(new List<P2GWorkout>() { p2gWorkout1,  p2gWorkout2 });
 			var stackedClasses = StackedClassesCalculator.CombineStackedClasses(stacks);
+
+			var stackedWorkout = stackedClasses.FirstOrDefault();
+			SaveData(stackedWorkout, "stackedWorkout", DataDirectory);
 
 			var fitConverter = new ConverterInstance(settingMock.Object, fileHandler.Object);
 			var messages = await fitConverter.Convert(stackedClasses.FirstOrDefault(), settings);
