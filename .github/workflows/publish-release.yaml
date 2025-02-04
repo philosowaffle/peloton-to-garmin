@@ -52,8 +52,8 @@ jobs:
       artifact_name: ${{ steps.win-ui-create-artifact.outputs.artifact_name }}
     strategy:
       matrix:
-        dotnet: [ '7.0.400' ]
-        framework: ['net7.0-windows10.0.22621.0']
+        dotnet: [ '7.0.410' ]
+        framework: ['net7.0-windows10.0.19041.0']
         os: [ 'win10-x64' ]
 
     steps:
@@ -71,22 +71,24 @@ jobs:
     runs-on: ubuntu-latest
     needs: [publish-ui-dist, publish-docker-images]
     steps:
-      - uses: actions/download-artifact@v3
+
+      - uses: actions/download-artifact@v4
         with:
           name: ${{ needs.publish-ui-dist.outputs.artifact_name }}
-          path: /download
+          path: ${{ github.workspace }}/downloaded
+
       - name: Create Zip for Win UI Release Artifact
-        uses: papeloto/action-zip@v1
+        uses: vimtor/action-zip@v1.2
         with:
-          files: /download/${{ needs.publish-ui-dist.outputs.artifact_name }}
-          dest: /dist/ui_win_${{ github.event.inputs.version }}.zip
+          files: /downloaded # must be relative to gh workspace, does not support absolute paths :(
+          dest: ui_win_${{ github.event.inputs.version }}.zip # this is hardcoded to output to ${{ github.workspace }}/ :(
     
       - uses: actions/checkout@v4
 
       - name: Create Release and Upload Artifacts
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "${{ github.workspace }}/dist/ui_win_${{ github.event.inputs.version }}.zip"
+          artifacts: "${{ github.workspace }}/ui_win_${{ github.event.inputs.version }}.zip"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: v${{ github.event.inputs.version }}
           allowUpdates: true

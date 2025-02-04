@@ -6,24 +6,6 @@ using Polly.Wrap;
 
 namespace Common.Http;
 
-public class PollyHttpClientFactory : DefaultHttpClientFactory
-{
-	private readonly AsyncPolicyWrap<HttpResponseMessage> _policies;
-
-	public PollyHttpClientFactory(AsyncPolicyWrap<HttpResponseMessage> policies)
-	{
-		_policies = policies;
-	}
-
-	public override HttpMessageHandler CreateMessageHandler()
-	{
-		return new PolicyHandler(_policies)
-		{
-			InnerHandler = base.CreateMessageHandler()
-		};
-	}
-}
-
 public class PolicyHandler : DelegatingHandler
 {
 	private readonly AsyncPolicyWrap<HttpResponseMessage> _policy;

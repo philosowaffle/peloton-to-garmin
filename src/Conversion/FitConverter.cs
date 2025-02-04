@@ -375,6 +375,18 @@ namespace Conversion
 			sessionMesg.SetMaxPosGrade(GetMaxGrade(workoutSamples));
 			sessionMesg.SetMaxNegGrade(0.0f);
 
+			var totalElevation = workoutSamples.Summaries.FirstOrDefault(s => s.Slug == "elevation");
+			if (totalElevation?.Value > 0)
+			{
+				try
+				{
+					sessionMesg.SetTotalAscent((ushort)ConvertDistanceToMeters(totalElevation.Value.GetValueOrDefault(), totalElevation.Display_Unit));
+				} catch (Exception e)
+				{
+					_logger.Warning($"Failed to cast elevation of {totalElevation?.Value} to ushort after converting to meters. Skipping data point.", e);
+				}
+			}
+
 			if (sport == Sport.Rowing)
 			{
 				var strokeCountSummary = workoutSamples.Summaries.FirstOrDefault(m => m.Slug == "stroke_count");

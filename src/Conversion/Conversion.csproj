@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Garmin.FIT.Sdk" Version="21.141.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Garmin\Garmin.csproj" />
   </ItemGroup>
 

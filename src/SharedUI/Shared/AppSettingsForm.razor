@@ -1,6 +1,8 @@
 ﻿@inject IApiClient _apiClient
 @inject IHxMessengerService _toaster;
 
+<GarminMfaModal @ref="_garminMfaModal" />
+
 <EditForm Model="@appSettings">
 	<div class="row g-3">
 		<div class="col-md-12">
@@ -32,12 +34,15 @@
 
 @code {
 	private App appSettings;
+	private SettingsGarminGetResponse garminSettings;
 	private string configDocumentation;
+	private GarminMfaModal? _garminMfaModal;
 
 	public AppSettingsForm()
 	{
 		var settings = new SettingsGetResponse();
 		appSettings = settings.App;
+		garminSettings = settings.Garmin;
 	}
 
 	protected override Task OnInitializedAsync()
@@ -63,6 +68,18 @@
 
 		_toaster.Clear();
 
+		if (appSettings.EnablePolling)
+		{
+			// If polling is enabled, check if we need the user to initialize a token
+			await _garminMfaModal!.ShowAsync(ContinueSaveAsync);
+			return;
+		}
+		
+		await ContinueSaveAsync();
+	}
+
+	private async Task ContinueSaveAsync()
+	{
 		try
 		{
 			appSettings = await _apiClient.SettingsAppPostAsync(appSettings);

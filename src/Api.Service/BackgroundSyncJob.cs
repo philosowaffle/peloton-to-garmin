@@ -1,16 +1,18 @@
-﻿using Common.Database;
-using Common.Dto;
+﻿using Common.Dto;
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
+using Garmin.Auth;
 using Microsoft.Extensions.Hosting;
 using Prometheus;
 using Sync;
+using Sync.Database;
+using Sync.Dto;
 using static Common.Observe.Metrics;
 using ILogger = Serilog.ILogger;
 using PromMetrics = Prometheus.Metrics;
 
-namespace Api.Services;
+namespace Api.Service;
 
 public class BackgroundSyncJob : BackgroundService
 {
@@ -23,12 +25,13 @@ public class BackgroundSyncJob : BackgroundService
 	private readonly ISettingsService _settingsService;
 	private readonly ISyncStatusDb _syncStatusDb;
 	private readonly ISyncService _syncService;
-		
+	private readonly IGarminAuthenticationService _garminAuthService;
+
 	private bool? _previousPollingState;
 	private Settings _config;
 
 
-	public BackgroundSyncJob(ISettingsService settingsService,ISyncStatusDb syncStatusDb, ISyncService syncService)
+	public BackgroundSyncJob(ISettingsService settingsService, ISyncStatusDb syncStatusDb, ISyncService syncService, IGarminAuthenticationService garminAuthService)
 	{
 		_settingsService = settingsService;
 		_syncStatusDb = syncStatusDb;
@@ -37,6 +40,7 @@ public class BackgroundSyncJob : BackgroundService
 		_syncService = syncService;
 
 		_config = new Settings();
+		_garminAuthService = garminAuthService;
 	}
 
 	protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -49,13 +53,6 @@ public class BackgroundSyncJob : BackgroundService
 	{
 		_config = await _settingsService.GetSettingsAsync();
 
-		if (_config.Garmin.Upload && _config.Garmin.TwoStepVerificationEnabled && _config.App.EnablePolling)
-		{
-			_logger.Error("Background Sync cannot be enabled when Garmin TwoStepVerification is enabled.");
-			_logger.Information("Sync Service stopped.");
-			return;
-		}
-
 		SyncServiceState.Enabled = _config.App.EnablePolling;
 		SyncServiceState.PollingIntervalSeconds = _config.App.PollingIntervalSeconds;
 
@@ -63,8 +60,15 @@ public class BackgroundSyncJob : BackgroundService
 		{
 			int stepIntervalSeconds = 5;
 
-			if (await NotPollingAsync())
+			if (await PollingDisabled())
 			{
+				Thread.Sleep(stepIntervalSeconds * 1000);
+				continue;
+			}
+
+			if (await NeedToWaitForMFAToBeCompletedAsync())
+			{
+				_logger.Information("Can't start background syncing until MFA flow is completed for the first time.");
 				Thread.Sleep(stepIntervalSeconds * 1000);
 				continue;
 			}
@@ -72,8 +76,8 @@ public class BackgroundSyncJob : BackgroundService
 			await SyncAsync();
 
 			_logger.Information("Sleeping for {@Seconds} seconds...", SyncServiceState.PollingIntervalSeconds);
-				
-			for (int i = 1; i < SyncServiceState.PollingIntervalSeconds; i+=stepIntervalSeconds)
+
+			for (int i = 1; i < SyncServiceState.PollingIntervalSeconds; i += stepIntervalSeconds)
 			{
 				Thread.Sleep(stepIntervalSeconds * 1000);
 				if (await StateChangedAsync()) break;
@@ -92,9 +96,9 @@ public class BackgroundSyncJob : BackgroundService
 		return _previousPollingState != SyncServiceState.Enabled;
 	}
 
-	private async Task<bool> NotPollingAsync()
+	private async Task<bool> PollingDisabled()
 	{
-		using var tracing = Tracing.Trace($"{nameof(BackgroundService)}.{nameof(NotPollingAsync)}");
+		using var tracing = Tracing.Trace($"{nameof(BackgroundService)}.{nameof(PollingDisabled)}");
 
 		if (await StateChangedAsync())
 		{
@@ -111,6 +115,17 @@ public class BackgroundSyncJob : BackgroundService
 		return !SyncServiceState.Enabled;
 	}
 
+	private async Task<bool> NeedToWaitForMFAToBeCompletedAsync()
+	{
+		_config = await _settingsService.GetSettingsAsync();
+		if (_config.Garmin.TwoStepVerificationEnabled)
+		{
+			var alreadyHaveToken = await _garminAuthService.GarminAuthTokenExistsAndIsValidAsync();
+			return !alreadyHaveToken;
+		}
+		return false;
+	}
+
 	private async Task SyncAsync()
 	{
 		using var tracing = Tracing.Trace($"{nameof(BackgroundService)}.{nameof(SyncAsync)}");
@@ -118,19 +133,22 @@ public class BackgroundSyncJob : BackgroundService
 		try
 		{
 			var result = await _syncService.SyncAsync(_config.Peloton.NumWorkoutsToDownload);
-			if(result.SyncSuccess)
+			if (result.SyncSuccess)
 			{
 				Health.Set(HealthStatus.Healthy);
-			} else
+			}
+			else
 			{
 				Health.Set(HealthStatus.UnHealthy);
 			}
 
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			_logger.Error(e, "Uncaught Exception.");
 
-		} finally
+		}
+		finally
 		{
 			var now = DateTime.UtcNow;
 			var nextRunTime = now.AddSeconds(_config.App.PollingIntervalSeconds);

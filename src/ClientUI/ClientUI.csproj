@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <!--<TargetFrameworks>net7.0-android;net7.0-ios;net7.0-maccatalyst</TargetFrameworks>-->
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.22621.0</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.19041.0</TargetFrameworks>
         <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
         <!-- <TargetFrameworks>$(TargetFrameworks);net7.0-tizen</TargetFrameworks> -->
         <OutputType>Exe</OutputType>
@@ -38,6 +38,10 @@
         <Product>P2G ClientUI</Product>
     </PropertyGroup>
 
+	<!--<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+		<WindowsSdkPackageVersion>10.0.19041.52</WindowsSdkPackageVersion>
+	</PropertyGroup>-->
+
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
@@ -61,11 +65,8 @@
     </ItemGroup>
 
     <ItemGroup>
-		 <!-- Pinning this version fixes a dependency downgrade issue with Havit -->
-		<!--https://github.com/dotnet/maui/issues/10775-->
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1">
-          <NoWarn>NU1603,NETSDK1023</NoWarn>
-        </PackageReference>
+      <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.20" />
+	<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
     </ItemGroup>
 
 	<ItemGroup>

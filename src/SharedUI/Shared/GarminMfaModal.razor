@@ -26,22 +26,11 @@
 	private bool _isErrored = false;
 	private Func<Task>? _successCallBack;
 
-	protected override async Task OnInitializedAsync()
-	{
-		var settings = await _apiClient.SettingsGetAsync();
-		if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled)
-		{
-			var garminAuthResult = await _apiClient.GetGarminAuthenticationAsync();
-			_isAuthenticated = garminAuthResult?.IsAuthenticated ?? false;
-			_mfaEnabled = true;
-		}
-
-		await base.OnInitializedAsync();
-	}
-
 	public async Task ShowAsync(Func<Task>? successCallBack = null)
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(GarminMfaModal)}.{nameof(ShowAsync)}", kind: ActivityKind.Client);
+
+		await InitializeFieldsAsync();
 
 		_isErrored = false;
 		_successCallBack = null;
@@ -123,6 +112,17 @@
 			Log.Error("UI - Failed to submit Garmin MFA Code.", e);
 			_isAuthenticated = false;
 			_isErrored = true;
+		}
+	}
+
+	private async Task InitializeFieldsAsync()
+	{
+		var settings = await _apiClient.SettingsGetAsync();
+		if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled)
+		{
+			var garminAuthResult = await _apiClient.GetGarminAuthenticationAsync();
+			_isAuthenticated = garminAuthResult?.IsAuthenticated ?? false;
+			_mfaEnabled = true;
 		}
 	}
 
