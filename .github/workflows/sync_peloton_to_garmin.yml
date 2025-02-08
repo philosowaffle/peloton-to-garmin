@@ -13,7 +13,7 @@ on:
         type: boolean
         default: false
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: '0 1 * * *'
 
 jobs:
   sync:
@@ -81,7 +81,7 @@ jobs:
         apt-get install -y zip
         zip -r -j output.zip ${{ env.OUTPUT_DIR }}
         
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: ${{ github.event.inputs.saveLocalCopy == 'true' }}
       with:
         name: output
