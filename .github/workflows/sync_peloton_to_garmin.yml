@@ -78,10 +78,9 @@ jobs:
       if: ${{ github.event.inputs.saveLocalCopy == 'true' }}
       run: |
         apt-get update
-        aapt-get install -y zip
+        apt-get install -y zip
         zip -r -j output.zip ${{ env.OUTPUT_DIR }}
         
-    - uses: actions/upload-artifact@v3
     - uses: actions/upload-artifact@v4
       if: ${{ github.event.inputs.saveLocalCopy == 'true' }}
       with:
