@@ -398,4 +398,66 @@ public class StackedWorkoutsCalculatorTests
 			}
 		}
 	}
+
+	[Test]
+	public void CombineMetricsData_When_WorkoutsToStack_Is_NullOrEmpty_NoOp()
+	{
+		// NULL
+		// SETUP
+		ICollection<P2GWorkout> workouts = null;
+
+		// ACT
+		var result = StackedWorkoutsCalculator.CombineMetricsData(workouts);
+
+		// ASSERT
+		result.Should().BeEmpty();
+
+		// EMPTY
+		// SETUP
+		workouts = new List<P2GWorkout>();
+
+		// ACT
+		result = StackedWorkoutsCalculator.CombineMetricsData(workouts);
+
+		// ASSERT
+		result.Should().BeEmpty();
+	}
+
+	[Test]
+	public void CombineMetricsData_When_WorkoutSamples_Is_Null_SkipsEmpty()
+	{
+		// NULL
+		// SETUP
+		_p2gWorkoutFaker.RuleSet($"{nameof(CombineMetricsData_When_WorkoutSamples_Is_Null_SkipsEmpty)}", (f) =>
+		{
+			f.RuleFor(f => f.WorkoutSamples, f => null);
+		});
+
+		var workoutsToStack = _p2gWorkoutFaker.Generate(10, $"{nameof(CombineMetricsData_When_WorkoutSamples_Is_Null_SkipsEmpty)}");
+
+		// ACT
+		var result = StackedWorkoutsCalculator.CombineMetricsData(workoutsToStack);
+
+		// ASSERT
+		result.Should().BeEmpty();
+	}
+
+	[Test]
+	public void CombineMetricData_When_Metrics_Is_Null_SkipsEmpty()
+	{
+		// NULL
+		// SETUP
+		_p2gWorkoutFaker.RuleSet($"{nameof(CombineMetricData_When_Metrics_Is_Null_SkipsEmpty)}_Null", (f) =>
+		{
+			f.RuleFor(f => f.WorkoutSamples, f => new WorkoutSamples() { Metrics = null });
+		});
+
+		var workoutsToStack = _p2gWorkoutFaker.Generate(10, $"{nameof(CombineMetricData_When_Metrics_Is_Null_SkipsEmpty)}_Null");
+
+		// ACT
+		var result = StackedWorkoutsCalculator.CombineMetricsData(workoutsToStack);
+
+		// ASSERT
+		result.Should().BeEmpty();
+	}
 }

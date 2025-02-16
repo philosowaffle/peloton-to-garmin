@@ -191,8 +191,15 @@ public static class StackedWorkoutsCalculator
 	{
 		var stackedMetricData = new List<Metric>();
 
+		if (workoutsToStack is null || workoutsToStack.Count <= 0)
+			return stackedMetricData;
+
 		foreach (var workout in workoutsToStack)
 		{
+			if (workout.WorkoutSamples is null
+				|| workout.WorkoutSamples.Metrics is null)
+				continue;
+
 			foreach (var metric in workout.WorkoutSamples.Metrics)
 			{
 				var aggregateSlug = stackedMetricData.FirstOrDefault(s => s.Slug == metric.Slug);

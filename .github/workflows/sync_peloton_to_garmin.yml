@@ -40,7 +40,11 @@ jobs:
             "Tcx": false,
             "SaveLocalCopy": ${{ github.event.inputs.saveLocalCopy || false }},
             "IncludeTimeInHRZones": false,
-            "IncludeTimeInPowerZones": false
+            "IncludeTimeInPowerZones": false,
+            "StackedWorkouts": {
+              "AutomaticallyStackWorkouts": false,
+              "MaxAllowedGapSeconds": 300
+            }
           },
           "Peloton": {
             "NumWorkoutsToDownload": ${{ github.event.inputs.workoutsToDownload || env.DEFAULT_WORKOUT_NUM }},
