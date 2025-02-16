@@ -123,7 +123,7 @@ namespace Sync
 			if (settings.Format.StackedWorkouts.AutomaticallyStackWorkouts || forceStackClasses)
 			{
 				_logger.Debug("Stacking classes.");
-				var stackedClassesMaxAllowedGapSeconds = forceStackClasses ? int.MaxValue : settings.Format.StackedWorkouts.MaxAllowedGapSeconds;
+				var stackedClassesMaxAllowedGapSeconds = forceStackClasses ? long.MaxValue : settings.Format.StackedWorkouts.MaxAllowedGapSeconds;
 				var stacks = StackedWorkoutsCalculator.GetStackedWorkouts(filteredWorkouts, stackedClassesMaxAllowedGapSeconds);
 				stackedWorkouts = StackedWorkoutsCalculator.CombineStackedWorkouts(stacks);
 				_logger.Debug($"{filteredWorkoutsCount} workouts yielded {stacks.Count()} stacks.");

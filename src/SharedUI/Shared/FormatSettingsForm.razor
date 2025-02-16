@@ -123,7 +123,7 @@
 				<BodyTemplate>
 					<HxSwitch Text="Enable Automatic Workout Stacking" @bind-Value="formatSettings.StackedWorkouts.AutomaticallyStackWorkouts" />
 					<br />
-					<HxInputNumber Label="Max Seconds between Stacked Workouts" TValue="int" @bind-Value="formatSettings.StackedWorkouts.MaxAllowedGapSeconds" Hint="A value of 300 would mean any workout started within 300s (5min) of the previous one would be stacked." />
+					<HxInputNumber Label="Max Seconds between Stacked Workouts" TValue="long" @bind-Value="formatSettings.StackedWorkouts.MaxAllowedGapSeconds" Hint="A value of 300 would mean any workout started within 300s (5min) of the previous one would be stacked." />
 				</BodyTemplate>
 			</HxCard>
 		</div>

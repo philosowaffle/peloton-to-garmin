@@ -15,14 +15,18 @@ public static class StackedWorkoutsCalculator
 	/// <param name="workouts">List of workouts that could be stacked.</param>
 	/// <param name="stackedWorkoutsTimeGapSeconds">The maximum amount of time between workouts to allow in stack.</param>
 	/// <returns>A Dictionary of Stacks.  Each key is a stackId, and the value is a list of workouts belonging to that stack.</returns>
-	public static Dictionary<int, List<P2GWorkout>> GetStackedWorkouts(IEnumerable<P2GWorkout> workouts, int stackedWorkoutsTimeGapSeconds)
+	public static Dictionary<int, List<P2GWorkout>> GetStackedWorkouts(IEnumerable<P2GWorkout> workouts, long stackedWorkoutsTimeGapSeconds)
 	{
+		var stacks = new Dictionary<int, List<P2GWorkout>>(); // <stackId, List of Workouts to stack>
+		var currentStack = -1;
+
+		if (workouts is null || !workouts.Any())
+			return stacks;
+
 		var orderedAndGroupedWorkouts = workouts
+								.Where(w => w.Workout is object)
 								.OrderBy(w => w.Workout.Start_Time)
 								.GroupBy(w => w.WorkoutType);
-
-		var stacks = new Dictionary<int, List<P2GWorkout>>(); // <stackId, List of Workouts to stack>
-		var currentStack = 0;
 
 		foreach (var workoutGrouping in orderedAndGroupedWorkouts)
 		{
@@ -145,25 +149,39 @@ public static class StackedWorkoutsCalculator
 	public static ICollection<LocationData> CombineLocationData(ICollection<P2GWorkout> workoutsToStack)
 	{
 		var stackedLocationData = new List<LocationData>();
+
+		if (workoutsToStack is null || workoutsToStack.Count <= 0) 
+			return stackedLocationData;
+
 		var totalSecondsSoFar = 0;
 		foreach (var workout in workoutsToStack)
 		{
-			var adjustedLocationData = workout.WorkoutSamples
+			if (workout.WorkoutSamples is object
+				&& workout.WorkoutSamples.Location_Data is object
+				&& workout.WorkoutSamples.Location_Data.Count > 0)
+			{
+				var adjustedLocationData = workout.WorkoutSamples
 										.Location_Data
+										.Where(l => l.Coordinates is object && l.Coordinates.Count > 0)
 										.Select(l =>
 										{
-											var adjustedCoords = l.Coordinates.Select(c =>
-											{
-												c.Seconds_Offset_From_Start += totalSecondsSoFar;
-												return c;
-											});
+											var adjustedCoords = l.Coordinates
+												.Select(c =>
+												{
+													if (c is null) return c;
+
+													c.Seconds_Offset_From_Start += totalSecondsSoFar;
+													return c;
+												});
 
 											l.Coordinates = adjustedCoords.ToList();
 											return l;
 										});
 
-			stackedLocationData.AddRange(adjustedLocationData);
-			totalSecondsSoFar += workout.WorkoutSamples.Duration;
+				stackedLocationData.AddRange(adjustedLocationData);
+			}
+			
+			totalSecondsSoFar += workout?.WorkoutSamples?.Duration ?? 0;
 		}
 
 		return stackedLocationData;

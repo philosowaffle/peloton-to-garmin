@@ -96,7 +96,7 @@ public record StackedWorkoutsSettings
 	/// If the gap of time is larger than this, then the workouts will not be stacked.
 	/// The default is 5min.
 	/// </summary>
-	public int MaxAllowedGapSeconds { get; set; } = 300;
+	public long MaxAllowedGapSeconds { get; set; } = 300;
 }
 
 public record Cycling
