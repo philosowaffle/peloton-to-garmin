@@ -1,12 +1,13 @@
 
 # Migrating from V4 to V5
 
-Version 4 introduces a few breaking changes.  Not every change will require action from you.  You can use the below table to see which changes may impact you based on your install method.
+Version 5 introduces a few breaking changes.  Not every change will require action from you.  You can use the below table to see which changes may impact you based on your install method.
 
 | Breaking Change | Build From Source | Docker Headless | Docker WebUI | GitHubAction | Windows Exe |
 |:----------------|:------------------|:----------------|:-------------|:-------------|:------------|
 | [.NET 9](#net-9) | ✔️ | ❌ | ❌ | ❌ | ❌ |
 | [DeviceInfoPath replaced by DeviceInfoSettings](#deviceinfopath-replaced-by-deviceinfosettings) | ❌ | ✔️ | ❌ | ❌ | ✔️ |
+| [Fixed Non-Root Docker](#fixed-non-root-docker) | ❌ | ✔️ | ✔️ | ❌ | ❌ |
 
 ## Breaking Changes
 
@@ -25,3 +26,13 @@ Additionally, if you are running P2G v4.2.0 or later then it is possible you hav
 If you are not persisting P2G settings across restarts then you will need to manually update your settings.  For example, if you use GitHub Actions to run P2G then your settings are defined in the action file and passed into P2G on each run.  If you have made use of the `DeviceInfoPath` setting then you will need to update it to follow the new format of `DeviceInfoSettings`.
 
 The new settings structure is explained [here](https://philosowaffle.github.io/peloton-to-garmin/v5.0.0/configuration/format/#customizing-the-garmin-device-associated-with-the-workout).
+
+### Fixed Non-Root Docker
+
+Previously running P2G as a rootless container did not [quite work](https://github.com/philosowaffle/peloton-to-garmin/issues/473).  Depending on how you worked around this in your personal setup you may encounter permission issues on the latest version of P2G.
+
+If you encounter issues, start by trying the below steps:
+
+1. Ensure you have created a Group `p2g` with GroupId of `1015`, see [Docker User](../install/docker.md#docker-user)
+1. Ensure existing config and setting files are editable by the `p2g` Group
+1. Update your containers to run with `user: :p2g`. See [docker-compose.yaml](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/docker-compose-ui.yaml)
