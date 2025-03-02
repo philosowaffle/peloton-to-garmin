@@ -22,7 +22,7 @@ namespace Sync
 	public interface ISyncService
 	{
 		Task<SyncResult> SyncAsync(int numWorkouts);
-		Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null);
+		Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null, bool forceStackWorkouts = false);
 	}
 
 	public class SyncService : ISyncService
@@ -57,7 +57,7 @@ namespace Sync
 			return await SyncWithWorkoutLoaderAsync(() => _pelotonService.GetRecentWorkoutsAsync(numWorkouts), settings.Peloton.ExcludeWorkoutTypes);
 		}
 
-		public async Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null)
+		public async Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null, bool forceStackClasses = false)
 		{
 			using var timer = SyncHistogram.NewTimer();
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.ByWorkoutIds");
@@ -118,12 +118,23 @@ namespace Sync
 				return response;
 			}
 
+			// calculate stacked workouts
+			var stackedWorkouts = filteredWorkouts;
+			if (settings.Format.StackedWorkouts.AutomaticallyStackWorkouts || forceStackClasses)
+			{
+				_logger.Debug("Stacking classes.");
+				var stackedClassesMaxAllowedGapSeconds = forceStackClasses ? long.MaxValue : settings.Format.StackedWorkouts.MaxAllowedGapSeconds;
+				var stacks = StackedWorkoutsCalculator.GetStackedWorkouts(filteredWorkouts, stackedClassesMaxAllowedGapSeconds);
+				stackedWorkouts = StackedWorkoutsCalculator.CombineStackedWorkouts(stacks);
+				_logger.Debug($"{filteredWorkoutsCount} workouts yielded {stacks.Count()} stacks.");
+			}
+
 			var convertStatuses = new List<ConvertStatus>();
 			try
 			{
 				_logger.Information("Converting workouts...");
 				var tasks = new List<Task<ConvertStatus>>();
-				foreach (var workout in filteredWorkouts)
+				foreach (var workout in stackedWorkouts)
 				{
 					workout.UserData = userData;
 					tasks.AddRange(_converters.Select(c => c.ConvertAsync(workout)));
