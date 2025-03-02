@@ -8,7 +8,7 @@ on:
 jobs:
 
   build-and-test:
-    name: ⚒ Build and 🧪 Test the code
+    name: ⚒🧪 Build and Test the code
     strategy:
       matrix:
         dotnet: ['9.0.101']
