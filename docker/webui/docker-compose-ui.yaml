@@ -1,9 +1,11 @@
-version: "3.9"
+# sudo groupadd -g 1015 p2g
+# sudo usermod -aG p2g <yourUser>
 
 services:
   p2g-api:
     container_name: p2g-api
     image: philosowaffle/peloton-to-garmin:api-stable
+    user: :p2g
     environment:
       - TZ=America/Chicago
       - P2G_CONFIG_DIRECTORY=/app/config
@@ -17,6 +19,7 @@ services:
   p2g-webui:
     container_name: p2g-webui
     image: philosowaffle/peloton-to-garmin:webui-stable
+    user: :p2g
     ports:
       - 8002:8080
     environment:

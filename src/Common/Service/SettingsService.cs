@@ -17,8 +17,6 @@ public class SettingsService : ISettingsService
 	private static readonly ILogger _logger = LogContext.ForClass<SettingsService>();
 	private static readonly object _lock = new object();
 	private static readonly string PelotonApiAuthKey = "PelotonApiAuth";
-	private static readonly string GarminApiAuthKey = "GarminApiAuth";
-	private static readonly string GarminDeviceInfoKey = "GarminDeviceInfo";
 
 	private readonly ISettingsDb _db;
 	private readonly IMemoryCache _cache;

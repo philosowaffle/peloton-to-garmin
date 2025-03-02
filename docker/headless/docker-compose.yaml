@@ -1,9 +1,11 @@
-version: "3.9"
+# sudo groupadd -g 1015 p2g
+# sudo usermod -aG p2g <yourUser>
 
 services:
   p2g:
     container_name: p2g
     image: philosowaffle/peloton-to-garmin:console-stable
+    user: :p2g
     environment:
       - TZ=America/Chicago
       - P2G_CONFIG_DIRECTORY=/app/config
