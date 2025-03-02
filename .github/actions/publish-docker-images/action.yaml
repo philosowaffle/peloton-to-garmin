@@ -53,7 +53,7 @@ runs:
         echo "BUILD_VERSION=${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}" >> $GITHUB_ENV
       shell: bash
 
-    - name: ⚒⤴ Build & Push Tag to Package Repositories
+    - name: ⚒⤴ Build & Push Tag to Package Repositories 🏷 {{ inputs.tag }}
       if: inputs.version_tag == ''
       id: docker_build_1
       uses: docker/build-push-action@v3
@@ -71,7 +71,7 @@ runs:
       run: echo ${{ steps.docker_build_1.outputs.digest }}
       shell: bash
     
-    - name: ⚒⤴ Build & Push Version Tags to Package Repositories
+    - name: ⚒⤴ Build & Push Version Tags to Package Repositories 🏷 {{ inputs.tag }}
       if: inputs.version_tag != ''
       id: docker_build_2
       uses: docker/build-push-action@v3
