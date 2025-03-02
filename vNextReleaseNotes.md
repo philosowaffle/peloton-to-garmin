@@ -14,9 +14,11 @@ Please see the [Migration Guide](https://philosowaffle.github.io/peloton-to-garm
 
 ## Fixes
 
+- [#473] Fix running rootless docker containers
 - [#711] Friendlier error messages, especially on first start when nothing is configured yet
 - [#711] Fixed issue where Windows exe would somtimes fail to start on very first run, but would launch on second attempt
 - [#711] Prevent users from saving Passwords that use an unsupported character
+- [#732] Fixed some broken links on documentation site
 
 ## Housekeeping
 
