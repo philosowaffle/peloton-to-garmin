@@ -8,9 +8,40 @@
 
 <GarminMfaModal @ref="_garminMfaModal" />
 
-<HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@IsSyncButtonEnabled()">
-	Sync <span class="badge bg-secondary">@selectedItems.Count()</span>
-</HxButton>
+@if (PelotonSettingNotConfiguredYet)
+{
+	<div class="row justify-content-start">
+		<HxAlert Color="ThemeColor.Primary"><HxIcon Icon="@BootstrapIcon.GearFill" /> Head on over to the <a href="settings">Settings</a> page to connect to Peloton.</HxAlert>
+	</div>
+}
+
+<HxCard>
+	<BodyTemplate>
+		<div class="row">
+			<div class="col-md-4">
+				<HxSwitch @bind-Value="forceStackWorkouts" Inline="true"> 
+					<TextTemplate>
+						Stack Workouts
+                        <HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+                                   Title="<b>Stack Workouts</b>"
+                                   Content="@StackWorkoutsDocumentation"
+                                   Html="true">
+                            <HxIcon Icon="@BootstrapIcon.QuestionCircle" />
+                        </HxPopover>
+					</TextTemplate>
+				</HxSwitch>
+				
+			</div>
+			<div class="col-md-4">
+			</div>
+			<div class="col-md-4 text-end">
+				<HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@IsSyncButtonEnabled()">
+					Sync <span class="badge bg-secondary">@selectedItems.Count()</span>
+				</HxButton>
+			</div>
+		</div>
+	</BodyTemplate>
+</HxCard>
 
 <HxGrid TItem="PelotonWorkout" MultiSelectionEnabled="true" Responsive="true" DataProvider="LoadDataAsync" @bind-SelectedDataItems="selectedItems" PageSize="PageSize" SelectionEnabled="false">
 	<Columns>
@@ -22,14 +53,12 @@
 	</Columns>
 </HxGrid>
 
-<HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@IsSyncButtonEnabled()">
-	Sync <span class="badge bg-secondary">@selectedItems.Count()</span>
-</HxButton>
-
 @code {
 
 	private HashSet<PelotonWorkout> selectedItems = new();
 	private static int PageSize = 25;
+	private bool PelotonSettingNotConfiguredYet = false;
+	private bool forceStackWorkouts = false;
 
 	private GarminMfaModal? _garminMfaModal;
 
@@ -41,11 +70,22 @@
 		base.Dispose();
 	}
 
+	protected override async Task OnInitializedAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Sync)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+	
+		var settings = await _apiClient.SettingsGetAsync();
+		PelotonSettingNotConfiguredYet = !settings.Peloton.IsConfigured;
+	}
+
 	private async Task<GridDataProviderResult<PelotonWorkout>> LoadDataAsync(GridDataProviderRequest<PelotonWorkout> request)
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(Sync)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
 
 		_toaster.Clear();
+
+		if (PelotonSettingNotConfiguredYet)
+			return new GridDataProviderResult<PelotonWorkout>() { Data = new List<PelotonWorkout>(), TotalCount = 0 };
 
 		try
 		{
@@ -82,7 +122,7 @@
 
 		try
 		{
-			var result = await _apiClient.SyncPostAsync(new SyncPostRequest() { WorkoutIds = selectedItems.Select(i => i.Id!).ToList() });
+			var result = await _apiClient.SyncPostAsync(new SyncPostRequest() { WorkoutIds = selectedItems.Select(i => i.Id!).ToList(), ForceStackWorkouts = forceStackWorkouts });
 			selectedItems.Clear();
 
 			if (result.SyncSuccess)
@@ -123,4 +163,6 @@
 	{
 		return selectedItems.Any();
 	}
+
+	private string StackWorkoutsDocumentation => $"Checking this will force the selected workouts to be combined into a single workout.  Selecting this will override anything you have configured in Settings.  It will stack the workouts regardless of how much time is between them so long as the workouts are of the same type..";
 }

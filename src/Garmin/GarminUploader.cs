@@ -89,17 +89,12 @@ namespace Garmin
 			if (auth.AuthStage == Dto.AuthStage.None)
 				throw new GarminUploadException("Expected user to be authenticated with Garmin at this point, but they are not. AuthStage: None.", -3);
 
-			var userAgent = Defaults.DefaultUserAgent;
-			var appConfig = await _settingsService.GetAppConfigurationAsync();
-			if (!string.IsNullOrEmpty(appConfig.Developer.UserAgent))
-				userAgent = appConfig.Developer.UserAgent;
-
 			foreach (var file in files)
 			{
 				try
 				{
 					_logger.Information("Uploading to Garmin: {@file}", file);
-					await _api.UploadActivity(file, settings.Format.Fit ? ".fit" : ".tcx", auth, userAgent);
+					await _api.UploadActivity(file, settings.Format.Fit ? ".fit" : ".tcx", auth);
 					await RateLimit();
 				} catch (Exception e)
 				{

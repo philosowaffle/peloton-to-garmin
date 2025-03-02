@@ -126,3 +126,6 @@ configuration.local.json
 
 # docs
 /mkdocs/site
+/src/Api/Api.csproj.user
+/src/Api.Service/Api.Service.csproj.user
+/PelotonToGarmin.slnLaunch.user
