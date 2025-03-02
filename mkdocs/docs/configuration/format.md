@@ -34,11 +34,13 @@ The Format Settings provide settings related to how workouts should be converted
     "Strength": {
       "DefaultSecondsPerRep": 3
     },
-    "WorkoutTitleTemplate": "{{PelotonWorkoutTitle}} with {{PelotonInstructorName}}"
+    "WorkoutTitleTemplate": "{{PelotonWorkoutTitle}} with {{PelotonInstructorName}}",
+    "StackedWorkouts": { /**(2)!**/  }
   }
 ```
 
 1. Jump to [Device Info Settings Documentation](#customizing-the-garmin-device-associated-with-the-workout)
+1. Jump to [StackedWorkouts Documentation](#stacked-workouts)
 
 ## Settings Overview
 
@@ -60,6 +62,7 @@ The Format Settings provide settings related to how workouts should be converted
 | Strength | no | `null` | Configuration specific to Strength workouts. |
 | Strength.DefaultSecondsPerRep | no | `3` | For exercises that are done for time instead of reps, P2G can estimate how many reps you completed using this value. Ex. If `DefaultSecondsPerRep=3` and you do Curls for 15s, P2G will estimate you completed 5 reps. |
 | WorkoutTitleTemplate | no | `{{PelotonWorkoutTitle}} with {{PelotonInstructorName}}` | Customize the workout title shown in Garmin Connect. [Read More...](#workout-title-templating) |
+| StackedWorkouts | no | `disabled` | Enable/disable workout stacking. [Read More...](#stacked-workouts) |
 
 ## Understanding P2G Provided Zones
 
@@ -230,3 +233,54 @@ Additionally, Garmin has a limit on how long a title will be. If the title excee
 
 For this setting to take effect, your Garmin Connect account must be set to allow custom workout names.  In the Garmin Connect web interface click on the user icon in the top right, select `Account Settings` then `Display Preferences` ([shortcut](https://connect.garmin.com/modern/settings/displayPreferences)).
 Change the `Activity Name` setting to `Workout Name (when available)`.  This will allow the custom workout name to sync, and should still allow the standard behavior when syncing non-P2G activities directly.
+
+## Stacked Workouts
+
+On Peloton, you can build "workout stacks" which allow you to seamlessly ride straight through several back to back classes for a longer overall workout.  By default, P2G will upload each of the stacked classes as an individual workout to Garmin.  There are a few drawbacks to this approach:
+
+1. Badges - You won't be able to earn certain Badges for duration since Garmin expects you to hit the goal duration within a single activity
+1. Workout Plans - You may not get credit towards your Workout Plan also because Garmin expects the goal to be met within a single activity file
+1. TE/TSS/VO2 - These metrics may not be accurately reflected because the overall combined duration is not accounted for by Garmin
+
+In order to address the above, P2G provides the option to combine stacked workouts into a single activity file that will be uploaded to Garmin.
+
+There are two main ways to use this feature:
+
+1. [Manual Stacking](#manual-stacking)
+1. [Automatic Stacking](#automatic-stacking)
+
+### Manual Stacking
+
+Manual Stacking refers to you explicitly choosing a list of workouts that you would like combined.  You can only do this from the UI on the `Sync` page.
+
+1. Select the workouts you would like combined, ensure they are all of the same Workout Type
+1. Enable the `Stack Workouts` toggle at the top of the page
+1. Click Sync
+
+It is important to note that when manually stacking workouts P2G does not honor any configured `StackedWorkouts` settings, this means that if you selected two workouts that were several hours a part, P2G will stack them.
+
+### Automatic Stacking
+
+Automatic stacking is where P2G always attempts to detect if workouts should be combined and then combines them for you.
+
+In order for a set of workouts to be automatically stacked the following must be true:
+
+1. Automatic Stacking is enabled in P2G Settings
+1. All the workouts are of the same exercise type (i.e. all Cycling or all Strength)
+1. Each workout must start within X seconds of the previous workouts end time (configured in settings)
+
+#### File Configuration
+
+```json
+"StackedWorkouts": {
+        "AutomaticallyStackWorkouts": true,
+        "MaxAllowedGapSeconds": 300
+      }
+```
+
+| Field      | Required | Default | Description |
+|:-----------|:---------|:--------|:------------|
+| AutomaticallyStackWorkouts | no | `false` | `true` indicates P2G should automatically detect stacked workouts and combine them|
+| MaxAllowedGapSeconds | no | `300` | When `AutomaticallyStackWorkouts` is enabled, P2G will use this value to detect workouts that should be combined.  For example, a value of 300 means that any workout starting within 300s (or 5min) of the previous workout should be considered "stacked". |
+
+If you use the UI, then you should see similar options available to you on the Conversion Settings page.
