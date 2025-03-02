@@ -25,6 +25,7 @@ Convert, Backup, and Sync your Peloton workouts to Garmin Connect locally and fo
     1. Exercise Name
     1. Rep count
     1. Weight
+1. Automatically Combine Stacked Classes
 
 ## Garmin Sync
 

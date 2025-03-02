@@ -251,9 +251,9 @@ There are two main ways to use this feature:
 
 ### Manual Stacking
 
-Manual Stacking refers to you explicitly choosing a list of workouts that you would like combined.  You can do this from Sync page.
+Manual Stacking refers to you explicitly choosing a list of workouts that you would like combined.  You can only do this from the UI on the `Sync` page.
 
-1. Select the workouts you would like combined, ensure they are all of the same Exercise Type
+1. Select the workouts you would like combined, ensure they are all of the same Workout Type
 1. Enable the `Stack Workouts` toggle at the top of the page
 1. Click Sync
 
@@ -267,7 +267,7 @@ In order for a set of workouts to be automatically stacked the following must be
 
 1. Automatic Stacking is enabled in P2G Settings
 1. All the workouts are of the same exercise type (i.e. all Cycling or all Strength)
-1. Each workout must start within X seconds of the previous workouts end time
+1. Each workout must start within X seconds of the previous workouts end time (configured in settings)
 
 #### File Configuration
 

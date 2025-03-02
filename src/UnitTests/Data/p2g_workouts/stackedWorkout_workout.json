@@ -3699,7 +3699,7 @@
           17
         ],
         "Slug": "output",
-        "Zones": null,
+        "Zones": [],
         "Missing_Data_Duration": 0,
         "Alternatives": null
       },
@@ -5511,7 +5511,7 @@
           59
         ],
         "Slug": "cadence",
-        "Zones": null,
+        "Zones": [],
         "Missing_Data_Duration": 0,
         "Alternatives": null
       },
@@ -7323,7 +7323,7 @@
           20
         ],
         "Slug": "resistance",
-        "Zones": null,
+        "Zones": [],
         "Missing_Data_Duration": 0,
         "Alternatives": null
       },
@@ -9135,7 +9135,7 @@
           6.7
         ],
         "Slug": "speed",
-        "Zones": null,
+        "Zones": [],
         "Missing_Data_Duration": 0,
         "Alternatives": null
       },

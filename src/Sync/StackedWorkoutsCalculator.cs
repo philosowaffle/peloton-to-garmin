@@ -1,5 +1,8 @@
 ﻿using Common.Dto;
 using Common.Dto.Peloton;
+using Common.Observe;
+using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,6 +10,8 @@ namespace Sync;
 
 public static class StackedWorkoutsCalculator
 {
+	private static readonly ILogger _logger = LogContext.ForStatic(nameof(StackedWorkoutsCalculator));
+
 	/// <summary>
 	/// Organizes a list of workouts into stacks.  To qualify for a stack a workouts must:
 	///  1. Be of the same Workout Type
@@ -65,82 +70,93 @@ public static class StackedWorkoutsCalculator
 	public static ICollection<P2GWorkout> CombineStackedWorkouts(Dictionary<int, List<P2GWorkout>> stacks)
 	{
 		var stackedWorkouts = new List<P2GWorkout>();
+
+		if (stacks is null)
+			return stackedWorkouts;
+
 		foreach (var stack in stacks)
 		{
-			var workoutsToStack = stack.Value;
-
-			if (workoutsToStack is null) continue;
-
-			// Only a single workout, so just add as is
-			if (workoutsToStack.Count == 1)
+			try
 			{
-				var workout = workoutsToStack.FirstOrDefault();
-				if (workout is null) continue;
+				var workoutsToStack = stack.Value;
 
-				stackedWorkouts.Add(workout);
-				continue;
-			}
+				if (workoutsToStack is null) continue;
 
-			var firstWorkout = workoutsToStack.FirstOrDefault();
-			if (firstWorkout is null) continue;
-
-			var lastWorkout = workoutsToStack.Last();
-
-			var stackedWorkout = new P2GWorkout()
-			{
-				IsStackedWorkout = true,
-
-				UserData = firstWorkout.UserData,
-
-				Workout = new Workout()
+				// Only a single workout, so just add as is
+				if (workoutsToStack.Count == 1)
 				{
-					Name = string.Join(",", workoutsToStack.Select(w => w.Workout.Name)),
-					Title = string.Join(",", workoutsToStack.Select(w => w.Workout.Title)),
-					Id = string.Join(",", workoutsToStack.Select(w => w.Workout.Id)),
+					var workout = workoutsToStack.FirstOrDefault();
+					if (workout is null) continue;
 
-					Status = lastWorkout.Workout.Status,
+					stackedWorkouts.Add(workout);
+					continue;
+				}
 
-					Created_At = firstWorkout.Workout.Created_At,
-					Start_Time = firstWorkout.Workout.Start_Time,
-					End_Time = lastWorkout.Workout.End_Time,
+				var firstWorkout = workoutsToStack.FirstOrDefault();
+				if (firstWorkout is null || firstWorkout.Workout is null) continue;
 
-					Fitness_Discipline = firstWorkout.Workout.Fitness_Discipline,
-					Ftp_Info = firstWorkout.Workout.Ftp_Info,
-					Is_Outdoor = firstWorkout.Workout.Is_Outdoor,
+				var lastWorkout = workoutsToStack.Last();
+				if (lastWorkout is null || lastWorkout.Workout is null) continue;
 
-					Movement_Tracker_Data = CombineMovementTrackerData(workoutsToStack),
+				var stackedWorkout = new P2GWorkout()
+				{
+					IsStackedWorkout = true,
 
-					Total_Work = workoutsToStack.Sum(w => w.Workout.Total_Work),
+					UserData = firstWorkout.UserData,
 
-					Ride = new Ride() // Currently only referencing Title and Instructor
+					Workout = new Workout()
 					{
-						Title = string.Join(",", workoutsToStack.Select(w => w.Workout.Ride.Title)),
-						Instructor = new Instructor ()
+						Name = string.Join(",", workoutsToStack.Select(w => w.Workout?.Name)),
+						Title = string.Join(",", workoutsToStack.Select(w => w.Workout?.Title)),
+						Id = string.Join(",", workoutsToStack.Select(w => w.Workout?.Id)),
+
+						Status = lastWorkout.Workout.Status,
+
+						Created_At = firstWorkout.Workout.Created_At,
+						Start_Time = firstWorkout.Workout.Start_Time,
+						End_Time = lastWorkout.Workout.End_Time,
+
+						Fitness_Discipline = firstWorkout.Workout.Fitness_Discipline,
+						Ftp_Info = firstWorkout.Workout.Ftp_Info,
+						Is_Outdoor = firstWorkout.Workout.Is_Outdoor,
+
+						Movement_Tracker_Data = CombineMovementTrackerData(workoutsToStack),
+
+						Total_Work = workoutsToStack.Sum(w => w.Workout?.Total_Work ?? 0),
+
+						Ride = new Ride() // Currently only referencing Title and Instructor
 						{
-							Name = string.Join(",", workoutsToStack.Select(w => w.Workout.Ride?.Instructor?.Name))
-						}
-					}, 
-				},
+							Title = string.Join(",", workoutsToStack.Select(w => w.Workout?.Ride?.Title)),
+							Instructor = new Instructor()
+							{
+								Name = string.Join(",", workoutsToStack.Select(w => w.Workout?.Ride?.Instructor?.Name))
+							}
+						},
+					},
 
-				WorkoutSamples = new WorkoutSamples()
-				{
-					Average_Summaries = new List<AverageSummary>(), // not used
-					Duration = workoutsToStack.Sum(w => w.WorkoutSamples.Duration),
-					Is_Class_Plan_Shown = false, // not used
-					Has_Apple_Watch_Metrcis = firstWorkout.WorkoutSamples.Has_Apple_Watch_Metrcis, // not used
-					Is_Location_Data_Accurate = firstWorkout.WorkoutSamples.Is_Location_Data_Accurate, // not used
-					Location_Data = CombineLocationData(workoutsToStack),
-					Metrics = CombineMetricsData(workoutsToStack),
-					Segment_List = CombineSegments(workoutsToStack),
-					Seconds_Since_Pedaling_Start = CombineSecondsArray(workoutsToStack),
-					Summaries = CombineSummaries(workoutsToStack),
-					Target_Performance_Metrics = CombineTargetPerformanceMetrics(workoutsToStack),
-				},
+					WorkoutSamples = new WorkoutSamples()
+					{
+						Average_Summaries = new List<AverageSummary>(), // not used
+						Duration = workoutsToStack.Sum(w => w.WorkoutSamples?.Duration ?? 0),
+						Is_Class_Plan_Shown = false, // not used
+						Has_Apple_Watch_Metrcis = firstWorkout.WorkoutSamples?.Has_Apple_Watch_Metrcis ?? false, // not used
+						Is_Location_Data_Accurate = firstWorkout.WorkoutSamples?.Is_Location_Data_Accurate, // not used
+						Location_Data = CombineLocationData(workoutsToStack),
+						Metrics = CombineMetricsData(workoutsToStack),
+						Segment_List = CombineSegments(workoutsToStack),
+						Seconds_Since_Pedaling_Start = CombineSecondsArray(workoutsToStack),
+						Summaries = CombineSummaries(workoutsToStack),
+						Target_Performance_Metrics = CombineTargetPerformanceMetrics(workoutsToStack),
+					},
 
-				Exercises = CombineExercises(workoutsToStack),
-			};
+					Exercises = CombineExercises(workoutsToStack),
+				};
 
-			stackedWorkouts.Add(stackedWorkout);
+				stackedWorkouts.Add(stackedWorkout);
+			} catch(Exception e)
+			{
+				_logger.Error(e, "Failed to build workout stack.  First workout in stack is {0}.", stack.Value.FirstOrDefault()?.Workout?.Name);
+			}
 		}
 
 		return stackedWorkouts;
@@ -213,7 +229,7 @@ public static class StackedWorkoutsCalculator
 						Display_Unit = metric.Display_Unit,
 						Max_Value = metric.Max_Value,
 						Values = new double?[0],
-						Zones = metric.Zones,
+						Zones = metric.Zones ?? new List<Zone>(),
 						Missing_Data_Duration = 0,
 					};
 					stackedMetricData.Add(aggregateSlug);
@@ -258,18 +274,23 @@ public static class StackedWorkoutsCalculator
 	{
 		var stackedRepitionData = new List<RepetitionSummaryData>();
 
+		if (workoutsToStack is null || workoutsToStack.Count <= 0)
+			return new MovementTrackerData();
+
 		var totalSecondsSoFar = 0;
 		foreach (var workout in workoutsToStack)
 		{
-			if (workout.Workout.Movement_Tracker_Data is null)
+			if (workout is null) continue;
+
+			if (workout.Workout?.Movement_Tracker_Data is null)
 			{
-				totalSecondsSoFar += workout.WorkoutSamples.Duration;
+				totalSecondsSoFar += workout.WorkoutSamples?.Duration ?? 0;
 				continue;
 			}
 
-			var repitionData = workout.Workout.Movement_Tracker_Data.Completed_Movements_Summary_Data.Repetition_Summary_Data;
+			var repitionData = workout.Workout.Movement_Tracker_Data.Completed_Movements_Summary_Data?.Repetition_Summary_Data;
 
-			var adjustedRepiritonData = repitionData
+			var adjustedRepiritonData = repitionData?
 										.Select(r =>
 										{
 											return new RepetitionSummaryData()
@@ -284,8 +305,10 @@ public static class StackedWorkoutsCalculator
 											};
 										});
 
-			stackedRepitionData.AddRange(adjustedRepiritonData);
-			totalSecondsSoFar += workout.WorkoutSamples.Duration;
+			if (adjustedRepiritonData is object)
+				stackedRepitionData.AddRange(adjustedRepiritonData);
+			
+			totalSecondsSoFar += workout.WorkoutSamples?.Duration ?? 0;
 		}
 
 		var stackedData = new MovementTrackerData()
@@ -303,12 +326,15 @@ public static class StackedWorkoutsCalculator
 	{
 		var stackedSegments = new List<Segment>();
 
+		if (workoutsToStack is null || workoutsToStack.Count <= 0)
+			return stackedSegments;
+
 		var totalSecondsSoFar = 0;
 		foreach (var workout in workoutsToStack)
 		{
-			var segments = workout.WorkoutSamples.Segment_List;
+			var segments = workout.WorkoutSamples?.Segment_List;
 
-			var adjustedSegments = segments.Select(s =>
+			var adjustedSegments = segments?.Select(s =>
 			{
 				return new Segment()
 				{
@@ -328,8 +354,10 @@ public static class StackedWorkoutsCalculator
 				};
 			});
 
-			stackedSegments.AddRange(adjustedSegments);
-			totalSecondsSoFar += workout.WorkoutSamples.Duration;
+			if (adjustedSegments is object)
+				stackedSegments.AddRange(adjustedSegments);
+			
+			totalSecondsSoFar += workout.WorkoutSamples?.Duration ?? 0;
 		}
 
 		return stackedSegments;
@@ -339,18 +367,23 @@ public static class StackedWorkoutsCalculator
 	{
 		var stackedSeconds = new List<int>();
 
+		if (workoutsToStack is null || workoutsToStack.Count <= 0)
+			return stackedSeconds;
+
 		var totalSecondsSoFar = 0;
 		foreach (var workout in workoutsToStack)
 		{
-			var secondsList = workout.WorkoutSamples.Seconds_Since_Pedaling_Start;
+			var secondsList = workout.WorkoutSamples?.Seconds_Since_Pedaling_Start;
 
-			var adjustedSeconds = secondsList.Select(s =>
+			var adjustedSeconds = secondsList?.Select(s =>
 			{
 				return s + totalSecondsSoFar;
 			});
 
-			stackedSeconds.AddRange(adjustedSeconds);
-			totalSecondsSoFar += workout.WorkoutSamples.Duration;
+			if (adjustedSeconds is object)
+				stackedSeconds.AddRange(adjustedSeconds);
+
+			totalSecondsSoFar += workout.WorkoutSamples?.Duration  ?? 0;
 		}
 
 		return stackedSeconds;
@@ -360,8 +393,15 @@ public static class StackedWorkoutsCalculator
 	{
 		var stackedSummaries = new List<Summary>();
 
+		if (workoutsToStack is null || workoutsToStack.Count <= 0)
+			return stackedSummaries;
+
 		foreach (var workout in workoutsToStack)
 		{
+			if (workout.WorkoutSamples is null
+				|| workout.WorkoutSamples.Summaries is null)
+				continue;
+
 			foreach (var summary in workout.WorkoutSamples.Summaries)
 			{
 				var aggregateSlug = stackedSummaries.FirstOrDefault(s => s.Slug == summary.Slug);
@@ -387,11 +427,13 @@ public static class StackedWorkoutsCalculator
 
 	public static TargetPerformanceMetrics CombineTargetPerformanceMetrics(ICollection<P2GWorkout> workoutsToStack)
 	{
-		var stackedTargetPerformanceMetrics = new TargetPerformanceMetrics()
-		{
-			Cadence_Time_In_Range = workoutsToStack.Sum(w => w.WorkoutSamples.Target_Performance_Metrics?.Cadence_Time_In_Range ?? 0),
-			Resistance_Time_In_Range = workoutsToStack.Sum(w => w.WorkoutSamples.Target_Performance_Metrics?.Resistance_Time_In_Range ?? 0)
-		};
+		var stackedTargetPerformanceMetrics = new TargetPerformanceMetrics();
+
+		if (workoutsToStack is null || workoutsToStack.Count <= 0)
+			return stackedTargetPerformanceMetrics;
+
+		stackedTargetPerformanceMetrics.Cadence_Time_In_Range = workoutsToStack.Sum(w => w.WorkoutSamples?.Target_Performance_Metrics?.Cadence_Time_In_Range ?? 0);
+		stackedTargetPerformanceMetrics.Resistance_Time_In_Range = workoutsToStack.Sum(w => w.WorkoutSamples?.Target_Performance_Metrics?.Resistance_Time_In_Range ?? 0);
 
 		var stackedTargetGraphMetrics = new List<TargetGraphMetrics>();
 
@@ -423,9 +465,9 @@ public static class StackedWorkoutsCalculator
 					stackedTargetGraphMetrics.Add(aggregateSlug);
 				}
 
-				aggregateSlug.Graph_Data.Upper = aggregateSlug.Graph_Data.Upper.Union(graphMetric.Graph_Data.Upper).ToArray();
-				aggregateSlug.Graph_Data.Lower = aggregateSlug.Graph_Data.Lower.Union(graphMetric.Graph_Data.Lower).ToArray();
-				aggregateSlug.Graph_Data.Average = aggregateSlug.Graph_Data.Average.Union(graphMetric.Graph_Data.Average).ToArray();
+				aggregateSlug.Graph_Data.Upper = aggregateSlug.Graph_Data.Upper.Union(graphMetric.Graph_Data?.Upper ?? new int[0]).ToArray();
+				aggregateSlug.Graph_Data.Lower = aggregateSlug.Graph_Data.Lower.Union(graphMetric.Graph_Data?.Lower ?? new int[0]).ToArray();
+				aggregateSlug.Graph_Data.Average = aggregateSlug.Graph_Data.Average.Union(graphMetric.Graph_Data?.Average ?? new int[0]).ToArray();
 			}
 		}
 
@@ -437,12 +479,15 @@ public static class StackedWorkoutsCalculator
 	{
 		var stackedExercises = new List<P2GExercise>();
 
+		if (workoutsToStack is null || workoutsToStack.Count <= 0)
+			return stackedExercises;
+
 		var totalSecondsSoFar = 0;
 		foreach (var workout in workoutsToStack)
 		{
 			var exercises = workout.Exercises;
 
-			var adjustedExercises = exercises.Select(s =>
+			var adjustedExercises = exercises?.Select(s =>
 			{
 				return new P2GExercise()
 				{
@@ -456,8 +501,10 @@ public static class StackedWorkoutsCalculator
 				};
 			});
 
-			stackedExercises.AddRange(adjustedExercises);
-			totalSecondsSoFar += workout.WorkoutSamples.Duration;
+			if (adjustedExercises is object)
+				stackedExercises.AddRange(adjustedExercises);
+			
+			totalSecondsSoFar += workout.WorkoutSamples?.Duration ?? 0;
 		}
 
 		return stackedExercises;

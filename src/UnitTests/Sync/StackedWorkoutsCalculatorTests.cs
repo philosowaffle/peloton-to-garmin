@@ -459,5 +459,20 @@ public class StackedWorkoutsCalculatorTests
 
 		// ASSERT
 		result.Should().BeEmpty();
+
+		// Empty
+		// SETUP
+		_p2gWorkoutFaker.RuleSet($"{nameof(CombineMetricData_When_Metrics_Is_Null_SkipsEmpty)}_Empty", (f) =>
+		{
+			f.RuleFor(f => f.WorkoutSamples, f => new WorkoutSamples() { Metrics = new List<Metric>() });
+		});
+
+		workoutsToStack = _p2gWorkoutFaker.Generate(10, $"{nameof(CombineMetricData_When_Metrics_Is_Null_SkipsEmpty)}_Empty");
+
+		// ACT
+		result = StackedWorkoutsCalculator.CombineMetricsData(workoutsToStack);
+
+		// ASSERT
+		result.Should().BeEmpty();
 	}
 }

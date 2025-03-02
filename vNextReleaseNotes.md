@@ -8,6 +8,10 @@ Please see the [Migration Guide](https://philosowaffle.github.io/peloton-to-garm
 - [#656] Uplift to .net 9
 - [#704] `DeviceInfoPath` fully removed and replaced by `DeviceInfoSettings`
 
+## New Features
+
+- [#556] Stacked Classes Support - P2G can now either automatically or on-demand combine Peloton workouts into a single final activity file that is uploaded to Garmin Connect
+
 ## Fixes
 
 - [#711] Friendlier error messages, especially on first start when nothing is configured yet
