@@ -7,7 +7,7 @@ Please see the [Migration Guide](https://philosowaffle.github.io/peloton-to-garm
 
 - [#656] Uplift to .net 9
 - [#704] `DeviceInfoPath` fully removed and replaced by `DeviceInfoSettings`
-- [#473] Fix running rootless docker containers
+- [#473] Fix running rootless docker containers (@jpecora716)
 
 ## New Features
 
