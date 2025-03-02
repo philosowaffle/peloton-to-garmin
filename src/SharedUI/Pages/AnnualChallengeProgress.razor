@@ -7,6 +7,10 @@
 
 
 <div class="row mb-3">
+    <ul style="list-style: none; padding-left: 0;">
+        <li>So far you have averaged <b>@Math.Round(annualProgress.CurrentDailyPace, 2)</b> min/day and <b>@Math.Round(annualProgress.CurrentWeeklyPace, 2)</b> min/week.</li>
+    </ul>
+
     @foreach (var tier in annualProgress.Tiers)
     {
         <HxCard style="border: 0px;">
