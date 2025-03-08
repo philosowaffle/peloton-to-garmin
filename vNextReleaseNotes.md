@@ -12,6 +12,7 @@ Please see the [Migration Guide](https://philosowaffle.github.io/peloton-to-garm
 ## New Features
 
 - [#556] Stacked Classes Support - P2G can now either automatically or on-demand combine Peloton workouts into a single final activity file that is uploaded to Garmin Connect
+- [#724] Annual Challenge Page - Now shows current average minutes/day and minutes/week
 
 ## Fixes
 
