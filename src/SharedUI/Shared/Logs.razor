@@ -3,7 +3,10 @@
 @inject IHxMessengerService _toaster;
 @inject IJSRuntime JS
 
-<h3>Logs</h3>
+<h3>Api Logs</h3>
+<ul>
+    <li>@systemInfo.CurrentLogLevel</li>
+</ul>
 
 <div class="row mb-3">
     <pre>
@@ -15,10 +18,12 @@
 
 @code {
     private SystemInfoLogsGetResponse logs;
+    private SystemInfoGetResponse systemInfo;
 
     public Logs() : base(nameof(Logs))
     {
         logs = new SystemInfoLogsGetResponse();
+        systemInfo = new SystemInfoGetResponse();
     }
 
     protected override async Task OnInitializedAsync()
@@ -26,5 +31,6 @@
         using var tracing = Tracing.ClientTrace($"{nameof(Logs)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
 
         logs = await _apiClient.SystemInfoGetLogsAsync();
+        systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = false });
     }
 }

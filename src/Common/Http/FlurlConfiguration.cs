@@ -38,14 +38,14 @@ public static class FlurlConfiguration
 
 		Func<FlurlCall, Task> beforeCallAsync = (call) =>
 		{
-			if (Log.IsEnabled(LogEventLevel.Verbose))
+			if (Log.Logger.IsEnabled(LogEventLevel.Verbose))
 				LogRequest(call, call.GetRawRequestBody());
 			return Task.CompletedTask;
 		};
 
 		Func<FlurlCall, Task> afterCallAsync = async (call) =>
 		{
-			if (Log.IsEnabled(LogEventLevel.Verbose))
+			//if (Log.IsEnabled(LogEventLevel.Verbose))
 				LogResponse(call, await call.GetRawResponseBodyAsync());
 			TrackMetrics(call);
 		};

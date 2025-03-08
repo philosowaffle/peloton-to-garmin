@@ -5,6 +5,8 @@ using Common.Dto;
 using Common.Observe;
 using Common.Service;
 using Philosowaffle.Capability.ReleaseChecks.Model;
+using Serilog;
+using Serilog.Events;
 
 namespace Api.Services;
 
@@ -12,6 +14,7 @@ public interface ISystemInfoService
 {
 	Task<SystemInfoGetResponse> GetAsync(SystemInfoGetRequest request, string? scheme = null, string? host = null);
 	Task<ServiceResult<SystemInfoLogsGetResponse>> GetLogsAsync();
+	Task<ServiceResult<LogEventLevel>> SetLogLevelAsync(LogLevelPostRequest request);
 }
 
 public class SystemInfoService : ISystemInfoService
@@ -62,6 +65,7 @@ public class SystemInfoService : ISystemInfoService
 
 			OutputDirectory = settings?.App?.OutputDirectory ?? string.Empty,
 			TempDirectory = settings?.App?.WorkingDirectory ?? string.Empty,
+			CurrentLogLevel = Logging.InternallLevelSwitch.MinimumLevel,
 		};
 	}
 
@@ -93,5 +97,23 @@ public class SystemInfoService : ISystemInfoService
 		}
 
 		return result;
+	}
+
+	public Task<ServiceResult<LogEventLevel>> SetLogLevelAsync(LogLevelPostRequest request)
+	{
+		var result = new ServiceResult<LogEventLevel>() { Result = Logging.InternallLevelSwitch.MinimumLevel };
+
+		try
+		{
+			Logging.InternallLevelSwitch.MinimumLevel = request.LogLevel;
+
+			result.Result = Logging.InternallLevelSwitch.MinimumLevel;
+		}
+		catch (Exception ex)
+		{
+			result.Error = new ServiceError() { Message = "Failed to update Log Level", Exception = ex, IsServerException = true };
+		}
+
+		return Task.FromResult(result);
 	}
 }
