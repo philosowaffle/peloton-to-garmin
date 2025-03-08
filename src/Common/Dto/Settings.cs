@@ -37,6 +37,7 @@ public class App
 	public bool EnablePolling { get; set; }
 	public int PollingIntervalSeconds { get; set; }
 	public bool CheckForUpdates { get; set; }
+	public bool CloseConsoleOnFinish { get; set; } = false;
 
 	public static string DataDirectory => Statics.DefaultDataDirectory;
 

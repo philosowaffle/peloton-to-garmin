@@ -171,7 +171,10 @@ namespace ConsoleClient
 			finally
 			{
 				_logger.Information("Done.");
-				Console.ReadLine();
+
+				if (!settings.App.CloseConsoleOnFinish)
+					Console.ReadLine();
+				
 				Environment.Exit(exitCode);
 			}
 		}
