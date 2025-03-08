@@ -35,7 +35,9 @@ The log files will be written to `output/log<datetime>.txt`.
 
 ### Windows UI / Web UI
 
-Naviate to the `About` page, then click the `Logs` tab.  Additionally, the log files will be written to `output/log<datetime>.txt`.
+Naviate to the `About` page, then click the `Logs` tab.  There may be more than one tab, be sure to copy all the logs from both tabs.  Additionally, the log files will be written to `output/log<datetime>.txt`.
+
+In the UI, you can also temporarily increase the logging verbosity which can be helpful to capture even more details about a reproduceable error.  Simply increase the verbosity to `Verbose` and try to reproduce the issue, then check back to see what new logs were written.
 
 ### GitHub Actions
 

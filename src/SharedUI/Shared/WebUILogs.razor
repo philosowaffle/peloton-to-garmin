@@ -99,7 +99,7 @@
         currentLogLevel = Logging.InternalLevelSwitch.MinimumLevel;
     }
 
-    protected async Task UpdateLogLevel()
+    protected Task UpdateLogLevel()
     {
         using var tracing = Tracing.ClientTrace($"{nameof(WebUILogs)}.{nameof(UpdateLogLevel)}", kind: ActivityKind.Client);
         _toaster.Clear();
@@ -116,6 +116,8 @@
             _toaster.AddError($"Failed to update Log Level - {e.Message} - See logs for details.");
             Log.Error("UI - Failed to update Log Level.", e);
         }
+
+        return Task.CompletedTask;
     }
 
     protected async Task CopyTextToClipboard()
