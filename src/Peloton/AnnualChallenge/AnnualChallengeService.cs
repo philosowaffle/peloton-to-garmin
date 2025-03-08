@@ -49,8 +49,8 @@ public class AnnualChallengeService : IAnnualChallengeService
 
 		result.Result.HasJoined = true;
 		result.Result.EarnedMinutes = progress.Metric_Value;
-		result.Result.CurrentDailyPace = elapsedDays / progress.Metric_Value;
-		result.Result.CurrentWeeklyPace = result.Result.CurrentDailyPace / 7;
+		result.Result.CurrentDailyPace = progress.Metric_Value / elapsedDays;
+		result.Result.CurrentWeeklyPace = result.Result.CurrentDailyPace * 7;
 		result.Result.Tiers = tiers.Where(t => t.Metric_Value > 0).Select(t => 
 		{
 			var requiredMinutes = t.Metric_Value;
