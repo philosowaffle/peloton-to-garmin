@@ -127,7 +127,7 @@ namespace ConsoleClient
 
 				if (!settings.App.EnablePolling)
 				{
-					await _syncService.SyncAsync(settings.Peloton.NumWorkoutsToDownload);
+					await _syncService.SyncAsync(settings.Peloton.NumWorkoutsToDownload, forceStackClasses: false);
 					return;
 				}
 
@@ -150,7 +150,7 @@ namespace ConsoleClient
 						}
 					}
 
-					var syncResult = await _syncService.SyncAsync(settings.Peloton.NumWorkoutsToDownload);
+					var syncResult = await _syncService.SyncAsync(settings.Peloton.NumWorkoutsToDownload, forceStackClasses: false);
 					Health.Set(syncResult.SyncSuccess ? HealthStatus.Healthy : HealthStatus.UnHealthy);
 
 					Log.Information("Done");
