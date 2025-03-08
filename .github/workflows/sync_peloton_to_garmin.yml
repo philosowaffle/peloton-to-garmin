@@ -37,7 +37,9 @@ jobs:
         cat <<EOT > /app/configuration.local.json 
         {
           "App": {
-            "EnablePolling": false
+            "EnablePolling": false,
+            "CheckForUpdates": true,
+            "CloseConsoleOnFinish": true
           },
           "Format": {
             "Fit": true,
