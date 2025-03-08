@@ -12,11 +12,13 @@ using Serilog.Events;
 using System.Web;
 using System.Net;
 using Polly;
+using Common.Observe;
 
 namespace Common.Http;
 
 public static class FlurlConfiguration
 {
+	private static readonly ILogger _logger = LogContext.ForStatic(nameof(FlurlConfiguration));
 	public static readonly Histogram HttpRequestHistogram = PromMetrics.CreateHistogram("p2g_http_duration_seconds", "The histogram of http requests.", new HistogramConfiguration
 	{
 		LabelNames = new[]
@@ -38,14 +40,14 @@ public static class FlurlConfiguration
 
 		Func<FlurlCall, Task> beforeCallAsync = (call) =>
 		{
-			if (Log.Logger.IsEnabled(LogEventLevel.Verbose))
+			if (_logger.IsEnabled(LogEventLevel.Verbose))
 				LogRequest(call, call.GetRawRequestBody());
 			return Task.CompletedTask;
 		};
 
 		Func<FlurlCall, Task> afterCallAsync = async (call) =>
 		{
-			//if (Log.IsEnabled(LogEventLevel.Verbose))
+			if (_logger.IsEnabled(LogEventLevel.Verbose))
 				LogResponse(call, await call.GetRawResponseBodyAsync());
 			TrackMetrics(call);
 		};
@@ -81,8 +83,8 @@ public static class FlurlConfiguration
 		{
 			if (call.Exception is FlurlParsingException fpe)
 			{
-				Log.Error(fpe, $"Http Failed to deserialize response to target type: {fpe.ExpectedFormat}");
-				Log.Information("Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
+				_logger.Error(fpe, $"Http Failed to deserialize response to target type: {fpe.ExpectedFormat}");
+				_logger.Information("Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
 					call.HttpResponseMessage?.StatusCode ?? (HttpStatusCode)0,
 					call.HttpRequestMessage?.Method?.Method,
 					call.HttpRequestMessage?.RequestUri,
@@ -93,18 +95,18 @@ public static class FlurlConfiguration
 
 			if (call.Exception is FlurlHttpTimeoutException hte)
 			{
-				Log.Error(hte, $"Http Timeout: {hte.Message}");
+				_logger.Error(hte, $"Http Timeout: {hte.Message}");
 				return;
 			}
 
 			if (call.Exception is object)
 			{
-				Log.Information("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
+				_logger.Information("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
 					call.HttpRequestMessage.Method?.Method,
 					call.HttpRequestMessage.RequestUri,
 					call.HttpRequestMessage.Headers.ToString(),
 					requestPayload);
-				Log.Information("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
+				_logger.Information("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
 					call.HttpResponseMessage?.StatusCode ?? (HttpStatusCode)0,
 					call.HttpRequestMessage?.Method?.Method,
 					call.HttpRequestMessage?.RequestUri,
@@ -113,12 +115,12 @@ public static class FlurlConfiguration
 				return;
 			}
 
-			Log.Information("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
+			_logger.Information("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
 				call.HttpRequestMessage.Method?.Method,
 				call.HttpRequestMessage.RequestUri,
 				call.HttpRequestMessage.Headers.ToString(),
 				requestPayload);
-			Log.Information("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
+			_logger.Information("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
 				call.HttpResponseMessage?.StatusCode ?? (HttpStatusCode)0,
 				call.HttpRequestMessage?.Method?.Method,
 				call.HttpRequestMessage?.RequestUri,
@@ -128,7 +130,7 @@ public static class FlurlConfiguration
 		}
 		catch (Exception e)
 		{
-			Log.Information(e, "Error while trying to log http error details.");
+			_logger.Information(e, "Error while trying to log http error details.");
 		}
 	}
 
@@ -136,7 +138,7 @@ public static class FlurlConfiguration
 	{
 		try
 		{
-			Log.Verbose("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
+			_logger.Verbose("HTTP Request: {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
 					call.HttpRequestMessage.Method?.Method,
 					call.HttpRequestMessage.RequestUri,
 					call.HttpRequestMessage.Headers.ToString(),
@@ -144,7 +146,7 @@ public static class FlurlConfiguration
 		}
 		catch (Exception e)
 		{
-			Log.Information(e, "Error while trying to log verbose request details.");
+			_logger.Information(e, "Error while trying to log verbose request details.");
 		}
 	}
 
@@ -152,7 +154,7 @@ public static class FlurlConfiguration
 	{
 		try
 		{
-			Log.Verbose("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
+			_logger.Verbose("HTTP Response: {@HttpStatusCode} - {@HttpMethod} - {@Uri} - {@Headers} - {@Content}",
 					call.HttpResponseMessage?.StatusCode ?? (HttpStatusCode)0,
 					call.HttpRequestMessage?.Method?.Method,
 					call.HttpRequestMessage?.RequestUri,
@@ -161,7 +163,7 @@ public static class FlurlConfiguration
 		}
 		catch (Exception e)
 		{
-			Log.Information(e, "Error while trying to log verbose response details.");
+			_logger.Information(e, "Error while trying to log verbose response details.");
 		}
 	}
 
@@ -194,7 +196,7 @@ public static class FlurlConfiguration
 		}
 		catch (Exception e)
 		{
-			Log.Information(e, "Error while attempting to track Http Metrics.");
+			_logger.Information(e, "Error while attempting to track Http Metrics.");
 		}
 	}
 
@@ -219,7 +221,7 @@ public static class FlurlConfiguration
 		return request
 			.BeforeCall((call) =>
 			{
-				if (Log.IsEnabled(LogEventLevel.Verbose))
+				if (_logger.IsEnabled(LogEventLevel.Verbose))
 				{
 					var content = call.GetRawRequestBody()
 									?.Replace(sensitiveField, "<redacted1>")
@@ -231,7 +233,7 @@ public static class FlurlConfiguration
 			})
 			.AfterCall(async (call) =>
 			{
-				if (Log.IsEnabled(LogEventLevel.Verbose))
+				if (_logger.IsEnabled(LogEventLevel.Verbose))
 				{
 					var content = (await call.GetRawResponseBodyAsync())
 									?.Replace(sensitiveField, "<redacted1>")

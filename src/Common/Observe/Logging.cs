@@ -18,7 +18,7 @@ public class LogContext
 public static class Logging
 {
 	public static string CurrentFilePath { get; set; }
-	public static LoggingLevelSwitch InternallLevelSwitch { get; set; }
+	public static LoggingLevelSwitch InternalLevelSwitch { get; set; }
 
 	public static void LogSystemInformation()
 	{

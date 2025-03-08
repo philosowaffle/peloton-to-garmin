@@ -65,7 +65,7 @@ public class SystemInfoService : ISystemInfoService
 
 			OutputDirectory = settings?.App?.OutputDirectory ?? string.Empty,
 			TempDirectory = settings?.App?.WorkingDirectory ?? string.Empty,
-			CurrentLogLevel = Logging.InternallLevelSwitch.MinimumLevel,
+			CurrentLogLevel = Logging.InternalLevelSwitch.MinimumLevel,
 		};
 	}
 
@@ -101,13 +101,13 @@ public class SystemInfoService : ISystemInfoService
 
 	public Task<ServiceResult<LogEventLevel>> SetLogLevelAsync(LogLevelPostRequest request)
 	{
-		var result = new ServiceResult<LogEventLevel>() { Result = Logging.InternallLevelSwitch.MinimumLevel };
+		var result = new ServiceResult<LogEventLevel>() { Result = Logging.InternalLevelSwitch.MinimumLevel };
 
 		try
 		{
-			Logging.InternallLevelSwitch.MinimumLevel = request.LogLevel;
+			Logging.InternalLevelSwitch.MinimumLevel = request.LogLevel;
 
-			result.Result = Logging.InternallLevelSwitch.MinimumLevel;
+			result.Result = Logging.InternalLevelSwitch.MinimumLevel;
 		}
 		catch (Exception ex)
 		{

@@ -44,17 +44,16 @@ public static class ObservabilityStartup
 
 	private static void ConfigureLogging(ConfigurationManager configManager)
 	{
-		Logging.InternallLevelSwitch = new Serilog.Core.LoggingLevelSwitch();
+		Logging.InternalLevelSwitch = new Serilog.Core.LoggingLevelSwitch();
 
 		var options = new ConfigurationReaderOptions
 		{
-			SectionName = $"{nameof(Observability)}:Serilog",
-			//OnLevelSwitchCreated = (switchName, levelSwitch) => Logging.LevelSwitch[switchName] = levelSwitch
+			SectionName = $"{nameof(Observability)}:Serilog"
 		};
 
 		var loggingConfig = new LoggerConfiguration()
-						.MinimumLevel.ControlledBy(Logging.InternallLevelSwitch)
 						.ReadFrom.Configuration(configManager, options)
+						.MinimumLevel.ControlledBy(Logging.InternalLevelSwitch)
 						.Enrich.WithSpan()
 						.Enrich.FromLogContext();
 
@@ -65,7 +64,7 @@ public static class ObservabilityStartup
 				retainedFileCountLimit: 2,
 				shared: false,
 				hooks: new CaptureFilePathHook(),
-				levelSwitch: Logging.InternallLevelSwitch);
+				levelSwitch: Logging.InternalLevelSwitch);
 
 		Log.Logger = loggingConfig.CreateLogger();
 
