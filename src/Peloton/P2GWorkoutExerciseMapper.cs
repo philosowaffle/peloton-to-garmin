@@ -60,10 +60,10 @@ public static class P2GWorkoutExerciseMapper
 				{
 					Id = repData.Movement_Id,
 					Name = repData.Movement_Name,
-					Type = repData.Is_Hold ? MovementTargetType.Time : MovementTargetType.Reps,
+					Type = repData.Tracking_Type == "time_tracked_rep" ? MovementTargetType.Time : MovementTargetType.Reps,
 					StartOffsetSeconds = repData.Offset,
 					DurationSeconds = repData.Length,
-					Reps = repData.Completed_Number,
+					Reps = repData.Completed_Reps,
 					Weight = new P2GWeight()
 					{
 						Unit = repData?.Weight?.FirstOrDefault()?.Weight_Data?.Weight_Unit,

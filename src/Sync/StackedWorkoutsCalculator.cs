@@ -297,8 +297,9 @@ public static class StackedWorkoutsCalculator
 											{
 												Movement_Id = r.Movement_Id,
 												Movement_Name = r.Movement_Name,
-												Is_Hold = r.Is_Hold,
-												Completed_Number = r.Completed_Number,
+												Tracking_Type = r.Tracking_Type,
+												Completed_Reps = r. Completed_Reps,
+												Completed_Duration = r.Completed_Duration,
 												Offset = r.Offset + totalSecondsSoFar,
 												Length = r.Length,
 												Weight = r.Weight,

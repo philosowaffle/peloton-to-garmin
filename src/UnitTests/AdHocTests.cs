@@ -85,7 +85,7 @@ namespace UnitTests
 		//	var email = "";
 		//	var password = "";
 
-		//	var workoutId = "13afceebe0f74a338f60bf9d70f657ef";
+		//	var workoutId = "e7a4b27a1c954cc0be9c71c4c67bb46b";
 		//	var userId = "";
 
 		//	var settings = new Settings()
@@ -101,16 +101,21 @@ namespace UnitTests
 		//	var settingMock = autoMocker.GetMock<ISettingsService>();
 		//	settingMock.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
 
-		//	var client = new ApiClient(settingMock.Object);
+		//	var client = new PelotonApiClient(settingMock.Object);
 
 		//	//var recentWorkouts = await client.GetWorkoutsAsync(userId, 5, 0);
-		//	var workouts = await client.GetWorkoutsAsync(System.DateTime.UtcNow.AddDays(-1), System.DateTime.UtcNow);
-		//	var workoutSamples = await client.GetWorkoutSamplesByIdAsync(workoutId);
+		//	//var workouts = await client.GetWorkoutsAsync(System.DateTime.UtcNow.AddDays(-1), System.DateTime.UtcNow);
+		//	var workout = await client.GetRawWorkoutByIdAsync(workoutId);
+		//	var workoutSamples = await client.GetRawWorkoutSamplesByIdAsync(workoutId);
+		//	var workoutSegments = await client.GetRawClassSegmentsAsync("779fab8b986147f5af8bc385b4bc6bcf");
+		//	//"tracking_type": "time_tracked_rep"
 
 		//	//await client.GetUserDataAsync();
 
 		//	//Log.Debug(workoutSamples.ToString());
-		//	SaveRawData(workoutSamples, workoutId, DataDirectory);
+		//	SaveRawData(workout, workoutId, DataDirectory);
+		//	//SaveRawData(workoutSegments, workoutId, DataDirectory);
+		//	//SaveRawData(workoutSamples, workoutId, DataDirectory);
 		//}
 
 		//[Test]
