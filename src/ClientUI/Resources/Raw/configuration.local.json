@@ -10,28 +10,6 @@
       "Enabled": false,
       "AgentHost": "localhost",
       "AgentPort": 6831
-    },
-
-    "Serilog": {
-      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File" ],
-      "MinimumLevel": {
-        "Default": "Information",
-        "Override": {
-          "Microsoft": "Error",
-          "System": "Error"
-        }
-      },
-      "WriteTo": [
-        { "Name": "Console" },
-        {
-          "Name": "File",
-          "Args": {
-            "path": "./output/log.txt",
-            "rollingInterval": "Day",
-            "retainedFileCountLimit": 7
-          }
-        }
-      ]
     }
   }
 }
