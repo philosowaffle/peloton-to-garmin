@@ -1,5 +1,4 @@
 ﻿using Common.Dto.Peloton;
-using Common.Http;
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
@@ -59,7 +58,6 @@ namespace Peloton
 				var response = await $"{AuthBaseUrl}"
 				.WithHeader("Accept-Language", "en-US")
 				.WithHeader("User-Agent", overrideUserAgent ?? "PostmanRuntime/7.26.20")
-				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 				.WithTimeout(30)
 				.PostJsonAsync(new AuthRequest()
 				{
@@ -101,7 +99,6 @@ namespace Peloton
 				page = page,
 				joins= "ride,ride.instructor"
 			})
-			.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 			.GetJsonAsync<PagedPelotonResponse<Workout>>();
 		}
 
@@ -118,7 +115,6 @@ namespace Peloton
 				sort_by = "-created",
 				joins = "ride"
 			})
-			.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 			.GetJsonAsync<PelotonResponse<Workout>>();
 		}
 
@@ -138,7 +134,6 @@ namespace Peloton
 				page = page,
 				joins = "ride"
 			})
-			.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 			.GetJsonAsync<JObject>();
 		}
 
@@ -148,7 +143,6 @@ namespace Peloton
 			return await $"{BaseUrl}/me"
 			.WithCookie("peloton_session_id", auth.SessionId)
 			.WithCommonHeaders()
-			.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 			.GetJsonAsync<UserData>();
 		}
 
@@ -162,7 +156,6 @@ namespace Peloton
 				{
 					joins = "ride,ride.instructor"
 				})
-				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 				.GetJsonAsync<Workout>();
 		}
 
@@ -176,7 +169,6 @@ namespace Peloton
 				{
 					every_n=1
 				})
-				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 				.GetJsonAsync<WorkoutSamples>();
 		}
 
@@ -190,7 +182,6 @@ namespace Peloton
 				{
 					has_joined = true
 				})
-				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 				.GetJsonAsync<PelotonChallenges>();
 		}
 
@@ -200,7 +191,6 @@ namespace Peloton
 			return await $"{BaseUrl}/user/{auth.UserId}/challenge/{challengeId}"
 				.WithCookie("peloton_session_id", auth.SessionId)
 				.WithCommonHeaders()
-				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 				.GetJsonAsync<PelotonUserChallengeDetail>();
 		}
 
@@ -210,7 +200,6 @@ namespace Peloton
 			return await $"{BaseUrl}/ride/{rideId}/details"
 				.WithCookie("peloton_session_id", auth.SessionId)
 				.WithCommonHeaders()
-				.StripSensitiveDataFromLogging(auth.Email, auth.Password)
 				.GetJsonAsync<RideSegments>();
 		}
 	}

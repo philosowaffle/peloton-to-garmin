@@ -14,7 +14,8 @@ Please see the [Migration Guide](https://philosowaffle.github.io/peloton-to-garm
 - [#556] Stacked Classes Support - P2G can now either automatically or on-demand combine Peloton workouts into a single final activity file that is uploaded to Garmin Connect
 - [#724] Annual Challenge Page - Now shows current average minutes/day and minutes/week
 - [#740] Console/Docker Headless - Can now configure whether P2G should exit immediately or not on completion using `App.CloseConsoleOnFinish` (@DinoChiesa)
-- [#697] Expose API endpoint to sync last N workouts
+- [#697] New API endpoint to sync last N workouts
+- [#487] Temporarily toggle logging verbosity from the UI for easier debugging and reporting
 
 ## Fixes
 

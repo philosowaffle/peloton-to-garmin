@@ -2,12 +2,14 @@
 
 P2G can be run on all major operating systems.
 
-| Operating System | Support Garmin 2-Step Verification |
-|:-------------------|:-----------------------------------|
-| [Windows](#windows-quick-start) | yes |
-| [Mac](#mac-quick-start) | yes |
-| [Linux](#linux-quick-start) | yes |
-| [I don't want to install anything](#github-actions)| no |
+## 👋 Start here to explore install options
+
+| Operating System | Supports Garmin 2-Step Verification | Supports Automatic Sync |
+|:-------------------|:-----------------------------------|:------------------------|
+| [Windows](#windows-quick-start) | yes | no |
+| [Mac](#mac-quick-start) | yes | yes |
+| [Linux](#linux-quick-start) | yes | yes |
+| [I don't want to install anything](#github-actions)| no | yes |
 
 ## Windows Quick Start
 

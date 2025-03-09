@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Http;
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
@@ -52,6 +53,8 @@ namespace ConsoleClient
 				GarminUploader.ValidateConfig(settings);
 				Metrics.ValidateConfig(appConfig.Observability);
 				Tracing.ValidateConfig(appConfig.Observability);
+
+				FlurlConfiguration.Configure(appConfig.Observability, _settingsService);
 
 				if (settings.App.CheckForUpdates)
 				{
