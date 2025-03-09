@@ -119,9 +119,9 @@ namespace Peloton
 		}
 
 		/// <summary>
-		/// For ad hoc testing.
+		/// For ad hoc testing and contract discovery.
 		/// </summary>
-		public async Task<JObject> GetWorkoutsAsync(string userId, int numWorkouts, int page)
+		public async Task<string> GetRawWorkoutsAsync(string userId, int numWorkouts, int page)
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/user/{userId}/workouts"
@@ -134,7 +134,51 @@ namespace Peloton
 				page = page,
 				joins = "ride"
 			})
-			.GetJsonAsync<JObject>();
+			.GetStringAsync();
+		}
+
+		/// <summary>
+		/// For ad hoc testing and contract discovery.
+		/// </summary>
+		public async Task<string> GetRawWorkoutByIdAsync(string id)
+		{
+			var auth = await GetAuthAsync();
+			return await $"{BaseUrl}/workout/{id}"
+				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithCommonHeaders()
+				.SetQueryParams(new
+				{
+					joins = "ride,ride.instructor"
+				})
+				.GetStringAsync();
+		}
+
+		/// <summary>
+		/// For ad hoc testing and contract discovery.
+		/// </summary>
+		public async Task<string> GetRawWorkoutSamplesByIdAsync(string id)
+		{
+			var auth = await GetAuthAsync();
+			return await $"{BaseUrl}/workout/{id}/performance_graph"
+				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithCommonHeaders()
+				.SetQueryParams(new
+				{
+					every_n = 1
+				})
+				.GetStringAsync();
+		}
+
+		/// <summary>
+		/// For ad hoc testing and contract discovery.
+		/// </summary>
+		public async Task<string> GetRawClassSegmentsAsync(string rideId)
+		{
+			var auth = await GetAuthAsync();
+			return await $"{BaseUrl}/ride/{rideId}/details"
+				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithCommonHeaders()
+				.GetStringAsync();
 		}
 
 		public async Task<UserData> GetUserDataAsync()

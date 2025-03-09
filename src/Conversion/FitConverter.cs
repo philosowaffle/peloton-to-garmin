@@ -573,13 +573,9 @@ namespace Conversion
 				var reps = p2gExercise.Reps;
 				if (p2gExercise.Type == MovementTargetType.Time)
 				{
-					if (reps > 0)
-						reps = reps / settings.Format.Strength.DefaultSecondsPerRep;
-
-					if (reps is null)
+					if (reps is null || reps <= 0)
 						reps = p2gExercise.DurationSeconds / settings.Format.Strength.DefaultSecondsPerRep;
 				}
-					
 
 				setMesg.SetRepetitions((ushort)reps);
 
