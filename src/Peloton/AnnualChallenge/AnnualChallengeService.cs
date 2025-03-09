@@ -44,9 +44,13 @@ public class AnnualChallengeService : IAnnualChallengeService
 		var now = DateTime.UtcNow;
 		var startTimeUtc = DateTimeOffset.FromUnixTimeSeconds(annualChallengeProgressDetail.Challenge_Summary.Start_Time).UtcDateTime;
 		var endTimeUtc = DateTimeOffset.FromUnixTimeSeconds(annualChallengeProgressDetail.Challenge_Summary.End_Time).UtcDateTime;
+		var elapsedTime = now - startTimeUtc;
+		var elapsedDays = Math.Ceiling(elapsedTime.TotalDays);
 
 		result.Result.HasJoined = true;
 		result.Result.EarnedMinutes = progress.Metric_Value;
+		result.Result.CurrentDailyPace = progress.Metric_Value / elapsedDays;
+		result.Result.CurrentWeeklyPace = result.Result.CurrentDailyPace * 7;
 		result.Result.Tiers = tiers.Where(t => t.Metric_Value > 0).Select(t => 
 		{
 			var requiredMinutes = t.Metric_Value;

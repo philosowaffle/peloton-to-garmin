@@ -21,7 +21,7 @@ namespace Sync
 {
 	public interface ISyncService
 	{
-		Task<SyncResult> SyncAsync(int numWorkouts);
+		Task<SyncResult> SyncAsync(int numWorkouts, bool forceStackClasses);
 		Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null, bool forceStackWorkouts = false);
 	}
 
@@ -47,14 +47,14 @@ namespace Sync
 			_fileHandler = fileHandler;
 		}
 
-		public async Task<SyncResult> SyncAsync(int numWorkouts)
+		public async Task<SyncResult> SyncAsync(int numWorkouts, bool forceStackClasses = false)
 		{
 			using var timer = SyncHistogram.NewTimer();
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.ByNumWorkouts")
 										.WithTag("numWorkouts", numWorkouts.ToString());
 
 			var settings = await _settingsService.GetSettingsAsync();
-			return await SyncWithWorkoutLoaderAsync(() => _pelotonService.GetRecentWorkoutsAsync(numWorkouts), settings.Peloton.ExcludeWorkoutTypes);
+			return await SyncWithWorkoutLoaderAsync(() => _pelotonService.GetRecentWorkoutsAsync(numWorkouts), settings.Peloton.ExcludeWorkoutTypes, forceStackClasses);
 		}
 
 		public async Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null, bool forceStackClasses = false)
@@ -243,7 +243,7 @@ namespace Sync
 					.Select(r => r.Id) ?? new List<string>();
 		}
 
-		private async Task<SyncResult> SyncWithWorkoutLoaderAsync(Func<Task<ServiceResult<ICollection<Workout>>>> loader, ICollection<WorkoutType>? exclude)
+		private async Task<SyncResult> SyncWithWorkoutLoaderAsync(Func<Task<ServiceResult<ICollection<Workout>>>> loader, ICollection<WorkoutType>? exclude, bool forceStackClasses = false)
 		{
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.SyncWithWorkoutLoaderAsync");
 
@@ -300,7 +300,7 @@ namespace Sync
 			_logger.Information("Found {@NumWorkouts} completed workouts.", completedWorkoutsCount);
 			activity?.AddTag("workouts.completed", completedWorkoutsCount);
 
-			var result = await SyncAsync(completedWorkouts, settings.Peloton.ExcludeWorkoutTypes);
+			var result = await SyncAsync(completedWorkouts, settings.Peloton.ExcludeWorkoutTypes, forceStackClasses);
 
 			if (result.SyncSuccess)
 				syncTime.LastSuccessfulSyncTime = DateTime.Now;

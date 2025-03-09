@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Http;
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
@@ -52,6 +53,8 @@ namespace ConsoleClient
 				GarminUploader.ValidateConfig(settings);
 				Metrics.ValidateConfig(appConfig.Observability);
 				Tracing.ValidateConfig(appConfig.Observability);
+
+				FlurlConfiguration.Configure(appConfig.Observability, _settingsService);
 
 				if (settings.App.CheckForUpdates)
 				{
@@ -127,7 +130,7 @@ namespace ConsoleClient
 
 				if (!settings.App.EnablePolling)
 				{
-					await _syncService.SyncAsync(settings.Peloton.NumWorkoutsToDownload);
+					await _syncService.SyncAsync(settings.Peloton.NumWorkoutsToDownload, forceStackClasses: false);
 					return;
 				}
 
@@ -150,7 +153,7 @@ namespace ConsoleClient
 						}
 					}
 
-					var syncResult = await _syncService.SyncAsync(settings.Peloton.NumWorkoutsToDownload);
+					var syncResult = await _syncService.SyncAsync(settings.Peloton.NumWorkoutsToDownload, forceStackClasses: false);
 					Health.Set(syncResult.SyncSuccess ? HealthStatus.Healthy : HealthStatus.UnHealthy);
 
 					Log.Information("Done");
@@ -171,7 +174,10 @@ namespace ConsoleClient
 			finally
 			{
 				_logger.Information("Done.");
-				Console.ReadLine();
+
+				if (!settings.App.CloseConsoleOnFinish)
+					Console.ReadLine();
+				
 				Environment.Exit(exitCode);
 			}
 		}

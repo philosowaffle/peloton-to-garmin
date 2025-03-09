@@ -70,8 +70,11 @@ public static class MauiProgram
 			logging.SetMinimumLevel(LogLevel.Trace);
 		});
 #endif
+		var app = builder.Build();
 
-		return builder.Build();
+		ObservabilityStartup.ConfigureFlurl(app.Services, config);
+
+		return app;
 	}
 
 	private static void InitObservabilityConfigFile(string sourceFileName, string destinationPath)

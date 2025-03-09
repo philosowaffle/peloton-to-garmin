@@ -14,6 +14,7 @@ using SharedUI;
 using Sync;
 using Garmin.Dto;
 using Sync.Database;
+using Microsoft.Extensions.Logging;
 
 namespace ClientUI;
 
@@ -337,6 +338,23 @@ public class ServiceClient : IApiClient
 				throw new ApiClientException(result.Error.Message, result.Error.Exception);
 
 			return result.Result;
+		}
+		catch (Exception e)
+		{
+			throw new ApiClientException($"Unexpected error occurred: {e.Message}", e);
+		}
+	}
+
+	public async Task<LogLevelPostResponse> LogLevelPostAsync(LogLevelPostRequest request)
+	{
+		try
+		{
+			var result = await _systemInfoService.SetLogLevelAsync(request);
+
+			if (result.IsErrored())
+				throw new ApiClientException(result.Error.Message, result.Error.Exception);
+
+			return new LogLevelPostResponse() { LogLevel = result.Result };
 		}
 		catch (Exception e)
 		{
