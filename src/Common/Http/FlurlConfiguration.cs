@@ -13,6 +13,7 @@ using System.Web;
 using System.Net;
 using Polly;
 using Common.Observe;
+using Common.Service;
 
 namespace Common.Http;
 
@@ -33,29 +34,63 @@ public static class FlurlConfiguration
 	});
 
 	private static bool PrometheusEnabled = false;
+	private static ISettingsService SettingsService;
 
-	public static void Configure(Observability config, int defaultTimeoutSeconds = 10)
+	public static void Configure(Observability config, ISettingsService settingsService, int defaultTimeoutSeconds = 10)
 	{
 		PrometheusEnabled = config.Prometheus.Enabled;
+		SettingsService = settingsService;
 
-		Func<FlurlCall, Task> beforeCallAsync = (call) =>
+		Func<FlurlCall, Task> beforeCallAsync = async (call) =>
 		{
-			if (_logger.IsEnabled(LogEventLevel.Verbose))
-				LogRequest(call, call.GetRawRequestBody());
-			return Task.CompletedTask;
+			try
+			{
+				if (_logger.IsEnabled(LogEventLevel.Verbose))
+				{
+					var settings = await SettingsService.GetSettingsAsync();
+					var pelotonAuth = SettingsService.GetPelotonApiAuthentication(settings.Peloton.Email);
+					var content = call.GetRawRequestBody().StripSensitiveData(settings.Peloton.Email, settings.Peloton.Password, pelotonAuth?.SessionId, settings.Garmin.Email, settings.Garmin.Password);
+					LogRequest(call, content);
+				}
+			} catch (Exception e)
+			{
+				_logger.Error("Failed to write verbose http request logs.", e);
+			}
 		};
 
 		Func<FlurlCall, Task> afterCallAsync = async (call) =>
 		{
-			if (_logger.IsEnabled(LogEventLevel.Verbose))
-				LogResponse(call, await call.GetRawResponseBodyAsync());
+			try
+			{
+				if (_logger.IsEnabled(LogEventLevel.Verbose))
+				{
+					var settings = await SettingsService.GetSettingsAsync();
+					var content = (await call.GetRawResponseBodyAsync()).StripSensitiveData(settings.Peloton.Email, settings.Peloton.Password, settings.Garmin.Email, settings.Garmin.Password);
+					LogResponse(call, content);
+				}
+			}
+			catch (Exception e)
+			{
+				_logger.Error("Failed to write verbose http response logs.", e);
+			}
+
+
 			TrackMetrics(call);
 		};
 
-		Func<FlurlCall, Task> onErrorAsync = async (call) => {
-			var request = call.GetRawRequestBody();
-			var response = await call.GetRawResponseBodyAsync();
-			LogError(call, request, response);
+		Func<FlurlCall, Task> onErrorAsync = async (call) => 
+		{
+			try
+			{
+				var settings = await SettingsService.GetSettingsAsync();
+				var request = call.GetRawRequestBody().StripSensitiveData(settings.Peloton.Email, settings.Peloton.Password, settings.Garmin.Email, settings.Garmin.Password);
+				var response = (await call.GetRawResponseBodyAsync()).StripSensitiveData(settings.Peloton.Email, settings.Peloton.Password, settings.Garmin.Email, settings.Garmin.Password);
+				LogError(call, request, response);
+			}
+			catch (Exception e)
+			{
+				_logger.Error("Failed to write verbose http error logs.", e);
+			}
 		};
 
 		FlurlHttp.Clients.WithDefaults(builder =>
@@ -216,47 +251,22 @@ public static class FlurlConfiguration
 		}
 	}
 
-	public static IFlurlRequest StripSensitiveDataFromLogging(this IFlurlRequest request, string sensitiveField, string sensitiveField2 = null)
+	private static string StripSensitiveData(this string? content, params string[] sensitiveFields)
 	{
-		return request
-			.BeforeCall((call) =>
+		try
+		{
+			if (string.IsNullOrWhiteSpace(content)) return string.Empty;
+			foreach (var sensitiveField in sensitiveFields)
 			{
-				if (_logger.IsEnabled(LogEventLevel.Verbose))
-				{
-					var content = call.GetRawRequestBody()
-									?.Replace(sensitiveField, "<redacted1>")
-									?.Replace(sensitiveField2, "<redacted2>") ?? string.Empty;
+				if (!string.IsNullOrEmpty(sensitiveField))
+					content = content?.Replace(sensitiveField, "<redacted>") ?? string.Empty;
+			}
+		} catch (Exception e)
+		{
+			_logger.Error("Failed to strip sensitive data from Http payload.", e);
+		}
 
-					LogRequest(call, content);
-				}
-				return Task.CompletedTask;
-			})
-			.AfterCall(async (call) =>
-			{
-				if (_logger.IsEnabled(LogEventLevel.Verbose))
-				{
-					var content = (await call.GetRawResponseBodyAsync())
-									?.Replace(sensitiveField, "<redacted1>")
-									?.Replace(sensitiveField2, "<redacted2>") ?? string.Empty;
-
-					LogResponse(call, content);
-				}
-
-				TrackMetrics(call);
-			})
-			.OnError(async (call) =>
-			{
-				var requestContent = call.GetRawRequestBody()
-									?.ToString()
-									?.Replace(sensitiveField, "<redacted1>")
-									?.Replace(sensitiveField2, "<redacted2>") ?? string.Empty;
-
-				var responseContent = (await call.GetRawResponseBodyAsync())
-								?.Replace(sensitiveField, "<redacted1>")
-								?.Replace(sensitiveField2, "<redacted2>") ?? string.Empty;
-
-				LogError(call, requestContent, responseContent);
-			});
+		return content ?? string.Empty;
 	}
 
 	private static string GetRawRequestBody(this FlurlCall call)

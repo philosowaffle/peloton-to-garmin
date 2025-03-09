@@ -45,6 +45,7 @@ public record SystemInfoGetResponse
 	public LatestVersionInformation? LatestVersionInformation { get; set; }
 	public string OutputDirectory { get; set; }
 	public string TempDirectory { get; set; }
+	public string ApplicationConfigFilePath { get; set; } = string.Empty;
 	public LogEventLevel CurrentLogLevel { get; set; }
 }
 

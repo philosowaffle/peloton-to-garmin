@@ -1,6 +1,6 @@
 # Configuration
 
-## How are you running P2G?
+## 👋 How are you running P2G?
 
 1. [I'm using the Web UI](#web-ui-configuration)
 1. [I'm using the Windows GUI](#windows-ui-configuration)

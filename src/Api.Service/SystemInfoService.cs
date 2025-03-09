@@ -4,8 +4,8 @@ using Common;
 using Common.Dto;
 using Common.Observe;
 using Common.Service;
+using Common.Stateful;
 using Philosowaffle.Capability.ReleaseChecks.Model;
-using Serilog;
 using Serilog.Events;
 
 namespace Api.Services;
@@ -65,6 +65,7 @@ public class SystemInfoService : ISystemInfoService
 
 			OutputDirectory = settings?.App?.OutputDirectory ?? string.Empty,
 			TempDirectory = settings?.App?.WorkingDirectory ?? string.Empty,
+			ApplicationConfigFilePath = Statics.ConfigPath,
 			CurrentLogLevel = Logging.InternalLevelSwitch.MinimumLevel,
 		};
 	}

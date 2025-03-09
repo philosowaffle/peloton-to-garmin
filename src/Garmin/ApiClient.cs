@@ -67,7 +67,6 @@ namespace Garmin
 						.WithHeader("NK", "NT")
 						.SetQueryParams(queryParams)
 						.WithCookies(jar)
-						.StripSensitiveDataFromLogging(email, password)
 						.OnRedirect((r) => { result.WasRedirected = true; result.RedirectedTo = r.Redirect.Url; })
 						.PostUrlEncodedAsync(loginData)
 						.ReceiveString();

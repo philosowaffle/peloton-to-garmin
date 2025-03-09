@@ -60,6 +60,8 @@ Common.Observe.Metrics.CreateAppInfo();
 
 var app = builder.Build();
 
+ObservabilityStartup.ConfigureFlurl(app.Services, config);
+
 if (Log.IsEnabled(LogEventLevel.Verbose))
 	app.UseSerilogRequestLogging();
 
