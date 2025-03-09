@@ -85,7 +85,7 @@ namespace UnitTests
 		//	var email = "";
 		//	var password = "";
 
-		//	var workoutId = "e7a4b27a1c954cc0be9c71c4c67bb46b";
+		//	var workoutId = "a077628f85954e979b2635490b6e3c86";
 		//	var userId = "";
 
 		//	var settings = new Settings()
@@ -107,13 +107,13 @@ namespace UnitTests
 		//	//var workouts = await client.GetWorkoutsAsync(System.DateTime.UtcNow.AddDays(-1), System.DateTime.UtcNow);
 		//	var workout = await client.GetRawWorkoutByIdAsync(workoutId);
 		//	var workoutSamples = await client.GetRawWorkoutSamplesByIdAsync(workoutId);
-		//	var workoutSegments = await client.GetRawClassSegmentsAsync("779fab8b986147f5af8bc385b4bc6bcf");
+		//	//var workoutSegments = await client.GetRawClassSegmentsAsync("779fab8b986147f5af8bc385b4bc6bcf");
 		//	//"tracking_type": "time_tracked_rep"
 
 		//	//await client.GetUserDataAsync();
 
 		//	//Log.Debug(workoutSamples.ToString());
-		//	SaveRawData(workout, workoutId, DataDirectory);
+		//	SaveRawData(workout, "blah", DataDirectory);
 		//	//SaveRawData(workoutSegments, workoutId, DataDirectory);
 		//	//SaveRawData(workoutSamples, workoutId, DataDirectory);
 		//}
@@ -124,7 +124,7 @@ namespace UnitTests
 		//	var email = "";
 		//	var password = "";
 
-		//	var workoutId = "98c617d5c56f4f1ab6fc250afc9aea5f";
+		//	var workoutId = "a077628f85954e979b2635490b6e3c86";
 
 		//	var settings = new Settings()
 		//	{
@@ -149,13 +149,13 @@ namespace UnitTests
 		//	SaveData(p2gWorkout, workoutId, DataDirectory);
 
 		//	// CONVERT TO FIT & SAVE
-		//	//var fitConverter = new ConverterInstance(settingsService.Object, new IOWrapper());
-		//	//var file = Path.Join(DataDirectory, $"{workoutId}_workout.json");
-		//	//var messages = await fitConverter.Convert(file, settings);
+		//	var fitConverter = new ConverterInstance(settingsService.Object, new IOWrapper());
+		//	var file = Path.Join(DataDirectory, $"{workoutId}_workout.json");
+		//	var messages = await fitConverter.Convert(file, settings);
 
-		//	//var output = Path.Join(DataDirectory, "output.fit");
+		//	var output = Path.Join(DataDirectory, "output.fit");
 
-		//	//fitConverter.Save(messages, output);
+		//	fitConverter.Save(messages, output);
 		//}
 
 		//[Test]

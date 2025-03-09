@@ -56,11 +56,19 @@ public static class P2GWorkoutExerciseMapper
 		{
 			foreach (var repData in trackedRepData)
 			{
+				MovementTargetType movementTargetType = MovementTargetType.Reps;
+				if (repData.Tracking_Type == TrackingTypes.TimeBased 
+					|| repData.Tracking_Type == TrackingTypes.TimeTrackedRep
+					|| repData.Tracking_Type == TrackingTypes.Rounds)
+				{
+					movementTargetType = MovementTargetType.Time;
+				}
+
 				var movement = new P2GExercise()
 				{
 					Id = repData.Movement_Id,
 					Name = repData.Movement_Name,
-					Type = repData.Tracking_Type == "time_tracked_rep" ? MovementTargetType.Time : MovementTargetType.Reps,
+					Type = movementTargetType,
 					StartOffsetSeconds = repData.Offset,
 					DurationSeconds = repData.Length,
 					Reps = repData.Completed_Reps,
