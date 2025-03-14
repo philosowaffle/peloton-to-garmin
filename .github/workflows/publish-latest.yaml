@@ -4,8 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-    # - master
-    - v5-wip
+    - master
     paths:
     - 'src/**'
     - 'docker/**'
