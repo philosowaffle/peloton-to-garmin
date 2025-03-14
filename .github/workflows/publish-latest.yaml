@@ -21,14 +21,11 @@ jobs:
                 dockerfile: ['Dockerfile.console', 'Dockerfile.api', 'Dockerfile.webui']
                 include:
                     - dockerfile: 'Dockerfile.console'
-                      # tag: 'console-latest'
-                      tag: 'console-v5-rc'
+                      tag: 'console-latest'
                     - dockerfile: 'Dockerfile.api'
-                      # tag: 'api-latest'
-                      tag: 'api-v5-rc'
+                      tag: 'api-latest'
                     - dockerfile: 'Dockerfile.webui'
-                      # tag: 'webui-latest'
-                      tag: 'webui-v5-rc'
+                      tag: 'webui-latest'
     
         steps:
     
