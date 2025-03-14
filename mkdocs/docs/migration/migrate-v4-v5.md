@@ -5,7 +5,6 @@ Version 5 introduces a few breaking changes.  Not every change will require acti
 
 First, identify your [install method](../install/index.md#-start-here-to-explore-install-options).  Then, use the table below to determine if you need to take any special action.  A ✔️ means there is something for you to do.  Follow the hyperlink to see what steps to take.
 
-
 | Breaking Change | Build From Source | Docker Headless | Docker WebUI | GitHubAction | Windows Exe |
 |:----------------|:------------------|:----------------|:-------------|:-------------|:------------|
 | [.NET 9](#net-9) | ✔️ | ❌ | ❌ | ❌ | ❌ |
