@@ -13,7 +13,7 @@ P2G can be run on all major operating systems.
 
 ## Windows Quick Start
 
-1. [Windows Executable](windows.md) - recommended unless you are comfortable with Docker on Windows
+1. [Windows Application](windows.md) - recommended unless you are comfortable with Docker on Windows
 1. [Docker](docker.md)
 1. [Build from Source](source.md)
 

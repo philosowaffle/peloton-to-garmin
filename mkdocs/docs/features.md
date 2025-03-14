@@ -40,7 +40,7 @@ Convert, Backup, and Sync your Peloton workouts to Garmin Connect locally and fo
     1. Meditation
     1. Strength
     1. Outdoor
-    1. and more
+    1. *and more* ✨
 1. Workout Data
     1. Heart Rate
     1. Cadence
@@ -48,12 +48,12 @@ Convert, Backup, and Sync your Peloton workouts to Garmin Connect locally and fo
     1. Distance
     1. Power
     1. Laps
-    1. and more
+    1. *and more* ✨
 1. Strength Data
     1. Exercise Name
     1. Rep count
     1. Weight
-1. Automatically Combine Stacked Classes
+1. Automatically Combine Stacked Classes in a single Activity
 
 ## 🖼️ Screenshots
 
