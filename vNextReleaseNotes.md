@@ -19,13 +19,13 @@ Please see the [Migration Guide](https://philosowaffle.github.io/peloton-to-garm
 - [#697] New API endpoint to sync last N workouts
 - [#487] Temporarily toggle logging verbosity from the UI for easier debugging and reporting
 
-
 ## Fixes
 
 - [#711] Friendlier error messages, especially on first start when nothing is configured yet
 - [#711] Fixed issue where Windows exe would somtimes fail to start on very first run, but would launch on second attempt
 - [#711] Prevent users from saving Passwords that use an unsupported character
 - [#732] Fixed some broken links on documentation site
+- [#577] Various improvements to the [Documentation Site](https://philosowaffle.github.io/peloton-to-garmin/latest/)
 
 ## Housekeeping
 

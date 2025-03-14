@@ -1,4 +1,4 @@
-name: Housekeeping Tasks
+name: 🏠 Housekeeping Tasks
 on:
   workflow_dispatch:
   schedule:

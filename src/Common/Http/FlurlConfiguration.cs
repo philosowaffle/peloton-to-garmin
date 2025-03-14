@@ -251,7 +251,7 @@ public static class FlurlConfiguration
 		}
 	}
 
-	private static string StripSensitiveData(this string? content, params string[] sensitiveFields)
+	private static string StripSensitiveData(this string content, params string[] sensitiveFields)
 	{
 		try
 		{
