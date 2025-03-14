@@ -65,29 +65,28 @@ jobs:
           os: ${{ matrix.os }}
           framework: ${{ matrix.framework }}
   
-  # publish-gh-pages:
-  #   name: 📢 Publish GH Pages
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: ⤵ Checkout the code
-  #       uses: actions/checkout@v4
+  publish-gh-pages:
+    name: 📢 Publish GH Pages
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵ Checkout the code
+        uses: actions/checkout@v4
       
-  #     - name: ⚙ Configure Git user
-  #       run: |
-  #         git config --local user.email "philosowaffle@gmail.com"
-  #         git config --local user.name "philosowaffle"
+      - name: ⚙ Configure Git user
+        run: |
+          git config --local user.email "philosowaffle@gmail.com"
+          git config --local user.name "philosowaffle"
+      - name: ⤵ Fetch gh-pages
+        run: git fetch origin gh-pages --depth=1
 
-  #     - name: ⤵ Fetch gh-pages
-  #       run: git fetch origin gh-pages --depth=1
+      - name: 💾 Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
 
-  #     - name: 💾 Install Python
-  #       uses: actions/setup-python@v4
-  #       with:
-  #         python-version: 3.x
+      - name: 💾 Install mkdocs
+        run: pip install mkdocs-material mike
 
-  #     - name: 💾 Install mkdocs
-  #       run: pip install mkdocs-material mike
-
-  #     - name: 📢 Publish Docs
-  #       run: mike deploy --push master
-  #       working-directory: ./mkdocs
+      - name: 📢 Publish Docs
+        run: mike deploy --push master
+        working-directory: ./mkdocs
