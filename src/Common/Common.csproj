@@ -10,16 +10,16 @@
     <PackageReference Include="Flurl.Http" Version="4.0.2" />
     <PackageReference Include="Handlebars.Net" Version="2.1.6" />
     <PackageReference Include="JsonFlatFileDataStore" Version="2.4.2" />
-	<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.11.1" />
-	<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.11.0" />
+	<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.11.2" />
+	<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.11.1" />
     <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="1.5.1" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.11.0" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.11.1" />
     <PackageReference Include="Polly" Version="8.5.2" />
     <PackageReference Include="prometheus-net" Version="8.2.1" />
     <PackageReference Include="prometheus-net.AspNetCore" Version="8.2.1" />
     <PackageReference Include="prometheus-net.DotNetRuntime" Version="4.4.1" />
     <PackageReference Include="Serilog.Sinks.File.Header" Version="1.0.2" />
-    <PackageReference Include="System.Text.Json" Version="9.0.2" />
+    <PackageReference Include="System.Text.Json" Version="9.0.3" />
 
 	  <PackageReference Include="Serilog" Version="4.2.0" />
 	  <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
