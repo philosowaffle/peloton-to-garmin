@@ -7,7 +7,7 @@
 ## Breaking Changes
 
 > [!CAUTION]
-> Please see the [Migration Guide](https://philosowaffle.github.io/peloton-to-garmin/latest/migration/migrate-v4-v5/) for specific instructions on how to address these breaking changes.
+> Please see the [Migration Guide](https://philosowaffle.github.io/peloton-to-garmin/master/migration/migrate-v4-v5/) for specific instructions on how to address these breaking changes.
 
 - [#656] Uplift to .net 9
 - [#704] `DeviceInfoPath` fully removed and replaced by `DeviceInfoSettings`
