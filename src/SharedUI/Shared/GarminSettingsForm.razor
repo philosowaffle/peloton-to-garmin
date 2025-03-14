@@ -63,7 +63,7 @@
 									Title="<b>Upload Format</b>"
 									Content="@UploadFormatDocumentation"
 									Html="true">
-										<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+										<HxIcon Icon="@BootstrapIcon.QuestionCircle" />
 									</HxPopover>
 								</HeaderTemplate>
 								<BodyTemplate>
@@ -75,7 +75,7 @@
 								</BodyTemplate>
 							</HxCard>
 							<br />
-							<HxCard>
+							<HxCard CssClass="border-danger text-danger">
 								<HeaderTemplate>
 									Garmin Api Settings
 									<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
@@ -154,6 +154,8 @@
 	{
 		var settings = new SettingsGetResponse();
 		garminSettings = settings.Garmin;
+		configDocumentation = string.Empty;
+		configDocumentationBase = string.Empty;
 	}
 
 	protected override Task OnInitializedAsync()
@@ -196,6 +198,10 @@
 		{
 			var error = await e.GetResponseJsonAsync<ErrorResponse>();
 			_toaster.AddError(error.Message);
+		}
+		catch (ApiClientException e)
+		{
+			_toaster.AddError(e.Message);
 		}
 		catch (Exception e)
 		{

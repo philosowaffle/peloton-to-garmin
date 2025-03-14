@@ -50,15 +50,11 @@ namespace Peloton
 		private readonly IPelotonApi _pelotonApi;
 		private readonly IFileHandling _fileHandler;
 
-		private int _failedCount;
-
 		public PelotonService(ISettingsService settingsService, IPelotonApi pelotonApi, IFileHandling fileHandler)
 		{
 			_settingsService = settingsService;
 			_pelotonApi = pelotonApi;
 			_fileHandler = fileHandler;
-
-			_failedCount = 0;
 		}
 
 		public static void ValidateConfig(PelotonSettings config)

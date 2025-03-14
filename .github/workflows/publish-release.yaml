@@ -1,4 +1,4 @@
-name: Publish Release
+name: 📢 Publish Release
 
 on:
   workflow_dispatch:
@@ -12,7 +12,7 @@ on:
 
 jobs:
   publish-docker-images:
-   name: Publish Docker Images
+   name: 📢 Publish Docker Images
    runs-on: ubuntu-latest
    strategy:
     matrix:
@@ -33,8 +33,10 @@ jobs:
 
    steps:
     
-      - uses: actions/checkout@v4
-      - name: Publish Docker Images
+      - name: ⤵ Checkout the code
+        uses: actions/checkout@v4
+        
+      - name: 📢 Publish Docker Images
         uses: ./.github/actions/publish-docker-images
         with:
           dockerfile: ${{ matrix.dockerfile }}
@@ -46,20 +48,22 @@ jobs:
           secret_github_package: ${{ secrets.GH_PACKAGE_SECRET}}
 
   publish-ui-dist:
-    name: Publish UI Distribution
+    name: 📢 Publish UI Distribution
     runs-on: 'windows-latest'
     outputs:
       artifact_name: ${{ steps.win-ui-create-artifact.outputs.artifact_name }}
     strategy:
       matrix:
-        dotnet: [ '7.0.410' ]
-        framework: ['net7.0-windows10.0.19041.0']
-        os: [ 'win10-x64' ]
+        dotnet: [ '9.0.101' ]
+        framework: ['net9.0-windows10.0.19041.0']
+        os: [ 'win-x64' ]
 
     steps:
 
-      - uses: actions/checkout@v4
-      - name: Publish UI Distribution
+      - name: ⤵ Checkout the code
+        uses: actions/checkout@v4
+
+      - name: 📢 Publish UI Distribution
         uses: ./.github/actions/publish-ui-dist
         id: win-ui-create-artifact
         with:
@@ -68,24 +72,27 @@ jobs:
           framework: ${{ matrix.framework }}
   
   create-gh-release:
+    name: 📢 Publish GH Release
     runs-on: ubuntu-latest
     needs: [publish-ui-dist, publish-docker-images]
     steps:
 
-      - uses: actions/download-artifact@v4
+      - name: ⤵ Checkout the code
+        uses: actions/checkout@v4
+
+      - name: ⤵ Download the Artifact
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.publish-ui-dist.outputs.artifact_name }}
           path: ${{ github.workspace }}/downloaded
 
-      - name: Create Zip for Win UI Release Artifact
+      - name: 📂 Create Zip for Win UI Release Artifact
         uses: vimtor/action-zip@v1.2
         with:
           files: /downloaded # must be relative to gh workspace, does not support absolute paths :(
           dest: ui_win_${{ github.event.inputs.version }}.zip # this is hardcoded to output to ${{ github.workspace }}/ :(
-    
-      - uses: actions/checkout@v4
 
-      - name: Create Release and Upload Artifacts
+      - name: ⤴ Create Release and Upload Artifacts
         uses: ncipollo/release-action@v1
         with:
           artifacts: "${{ github.workspace }}/ui_win_${{ github.event.inputs.version }}.zip"
@@ -96,26 +103,33 @@ jobs:
           bodyFile:  ${{ github.workspace }}/vNextReleaseNotes.md
   
   publish-gh-pages:
-    name: Publish GH Pages
+    name: 📢 Publish GH Pages
     runs-on: ubuntu-latest
     needs: [create-gh-release]
     steps:
-      - uses: actions/checkout@v4
+      - name: ⤵ Checkout the code
+        uses: actions/checkout@v4
 
-      - name: Configure Git user
+      - name: ⚙ Configure Git user
         run: |
           git config --local user.email "philosowaffle@gmail.com"
           git config --local user.name "philosowaffle"
 
-      - name: Fetch gh-pages
+      - name: ⤵ Fetch gh-pages
         run: git fetch origin gh-pages --depth=1
 
-      - uses: actions/setup-python@v4
+      - name: 💾 Install Python
+        uses: actions/setup-python@v4
         with:
           python-version: 3.x
 
-      - run: pip install mkdocs-material mike
-      - run: mike deploy --push --update-aliases v${{ github.event.inputs.version }} latest
+      - name: 💾 Install mkdocs
+        run: pip install mkdocs-material mike
+
+      - name: 📢 Publish Release Docs
+        run: mike deploy --push --update-aliases v${{ github.event.inputs.version }} latest
         working-directory: ./mkdocs
-      - run: mike set-default --push latest
+
+      - name: 📢 Publish Latest Docs
+        run: mike set-default --push latest
         working-directory: ./mkdocs

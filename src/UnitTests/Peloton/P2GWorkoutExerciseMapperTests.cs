@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Common.Dto.Peloton;
 using FluentAssertions;
 
-namespace UnitTests.Peloton;
+namespace UnitTests.PelotonTests;
 
 public class P2GWorkoutExerciseMapperTests
 {

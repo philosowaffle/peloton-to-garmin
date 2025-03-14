@@ -1,4 +1,4 @@
-name: 'Publish UI Distribution'
+name: '📢 Publish UI Distribution'
 description: 'Publishes the UI Distribution'
 inputs:
   dotnet-version:
@@ -7,6 +7,10 @@ inputs:
   framework:
     description: 'DotNet Framework'
     required: true
+  os-path:
+    description: 'The folder pathname used when built'
+    required: false
+    default: 'win10-x64'
   os:
     description: 'The OS we are running on'
     required: true
@@ -17,52 +21,70 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Setup .NET Core SDK ${{ inputs.dotnet-version }}
+    - name: 💾 Setup .NET Core SDK ${{ inputs.dotnet-version }}
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
+    
+    - name: 📃 List SDKs
+      run: dotnet --list-sdks
+      shell: pwsh
 
-    - name: Restore MAUI Workloads
+    # I really shouldn't need to do this. The restore command below should be enough.
+    # However it seems the restore command does not install Maui base, which is needed
+    # to publish a running package.
+    - name: 💾 Install MAUI Workloads
+      run: dotnet workload install maui
+      shell: pwsh
+
+    - name: 🎨 Restore MAUI Workloads
       run: dotnet workload restore
       shell: pwsh
 
-    - name: List MAUI Workloads
+    - name: 📃 List MAUI Workloads
       run: dotnet workload list
       shell: pwsh
 
-    - name: Prepare env
+    - name: ⚙ Prepare env
       run: |
           echo "BUILD_VERSION=$Env:GITHUB_RUN_NUMBER-$Env:GITHUB_RUN_ID" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
           echo "RUNNER_TOOL_CACHE=$Env:RUNNER_TOOL_CACHE" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
       shell: pwsh
 
-    # dotnet publish src/ClientUI/ClientUI.csproj -c Release -f net7.0-windows10.0.19041.0 -p:RuntimeIdentifierOverride=win10-x64 -p:PublishSingleFile=true -p:SelfContained=true
-    - name: Publish ${{ inputs.os }}
+    - name: 🧹 Dotnet Clean
+      run: dotnet clean --configuration Debug && dotnet nuget locals all --clear
+      shell: pwsh
+    
+    - name: 🎨 Dotnet Restore
+      run: dotnet restore
+      shell: pwsh
+
+    # dotnet publish src/ClientUI/ClientUI.csproj -c Release -f net9.0-windows10.0.19041.0 -p:RuntimeIdentifierOverride=win-x64 -p:PublishSingleFile=true -p:SelfContained=true
+    - name: 📢 Publish ${{ inputs.os }}
       run: dotnet publish ${{ github.workspace }}/src/ClientUI/ClientUI.csproj -c Release -f ${{ inputs.framework }} -p:RuntimeIdentifierOverride=${{ inputs.os }} -p:PublishSingleFile=true -p:SelfContained=true
       shell: pwsh
-
-    - name: Rename Config
-      run: Rename-Item ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os }}/configuration.example.json -NewName configuration.local.json
+    
+    - name: 📃 Log Dependencies
+      run: dotnet list package --include-transitive
       shell: pwsh
 
-    - name: Remove nested Publish Dir
-      run: Remove-Item ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os }}/publish -Recurse
-      shell: pwsh
+    # - name: Remove nested Publish Dir
+    #   run: Remove-Item ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os-path }}/publish -Recurse
+    #   shell: pwsh
 
     # Create Build Artifact
-    - name: Upload Artifact ui_${{ inputs.os }}_${{ github.run_number }}-${{ github.run_id }}
+    - name: ⤴ Upload Artifact ui_${{ inputs.os }}_${{ github.run_number }}-${{ github.run_id }}
       uses: actions/upload-artifact@v4
       with:
         name: ui_${{ inputs.os }}_${{ github.run_number }}-${{ github.run_id }}
-        path: ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os }}
+        path: ${{ github.workspace }}/src/ClientUI/bin/Release/${{ inputs.framework }}/${{ inputs.os-path }}
 
 
 # Installed Workload Id      Manifest Version       Installation Source
-# ---------------------------------------------------------------------
-# maui-android               7.0.92/7.0.100         VS 17.7.34031.279
-# android                    33.0.68/7.0.100        VS 17.7.34031.279
-# ios                        16.4.7098/7.0.100      VS 17.7.34031.279
-# maui-ios                   7.0.92/7.0.100         VS 17.7.34031.279
-# maui-windows               7.0.92/7.0.100         VS 17.7.34031.279
-# maui-maccatalyst           7.0.92/7.0.100         VS 17.7.34031.279
-# maccatalyst                16.4.7098/7.0.100      VS 17.7.34031.279
+# ---------------------------------------------------------------------------------
+# android                    35.0.7/9.0.100         SDK 9.0.100, VS 17.12.35527.113
+# aspire                     8.2.2/8.0.100          SDK 9.0.100, VS 17.12.35527.113
+# ios                        18.1.9163/9.0.100      SDK 9.0.100, VS 17.12.35527.113
+# maccatalyst                18.1.9163/9.0.100      SDK 9.0.100, VS 17.12.35527.113
+# maui                       9.0.0/9.0.100          SDK 9.0.100
+# maui-windows               9.0.0/9.0.100          SDK 9.0.100, VS 17.12.35527.113

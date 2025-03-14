@@ -8,4 +8,4 @@ Checkout the dedicated [Category](https://github.com/philosowaffle/peloton-to-ga
 
 ## Garmin Two Step Verification
 
-Yes, P2G supports Garmin's Multi-factor Authentication option!  However,oOnly some [install options have support](install/index.md) so you'll be limited to one of these options.
+Yes, P2G supports Garmin's Multi-factor Authentication option!  However, only some [install options have support](install/index.md) so you'll be limited to one of these options.

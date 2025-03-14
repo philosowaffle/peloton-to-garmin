@@ -1,46 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-        <!--<TargetFrameworks>net7.0-android;net7.0-ios;net7.0-maccatalyst</TargetFrameworks>-->
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.19041.0</TargetFrameworks>
-        <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
-        <!-- <TargetFrameworks>$(TargetFrameworks);net7.0-tizen</TargetFrameworks> -->
+		<MauiVersion>9.0.0</MauiVersion>
+        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
         <OutputType>Exe</OutputType>
         <RootNamespace>ClientUI</RootNamespace>
-        <UseMaui>true</UseMaui>
         <SingleProject>true</SingleProject>
         <ImplicitUsings>enable</ImplicitUsings>
         <EnableDefaultCssItems>false</EnableDefaultCssItems>
 
-        <WindowsPackageType Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">None</WindowsPackageType>
-        <WindowsAppSDKSelfContained Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">true</WindowsAppSDKSelfContained>
+		    <UseMaui>true</UseMaui>
+        <WindowsPackageType>None</WindowsPackageType>
         <PublishReadyToRun>false</PublishReadyToRun>
+        <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 
         <!-- Display name -->
         <ApplicationTitle>PelotonToGarmin</ApplicationTitle>
-
+        <Title>P2G ClientUI</Title>
+        <Authors>Philosowaffle</Authors>
+        <Product>P2G ClientUI</Product>
+		
         <!-- App Identifier -->
         <ApplicationId>com.philosowaffle.pelotontogarmin.clientui</ApplicationId>
         <ApplicationIdGuid>B01486E7-1F8D-4350-B68E-874A02A96694</ApplicationIdGuid>
 
         <!-- Versions -->
-        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-        <ApplicationVersion>1</ApplicationVersion>
+        <ApplicationDisplayVersion>5.0.0</ApplicationDisplayVersion>
+        <ApplicationVersion>5</ApplicationVersion>
 
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
-        <Title>P2G ClientUI</Title>
-        <Authors>Philosowaffle</Authors>
-        <Product>P2G ClientUI</Product>
     </PropertyGroup>
-
-	<!--<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-		<WindowsSdkPackageVersion>10.0.19041.52</WindowsSdkPackageVersion>
-	</PropertyGroup>-->
 
     <ItemGroup>
         <!-- App Icon -->
@@ -57,28 +47,101 @@
         <MauiFont Include="Resources\Fonts\*" />
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
-		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-    </ItemGroup>
+        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+
+        <!-- Don't Copy extra Configuration file to output, what we need is already in "Resources/Raw" -->
+        <Content Remove="configuration.local.json;configuration.example.json" />
+      </ItemGroup>
 
     <ItemGroup>
-      <Content Remove="Resources\Raw\configuration.local.json" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.20" />
-	<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+        <ProjectReference Include="..\SharedUI\SharedUI.csproj" />
+        <ProjectReference Include="..\Api.Service\Api.Service.csproj" />
+        <ProjectReference Include="..\Common\Common.csproj" />
     </ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\SharedUI\SharedUI.csproj" />
-		<ProjectReference Include="..\Api.Service\Api.Service.csproj" />
-		<ProjectReference Include="..\Common\Common.csproj" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.50" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.50" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <None Update="Resources\Splash\P2G-Splash.png">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	</ItemGroup>
+    <ItemGroup>
+      <None Update="Resources\Splash\P2G-Splash.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+<!-- https://github.com/microsoft/WindowsAppSDK/issues/4713 -->
+  <UsingTask TaskName="GenerateAppManifestFromAppx" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+        <ParameterGroup>
+            <RedirectDlls ParameterType="System.Boolean" Required="true" />
+            <MsixContentDir ParameterType="System.String" Required="true" />
+            <InAppxManifest ParameterType="System.String" Required="true" />
+            <OutAppManifest ParameterType="System.String" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Using Namespace="System.Collections.Generic" />
+            <Using Namespace="System.IO" />
+            <Using Namespace="System.Linq" />
+            <Using Namespace="System.Text" />
+            <Using Namespace="System.Xml" />
+            <Code Type="Fragment" Language="cs">
+                <![CDATA[
+            var headerF = @"<?xml version='1.0' encoding='utf-8' standalone='yes'?>
+<assembly manifestVersion='1.0'
+    xmlns:asmv3='urn:schemas-microsoft-com:asm.v3'
+    xmlns:winrtv1='urn:schemas-microsoft-com:winrt.v1'
+    xmlns='urn:schemas-microsoft-com:asm.v1'>";
+            var sb = new StringBuilder();
+            sb.AppendLine(headerF);
+            
+            var dllFileFormat = RedirectDlls ? 
+                @"    <asmv3:file name='{0}' loadFrom='%MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY%{0}'>" :
+                @"    <asmv3:file name='{0}'>";
+            if (!string.IsNullOrEmpty(InAppxManifest))
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.Load(InAppxManifest);
+                var nsmgr = new XmlNamespaceManager(doc.NameTable);
+                nsmgr.AddNamespace("m", "http://schemas.microsoft.com/appx/manifest/foundation/windows10");
+                var xQuery = "./m:Package/m:Extensions/m:Extension/m:InProcessServer";
+                var dllFiles = (from di in (new DirectoryInfo(MsixContentDir).EnumerateFiles("*.dll")) select di.Name).ToList();
+                foreach (XmlNode winRTFactory in doc.SelectNodes(xQuery, nsmgr))
+                {
+                    var dllFileNode = winRTFactory.SelectSingleNode("./m:Path", nsmgr);
+                    var dllFile = dllFileNode.InnerText;
+                    var typesNames = winRTFactory.SelectNodes("./m:ActivatableClass", nsmgr).OfType<XmlNode>();
+                    sb.AppendFormat(dllFileFormat, dllFile);
+                    sb.AppendLine();
+                    foreach (var typeNode in typesNames)
+                    {
+                        var attribs = typeNode.Attributes.OfType<XmlAttribute>().ToArray();
+                        var typeName = attribs
+                            .OfType<XmlAttribute>()
+                            .SingleOrDefault(x => x.Name == "ActivatableClassId")
+                            .InnerText;
+                        var xmlEntryFormat =
+@"        <winrtv1:activatableClass name='{0}' threadingModel='both'/>";
+                        sb.AppendFormat(xmlEntryFormat, typeName);
+                        sb.AppendLine();
+                        dllFiles.RemoveAll(e => e.Equals(dllFile, StringComparison.OrdinalIgnoreCase));
+                    }
+                    sb.AppendLine(@"    </asmv3:file>");
+                }
+                if(RedirectDlls)
+                {
+                    foreach (var dllFile in dllFiles)
+                    {
+                        sb.AppendFormat(dllFileFormat, dllFile);
+                        sb.AppendLine(@"</asmv3:file>");
+                    }
+                }
+            }
+            sb.AppendLine(@"</assembly>");
+            var manifestContent = sb.ToString();
+            File.WriteAllText(OutAppManifest, manifestContent, Encoding.UTF8);
+]]>
+            </Code>
+        </Task>
+    </UsingTask>
 
 </Project>

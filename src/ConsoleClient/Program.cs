@@ -108,7 +108,6 @@ static IHostBuilder CreateHostBuilder(string[] args)
 			// HTTP
 			var config = new AppConfiguration();
 			ConfigurationSetup.LoadConfigValues(hostContext.Configuration, config);
-			FlurlConfiguration.Configure(config.Observability);
 
 			services.AddHostedService<Startup>();
 		});

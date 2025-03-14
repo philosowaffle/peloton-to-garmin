@@ -58,14 +58,6 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 			return result;
 		}
 
-		if (!string.IsNullOrWhiteSpace(updatedFormatSettings.DeviceInfoPath)
-			&& !_fileHandler.FileExists(updatedFormatSettings.DeviceInfoPath))
-		{
-			result.Successful = false;
-			result.Error = new ServiceError() { Message = "The DeviceInfo path is either not accessible or does not exist." };
-			return result;
-		}
-
 		var settings = await _settingsService.GetSettingsAsync();
 		settings.Format = updatedFormatSettings;
 
@@ -84,6 +76,14 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 		{
 			result.Successful = false;
 			result.Error = new ServiceError() { Message = "Updated Garmin Settings must not be null or empty." };
+			return result;
+		}
+
+		if (!string.IsNullOrWhiteSpace(updatedGarminSettings.Password)
+			&& updatedGarminSettings.Password.Contains('\\'))
+		{
+			result.Successful = false;
+			result.Error = new ServiceError() { Message = "P2G does not support the `\\` character in passwords." };
 			return result;
 		}
 
@@ -110,6 +110,14 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 		{
 			result.Successful = false;
 			result.Error = new ServiceError() { Message = "Updated PelotonSettings must not be null or empty." };
+			return result;
+		}
+
+		if (!string.IsNullOrWhiteSpace(updatedPelotonSettings.Password) 
+			&& updatedPelotonSettings.Password.Contains('\\'))
+		{
+			result.Successful = false;
+			result.Error = new ServiceError() { Message = "P2G does not support the `\\` character in passwords." };
 			return result;
 		}
 

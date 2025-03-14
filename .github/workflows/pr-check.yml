@@ -1,66 +1,70 @@
-name: PR Check
+name: PR Check ✔
 
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ master, v4-wip ]
+    branches: [ master, v5-wip ]
 
 jobs:
 
   build-and-test:
+    name: ⚒🧪 Build and Test the code
     strategy:
       matrix:
-        dotnet: ['7.0']
+        dotnet: ['9.0.101']
         os: [windows-latest]
-        framework: ['net7.0-windows10.0.19041.0']
+        framework: ['net9.0-windows10.0.19041.0']
 
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v3
+    - name: ⤵ Checkout the code
+      uses: actions/checkout@v3
 
-    - name: Install dotnet
+    - name: 💾 Install dotnet
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ matrix.dotnet }}
 
-    - name: List SDKs
+    - name: 📃 List SDKs
       run: dotnet --list-sdks
     
-    - name: Restore MAUI Workloads
+    - name: 🎨 Restore MAUI Workloads
       run: dotnet workload restore
       shell: pwsh
 
-    - name: List MAUI Workloads
+    - name: 📃 List MAUI Workloads
       run: dotnet workload list
       shell: pwsh
 
-    - name: Clean
+    - name: 🧹 Dotnet Clean
       run: dotnet clean --configuration Debug && dotnet nuget locals all --clear
     
-    - name: Restore
+    - name: 🎨 Dotnet Restore
       run: dotnet restore
 
-    - name: Build
+    - name: ⚒ Dotnet Build
       run: dotnet build --no-restore --configuration Debug
 
-    - name: Test
+    - name: 🧪 Dotnet Test
       run: dotnet test
 
   publish-ui-dist:
-    name: Publish UI Distribution
+    name: 📢 Publish UI Distribution
     runs-on: 'windows-latest'
     needs: build-and-test
     strategy:
       matrix:
-        dotnet: [ '7.0.410' ]
-        framework: ['net7.0-windows10.0.19041.0']
-        os: [ 'win10-x64' ]
+        dotnet: [ '9.0.101' ]
+        framework: ['net9.0-windows10.0.19041.0']
+        os: [ 'win-x64' ]
 
     steps:
 
-      - uses: actions/checkout@v3
-      - name: Publish UI Distribution
+      - name: ⤵ Checkout the code
+        uses: actions/checkout@v3
+
+      - name: 📢 Publish UI Distribution
         uses: ./.github/actions/publish-ui-dist
         with:
           dotnet-version: ${{ matrix.dotnet }}
@@ -68,7 +72,7 @@ jobs:
           framework: ${{ matrix.framework }}
  
   publish-docker-images:
-    name: Publish Docker Images
+    name: 📢 Publish Docker Images
     runs-on: ubuntu-latest
     needs: build-and-test
     strategy:
@@ -84,8 +88,10 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v3
-    - name: Publish Docker Images
+    - name: ⤵ Checkout the code
+      uses: actions/checkout@v3
+
+    - name: 📢 Publish Docker Images
       uses: ./.github/actions/publish-docker-images
       with:
         dockerfile: ${{ matrix.dockerfile }}

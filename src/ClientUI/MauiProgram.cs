@@ -64,9 +64,17 @@ public static class MauiProgram
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
 		builder.Logging.AddDebug();
+		builder.Services.AddLogging(logging =>
+		{
+			//logging.AddFilter("Microsoft.AspNetCore.Components.WebView", LogLevel.Trace);
+			logging.SetMinimumLevel(LogLevel.Trace);
+		});
 #endif
+		var app = builder.Build();
 
-		return builder.Build();
+		ObservabilityStartup.ConfigureFlurl(app.Services, config);
+
+		return app;
 	}
 
 	private static void InitObservabilityConfigFile(string sourceFileName, string destinationPath)
@@ -76,21 +84,28 @@ public static class MauiProgram
 		using BinaryWriter writer = new BinaryWriter(outputStream);
 		using (BinaryReader reader = new BinaryReader(fs))
 		{
-			var bytesRead = 0;
-
-			int bufferSize = 1024;
-			var buffer = new byte[bufferSize];
-			using (fs)
+			try
 			{
-				do
+				var bytesRead = 0;
+
+				int bufferSize = 1024;
+				var buffer = new byte[bufferSize];
+				using (fs)
 				{
-					buffer = reader.ReadBytes(bufferSize);
-					bytesRead = buffer.Count();
-					writer.Write(buffer);
+					do
+					{
+						buffer = reader.ReadBytes(bufferSize);
+						bytesRead = buffer.Count();
+						writer.Write(buffer);
+					}
+
+					while (bytesRead > 0);
+
 				}
-
-				while (bytesRead > 0);
-
+			}
+			catch (Exception ex)
+			{
+				Console.Out.WriteLine(ex.ToString());
 			}
 		}
 	}

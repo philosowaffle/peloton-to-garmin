@@ -63,7 +63,7 @@ public class SettingsGarminPostRequest
 	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
-	public GarminApiSettings Api { get; set; }
+	public GarminApiSettings Api { get; set; } = new GarminApiSettings();
 }
 
 public class SettingsPelotonGetResponse
@@ -73,6 +73,7 @@ public class SettingsPelotonGetResponse
 		ExcludeWorkoutTypes = new List<WorkoutType>();
 	}
 
+	public bool IsConfigured => !string.IsNullOrWhiteSpace(Email) && IsPasswordSet;
 	public bool IsPasswordSet { get; set; }
 	public string? Email { get; set; }
 	public string? Password { get; set; }

@@ -20,9 +20,11 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Peloton;
 using Serilog;
+using Sync;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -83,7 +85,7 @@ namespace UnitTests
 		//	var email = "";
 		//	var password = "";
 
-		//	var workoutId = "13afceebe0f74a338f60bf9d70f657ef";
+		//	var workoutId = "a077628f85954e979b2635490b6e3c86";
 		//	var userId = "";
 
 		//	var settings = new Settings()
@@ -99,16 +101,21 @@ namespace UnitTests
 		//	var settingMock = autoMocker.GetMock<ISettingsService>();
 		//	settingMock.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
 
-		//	var client = new ApiClient(settingMock.Object);
+		//	var client = new PelotonApiClient(settingMock.Object);
 
 		//	//var recentWorkouts = await client.GetWorkoutsAsync(userId, 5, 0);
-		//	var workouts = await client.GetWorkoutsAsync(System.DateTime.UtcNow.AddDays(-1), System.DateTime.UtcNow);
-		//	var workoutSamples = await client.GetWorkoutSamplesByIdAsync(workoutId);
+		//	//var workouts = await client.GetWorkoutsAsync(System.DateTime.UtcNow.AddDays(-1), System.DateTime.UtcNow);
+		//	var workout = await client.GetRawWorkoutByIdAsync(workoutId);
+		//	var workoutSamples = await client.GetRawWorkoutSamplesByIdAsync(workoutId);
+		//	//var workoutSegments = await client.GetRawClassSegmentsAsync("779fab8b986147f5af8bc385b4bc6bcf");
+		//	//"tracking_type": "time_tracked_rep"
 
 		//	//await client.GetUserDataAsync();
 
 		//	//Log.Debug(workoutSamples.ToString());
-		//	SaveRawData(workoutSamples, workoutId, DataDirectory);
+		//	SaveRawData(workout, "blah", DataDirectory);
+		//	//SaveRawData(workoutSegments, workoutId, DataDirectory);
+		//	//SaveRawData(workoutSamples, workoutId, DataDirectory);
 		//}
 
 		//[Test]
@@ -117,7 +124,7 @@ namespace UnitTests
 		//	var email = "";
 		//	var password = "";
 
-		//	var workoutId = "98c617d5c56f4f1ab6fc250afc9aea5f";
+		//	var workoutId = "a077628f85954e979b2635490b6e3c86";
 
 		//	var settings = new Settings()
 		//	{
@@ -142,13 +149,13 @@ namespace UnitTests
 		//	SaveData(p2gWorkout, workoutId, DataDirectory);
 
 		//	// CONVERT TO FIT & SAVE
-		//	//var fitConverter = new ConverterInstance(settingsService.Object, new IOWrapper());
-		//	//var file = Path.Join(DataDirectory, $"{workoutId}_workout.json");
-		//	//var messages = await fitConverter.Convert(file, settings);
+		//	var fitConverter = new ConverterInstance(settingsService.Object, new IOWrapper());
+		//	var file = Path.Join(DataDirectory, $"{workoutId}_workout.json");
+		//	var messages = await fitConverter.Convert(file, settings);
 
-		//	//var output = Path.Join(DataDirectory, "output.fit");
+		//	var output = Path.Join(DataDirectory, "output.fit");
 
-		//	//fitConverter.Save(messages, output);
+		//	fitConverter.Save(messages, output);
 		//}
 
 		//[Test]
@@ -178,6 +185,61 @@ namespace UnitTests
 
 		//	var fitConverter = new ConverterInstance(settingsService.Object, fileHandler);
 		//	var messages = await fitConverter.Convert(file, settings);
+
+		//	var output = Path.Join(DataDirectory, "output.fit");
+
+		//	fitConverter.Save(messages, output);
+		//}
+
+		//[Test]
+		//public async Task Convert_Stacked_Classes()
+		//{
+		//	var email = "";
+		//	var password = "";
+
+		//	var workoutId1 = "98c87f674a1848068d5aea14f73f3b1e"; // 98c87f674a1848068d5aea14f73f3b1e_10_min_Dalmatian_Coast_Ride.fit
+		//	var workoutId2 = "3ce6e73be6434462a1940e20c1d61e5a"; // 3ce6e73be6434462a1940e20c1d61e5a_20_min_Bay_of_Kotor_Ride.fit
+
+		//	var settings = new Settings()
+		//	{
+		//		Peloton = new()
+		//		{
+		//			Email = email,
+		//			Password = password,
+		//		}
+		//	};
+
+		//	var autoMocker = new AutoMocker();
+		//	var settingMock = autoMocker.GetMock<ISettingsService>();
+		//	settingMock.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
+		//	settingMock.Setup(s => s.GetCustomDeviceInfoAsync(It.IsAny<Workout>())).ReturnsAsync(Format.DefaultDeviceInfoSettings[WorkoutType.Cycling]);
+
+		//	var fileHandler = autoMocker.GetMock<IFileHandling>();
+
+		//	// Download Workout data from Peloton
+		//	//var client = new Peloton.ApiClient(settingMock.Object);
+		//	//var service = new PelotonService(settingMock.Object, client, fileHandler.Object);
+
+		//	//var p2gWorkout1 = await service.GetWorkoutDetailsAsync(workoutId1);
+		//	//SaveData(p2gWorkout1, workoutId1, DataDirectory);
+		//	//var p2gWorkout2 = await service.GetWorkoutDetailsAsync(workoutId2);
+		//	//SaveData(p2gWorkout2, workoutId2, DataDirectory);
+
+		//	// Load Workout data from File
+		//	var p2gWorkout1Path = Path.Join(DataDirectory, $"{workoutId1}_workout.json");
+		//	var p2gWorkout2Path = Path.Join(DataDirectory, $"{workoutId2}_workout.json");
+		//	var _fileHandler = new IOWrapper();
+		//	var p2gWorkout1 = _fileHandler.DeserializeJsonFile<P2GWorkout>(p2gWorkout1Path);
+		//	var p2gWorkout2 = _fileHandler.DeserializeJsonFile<P2GWorkout>(p2gWorkout2Path);
+
+		//	var stacks = StackedWorkoutsCalculator.GetStackedWorkouts(new List<P2GWorkout>() { p2gWorkout1,  p2gWorkout2 }, 300);
+		//	var stackedClasses = StackedWorkoutsCalculator.CombineStackedWorkouts(stacks);
+
+		//	var stackedWorkout = stackedClasses.FirstOrDefault();
+		//	SaveData(stackedWorkout, "stackedWorkout", DataDirectory);
+
+		//	var fitConverter = new ConverterInstance(settingMock.Object, fileHandler.Object);
+		//	var messages = await fitConverter.Convert(stackedClasses.FirstOrDefault(), settings);
 
 		//	var output = Path.Join(DataDirectory, "output.fit");
 
@@ -226,6 +288,13 @@ namespace UnitTests
 			{
 				var workoutData = fileHandler.DeserializeJsonFile<P2GWorkout>(path);
 				var converted = await this.ConvertInternalAsync(workoutData, settings);
+
+				return converted;
+			}
+
+			public async Task<Tuple<string, ICollection<Mesg>>> Convert(P2GWorkout workout, Settings settings)
+			{
+				var converted = await this.ConvertInternalAsync(workout, settings);
 
 				return converted;
 			}

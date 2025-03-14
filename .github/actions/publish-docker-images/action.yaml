@@ -1,4 +1,4 @@
-name: 'Publish Docker Images'
+name: '📢 Publish Docker Images'
 description: 'Publishes the Docker Images'
 inputs:
   dockerfile:
@@ -25,35 +25,35 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Set up QEMU
+    - name: 💾 Install QEMU
       uses: docker/setup-qemu-action@v2
       with:
         platforms: linux/amd64,linux/arm64,linux/arm/v7
 
-    - name: Set up Docker Buildx
+    - name: 💾 Install Docker Buildx
       uses: docker/setup-buildx-action@v2
       with:
         platforms: linux/amd64,linux/arm64,linux/arm/v7
 
-    - name: Login to Docker Hub
+    - name: 🗝 Login to Docker Hub
       uses: docker/login-action@v2
       with:
         username: ${{ inputs.secret_docker_username }}
         password: ${{ inputs.secret_docker_password }}
       
-    - name: Login to GitHub Container Registry
+    - name: 🗝 Login to GitHub Container Registry
       uses: docker/login-action@v2
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ inputs.secret_github_package }}
       
-    - name: Prepare env
+    - name: ⚙ Prepare env
       run: |
         echo "BUILD_VERSION=${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}" >> $GITHUB_ENV
       shell: bash
 
-    - name: Build & Push Tag to Package Repositories
+    - name: ⚒⤴ Build & Push Tag to Package Repositories 🏷 {{ inputs.tag }}
       if: inputs.version_tag == ''
       id: docker_build_1
       uses: docker/build-push-action@v3
@@ -66,12 +66,12 @@ runs:
             ${{ inputs.secret_docker_username }}/peloton-to-garmin:${{ inputs.tag }}
             ghcr.io/${{ github.repository_owner }}/peloton-to-garmin:${{ inputs.tag }}
 
-    - name: Image digest
+    - name: 📃 Image digest
       if: inputs.version_tag == ''
       run: echo ${{ steps.docker_build_1.outputs.digest }}
       shell: bash
     
-    - name: Build & Push Version Tags to Package Repositories
+    - name: ⚒⤴ Build & Push Version Tags to Package Repositories 🏷 {{ inputs.tag }}
       if: inputs.version_tag != ''
       id: docker_build_2
       uses: docker/build-push-action@v3
@@ -88,7 +88,7 @@ runs:
             ghcr.io/${{ github.repository_owner }}/peloton-to-garmin:${{ inputs.version_tag }}
             ghcr.io/${{ github.repository_owner }}/peloton-to-garmin:${{ inputs.major_version_tag }}
 
-    - name: Image digest
+    - name: 📃 Image digest
       if: inputs.version_tag != ''
       run: echo ${{ steps.docker_build_2.outputs.digest }}
       shell: bash

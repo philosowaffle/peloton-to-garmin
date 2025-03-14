@@ -27,6 +27,8 @@ Head on over to the [Wiki](https://philosowaffle.github.io/peloton-to-garmin) to
 
 Special thanks to all the [contributors](https://github.com/philosowaffle/peloton-to-garmin/graphs/contributors) who have helped improve this project!
 
+If you're interested in contributing to P2G, [start here](https://philosowaffle.github.io/peloton-to-garmin/latest/contributing/).
+
 ## Warnings
 
 ⚠️ WARNING!!! For the Console or Docker Headless deployments your username and password for Peloton and Garmin Connect are stored in clear text, WHICH IS NOT SECURE. If you have concerns about storing your credentials in an unsecure file, do not use this option.
