@@ -22,15 +22,13 @@ jobs:
     # The type of runner that the job will run on
     container: 
       image:  philosowaffle/peloton-to-garmin:console-stable
-      env:
-        OUTPUT_DIR: /app/output        
     steps:
 
     - run: id
     - run: ls -la
 
     - name: 📁Create output directory
-      run: mkdir -p ${{ env.OUTPUT_DIR }}
+      run: mkdir -p /app/output
 
     - name: 🗃 Create config file
       env:
@@ -94,7 +92,7 @@ jobs:
       run: |
         apt-get update
         apt-get install -y zip
-        zip -r -j output.zip ${{ env.OUTPUT_DIR }}
+        zip -r -j output.zip /app/output
         
     - name: ⤴ Upload output directory
       uses: actions/upload-artifact@v4
