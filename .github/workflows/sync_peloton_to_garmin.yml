@@ -19,13 +19,9 @@ jobs:
   sync:
     name: 🔄 Sync
     runs-on: ubuntu-latest
-    # The type of runner that the job will run on
     container: 
       image:  philosowaffle/peloton-to-garmin:console-stable
     steps:
-
-    - run: id
-    - run: ls -la
 
     - name: 📁Create output directory
       run: mkdir -p /app/output
@@ -87,10 +83,11 @@ jobs:
         TZ: America/Chicago
 
     - name: 💾 Save to output directory
-      uses: vimtor/action-zip@v1.2
-      with:
-        files: /app/output # must be relative to gh workspace, does not support absolute paths :(
-        dest: output.zip # this is hardcoded to output to ${{ github.workspace }}/ :(
+      # saveLocalCopy can be set when workflow action is manually run otherwise it's always skipped 
+      if: ${{ github.event.inputs.saveLocalCopy == 'true' }}
+      run: |
+        apt-get install -y zip
+        zip -r -j output.zip /app/output
 
     - name: ⤴ Upload output directory
       uses: actions/upload-artifact@v4
