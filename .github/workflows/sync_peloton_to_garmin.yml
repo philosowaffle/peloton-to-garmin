@@ -87,13 +87,11 @@ jobs:
         TZ: America/Chicago
 
     - name: 💾 Save to output directory
-      # saveLocalCopy can be set when workflow action is manually run otherwise it's always skipped 
-      if: ${{ github.event.inputs.saveLocalCopy == 'true' }}
-      run: |
-        apt-get update
-        apt-get install -y zip
-        zip -r -j output.zip /app/output
-        
+      uses: vimtor/action-zip@v1.2
+      with:
+        files: /app/output # must be relative to gh workspace, does not support absolute paths :(
+        dest: output.zip # this is hardcoded to output to ${{ github.workspace }}/ :(
+
     - name: ⤴ Upload output directory
       uses: actions/upload-artifact@v4
       if: ${{ github.event.inputs.saveLocalCopy == 'true' }}
