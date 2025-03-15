@@ -22,13 +22,12 @@ jobs:
     # The type of runner that the job will run on
     container: 
       image:  philosowaffle/peloton-to-garmin:console-stable
+      env:
+        OUTPUT_DIR: /app/output        
     steps:
 
     - run: id
     - run: ls -la
-
-    - name: ⚙ Configure output directory
-      run: echo "OUTPUT_DIR=/app/output" >> $GITHUB_ENV
 
     - name: 📁Create output directory
       run: mkdir -p ${{ env.OUTPUT_DIR }}
