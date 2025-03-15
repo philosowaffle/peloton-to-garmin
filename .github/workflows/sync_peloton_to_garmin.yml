@@ -24,6 +24,9 @@ jobs:
       image:  philosowaffle/peloton-to-garmin:console-stable
     steps:
 
+    - run: id
+    - run: ls -la
+
     - name: ⚙ Configure output directory
       run: echo "OUTPUT_DIR=/app/output" >> $GITHUB_ENV
 
