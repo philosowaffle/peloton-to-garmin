@@ -86,8 +86,6 @@ jobs:
       # saveLocalCopy can be set when workflow action is manually run otherwise it's always skipped 
       if: ${{ github.event.inputs.saveLocalCopy == 'true' }}
       run: |
-        sudo apt-get update
-        sudo apt-get install -y zip
         zip -r -j output.zip /app/output
 
     - name: ⤴ Upload output directory
