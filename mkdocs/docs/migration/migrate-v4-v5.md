@@ -9,7 +9,7 @@ First, identify your [install method](../install/index.md#-start-here-to-explore
 |:----------------|:------------------|:----------------|:-------------|:-------------|:------------|
 | [.NET 9](#net-9) | ✔️ | ❌ | ❌ | ❌ | ❌ |
 | [DeviceInfoPath replaced by DeviceInfoSettings](#deviceinfopath-replaced-by-deviceinfosettings) | ✔️ | ✔️ | ❌ | ✔️ | ❌ |
-| [Fixed Non-Root Docker](#fixed-non-root-docker) | ❌ | ✔️ | ✔️ | ❌ | ❌ |
+| [Fixed Non-Root Docker](#fixed-non-root-docker) | ❌ | ✔️ | ✔️ | ✔️ | ❌ |
 
 ## Breaking Changes
 
@@ -38,3 +38,7 @@ If you encounter issues, start by trying the below steps:
 1. Ensure you have created a Group `p2g` with GroupId of `1015`, see [Docker User](../install/docker.md#docker-user)
 1. Ensure existing config and setting files are editable by the `p2g` Group
 1. Update your containers to run with `user: :p2g`. See [docker-compose.yaml](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/docker-compose-ui.yaml)
+
+#### GitHub Action Users
+
+If you use GitHub Actions for running P2G then the fix for this has already been applied to the latest version of the workflow file.  You can follow the normal [Updating steps](../install/github-action.md#️updating) to get the latest version.
