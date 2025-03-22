@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     container: 
       image:  philosowaffle/peloton-to-garmin:console-stable
+      options: --user root
     steps:
 
     - name: 📁Create output directory
