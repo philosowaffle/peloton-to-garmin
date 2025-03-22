@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.8">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.9">
     
     
       
@@ -30,7 +30,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.8608ea7d.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4af4bdda.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -565,14 +565,23 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#docker-compose" class="md-nav__link">
+  <a href="#install" class="md-nav__link">
     <span class="md-ellipsis">
-      docker-compose
+      ⬇️ Install
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="docker-compose">
+    <nav class="md-nav" aria-label="⬇️ Install">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#to-stop-p2g" class="md-nav__link">
@@ -584,9 +593,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#to-update-p2g" class="md-nav__link">
+  <a href="#open-api" class="md-nav__link">
     <span class="md-ellipsis">
-      To update P2G
+      Open Api
     </span>
   </a>
   
@@ -598,18 +607,36 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration" class="md-nav__link">
+  <a href="#updating" class="md-nav__link">
     <span class="md-ellipsis">
-      Configuration
+      ⬆️ Updating
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#open-api" class="md-nav__link">
+  <a href="#uninstalling" class="md-nav__link">
     <span class="md-ellipsis">
-      Open Api
+      ❌ Uninstalling
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changing-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      #️⃣ Changing Versions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multiple-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      👪 Multiple Users
     </span>
   </a>
   
@@ -1254,14 +1281,23 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#docker-compose" class="md-nav__link">
+  <a href="#install" class="md-nav__link">
     <span class="md-ellipsis">
-      docker-compose
+      ⬇️ Install
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="docker-compose">
+    <nav class="md-nav" aria-label="⬇️ Install">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#to-stop-p2g" class="md-nav__link">
@@ -1273,9 +1309,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#to-update-p2g" class="md-nav__link">
+  <a href="#open-api" class="md-nav__link">
     <span class="md-ellipsis">
-      To update P2G
+      Open Api
     </span>
   </a>
   
@@ -1287,18 +1323,36 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration" class="md-nav__link">
+  <a href="#updating" class="md-nav__link">
     <span class="md-ellipsis">
-      Configuration
+      ⬆️ Updating
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#open-api" class="md-nav__link">
+  <a href="#uninstalling" class="md-nav__link">
     <span class="md-ellipsis">
-      Open Api
+      ❌ Uninstalling
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changing-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      #️⃣ Changing Versions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multiple-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      👪 Multiple Users
     </span>
   </a>
   
@@ -1332,7 +1386,7 @@
 <li>OpenApi for custom scripts and workflows</li>
 </ol>
 <p><img alt="P2G UI Demo" src="../../img/p2g_demo.gif" title="P2G UI Demo" /></p>
-<h2 id="docker-compose">docker-compose</h2>
+<h2 id="install">⬇️ Install</h2>
 <p><em>Pre-requisite:</em> You have either <code>docker-compose</code> or <code>Docker Desktop</code> installed</p>
 <ol>
 <li>Create a folder named <code>p2g-webui</code><ol>
@@ -1347,7 +1401,7 @@
 </ol>
 </li>
 <li>Open a terminal in the <code>p2g-webui</code> folder</li>
-<li>Run: <code>docker-compose pull &amp;&amp; docker-compose up -d</code><ol>
+<li>Run: <code>docker compose pull &amp;&amp; docker compose up -d</code><ol>
 <li>This will pull the containers and start them up running in the background</li>
 <li>You can close the terminal at this time</li>
 </ol>
@@ -1355,25 +1409,55 @@
 <li>Open a browser and navigate to <code>http://localhost:8002</code></li>
 </ol>
 <p>Any logs or generated files will be available in the <code>output</code> directory.  Additionally, you can learn more about customizing your configuration over in the <a href="../../configuration/">Configuration Section</a></p>
+<h3 id="configuration">Configuration</h3>
+<p>You can learn more about customizing your configuration over in the <a href="../../configuration/">Configuration Section</a>.</p>
+<p>If you are migrating to the Web UI for the first time you will need to reconfigure most of your settings using the user interface.  The only settings that are carried over and still configured via the configuration file are the ones related to <code>Observability</code>.</p>
 <h3 id="to-stop-p2g">To stop P2G</h3>
 <ol>
 <li>You can use Docker Desktop application to kill the containers</li>
 <li>Or, you can open a terminal in the <code>p2g-webui</code> folder<ol>
-<li>Run: <code>docker-compose down</code></li>
+<li>Run: <code>docker compose down</code></li>
 </ol>
 </li>
 </ol>
-<h3 id="to-update-p2g">To update P2G</h3>
+<h3 id="open-api">Open Api</h3>
+<p>To access the Open API spec  for P2G you will need to expose port <code>8080</code> on the Api docker container.  The open API spec will be available at <code>http://localhost:8001/swagger</code>.</p>
+<h2 id="updating">⬆️ Updating</h2>
 <ol>
 <li>Open a terminal in the <code>p2g-webui</code> folder<ol>
-<li>Run: <code>docker-compose pull &amp;&amp; docker-compose up -d</code></li>
+<li>Run: <code>docker compose pull &amp;&amp; docker compose up -d</code></li>
 </ol>
 </li>
 </ol>
-<h2 id="configuration">Configuration</h2>
-<p>If you are migrating to the Web UI for the first time you will need to reconfigure most of your settings using the user interface.  The only settings that are carried over and still configured via the configuration file are the ones related to <code>Observability</code>.</p>
-<h2 id="open-api">Open Api</h2>
-<p>To access the Open API spec  for P2G you will need to expose port <code>8080</code> on the Api docker container.  The open API spec will be available at <code>http://localhost:8001/swagger</code>.</p>
+<h2 id="uninstalling">❌ Uninstalling</h2>
+<ol>
+<li>You can use Docker Desktop application to kill the containers and delete the images</li>
+<li>Or, you can open a terminal in the <code>p2g-webui</code> folder<ol>
+<li>Run: <code>docker compose down &amp;&amp; docker compose rm</code></li>
+</ol>
+</li>
+<li>Finally, delete the <code>p2g-webui</code> folder</li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is non-recoverable.  Any and all customizations will be lost.  You can re-install P2G again by starting over.</p>
+</div>
+<h2 id="changing-versions">#️⃣ Changing Versions</h2>
+<ol>
+<li>Find the image tags you want from the <a href="https://github.com/philosowaffle/peloton-to-garmin/releases">releases page</a></li>
+<li>Update the <a href="https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/webui/docker-compose-ui.yaml">docker-compose.yaml</a> containers to reference those tags.</li>
+<li>Restart the containers<ol>
+<li>Run: <code>docker compose down &amp;&amp; docker compose up -d</code></li>
+</ol>
+</li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Attempting to use configuration or data from a later version of P2G with an older version is not guaranteed to work. You may need to reconfigure your instance.</p>
+</div>
+<h2 id="multiple-users">👪 Multiple Users</h2>
+<p>To setup P2G for an additional user, simply download P2G run through the install process again in a new folder named <code>&lt;PersonsName&gt;-P2G</code>.  You will also need to update the <code>docker-compose.yaml</code> file to use unique names and ports for the containers.</p>
+<p>For this setup, tt is recommended to place P2G behind a reverse-proxy with authentication.  However, that is outside the scope of this documentation.</p>
 
 
 
