@@ -19,7 +19,21 @@ This Garmin Settings provide settings related to uploading workouts to Garmin.
     "Password": "garmin",
     "TwoStepVerificationEnabled": false,
     "Upload": false,
-    "FormatToUpload": "fit"
+    "FormatToUpload": "fit",
+    "api": {
+      "ssoSignInUrl": "https://sso.garmin.com/sso/signin",
+      "ssoEmbedUrl": "https://sso.garmin.com/sso/embed",
+      "ssoMfaCodeUrl": "https://sso.garmin.com/sso/verifyMFA/loginEnterMfaCode",
+      "ssoUserAgent": "GCM-iOS-5.7.2.1",
+      "oAuth1TokenUrl": "https://connectapi.garmin.com/oauth-service/oauth/preauthorized",
+      "oAuth1LoginUrlParam": "https://sso.garmin.com/sso/embed&accepts-mfa-tokens=true",
+      "oAuth2RequestUrl": "https://connectapi.garmin.com/oauth-service/oauth/exchange/user/2.0",
+      "uploadActivityUrl": "https://connectapi.garmin.com/upload-service/upload",
+      "uploadActivityUserAgent": "GCM-iOS-5.7.2.1",
+      "uplaodActivityNkHeader": "NT",
+      "origin": "https://sso.garmin.com",
+      "referer": "https://sso.garmin.com/sso/signin"
+    }
   }
 ```
 
@@ -38,3 +52,4 @@ This Garmin Settings provide settings related to uploading workouts to Garmin.
 | TwoStepVerificationEnabled | no | `false` | `Garmin Tab` | Whether or not your Garmin account is protected by Two Step Verification |
 | Upload | no | `false` | `Garmin Tab` |  `true` indicates you wish downloaded Peloton workouts to be uploaded to Garmin Connect. |
 | FormatToUpload | no | `fit` | `Garmin Tab > Advanced` | Valid values are `fit` or `tcx`. Ensure the format you specify here is also enabled in your [Format config](format.md) |
+| Api | no | See sample above | `Garmin Tab > Advanced > Garmin Api Settings` | Configures how P2G communicates with the Garmin Api. **Do not modify unless told to do so** |

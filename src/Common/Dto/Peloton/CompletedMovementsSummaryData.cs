@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace Common.Dto.Peloton;
 
@@ -17,12 +16,20 @@ public record RepetitionSummaryData
 {
 	public string Movement_Id { get; init; }
 	public string Movement_Name { get; init; }
-
 	/// <summary>
-	/// True when doing the exercise for Time instead of for Reps
+	/// When doing the exercise for time, this will be `time_tracked_rep`.
 	/// </summary>
-	public bool Is_Hold { get; init; }
-	public int Completed_Number { get; init; }
+	public string Tracking_Type { get; init; } // time_tracked_rep, rep_counting, time_based
+	/// <summary>
+	/// Completed reps by the user (as measured by Peloton),.
+	/// Only set for time_tracked_rep, rep_counting
+	/// </summary>
+	public int Completed_Reps { get; init; }
+	/// <summary>
+	/// This will only be set when the Tracking_Type is
+	/// time_traced_rep or time_based.
+	/// </summary>
+	public int Completed_Duration { get; init; }
 	/// <summary>
 	/// Seconds offset from start.... I think?
 	/// </summary>
@@ -32,6 +39,14 @@ public record RepetitionSummaryData
 	/// </summary>
 	public int Length { get; init; }
 	public ICollection<Weight> Weight { get; init; }
+}
+
+public static class TrackingTypes
+{
+	public const string TimeTrackedRep = "time_tracked_rep";
+	public const string RepCounting = "rep_counting";
+	public const string TimeBased = "time_based";
+	public const string Rounds = "rouds"; // AMRAP
 }
 
 public record Weight

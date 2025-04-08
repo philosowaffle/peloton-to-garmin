@@ -5,38 +5,46 @@
 
 <PageTitle>Annual Challenge Progress</PageTitle>
 
+<h2>Annual Challenge Progress</h2>
+<ul style="list-style: none; padding-left: 0;">
+    <li>So far you have averaged <b>@Math.Round(annualProgress.CurrentDailyPace, 2)</b> min/day and <b>@Math.Round(annualProgress.CurrentWeeklyPace, 2)</b> min/week.</li>
+</ul>
 
 <div class="row mb-3">
-        @foreach (var tier in annualProgress.Tiers)
-        {
-            <HxCard style="border: 0px;">
-                <BodyTemplate>
-                    <HxProgress Height="50">
-                        <img src="@tier.BadgeUrl" height="50" width="50">
-                        <HxProgressBar Value="@tier.PercentComplete" Label="@GetProgressLabel(annualProgress.EarnedMinutes, tier.RequiredMinutes)" Color="@GetThemeColor(tier.IsOnTrackToEarndByEndOfYear)" />
-                    </HxProgress>
-                    
-                    @if (!tier.HasEarned)
-                    {
-                        <ul style="list-style: none; padding-left: 0;">
-                            <li>Badge requires averaging <b>@Math.Round(tier.MinutesNeededPerDay, 2)</b> min/day or <b>@Math.Round(tier.MinutesNeededPerWeek, 2)</b> min/week.</li>
-                                @if (!tier.IsOnTrackToEarndByEndOfYear)
-                                {
-                                    <li>You are <b>@Math.Round(tier.MinutesBehindPace, 2)</b> minutes behind pace.</li>
-                                }
-                            <li>You need <b>@Math.Round(tier.MinutesNeededPerDayToFinishOnTime, 2)</b> min/day or <b>@Math.Round(tier.MinutesNeededPerWeekToFinishOnTime, 2)</b> min/week in order to finish in time.</li>
-                        </ul>
-                    }
-                
-                </BodyTemplate>
-            </HxCard>
-            <br />
-        }
+     @foreach (var tier in annualProgress.Tiers)
+    {
+        <HxCard style="border: 0px;">
+            <BodyTemplate>
+                <HxProgress Height="50">
+                    <img src="@tier.BadgeUrl" height="50" width="50">
+                    <HxProgressBar Value="@tier.PercentComplete" Label="@GetProgressLabel(annualProgress.EarnedMinutes, tier.RequiredMinutes)" Color="@GetThemeColor(tier.IsOnTrackToEarndByEndOfYear)" />
+                </HxProgress>
+
+                @if (!tier.HasEarned)
+                {
+                    <ul style="list-style: none; padding-left: 0;">
+                        <li>Badge requires averaging <b>@Math.Round(tier.MinutesNeededPerDay, 2)</b> min/day or <b>@Math.Round(tier.MinutesNeededPerWeek, 2)</b> min/week.</li>
+                        @if (!tier.IsOnTrackToEarndByEndOfYear)
+                        {
+                            <li>You are <b>@Math.Round(tier.MinutesBehindPace, 2)</b> minutes behind pace.</li>
+                        }
+                        <li>You need <b>@Math.Round(tier.MinutesNeededPerDayToFinishOnTime, 2)</b> min/day or <b>@Math.Round(tier.MinutesNeededPerWeekToFinishOnTime, 2)</b> min/week in order to finish in time.</li>
+                    </ul>
+                }
+
+            </BodyTemplate>
+        </HxCard>
+        <br />
+    }
 </div>
 
 <div class="row justify-content-start">
 
-    @if (!loading && !annualProgress.Tiers.Any())
+    @if (!loading && PelotonSettingNotConfiguredYet)
+    {
+        <HxAlert Color="ThemeColor.Primary"><HxIcon Icon="@BootstrapIcon.GearFill" /> Head on over to the <a href="settings">Settings</a> page to connect to Peloton.</HxAlert>
+    }
+    else if (!loading && !annualProgress.Tiers.Any())
     {
         <HxAlert Color="ThemeColor.Primary">Looks like you haven't signed up for the Peloton Annual Challenge yet. <a href="https://members.onepeloton.com/challenges/active">Join the challenge on Peloton</a> then check back here!</HxAlert>
     }
@@ -45,6 +53,7 @@
 @code {
     private ProgressGetResponse annualProgress;
     private bool loading = true;
+    private bool PelotonSettingNotConfiguredYet = false;
 
     public AnnualChallengeProgress() : base(nameof(AnnualChallengeProgress))
     {
@@ -54,6 +63,16 @@
     protected override async Task OnInitializedAsync()
     {
         using var tracing = Tracing.ClientTrace($"{nameof(ProgressGetResponse)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+
+        var settings = await _apiClient.SettingsGetAsync();
+        PelotonSettingNotConfiguredYet = !settings.Peloton.IsConfigured;
+
+        if (PelotonSettingNotConfiguredYet)
+        {
+            loading = false;
+            return;
+        }
+
         try
         {
             annualProgress = (await _apiClient.GetAnnualProgressAsync()) ?? new ProgressGetResponse() { Tiers = new List<Tier>() };

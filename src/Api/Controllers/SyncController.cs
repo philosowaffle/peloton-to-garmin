@@ -1,9 +1,10 @@
 ﻿using Api.Contract;
 using Api.Service.Validators;
-using Common.Database;
 using Common.Service;
+using Garmin.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Sync;
+using Sync.Database;
 
 namespace Api.Controllers;
 
@@ -14,14 +15,16 @@ namespace Api.Controllers;
 public class SyncController : Controller
 {
 	private readonly ISettingsService _settingsService;
+	private readonly IGarminAuthenticationService _garminAuthService;
 	private readonly ISyncService _syncService;
 	private readonly ISyncStatusDb _db;
 
-	public SyncController(ISettingsService settingsService, ISyncService syncService, ISyncStatusDb db)
+	public SyncController(ISettingsService settingsService, ISyncService syncService, ISyncStatusDb db, IGarminAuthenticationService authService)
 	{
 		_settingsService = settingsService;
 		_syncService = syncService;
 		_db = db;
+		_garminAuthService = authService;
 	}
 
 	/// <summary>
@@ -41,7 +44,7 @@ public class SyncController : Controller
 	public async Task<ActionResult<SyncPostResponse>> SyncAsync([FromBody] SyncPostRequest request)
 	{
 		var settings = await _settingsService.GetSettingsAsync();
-		var auth = _settingsService.GetGarminAuthentication(settings.Garmin.Email);
+		var auth = await _garminAuthService.GetGarminAuthenticationAsync();
 
 		var (isValid, result) = request.IsValidHttp(settings, auth);
 		if (!isValid) return result!;
@@ -49,7 +52,7 @@ public class SyncController : Controller
 		SyncResult syncResult = new();
 		try
 		{
-			syncResult = await _syncService.SyncAsync(request.WorkoutIds, exclude: null);
+			syncResult = await _syncService.SyncAsync(request.WorkoutIds, exclude: null, forceStackWorkouts: request.ForceStackWorkouts);
 		}
 		catch (Exception e)
 		{
@@ -57,6 +60,53 @@ public class SyncController : Controller
 		}
 
 		var response = new SyncPostResponse()
+		{
+			SyncSuccess = syncResult.SyncSuccess,
+			PelotonDownloadSuccess = syncResult.PelotonDownloadSuccess,
+			ConverToFitSuccess = syncResult.ConversionSuccess,
+			UploadToGarminSuccess = syncResult.UploadToGarminSuccess,
+			Errors = syncResult.Errors.Select(e => new Contract.ErrorResponse(e.Message)).ToList()
+		};
+
+		if (!response.SyncSuccess)
+			return Ok(response);
+
+		return Created("/sync", response);
+	}
+
+	/// <summary>
+	/// Syncs the most recent NumberToSync workouts from Peloton to Garmin.
+	/// </summary>
+	/// <response code="201">The sync was successful. Returns the sync status information.</response>
+	/// <response code="200">This request completed, but the Sync may not have been successful. Returns the sync status information.</response>
+	/// <response code="400">If the request fields are invalid.</response>
+	/// <response code="401">ErrorCode.NeedToInitGarminMFAAuth - Garmin Two Factor is enabled, you must manually initialize Garmin auth prior to syncing.</response>
+	/// <response code="500">Unhandled exception.</response>
+	[HttpPost("recent")]
+	[ProducesResponseType(typeof(SyncPostResponse), StatusCodes.Status201Created)]
+	[ProducesResponseType(typeof(SyncPostResponse), StatusCodes.Status200OK)]
+	[ProducesResponseType(typeof(Contract.ErrorResponse), StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(typeof(Contract.ErrorResponse), StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(typeof(Contract.ErrorResponse), StatusCodes.Status500InternalServerError)]
+	public async Task<ActionResult<SyncRecentPostResponse>> SyncRecentAsync([FromBody] SyncRecentPostRequest request)
+	{
+		var settings = await _settingsService.GetSettingsAsync();
+		var auth = await _garminAuthService.GetGarminAuthenticationAsync();
+
+		var (isValid, result) = request.IsValidHttp(settings, auth);
+		if (!isValid) return result!;
+
+		SyncResult syncResult = new();
+		try
+		{
+			syncResult = await _syncService.SyncAsync(request.NumberToSync, request.ForceStackWorkouts);
+		}
+		catch (Exception e)
+		{
+			return StatusCode(StatusCodes.Status500InternalServerError, new Contract.ErrorResponse($"Unexpected error occurred: {e.Message}"));
+		}
+
+		var response = new SyncRecentPostResponse()
 		{
 			SyncSuccess = syncResult.SyncSuccess,
 			PelotonDownloadSuccess = syncResult.PelotonDownloadSuccess,
@@ -91,7 +141,7 @@ public class SyncController : Controller
 		var response = new SyncGetResponse()
 		{
 			SyncEnabled = settings.App.EnablePolling,
-			SyncStatus = syncTime.SyncStatus,
+			SyncStatus = (Status)syncTime.SyncStatus,
 			LastSuccessfulSyncTime = syncTime.LastSuccessfulSyncTime,
 			LastSyncTime = syncTime.LastSyncTime,
 			NextSyncTime = syncTime.NextSyncTime

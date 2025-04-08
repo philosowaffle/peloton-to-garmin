@@ -18,6 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solution", ".solution", "{
 		.gitignore = .gitignore
 		configuration.example.json = configuration.example.json
 		deviceInfo.sample.xml = deviceInfo.sample.xml
+		global.json = global.json
 		README.md = README.md
 		vNextReleaseNotes.md = vNextReleaseNotes.md
 	EndProjectSection

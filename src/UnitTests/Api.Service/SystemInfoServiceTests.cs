@@ -2,6 +2,7 @@
 using Api.Service;
 using Api.Services;
 using Common;
+using Common.Observe;
 using Core.GitHub;
 using FluentAssertions;
 using Moq;
@@ -22,6 +23,7 @@ public class SystemInfoServiceTests
 		var autoMocker = new AutoMocker();
 		var controller = autoMocker.CreateInstance<SystemInfoService>();
 		var ghService = autoMocker.GetMock<IGitHubReleaseCheckService>();
+		Logging.InternalLevelSwitch = new Serilog.Core.LoggingLevelSwitch();
 
 		var request = new SystemInfoGetRequest() { CheckForUpdate = false };
 
@@ -44,6 +46,7 @@ public class SystemInfoServiceTests
 		var autoMocker = new AutoMocker();
 		var controller = autoMocker.CreateInstance<SystemInfoService>();
 		var ghService = autoMocker.GetMock<IVersionInformationService>();
+		Logging.InternalLevelSwitch = new Serilog.Core.LoggingLevelSwitch();
 
 		ghService.Setup(x => x.GetLatestReleaseInformationAsync())
 			.ReturnsAsync(new LatestReleaseInformation()

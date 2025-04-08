@@ -1,7 +1,7 @@
 ###################
 # CREATE FINAL LAYER
 ###################
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 as final
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 
 RUN apt-get update \
 	&& apt-get -y install bash tzdata \
@@ -11,13 +11,14 @@ RUN apt-get update \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 1015 p2g && useradd -g p2g -u 1015 p2g
+USER p2g:p2g
 
 WORKDIR /app
 
 ###################
 # BUILD LAYER
 ###################
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 
 COPY . /build
 WORKDIR /build
@@ -29,7 +30,7 @@ RUN dotnet tool install -g Microsoft.Web.LibraryManager.Cli \
 # BUILD WebUI
 ###################
 
-WORKDIR /build/src/WebUI
+WORKDIR /build/src/SharedUI
 RUN /root/.dotnet/tools/libman restore
 
 WORKDIR /build
@@ -52,12 +53,9 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
 ###################
 FROM final
 
-COPY --from=build /build/published .
-COPY --from=build /build/LICENSE ./LICENSE
-COPY --from=build /build/configuration.example.json ./configuration.local.json
-
-COPY --chmod=770 ./docker/entrypoint.sh .
+COPY --chown=p2g:p2g --chmod=770 --from=build /build/published .
+COPY --chown=p2g:p2g --chmod=770 --from=build /build/LICENSE ./LICENSE
+COPY --chown=p2g:p2g --chmod=770 --from=build /build/configuration.example.json ./configuration.local.json
 
 EXPOSE 80 443
-ENTRYPOINT ["/app/entrypoint.sh"]
-CMD ["webui"]
+ENTRYPOINT ["/app/WebUI"]

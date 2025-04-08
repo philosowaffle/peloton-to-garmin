@@ -17,8 +17,6 @@ public class SettingsService : ISettingsService
 	private static readonly ILogger _logger = LogContext.ForClass<SettingsService>();
 	private static readonly object _lock = new object();
 	private static readonly string PelotonApiAuthKey = "PelotonApiAuth";
-	private static readonly string GarminApiAuthKey = "GarminApiAuth";
-	private static readonly string GarminDeviceInfoKey = "GarminDeviceInfo";
 
 	private readonly ISettingsDb _db;
 	private readonly IMemoryCache _cache;
@@ -66,9 +64,6 @@ public class SettingsService : ISettingsService
 		ClearPelotonApiAuthentication(originalSettings.Peloton.Email);
 		ClearPelotonApiAuthentication(updatedSettings.Peloton.Email);
 
-		ClearGarminAuthentication(originalSettings.Garmin.Email);
-		ClearGarminAuthentication(originalSettings.Garmin.Password);
-
 		await _db.UpsertSettingsAsync(1, updatedSettings); // hardcode to admin user for now
 	}
 
@@ -105,41 +100,6 @@ public class SettingsService : ISettingsService
 		}
 	}
 
-	public GarminApiAuthentication GetGarminAuthentication(string garminEmail)
-	{
-		using var tracing = Tracing.Trace($"{nameof(SettingsService)}.{nameof(GetGarminAuthentication)}");
-
-		lock (_lock)
-		{
-			var key = $"{GarminApiAuthKey}:{garminEmail}";
-			return _cache.Get<GarminApiAuthentication>(key);
-		}
-	}
-
-	public void SetGarminAuthentication(GarminApiAuthentication authentication)
-	{
-		using var tracing = Tracing.Trace($"{nameof(SettingsService)}.{nameof(SetGarminAuthentication)}");
-
-		lock (_lock)
-		{
-			var key = $"{GarminApiAuthKey}:{authentication.Email}";
-			var expiration = authentication.OAuth2Token?.Expires_In - (60 * 60) ?? 0; // expire an hour early
-			var finalExpiration = expiration <= 0 ? 45 * 60 : expiration; // default to 45min
-			_cache.Set(key, authentication, new MemoryCacheEntryOptions() { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(finalExpiration) });
-		}
-	}
-
-	public void ClearGarminAuthentication(string garminEmail)
-	{
-		using var tracing = Tracing.Trace($"{nameof(SettingsService)}.{nameof(ClearGarminAuthentication)}");
-
-		lock (_lock)
-		{
-			var key = $"{GarminApiAuthKey}:{garminEmail}";
-			_cache.Remove(key);
-		}
-	}
-
 	public Task<AppConfiguration> GetAppConfigurationAsync()
 	{
 		var appConfiguration = new AppConfiguration();
@@ -159,13 +119,6 @@ public class SettingsService : ISettingsService
 		GarminDeviceInfo userProvidedDeviceInfo = null;
 
 		var settings = await GetSettingsAsync();
-#pragma warning disable CS0618 // Type or member is obsolete
-		var userDevicePath = settings?.Format?.DeviceInfoPath;
-#pragma warning restore CS0618 // Type or member is obsolete
-
-		_fileHandler.TryDeserializeXml(userDevicePath, out userProvidedDeviceInfo);
-
-		if (userProvidedDeviceInfo != null) return userProvidedDeviceInfo;
 
 		if (settings?.Format?.DeviceInfoSettings is object)
 		{

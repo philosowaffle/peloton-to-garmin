@@ -7,6 +7,7 @@ using Common.Dto.P2G;
 using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
+using Sync.Database;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ public class DbMigrationsTests
 		var service = mocker.CreateInstance<DbMigrations>();
 		var settingsDb = mocker.GetMock<ISettingsDb>();
 
-		settingsDb.Setup(x => x.GetLegacySettings())
+		settingsDb.Setup(x => x.DbMigrations_TryGetLegacy_Settings())
 			.Returns((Settings)null)
 			.Verifiable();
 
@@ -30,7 +31,7 @@ public class DbMigrationsTests
 
 		settingsDb.Verify();
 		settingsDb.Verify(s => s.UpsertSettingsAsync(It.IsAny<int>(), It.IsAny<Settings>()), Times.Never);
-		settingsDb.Verify(x => x.RemoveLegacySettingsAsync(), Times.Never);
+		settingsDb.Verify(x => x.DbMigrations_TryRemoveLegacySettingsAsync(), Times.Never);
 		mocker.GetMock<IUsersDb>().Verify(x => x.GetUsersAsync(), Times.Never);
 		mocker.GetMock<ISyncStatusDb>().Verify(x => x.DeleteLegacySyncStatusAsync(), Times.Never);
 	}
@@ -48,7 +49,7 @@ public class DbMigrationsTests
 			App = new App() { EnablePolling = true },
 		};
 
-		settingsDb.Setup(x => x.GetLegacySettings())
+		settingsDb.Setup(x => x.DbMigrations_TryGetLegacy_Settings())
 			.Returns(settings)
 			.Verifiable();
 
@@ -62,9 +63,8 @@ public class DbMigrationsTests
 		await service.MigrateToAdminUserAsync();
 
 		settingsDb.Verify();
-		settingsDb.Verify(x => x.RemoveLegacySettingsAsync(), Times.Once);
+		settingsDb.Verify(x => x.DbMigrations_TryRemoveLegacySettingsAsync(), Times.Once);
 		usersDb.Verify(x => x.GetUsersAsync(), Times.Once);
-		mocker.GetMock<ISyncStatusDb>().Verify(x => x.DeleteLegacySyncStatusAsync(), Times.Once);
 	}
 
 	[Test]
@@ -80,7 +80,7 @@ public class DbMigrationsTests
 			App = new App() { EnablePolling = true },
 		};
 
-		settingsDb.Setup(x => x.GetLegacySettings())
+		settingsDb.Setup(x => x.DbMigrations_TryGetLegacy_Settings())
 			.Returns(settings)
 			.Verifiable();
 
@@ -94,8 +94,7 @@ public class DbMigrationsTests
 		await service.MigrateToAdminUserAsync();
 
 		settingsDb.Verify();
-		settingsDb.Verify(x => x.RemoveLegacySettingsAsync(), Times.Never);
+		settingsDb.Verify(x => x.DbMigrations_TryRemoveLegacySettingsAsync(), Times.Never);
 		usersDb.Verify(x => x.GetUsersAsync(), Times.Once);
-		mocker.GetMock<ISyncStatusDb>().Verify(x => x.DeleteLegacySyncStatusAsync(), Times.Once);
 	}
 }

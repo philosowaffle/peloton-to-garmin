@@ -11,7 +11,7 @@ namespace Common.Database
     {
 		private static readonly ILogger _logger = LogContext.ForClass<DbBase<T>>();
 
-		private IFileHandling _fileHandler;
+		protected IFileHandling _fileHandler;
 
 		protected Lazy<IDocumentCollection<T>> _table;
 

@@ -1,5 +1,4 @@
 ﻿using Common;
-using Common.Database;
 using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Observe;
@@ -11,6 +10,8 @@ using Garmin.Auth;
 using Peloton;
 using Prometheus;
 using Serilog;
+using Sync.Database;
+using Sync.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,8 +21,8 @@ namespace Sync
 {
 	public interface ISyncService
 	{
-		Task<SyncResult> SyncAsync(int numWorkouts);
-		Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null);
+		Task<SyncResult> SyncAsync(int numWorkouts, bool forceStackClasses);
+		Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null, bool forceStackWorkouts = false);
 	}
 
 	public class SyncService : ISyncService
@@ -46,17 +47,17 @@ namespace Sync
 			_fileHandler = fileHandler;
 		}
 
-		public async Task<SyncResult> SyncAsync(int numWorkouts)
+		public async Task<SyncResult> SyncAsync(int numWorkouts, bool forceStackClasses = false)
 		{
 			using var timer = SyncHistogram.NewTimer();
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.ByNumWorkouts")
 										.WithTag("numWorkouts", numWorkouts.ToString());
 
 			var settings = await _settingsService.GetSettingsAsync();
-			return await SyncWithWorkoutLoaderAsync(() => _pelotonService.GetRecentWorkoutsAsync(numWorkouts), settings.Peloton.ExcludeWorkoutTypes);
+			return await SyncWithWorkoutLoaderAsync(() => _pelotonService.GetRecentWorkoutsAsync(numWorkouts), settings.Peloton.ExcludeWorkoutTypes, forceStackClasses);
 		}
 
-		public async Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null)
+		public async Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null, bool forceStackClasses = false)
 		{
 			using var timer = SyncHistogram.NewTimer();
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.ByWorkoutIds");
@@ -117,12 +118,23 @@ namespace Sync
 				return response;
 			}
 
+			// calculate stacked workouts
+			var stackedWorkouts = filteredWorkouts;
+			if (settings.Format.StackedWorkouts.AutomaticallyStackWorkouts || forceStackClasses)
+			{
+				_logger.Debug("Stacking classes.");
+				var stackedClassesMaxAllowedGapSeconds = forceStackClasses ? long.MaxValue : settings.Format.StackedWorkouts.MaxAllowedGapSeconds;
+				var stacks = StackedWorkoutsCalculator.GetStackedWorkouts(filteredWorkouts, stackedClassesMaxAllowedGapSeconds);
+				stackedWorkouts = StackedWorkoutsCalculator.CombineStackedWorkouts(stacks);
+				_logger.Debug($"{filteredWorkoutsCount} workouts yielded {stacks.Count()} stacks.");
+			}
+
 			var convertStatuses = new List<ConvertStatus>();
 			try
 			{
 				_logger.Information("Converting workouts...");
 				var tasks = new List<Task<ConvertStatus>>();
-				foreach (var workout in filteredWorkouts)
+				foreach (var workout in stackedWorkouts)
 				{
 					workout.UserData = userData;
 					tasks.AddRange(_converters.Select(c => c.ConvertAsync(workout)));
@@ -172,29 +184,38 @@ namespace Sync
 			}
 			catch (ArgumentException ae)
 			{
-				_logger.Error(ae, $"Failed to upload to Garmin Connect. {ae.Message}");
+				_logger.Error(ae, $"Sync failed to upload to Garmin Connect. {ae.Message}");
 
 				response.SyncSuccess = false;
 				response.UploadToGarminSuccess = false;
-				response.Errors.Add(new ServiceError() { Message = $"Failed to upload workouts to Garmin Connect. {ae.Message}" });
+				response.Errors.Add(new ServiceError() { Message = $"Failed to upload workouts to Garmin Connect. {ae.Message}", Exception = ae });
 				return response;
 			}
 			catch (GarminAuthenticationError gae)
 			{
-				_logger.Error(gae, $"Sync failed to authenticate with Garmin. {gae.Message}");
+				_logger.Error(gae, $"Garmin Uploader failed to authenticate with Garmin. {gae.Message}");
 
 				response.SyncSuccess = false;
 				response.UploadToGarminSuccess = false;
-				response.Errors.Add(new ServiceError() { Message = gae.Message });
+				response.Errors.Add(new ServiceError() { Message = gae.Message, Exception = gae });
+				return response;
+			}
+			catch (GarminUploadException gue)
+			{
+				_logger.Error(gue, $"Garmin Uploader failed to upload to Garmin Connect. {gue.Message}");
+
+				response.SyncSuccess = false;
+				response.UploadToGarminSuccess = false;
+				response.Errors.Add(new ServiceError() { Message = gue.Message, Exception = gue });
 				return response;
 			}
 			catch (Exception e)
 			{
-				_logger.Error(e, "Failed to upload workouts to Garmin Connect. You can find the converted files at {@Path} \\n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", settings.App.OutputDirectory);
+				_logger.Error(e, "Unexpected error. Failed to upload workouts to Garmin Connect. You can find the converted files at {@Path} \\n You can manually upload your files to Garmin Connect, or wait for P2G to try again on the next sync job.", settings.App.OutputDirectory);
 
 				response.SyncSuccess = false;
 				response.UploadToGarminSuccess = false;
-				response.Errors.Add(new ServiceError() { Message = $"Failed to upload workouts to Garmin Connect. {e.Message}" });
+				response.Errors.Add(new ServiceError() { Message = $"Failed to upload workouts to Garmin Connect. {e.Message}", Exception = e });
 				return response;
 			}
 			finally
@@ -222,7 +243,7 @@ namespace Sync
 					.Select(r => r.Id) ?? new List<string>();
 		}
 
-		private async Task<SyncResult> SyncWithWorkoutLoaderAsync(Func<Task<ServiceResult<ICollection<Workout>>>> loader, ICollection<WorkoutType>? exclude)
+		private async Task<SyncResult> SyncWithWorkoutLoaderAsync(Func<Task<ServiceResult<ICollection<Workout>>>> loader, ICollection<WorkoutType>? exclude, bool forceStackClasses = false)
 		{
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.SyncWithWorkoutLoaderAsync");
 
@@ -279,7 +300,7 @@ namespace Sync
 			_logger.Information("Found {@NumWorkouts} completed workouts.", completedWorkoutsCount);
 			activity?.AddTag("workouts.completed", completedWorkoutsCount);
 
-			var result = await SyncAsync(completedWorkouts, settings.Peloton.ExcludeWorkoutTypes);
+			var result = await SyncAsync(completedWorkouts, settings.Peloton.ExcludeWorkoutTypes, forceStackClasses);
 
 			if (result.SyncSuccess)
 				syncTime.LastSuccessfulSyncTime = DateTime.Now;

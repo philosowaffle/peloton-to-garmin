@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Api.Services;
 using Garmin.Auth;
 using Api.Service;
+using Garmin.Database;
+using Sync.Database;
 
 namespace SharedStartup;
 
@@ -34,6 +36,7 @@ public static class ApiStartupServices
 		services.AddSingleton<IGarminUploader, GarminUploader>();
 		services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
 		services.AddSingleton<IGarminAuthenticationService, GarminAuthenticationService>();
+		services.AddSingleton<IGarminDb, GarminDb>();
 
 		// IO
 		services.AddSingleton<IFileHandling, IOWrapper>();
