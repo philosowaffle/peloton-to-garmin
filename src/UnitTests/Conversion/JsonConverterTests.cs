@@ -39,7 +39,7 @@ public class JsonConverterTests
 	{
 		public new FileFormat Format => base.Format;
 
-		public JsonConverterInstance(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
+		public JsonConverterInstance(ISettingsService settings, IFileHandling fileHandler, IElevationGainCalculatorService elevationGainCalculatorService) : base(settings, fileHandler, elevationGainCalculatorService) { }
 
 		public new bool ShouldConvert(Format settings) => base.ShouldConvert(settings);
 	}

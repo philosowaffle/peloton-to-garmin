@@ -76,7 +76,7 @@ namespace UnitTests.Sync
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
 			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } }.AsServiceResult());
 			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<Workout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
-			converter.Setup(x => x.ConvertAsync(It.IsAny<P2GWorkout>())).Throws(new Exception());
+			converter.Setup(x => x.ConvertAsync(It.IsAny<P2GWorkout>(), It.IsAny<bool>())).Throws(new Exception());
 
 			// ACT
 			var response = await service.SyncAsync(0);
@@ -88,7 +88,7 @@ namespace UnitTests.Sync
 			response.Errors.Should().NotBeNullOrEmpty();
 
 			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Once);
-			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>()), Times.Once);
+			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>(), It.IsAny<bool>()), Times.Once);
 			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
 		}
 
@@ -110,7 +110,7 @@ namespace UnitTests.Sync
 			settings.App.CheckForUpdates = false;
 			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
 
-			converter.Setup(c => c.ConvertAsync(It.IsAny<P2GWorkout>())).ReturnsAsync(new ConvertStatus() { Result = ConversionResult.Success });
+			converter.Setup(c => c.ConvertAsync(It.IsAny<P2GWorkout>(), It.IsAny<bool>())).ReturnsAsync(new ConvertStatus() { Result = ConversionResult.Success });
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
@@ -129,7 +129,7 @@ namespace UnitTests.Sync
 			response.Errors.Should().NotBeNullOrEmpty();
 
 			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Once);
-			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>()), Times.Once);
+			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>(), It.IsAny<bool>()), Times.Once);
 			garmin.Verify(x => x.UploadToGarminAsync(), Times.Once);
 			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
 		}
@@ -153,7 +153,7 @@ namespace UnitTests.Sync
 			settings.App.CheckForUpdates = false;
 			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
 
-			converter.Setup(c => c.ConvertAsync(It.IsAny<P2GWorkout>())).ReturnsAsync(new ConvertStatus() { Result = ConversionResult.Success });
+			converter.Setup(c => c.ConvertAsync(It.IsAny<P2GWorkout>(), It.IsAny<bool>())).ReturnsAsync(new ConvertStatus() { Result = ConversionResult.Success });
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
@@ -171,7 +171,7 @@ namespace UnitTests.Sync
 			response.Errors.Should().BeNullOrEmpty();
 
 			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Once);
-			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>()), Times.Once);
+			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>(), It.IsAny<bool>()), Times.Once);
 			garmin.Verify(x => x.UploadToGarminAsync(), Times.Once);
 			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
 			fileHandler.Verify(x => x.Cleanup(It.IsAny<string>()), Times.Exactly(3));
@@ -196,7 +196,7 @@ namespace UnitTests.Sync
 			settings.App.CheckForUpdates = false;
 			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
 
-			converter.Setup(c => c.ConvertAsync(It.IsAny<P2GWorkout>())).ReturnsAsync(new ConvertStatus() { Result = ConversionResult.Success });
+			converter.Setup(c => c.ConvertAsync(It.IsAny<P2GWorkout>(), It.IsAny<bool>())).ReturnsAsync(new ConvertStatus() { Result = ConversionResult.Success });
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
@@ -221,7 +221,7 @@ namespace UnitTests.Sync
 			response.Errors.Should().BeNullOrEmpty();
 
 			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Once);
-			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>()), Times.Once);
+			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>(), It.IsAny<bool>()), Times.Once);
 			garmin.Verify(x => x.UploadToGarminAsync(), Times.Once);
 			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
 			fileHandler.Verify(x => x.Cleanup(It.IsAny<string>()), Times.Exactly(3));
@@ -247,7 +247,7 @@ namespace UnitTests.Sync
 			settings.Peloton.NumWorkoutsToDownload = 5;
 			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
 
-			converter.Setup(c => c.ConvertAsync(It.IsAny<P2GWorkout>())).ReturnsAsync(new ConvertStatus() { Result = ConversionResult.Success });
+			converter.Setup(c => c.ConvertAsync(It.IsAny<P2GWorkout>(), It.IsAny<bool>())).ReturnsAsync(new ConvertStatus() { Result = ConversionResult.Success });
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
@@ -270,7 +270,7 @@ namespace UnitTests.Sync
 			response.Errors.Should().BeNullOrEmpty();
 
 			peloton.Verify(x => x.GetRecentWorkoutsAsync(5), Times.Once);
-			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>()), Times.Once);
+			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>(), It.IsAny<bool>()), Times.Once);
 			garmin.Verify(x => x.UploadToGarminAsync(), Times.Once);
 			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
 			fileHandler.Verify(x => x.Cleanup(It.IsAny<string>()), Times.Exactly(3));
@@ -323,17 +323,12 @@ namespace UnitTests.Sync
 			var settings = new Settings();
 			settings.Format.Fit = true;
 			settings.App.CheckForUpdates = false;
-			settings.Peloton.ExcludeWorkoutTypes = new List<WorkoutType>() { WorkoutType.OutdoorCycling };
+			settings.Peloton.ExcludeWorkoutTypes = new List<WorkoutType>() { WorkoutType.Cycling };
 			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
 
 			var syncStatus = new SyncServiceStatus();
 			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
-
-			var workout = new Workout() { Status = "COMPLETE", Id = "1", Is_Outdoor = true, Fitness_Discipline = FitnessDiscipline.Cycling };
-			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { workout }.AsServiceResult());
-
-			var p2gWorkout = new P2GWorkout() { Workout = workout };
-			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<Workout>>())).ReturnsAsync(new P2GWorkout[] { p2gWorkout });
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1", Fitness_Discipline = FitnessDiscipline.Cycling } }.AsServiceResult());
 
 			// ACT
 			var response = await service.SyncAsync(0);
@@ -342,14 +337,100 @@ namespace UnitTests.Sync
 			response.SyncSuccess.Should().BeTrue();
 			response.PelotonDownloadSuccess.Should().BeTrue();
 			response.ConversionSuccess.Should().BeTrue();
-			response.UploadToGarminSuccess.Should().BeNull();
+			response.UploadToGarminSuccess.Should().BeTrue();
 			response.Errors.Should().BeNullOrEmpty();
 
 			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Once);
-			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>()), Times.Never);
+			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>(), It.IsAny<bool>()), Times.Never);
 			garmin.Verify(x => x.UploadToGarminAsync(), Times.Never);
 			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
 			fileHandler.Verify(x => x.Cleanup(It.IsAny<string>()), Times.Never);
+		}
+
+		[Test]
+		public async Task SyncAsync_When_ForceElevationGainCalculation_True_Should_PassToConverters()
+		{
+			// SETUP
+			var mocker = new AutoMocker();
+
+			var service = mocker.CreateInstance<SyncService>();
+			var peloton = mocker.GetMock<IPelotonService>();
+			var db = mocker.GetMock<ISyncStatusDb>();
+			var converter = mocker.GetMock<IConverter>();
+			var garmin = mocker.GetMock<IGarminUploader>();
+			var fileHandler = mocker.GetMock<IFileHandling>();
+			var settingsService = mocker.GetMock<ISettingsService>();
+
+			var settings = new Settings();
+			settings.Format.Fit = true;
+			settings.App.CheckForUpdates = false;
+			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
+
+			converter.Setup(c => c.ConvertAsync(It.IsAny<P2GWorkout>(), It.IsAny<bool>())).ReturnsAsync(new ConvertStatus() { Result = ConversionResult.Success });
+
+			var syncStatus = new SyncServiceStatus();
+			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } }.AsServiceResult());
+			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<Workout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
+
+			// ACT
+			var response = await service.SyncAsync(0, forceStackClasses: false, forceElevationGainCalculation: true);
+
+			// ASSERT
+			response.SyncSuccess.Should().BeTrue();
+			response.PelotonDownloadSuccess.Should().BeTrue();
+			response.ConversionSuccess.Should().BeTrue();
+			response.UploadToGarminSuccess.Should().BeTrue();
+			response.Errors.Should().BeNullOrEmpty();
+
+			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Once);
+			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>(), true), Times.Once);
+			garmin.Verify(x => x.UploadToGarminAsync(), Times.Once);
+			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
+			fileHandler.Verify(x => x.Cleanup(It.IsAny<string>()), Times.Exactly(3));
+		}
+
+		[Test]
+		public async Task SyncAsync_When_ForceElevationGainCalculation_False_Should_PassFalseToConverters()
+		{
+			// SETUP
+			var mocker = new AutoMocker();
+
+			var service = mocker.CreateInstance<SyncService>();
+			var peloton = mocker.GetMock<IPelotonService>();
+			var db = mocker.GetMock<ISyncStatusDb>();
+			var converter = mocker.GetMock<IConverter>();
+			var garmin = mocker.GetMock<IGarminUploader>();
+			var fileHandler = mocker.GetMock<IFileHandling>();
+			var settingsService = mocker.GetMock<ISettingsService>();
+
+			var settings = new Settings();
+			settings.Format.Fit = true;
+			settings.App.CheckForUpdates = false;
+			settingsService.Setup(s => s.GetSettingsAsync()).ReturnsAsync(settings);
+
+			converter.Setup(c => c.ConvertAsync(It.IsAny<P2GWorkout>(), It.IsAny<bool>())).ReturnsAsync(new ConvertStatus() { Result = ConversionResult.Success });
+
+			var syncStatus = new SyncServiceStatus();
+			db.Setup(x => x.GetSyncStatusAsync()).Returns(Task.FromResult(syncStatus));
+			peloton.Setup(x => x.GetRecentWorkoutsAsync(0)).ReturnsAsync(new List<Workout>() { new Workout() { Status = "COMPLETE", Id = "1" } }.AsServiceResult());
+			peloton.Setup(x => x.GetWorkoutDetailsAsync(It.IsAny<ICollection<Workout>>())).ReturnsAsync(new P2GWorkout[] { new P2GWorkout() });
+
+			// ACT
+			var response = await service.SyncAsync(0, forceStackClasses: false, forceElevationGainCalculation: false);
+
+			// ASSERT
+			response.SyncSuccess.Should().BeTrue();
+			response.PelotonDownloadSuccess.Should().BeTrue();
+			response.ConversionSuccess.Should().BeTrue();
+			response.UploadToGarminSuccess.Should().BeTrue();
+			response.Errors.Should().BeNullOrEmpty();
+
+			peloton.Verify(x => x.GetRecentWorkoutsAsync(0), Times.Once);
+			converter.Verify(x => x.ConvertAsync(It.IsAny<P2GWorkout>(), false), Times.Once);
+			garmin.Verify(x => x.UploadToGarminAsync(), Times.Once);
+			db.Verify(x => x.UpsertSyncStatusAsync(It.IsAny<SyncServiceStatus>()), Times.Once);
+			fileHandler.Verify(x => x.Cleanup(It.IsAny<string>()), Times.Exactly(3));
 		}
 	}
 }

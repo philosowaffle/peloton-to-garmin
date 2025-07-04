@@ -21,6 +21,7 @@ namespace Conversion
 	public interface IConverter
 	{
 		Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData);
+		Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData, bool forceElevationGainCalculation);
 	}
 
 	public abstract class Converter<T> : IConverter
@@ -38,20 +39,27 @@ namespace Conversion
 
 		protected readonly ISettingsService _settingsService;
 		protected readonly IFileHandling _fileHandler;
+		protected readonly IElevationGainCalculatorService _elevationGainCalculatorService;
 
-		public Converter(ISettingsService settingsService, IFileHandling fileHandler)
+		public Converter(ISettingsService settingsService, IFileHandling fileHandler, IElevationGainCalculatorService elevationGainCalculatorService)
 		{
 			_settingsService = settingsService;
 			_fileHandler = fileHandler;
+			_elevationGainCalculatorService = elevationGainCalculatorService;
 		}
 
 		protected abstract bool ShouldConvert(Format settings);
 
-		protected abstract Task<T> ConvertInternalAsync(P2GWorkout workoutData, Settings settings);
+		protected abstract Task<T> ConvertInternalAsync(P2GWorkout workoutData, Settings settings, bool forceElevationGainCalculation = false);
 
 		protected abstract void Save(T data, string path);
 
 		public async Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData)
+		{
+			return await ConvertAsync(workoutData, false);
+		}
+
+		public async Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData, bool forceElevationGainCalculation)
 		{
 			using var tracing = Tracing.Trace($"{nameof(IConverter)}.{nameof(ConvertAsync)}.Workout")?
 										.WithWorkoutId(workoutData.Workout.Id)
@@ -71,7 +79,7 @@ namespace Conversion
 			var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout, settings.Format);
 			try
 			{
-				converted = await ConvertInternalAsync(workoutData, settings);
+				converted = await ConvertInternalAsync(workoutData, settings, forceElevationGainCalculation);
 			}
 			catch (Exception e)
 			{
@@ -580,6 +588,14 @@ namespace Conversion
 				default:
 					return Sport.Invalid;
 			}
+		}
+
+		protected async Task<float?> GetElevationGainAsync(Workout workout, WorkoutSamples workoutSamples, ElevationGainSettings settings, bool forceCalculation = false)
+		{
+			if (!forceCalculation && !settings.CalculateElevationGain)
+				return null;
+
+			return await _elevationGainCalculatorService.CalculateElevationGainAsync(workout, workoutSamples, settings);
 		}
 	}
 }

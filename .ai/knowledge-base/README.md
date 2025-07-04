@@ -40,7 +40,7 @@ This knowledge base contains comprehensive documentation for maintaining, fixing
 ## Quick Reference
 
 ### Key Project Information
-- **Version**: 5.0.1
+- **Version**: 5.1.0-rc
 - **Framework**: .NET 9.0
 - **Primary Languages**: C#, Blazor, HTML/CSS
 - **Database**: SQLite
@@ -53,6 +53,7 @@ This knowledge base contains comprehensive documentation for maintaining, fixing
 - **ClientUI**: MAUI desktop application
 - **Sync Service**: Core synchronization logic
 - **Conversion**: File format converters (FIT, TCX, JSON)
+- **Elevation Gain Calculator**: Physics-based elevation estimation from power data
 
 ### External Dependencies
 - **Peloton API**: `https://api.onepeloton.com`
@@ -138,7 +139,9 @@ This knowledge base contains comprehensive documentation for maintaining, fixing
 
 ## Version History
 
-### Current Version (5.0.1)
+### Current Version (5.1.0-rc)
+- **New Feature**: Elevation gain calculation for cycling workouts
+- Physics-based elevation estimation using power data
 - Comprehensive knowledge base creation
 - System architecture documentation
 - API reference and troubleshooting guides
