@@ -79,6 +79,9 @@ testing:
 ## Documentation Standards
 documentation:
   - "User documentation: mkdocs/docs/ using Material theme"
+  - "Published documentation: https://philosowaffle.github.io/peloton-to-garmin/"
+  - "Documentation hosting: GitHub Pages from gh-pages branch"
+  - "Versioned documentation: Multiple versions available (latest, v4.4.0, v4.1.0, etc.)"
   - "API documentation: Generated from XML comments using Swagger/OpenAPI"
   - "Configuration examples: Keep in sync with actual configuration classes"
   - "Release notes: Update vNextReleaseNotes.md for all user-facing changes"
