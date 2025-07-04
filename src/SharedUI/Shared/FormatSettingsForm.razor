@@ -84,6 +84,26 @@
 							@bind-Value="formatSettings.Rowing.PreferredLapType" />
 						</div>
 					</div>
+					<br />
+					<div class="row">
+						<div class="col-md-12">
+							<h6>Cycling Elevation Gain Estimation</h6>
+							<HxSwitch Text="Calculate estimated elevation gain from power output" @bind-Value="formatSettings.Cycling.ElevationGain.CalculateElevationGain" />
+							<br />
+							<div class="row">
+								<div class="col-md-6">
+									<HxInputNumber Label="Your mass (kg)" TValue="float?" @bind-Value="formatSettings.Cycling.ElevationGain.UserMassKg" Hint="If not provided, P2G will attempt to get this from Peloton or Garmin user data." />
+								</div>
+								<div class="col-md-6">
+									<HxInputNumber Label="Gravity acceleration (m/s²)" TValue="float" @bind-Value="formatSettings.Cycling.ElevationGain.GravityAcceleration" Hint="Default is 9.81 m/s². Only change if you know what you're doing." />
+								</div>
+							</div>
+							<small class="text-muted">
+								<HxIcon Icon="@BootstrapIcon.InfoCircle" />
+								This feature estimates elevation gain using the formula: Elevation (m) = Energy (J) / (Mass (kg) × Gravity (m/s²)), where Energy = Average Power (W) × Duration (s).
+							</small>
+						</div>
+					</div>
 				</BodyTemplate>
 			</HxCard>
 		</div>
@@ -124,28 +144,6 @@
 					<HxSwitch Text="Enable Automatic Workout Stacking" @bind-Value="formatSettings.StackedWorkouts.AutomaticallyStackWorkouts" />
 					<br />
 					<HxInputNumber Label="Max Seconds between Stacked Workouts" TValue="long" @bind-Value="formatSettings.StackedWorkouts.MaxAllowedGapSeconds" Hint="A value of 300 would mean any workout started within 300s (5min) of the previous one would be stacked." />
-				</BodyTemplate>
-			</HxCard>
-		</div>
-	</div>
-	<br />
-	<div class="row g-3">
-		<div class="col-md-12">
-			<HxCard>
-				<HeaderTemplate>
-					Elevation Gain
-					<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
-					Title="<b>Estimated Elevation Gain</b>"
-					Content="@ElevationGainDocumentation"
-					Html="true">
-						<HxIcon Icon="@BootstrapIcon.QuestionCircle" />
-					</HxPopover>
-				</HeaderTemplate>
-				<BodyTemplate>
-					<HxSwitch Text="Calculate estimated elevation gain from energy output" @bind-Value="formatSettings.ElevationGain.CalculateElevationGain" />
-					<br />
-					<HxInputNumber Label="Your mass (kg)" TValue="float?" @bind-Value="formatSettings.ElevationGain.UserMassKg" Hint="If not provided, P2G will attempt to get this from Peloton or Garmin user data." />
-					<HxInputNumber Label="Gravity acceleration (m/s²)" TValue="float" @bind-Value="formatSettings.ElevationGain.GravityAcceleration" Hint="Default is 9.81 m/s². Only change if you know what you're doing." />
 				</BodyTemplate>
 			</HxCard>
 		</div>
@@ -406,6 +404,5 @@
 	private string StackedWorkoutsDocumentation => $"A stacked workout is when you do several classes of the same type back to back and would like those classes combined into a single final activity file.  In order for a workout to be stacked it must:<ol><li>Be of the same type as the other workouts in the stack</li><li>Have started within X seconds of the previous workouts end time</li></ol><br /><br /><a href='{configDocumentation}#stacked-workouts'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
 	private string CustomZoneHandlingDocumentation => $"If you are able to set your HR and Power Zones in Garmin Connect, then you do not need to enable these settings, Garmin will automatically calculate your time in zones correctly.  If you are not able to configure your zones in Garmin Connect, then you can enable these settings to have P2G calculate time in zone information.<br /><br />If these are enabled, its likely Garmin will not calculate Training Load, Effect, or related data points.<br /><br /><a href='{configDocumentation}#understanding-p2g-provided-zones'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
 	private string CustomDeviceInfoDocumentation => $"The device used for a given exercise type can impact what additional data Garmin Connect will calculate (like TE, TSS, and VO2).  P2G provides reasonable defaults, but you can customize what device you would like used here.<br /><br />The <strong>None</strong> Exercise Type serves as a global default. Meaning P2G will default to using this device if no more specific override is configured for a given Exercise type.<br /><br />If you delete all devices, P2G will restore its internal defaults.<br /><br /><a href='{configDocumentation}#customizing-the-garmin-device-associated-with-the-workout'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
-	private string ElevationGainDocumentation => $"This feature estimates elevation gain from energy output using the physics formula: Elevation (m) = Energy (J) / (Mass (kg) × Gravity (m/s²)).<br /><br />This is an experimental feature that provides an approximation since Peloton does not provide elevation data. The calculation assumes all energy output goes toward climbing, which is not perfectly accurate but provides a reasonable estimate.<br /><br />Your mass in kilograms is required for the calculation. If not provided here, P2G will attempt to retrieve it from your Peloton or Garmin profile data.<br /><br /><strong>Note:</strong> This feature is disabled by default and should only be enabled if you want estimated elevation data in your workout files.<br /><small>(click the <b>?</b> to pin this window)</small>";
 	private string SaveLocalCopyHint => $"Files will be saved to: {outputDirectory}.";
 }

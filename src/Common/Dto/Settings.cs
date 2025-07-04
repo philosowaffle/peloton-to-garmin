@@ -81,7 +81,6 @@ public class Format
 	public Rowing Rowing { get; init; }
 	public Strength Strength { get; init; }
 	public StackedWorkoutsSettings StackedWorkouts { get; init; } = new StackedWorkoutsSettings();
-	public ElevationGainSettings ElevationGain { get; init; } = new ElevationGainSettings();
 }
 
 public record StackedWorkoutsSettings
@@ -104,6 +103,7 @@ public record StackedWorkoutsSettings
 public record Cycling
 {
 	public PreferredLapType PreferredLapType { get; set; }
+	public ElevationGainSettings ElevationGain { get; init; } = new ElevationGainSettings();
 }
 
 public record Running

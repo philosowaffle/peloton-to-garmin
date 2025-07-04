@@ -23,7 +23,12 @@ The Format Settings provide settings related to how workouts should be converted
     "IncludeTimeInPowerZones": false,
     "DeviceInfoSettings": { /**(1)!**/ }
     "Cycling": {
-      "PreferredLapType": "Class_Targets"
+      "PreferredLapType": "Class_Targets",
+      "ElevationGain": {
+        "CalculateElevationGain": false,
+        "UserMassKg": null,
+        "GravityAcceleration": 9.81
+      }
     },
     "Running": {
       "PreferredLapType": "Distance"
@@ -55,6 +60,9 @@ The Format Settings provide settings related to how workouts should be converted
 | DeviceInfoSettings | no | `null` | See [customizing the Garmin device associated with the workout](#customizing-the-garmin-device-associated-with-the-workout). |
 | Cycling | no | `null` | Configuration specific to Cycling workouts. |
 | Cycling.PreferredLapType | no | `Default` | The preferred [lap type to use](#lap-types). |
+| Cycling.ElevationGain.CalculateElevationGain | no | `false` | **Experimental feature.** When enabled, P2G will estimate elevation gain from power output data for cycling workouts when no elevation data is provided by Peloton. Uses the formula: Elevation (m) = Energy (J) / (Mass (kg) × Gravity (m/s²)), where Energy = Average Power (W) × Duration (s). |
+| Cycling.ElevationGain.UserMassKg | no | `null` | Your mass in kilograms, required for elevation gain calculation. If not provided, P2G will attempt to get this from Peloton or Garmin user profile data. |
+| Cycling.ElevationGain.GravityAcceleration | no | `9.81` | Gravitational acceleration in m/s². Default is Earth's gravity (9.81 m/s²). Only change if you know what you're doing. |
 | Running | no | `null` | Configuration specific to Running workouts. |
 | Running.PreferredLapType | no | `Default` | The preferred [lap type to use](#lap-types). |
 | Rowing | no | `null` | Configuration specific to Rowing workouts. |
