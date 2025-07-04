@@ -1,7 +1,7 @@
 using Common.Dto;
 using Common.Dto.Peloton;
 
-namespace Common.Service;
+namespace Conversion;
 
 public interface IElevationGainCalculatorService
 {

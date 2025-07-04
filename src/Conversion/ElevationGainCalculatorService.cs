@@ -1,11 +1,12 @@
 using Common.Dto;
 using Common.Dto.Peloton;
+using Common.Service;
 using Serilog;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Common.Service;
+namespace Conversion;
 
 public class ElevationGainCalculatorService : IElevationGainCalculatorService
 {

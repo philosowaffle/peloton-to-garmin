@@ -1,12 +1,13 @@
 using Common.Dto;
 using Common.Dto.Peloton;
 using Common.Service;
+using Conversion;
 using FluentAssertions;
 using Moq;
 using System.Collections.Generic;
 using Xunit;
 
-namespace UnitTests.Common;
+namespace UnitTests.Conversion;
 
 public class ElevationGainCalculatorServiceTests
 {
