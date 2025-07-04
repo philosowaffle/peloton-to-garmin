@@ -37,20 +37,15 @@ public class ElevationGainCalculatorServiceTests
 	}
 
 	[Test]
-	public async Task CalculateElevationGainAsync_WhenNoPowerData_ReturnsNull()
+	public async Task CalculateElevationGainAsync_WhenNoResistanceData_ReturnsNull()
 	{
 		// Arrange
 		var workout = new Workout();
-		var workoutSamples = new WorkoutSamples 
-		{ 
-			Metrics = new List<Metric>(),
-			Duration = 3600
+		var workoutSamples = new WorkoutSamples
+		{
+			Metrics = new List<Metric>()
 		};
-		var settings = new ElevationGainSettings 
-		{ 
-			CalculateElevationGain = true,
-			UserMassKg = 70f 
-		};
+		var settings = new ElevationGainSettings { CalculateElevationGain = true };
 
 		// Act
 		var result = await _service.CalculateElevationGainAsync(workout, workoutSamples, settings);
@@ -60,23 +55,18 @@ public class ElevationGainCalculatorServiceTests
 	}
 
 	[Test]
-	public async Task CalculateElevationGainAsync_WhenNoUserMass_ReturnsNull()
+	public async Task CalculateElevationGainAsync_WhenNoSpeedData_ReturnsNull()
 	{
 		// Arrange
 		var workout = new Workout();
 		var workoutSamples = new WorkoutSamples
 		{
-			Duration = 3600, // 1 hour
 			Metrics = new List<Metric>
 			{
-				new Metric { Slug = "output", Average_Value = 200 } // 200 watts average
+				new Metric { Slug = "resistance", Values = new double?[] { 30, 35, 40 } }
 			}
 		};
-		var settings = new ElevationGainSettings 
-		{ 
-			CalculateElevationGain = true,
-			UserMassKg = null
-		};
+		var settings = new ElevationGainSettings { CalculateElevationGain = true };
 
 		// Act
 		var result = await _service.CalculateElevationGainAsync(workout, workoutSamples, settings);
@@ -86,162 +76,280 @@ public class ElevationGainCalculatorServiceTests
 	}
 
 	[Test]
-	public async Task CalculateElevationGainAsync_WithValidData_CalculatesCorrectElevation()
+	public async Task CalculateElevationGainAsync_WithFlatRoadResistance_ReturnsZero()
 	{
 		// Arrange
 		var workout = new Workout();
 		var workoutSamples = new WorkoutSamples
 		{
-			Duration = 3600, // 1 hour
 			Metrics = new List<Metric>
 			{
-				new Metric { Slug = "output", Average_Value = 200 } // 200 watts average
+				new Metric { Slug = "resistance", Values = new double?[] { 30, 30, 30 } },
+				new Metric { Slug = "speed", Display_Unit = "mph", Values = new double?[] { 15, 15, 15 } }
 			}
 		};
 		var settings = new ElevationGainSettings 
 		{ 
 			CalculateElevationGain = true,
-			UserMassKg = 70f,
-			GravityAcceleration = 9.81f
+			FlatRoadResistance = 30f
 		};
 
 		// Act
 		var result = await _service.CalculateElevationGainAsync(workout, workoutSamples, settings);
 
 		// Assert
-		// Energy = 200W × 3600s = 720,000 J
-		// Elevation = 720,000 J / (70 kg × 9.81 m/s²) = 720,000 / 686.7 = ~1048 m
+		result.Should().Be(0f);
+	}
+
+	[Test]
+	public async Task CalculateElevationGainAsync_WithClimbingResistance_CalculatesElevation()
+	{
+		// Arrange
+		var workout = new Workout();
+		var workoutSamples = new WorkoutSamples
+		{
+			Metrics = new List<Metric>
+			{
+				new Metric { Slug = "resistance", Values = new double?[] { 45, 50, 55 } }, // All above flat road (30)
+				new Metric { Slug = "speed", Display_Unit = "mph", Values = new double?[] { 12, 10, 8 } } // Decreasing speed
+			}
+		};
+		var settings = new ElevationGainSettings 
+		{ 
+			CalculateElevationGain = true,
+			FlatRoadResistance = 30f,
+			MaxGradePercentage = 15f
+		};
+
+		// Act
+		var result = await _service.CalculateElevationGainAsync(workout, workoutSamples, settings);
+
+		// Assert
 		result.Should().NotBeNull();
-		result.Should().BeApproximately(1048f, 1f);
+		result.Should().BeGreaterThan(0f);
+		// Expected calculation:
+		// Resistance 45: Grade = 15% * (15/70) = 3.21%, Speed = 12 mph = 5.36 m/s, Elevation = 5.36 * 3.21% = 0.172 m
+		// Resistance 50: Grade = 15% * (20/70) = 4.29%, Speed = 10 mph = 4.47 m/s, Elevation = 4.47 * 4.29% = 0.192 m  
+		// Resistance 55: Grade = 15% * (25/70) = 5.36%, Speed = 8 mph = 3.58 m/s, Elevation = 3.58 * 5.36% = 0.192 m
+		// Total: 0.172 + 0.192 + 0.192 = 0.556 m
+		result.Should().BeApproximately(0.556f, 0.01f);
 	}
 
 	[Test]
-	public async Task CalculateElevationGainAsync_WithDifferentPowerAndDuration_CalculatesCorrectElevation()
+	public async Task CalculateElevationGainAsync_WithMixedResistance_OnlyCountsClimbing()
 	{
 		// Arrange
 		var workout = new Workout();
 		var workoutSamples = new WorkoutSamples
 		{
-			Duration = 1800, // 30 minutes
 			Metrics = new List<Metric>
 			{
-				new Metric { Slug = "output", Average_Value = 150 } // 150 watts average
+				new Metric { Slug = "resistance", Values = new double?[] { 25, 30, 35, 40 } }, // 25 below, 30 flat, 35&40 above
+				new Metric { Slug = "speed", Display_Unit = "mph", Values = new double?[] { 18, 15, 12, 10 } }
 			}
 		};
 		var settings = new ElevationGainSettings 
 		{ 
 			CalculateElevationGain = true,
-			UserMassKg = 80f,
-			GravityAcceleration = 9.81f
+			FlatRoadResistance = 30f,
+			MaxGradePercentage = 15f
 		};
 
 		// Act
 		var result = await _service.CalculateElevationGainAsync(workout, workoutSamples, settings);
 
 		// Assert
-		// Energy = 150W × 1800s = 270,000 J
-		// Elevation = 270,000 J / (80 kg × 9.81 m/s²) = 270,000 / 784.8 = ~344 m
 		result.Should().NotBeNull();
-		result.Should().BeApproximately(344f, 1f);
+		result.Should().BeGreaterThan(0f);
+		// Only resistance 35 and 40 should contribute to elevation gain
+		// Resistance 25 and 30 should be ignored (below or equal to flat road)
 	}
 
 	[Test]
-	public async Task CalculateElevationGainAsync_WithZeroPower_ReturnsNull()
+	public async Task CalculateElevationGainAsync_WithCustomFlatRoadResistance_CalculatesCorrectly()
 	{
 		// Arrange
 		var workout = new Workout();
 		var workoutSamples = new WorkoutSamples
 		{
-			Duration = 3600,
 			Metrics = new List<Metric>
 			{
-				new Metric { Slug = "output", Average_Value = 0 } // 0 watts average
+				new Metric { Slug = "resistance", Values = new double?[] { 35, 40 } }, // Above custom flat road (25)
+				new Metric { Slug = "speed", Display_Unit = "mph", Values = new double?[] { 15, 12 } }
 			}
 		};
 		var settings = new ElevationGainSettings 
 		{ 
 			CalculateElevationGain = true,
-			UserMassKg = 70f,
-			GravityAcceleration = 9.81f
+			FlatRoadResistance = 25f, // Custom flat road resistance
+			MaxGradePercentage = 15f
 		};
 
 		// Act
 		var result = await _service.CalculateElevationGainAsync(workout, workoutSamples, settings);
+
+		// Assert
+		result.Should().NotBeNull();
+		result.Should().BeGreaterThan(0f);
+		// Resistance 35: Grade = 15% * (10/75) = 2%, Speed = 15 mph = 6.7 m/s, Elevation = 6.7 * 2% = 0.134 m
+		// Resistance 40: Grade = 15% * (15/75) = 3%, Speed = 12 mph = 5.36 m/s, Elevation = 5.36 * 3% = 0.161 m
+		// Total: 0.134 + 0.161 = 0.295 m
+		result.Should().BeApproximately(0.295f, 0.01f);
+	}
+
+	[Test]
+	public async Task CalculateElevationGainAsync_WithCustomMaxGrade_CapsGradeCorrectly()
+	{
+		// Arrange
+		var workout = new Workout();
+		var workoutSamples = new WorkoutSamples
+		{
+			Metrics = new List<Metric>
+			{
+				new Metric { Slug = "resistance", Values = new double?[] { 100 } }, // Maximum resistance
+				new Metric { Slug = "speed", Display_Unit = "mph", Values = new double?[] { 10 } }
+			}
+		};
+		var settings = new ElevationGainSettings 
+		{ 
+			CalculateElevationGain = true,
+			FlatRoadResistance = 30f,
+			MaxGradePercentage = 10f // Custom max grade (should cap at 10% instead of 15%)
+		};
+
+		// Act
+		var result = await _service.CalculateElevationGainAsync(workout, workoutSamples, settings);
+
+		// Assert
+		result.Should().NotBeNull();
+		result.Should().BeGreaterThan(0f);
+		// Resistance 100: Grade should be capped at 10%, Speed = 10 mph = 4.47 m/s, Elevation = 4.47 * 10% = 0.447 m
+		result.Should().BeApproximately(0.447f, 0.01f);
+	}
+
+	[Test]
+	public async Task CalculateElevationGainAsync_WithDifferentSpeedUnits_HandlesCorrectly()
+	{
+		// Arrange
+		var workout = new Workout();
+		var workoutSamples = new WorkoutSamples
+		{
+			Metrics = new List<Metric>
+			{
+				new Metric { Slug = "resistance", Values = new double?[] { 40 } },
+				new Metric { Slug = "speed", Display_Unit = "km/h", Values = new double?[] { 20 } } // 20 km/h
+			}
+		};
+		var settings = new ElevationGainSettings 
+		{ 
+			CalculateElevationGain = true,
+			FlatRoadResistance = 30f,
+			MaxGradePercentage = 15f
+		};
+
+		// Act
+		var result = await _service.CalculateElevationGainAsync(workout, workoutSamples, settings);
+
+		// Assert
+		result.Should().NotBeNull();
+		result.Should().BeGreaterThan(0f);
+		// Resistance 40: Grade = 15% * (10/70) = 2.14%, Speed = 20 km/h = 5.56 m/s, Elevation = 5.56 * 2.14% = 0.119 m
+		result.Should().BeApproximately(0.119f, 0.01f);
+	}
+
+	// Direct method tests
+	[Test]
+	public void CalculateResistanceBasedElevationGain_WhenNoResistanceData_ReturnsNull()
+	{
+		// Arrange
+		var workoutSamples = new WorkoutSamples
+		{
+			Metrics = new List<Metric>()
+		};
+		var settings = new ElevationGainSettings { CalculateElevationGain = true };
+
+		// Act
+		var result = _service.CalculateResistanceBasedElevationGain(workoutSamples, settings);
 
 		// Assert
 		result.Should().BeNull();
 	}
 
 	[Test]
-	public async Task CalculateElevationGainAsync_WithCustomGravity_CalculatesCorrectElevation()
+	public void CalculateResistanceBasedElevationGain_WhenNoSpeedData_ReturnsNull()
 	{
 		// Arrange
-		var workout = new Workout();
 		var workoutSamples = new WorkoutSamples
 		{
-			Duration = 2700, // 45 minutes
 			Metrics = new List<Metric>
 			{
-				new Metric { Slug = "output", Average_Value = 180 } // 180 watts average
+				new Metric { Slug = "resistance", Values = new double?[] { 30, 35, 40 } }
+			}
+		};
+		var settings = new ElevationGainSettings { CalculateElevationGain = true };
+
+		// Act
+		var result = _service.CalculateResistanceBasedElevationGain(workoutSamples, settings);
+
+		// Assert
+		result.Should().BeNull();
+	}
+
+	[Test]
+	public void CalculateResistanceBasedElevationGain_WithFlatRoadResistance_ReturnsZero()
+	{
+		// Arrange
+		var workoutSamples = new WorkoutSamples
+		{
+			Metrics = new List<Metric>
+			{
+				new Metric { Slug = "resistance", Values = new double?[] { 30, 30, 30 } },
+				new Metric { Slug = "speed", Display_Unit = "mph", Values = new double?[] { 15, 15, 15 } }
 			}
 		};
 		var settings = new ElevationGainSettings 
 		{ 
 			CalculateElevationGain = true,
-			UserMassKg = 75f,
-			GravityAcceleration = 10f // Custom gravity
+			FlatRoadResistance = 30f
 		};
 
 		// Act
-		var result = await _service.CalculateElevationGainAsync(workout, workoutSamples, settings);
+		var result = _service.CalculateResistanceBasedElevationGain(workoutSamples, settings);
 
 		// Assert
-		// Energy = 180W × 2700s = 486,000 J
-		// Elevation = 486,000 J / (75 kg × 10 m/s²) = 486,000 / 750 = 648 m
+		result.Should().Be(0f);
+	}
+
+	[Test]
+	public void CalculateResistanceBasedElevationGain_WithClimbingResistance_CalculatesElevation()
+	{
+		// Arrange
+		var workoutSamples = new WorkoutSamples
+		{
+			Metrics = new List<Metric>
+			{
+				new Metric { Slug = "resistance", Values = new double?[] { 45, 50, 55 } }, // All above flat road (30)
+				new Metric { Slug = "speed", Display_Unit = "mph", Values = new double?[] { 12, 10, 8 } } // Decreasing speed
+			}
+		};
+		var settings = new ElevationGainSettings 
+		{ 
+			CalculateElevationGain = true,
+			FlatRoadResistance = 30f,
+			MaxGradePercentage = 15f
+		};
+
+		// Act
+		var result = _service.CalculateResistanceBasedElevationGain(workoutSamples, settings);
+
+		// Assert
 		result.Should().NotBeNull();
-		result.Should().BeApproximately(648f, 1f);
-	}
-
-	[Test]
-	public async Task GetUserMassKgAsync_WithSettingsProvided_ReturnsSettingsValue()
-	{
-		// Arrange
-		var workout = new Workout();
-		var settings = new ElevationGainSettings { UserMassKg = 75f };
-
-		// Act
-		var result = await _service.GetUserMassKgAsync(workout, settings);
-
-		// Assert
-		result.Should().Be(75f);
-	}
-
-	[Test]
-	public async Task GetUserMassKgAsync_WithNoSettingsButPelotonData_ReturnsPelotonValue()
-	{
-		// Arrange
-		var workout = new Workout();
-		var settings = new ElevationGainSettings { UserMassKg = null };
-
-		// TODO: This test will need to be implemented when we add Peloton/Garmin user data retrieval
-		// Act
-		var result = await _service.GetUserMassKgAsync(workout, settings);
-
-		// Assert
-		result.Should().BeNull(); // For now, returns null when no settings provided
-	}
-
-	[Test]
-	public async Task GetUserMassKgAsync_WithNoData_ReturnsNull()
-	{
-		// Arrange
-		var workout = new Workout();
-		var settings = new ElevationGainSettings { UserMassKg = null };
-
-		// Act
-		var result = await _service.GetUserMassKgAsync(workout, settings);
-
-		// Assert
-		result.Should().BeNull();
+		result.Should().BeGreaterThan(0f);
+		// Expected calculation:
+		// Resistance 45: Grade = 15% * (15/70) = 3.21%, Speed = 12 mph = 5.36 m/s, Elevation = 5.36 * 3.21% = 0.172 m
+		// Resistance 50: Grade = 15% * (20/70) = 4.29%, Speed = 10 mph = 4.47 m/s, Elevation = 4.47 * 4.29% = 0.192 m  
+		// Resistance 55: Grade = 15% * (25/70) = 5.36%, Speed = 8 mph = 3.58 m/s, Elevation = 3.58 * 5.36% = 0.192 m
+		// Total: 0.172 + 0.192 + 0.192 = 0.556 m
+		result.Should().BeApproximately(0.556f, 0.01f);
 	}
 }

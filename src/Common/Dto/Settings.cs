@@ -193,20 +193,21 @@ public enum FileFormat : byte
 public record ElevationGainSettings
 {
 	/// <summary>
-	/// True if P2G should calculate estimated elevation gain from energy output.
-	/// This is an opt-in feature that estimates elevation gain using the formula:
-	/// Elevation (m) = Energy (J) / (Mass (kg) x Gravity (m/s²))
+	/// True if P2G should calculate estimated elevation gain from resistance data.
+	/// This method uses resistance data to estimate grade and calculate elevation gain
+	/// by processing resistance data second-by-second.
 	/// </summary>
 	public bool CalculateElevationGain { get; set; } = false;
 
 	/// <summary>
-	/// User's mass in kilograms. If not provided, P2G will attempt to get this
-	/// from Peloton or Garmin user profile data.
+	/// Resistance value that represents "flat road" (0% grade). Default is 30.
+	/// Any resistance above this value is considered climbing, below is considered descending.
 	/// </summary>
-	public float? UserMassKg { get; set; }
+	public float FlatRoadResistance { get; set; } = 30f;
 
 	/// <summary>
-	/// Gravitational acceleration in m/s². Default is 9.81 m/s².
+	/// Maximum grade percentage for resistance-based calculation. Default is 15%.
+	/// This caps the maximum grade that can be calculated from resistance data.
 	/// </summary>
-	public float GravityAcceleration { get; set; } = 9.81f;
+	public float MaxGradePercentage { get; set; } = 15f;
 }

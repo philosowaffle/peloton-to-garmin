@@ -20,90 +20,121 @@ public class ElevationGainCalculatorService : IElevationGainCalculatorService
 		_settingsService = settingsService;
 	}
 
-	public async Task<float?> CalculateElevationGainAsync(Workout workout, WorkoutSamples workoutSamples, ElevationGainSettings settings)
+	public Task<float?> CalculateElevationGainAsync(Workout workout, WorkoutSamples workoutSamples, ElevationGainSettings settings)
 	{
 		if (!settings.CalculateElevationGain)
 		{
 			_logger.Debug("Elevation gain calculation is disabled in settings");
-			return null;
+			return Task.FromResult<float?>(null);
 		}
 
-		var userMass = await GetUserMassKgAsync(workout, settings);
-		if (userMass == null)
+		var elevationGain = CalculateResistanceBasedElevationGain(workoutSamples, settings);
+		if (elevationGain.HasValue)
 		{
-			_logger.Debug("Cannot calculate elevation gain: user mass not available");
-			return null;
+			_logger.Information("Calculated elevation gain: {ElevationGain}m", elevationGain.Value);
 		}
-
-		var energyInJoules = GetEnergyFromPowerData(workoutSamples);
-		if (energyInJoules == null)
+		else
 		{
-			_logger.Debug("Cannot calculate elevation gain: power/energy data not available");
-			return null;
+			_logger.Debug("Elevation gain calculation failed: no resistance or speed data available");
 		}
 
-		// Formula: Elevation (m) = Energy (J) / (Mass (kg) x Gravity (m/s²))
-		// Energy (J) = Average Power (W) × Duration (s)
-		var elevationGain = energyInJoules.Value / (userMass.Value * settings.GravityAcceleration);
-		
-		_logger.Information("Calculated elevation gain: {ElevationGain}m from {Energy}J with {Mass}kg mass", 
-			elevationGain, energyInJoules.Value, userMass.Value);
-
-		return elevationGain;
+		return Task.FromResult(elevationGain);
 	}
 
-	public async Task<float?> GetUserMassKgAsync(Workout workout, ElevationGainSettings settings)
-	{
-		// First check if user provided mass in settings
-		if (settings.UserMassKg.HasValue)
-		{
-			_logger.Debug("Using user-provided mass: {Mass}kg", settings.UserMassKg.Value);
-			return settings.UserMassKg.Value;
-		}
-
-		// TODO: In the future, we could try to get user mass from Peloton or Garmin user profile data
-		// For now, return null if not provided in settings
-		_logger.Debug("No user mass provided in settings and external data retrieval not implemented");
-		return null;
-	}
-
-	private float? GetEnergyFromPowerData(WorkoutSamples workoutSamples)
+	public float? CalculateResistanceBasedElevationGain(WorkoutSamples workoutSamples, ElevationGainSettings settings)
 	{
 		if (workoutSamples?.Metrics == null)
 		{
-			_logger.Debug("No workout metrics available for power calculation");
+			_logger.Debug("No workout metrics available for elevation gain calculation");
 			return null;
 		}
 
-		// Look for output (power/watts) metrics
-		var outputMetrics = workoutSamples.Metrics.FirstOrDefault(m => m.Slug == "output");
-		if (outputMetrics == null)
+		// Look for resistance metrics
+		var resistanceMetrics = workoutSamples.Metrics.FirstOrDefault(m => m.Slug == "resistance");
+		if (resistanceMetrics?.Values == null)
 		{
-			_logger.Debug("No output (power) metrics found in workout data");
+			_logger.Debug("No resistance metrics found in workout data");
 			return null;
 		}
 
-		if (outputMetrics.Average_Value == null || outputMetrics.Average_Value <= 0)
+		// Look for speed metrics
+		var speedMetrics = GetSpeedSummary(workoutSamples);
+		if (speedMetrics?.Values == null)
 		{
-			_logger.Debug("Output metrics has no average value or invalid value");
+			_logger.Debug("No speed metrics found in workout data");
 			return null;
 		}
 
-		var averagePowerWatts = (float)outputMetrics.Average_Value.Value;
-		var durationSeconds = workoutSamples.Duration;
+		float totalElevationGain = 0f;
+		var flatRoadResistance = settings.FlatRoadResistance;
+		var maxGrade = settings.MaxGradePercentage;
 
-		if (durationSeconds <= 0)
+		// Process each second of data
+		for (int i = 0; i < resistanceMetrics.Values.Length && i < speedMetrics.Values.Length; i++)
 		{
-			_logger.Debug("Workout duration is invalid");
-			return null;
+			var resistance = (float)resistanceMetrics.GetValue(i);
+			var speedMps = ConvertSpeedToMetersPerSecond(speedMetrics.GetValue(i), speedMetrics.Display_Unit);
+
+			// Only calculate elevation gain if we're "climbing" (resistance > flat road)
+			if (resistance > flatRoadResistance)
+			{
+				var gradePercentage = CalculateGradeFromResistance(resistance, flatRoadResistance, maxGrade);
+				var elevationGainThisSecond = speedMps * gradePercentage / 100f;
+				totalElevationGain += elevationGainThisSecond;
+			}
 		}
 
-		// Energy (J) = Power (W) × Time (s)
-		var energyInJoules = averagePowerWatts * durationSeconds;
+		_logger.Debug("Calculated elevation gain: {TotalElevationGain}m from {DataPoints} data points", 
+			totalElevationGain, Math.Min(resistanceMetrics.Values.Length, speedMetrics.Values.Length));
 
-		_logger.Debug("Calculated energy: {AveragePower}W × {Duration}s = {EnergyInJoules}J", 
-			averagePowerWatts, durationSeconds, energyInJoules);
+		return totalElevationGain;
+	}
 
-		return energyInJoules;
+	private float CalculateGradeFromResistance(float resistance, float flatRoadResistance, float maxGrade)
+	{
+		if (resistance <= flatRoadResistance)
+			return 0f;
+			
+		// Linear interpolation: resistance above flat road maps to grade 0-maxGrade%
+		var resistanceRange = 100f - flatRoadResistance;
+		var resistanceAboveFlat = resistance - flatRoadResistance;
+		var gradePercentage = (resistanceAboveFlat / resistanceRange) * maxGrade;
+		
+		return Math.Min(gradePercentage, maxGrade); // Cap at max grade
+	}
+
+	private float ConvertSpeedToMetersPerSecond(double speed, string displayUnit)
+	{
+		if (speed <= 0) return 0f;
+
+		switch (displayUnit?.ToLower())
+		{
+			case "mph":
+				// Convert mph to m/s: 1 mph = 0.44704 m/s
+				return (float)(speed * 0.44704);
+			case "kph":
+			case "km/h":
+				// Convert km/h to m/s: 1 km/h = 0.277778 m/s
+				return (float)(speed * 0.277778);
+			case "m/s":
+				return (float)speed;
+			default:
+				_logger.Warning("Unknown speed unit: {Unit}, treating as m/s", displayUnit);
+				return (float)speed;
+		}
+	}
+
+	private Metric GetSpeedSummary(WorkoutSamples workoutSamples)
+	{
+		if (workoutSamples?.Metrics == null)
+			return null;
+
+		// Look for speed metrics
+		var speed = workoutSamples.Metrics.FirstOrDefault(m => m.Slug == "speed");
+		if (speed != null)
+			return speed;
+
+		// Fall back to split_pace for rowing
+		return workoutSamples.Metrics.FirstOrDefault(m => m.Slug == "split_pace");
 	}
 }

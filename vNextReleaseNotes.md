@@ -6,13 +6,14 @@
 
 ## New Features
 
-- [#415] **Experimental Elevation Gain Calculation for Cycling Workouts** - P2G can now estimate elevation gain from power output data when Peloton doesn't provide elevation data
-  - Uses physics-based formula: `Elevation (m) = Energy (J) / (Mass (kg) × Gravity (m/s²))`
-  - Where `Energy (J) = Average Power (W) × Duration (s)`
+- [#415] **Enhanced Elevation Gain Calculation for Cycling Workouts** - P2G can now estimate elevation gain from resistance data when Peloton doesn't provide elevation data
+  - **Resistance-based calculation**: Uses resistance data to estimate grade and calculate elevation gain by processing resistance data second-by-second
+  - Only counts elevation gain when resistance is above the configured "flat road" resistance
+  - Provides realistic elevation estimates that account for the actual resistance profile of your workout
   - **Opt-in feature** - disabled by default in cycling settings
-  - Requires user mass configuration (attempts to get from Peloton/Garmin if not provided)
   - Only applies to cycling workouts when no existing elevation data is present
-  - Configurable via UI under Settings > Conversion > Lap Types > Cycling Elevation Gain Estimation
+  - Configurable via UI under Settings > Conversion > Lap Types > Cycling Elevation Gain
+  - Requires resistance and speed data from Peloton workout
 
 ## Configuration Changes
 
@@ -22,8 +23,8 @@
     "PreferredLapType": "Default",
     "ElevationGain": {
       "CalculateElevationGain": false,
-      "UserMassKg": null,
-      "GravityAcceleration": 9.81
+      "FlatRoadResistance": 30,
+      "MaxGradePercentage": 15
     }
   }
   ```
@@ -31,9 +32,9 @@
 ## Technical Notes
 
 - This is an **experimental feature** that provides elevation estimates when Peloton data lacks elevation information
-- The calculation assumes all energy output contributes to elevation gain, which is an approximation
-- Works only with cycling workouts that have power/watts data
-- Does not override existing elevation data when present
+- **Resistance-based calculation**: Provides accurate estimates by processing resistance data second-by-second and only counting elevation gain during climbing segments
+- Works only with cycling workouts that have resistance and speed data
+- The calculation assumes a linear relationship between resistance and grade, which is a reasonable approximation for most indoor cycling scenarios
 
 ## Docker Tags
 

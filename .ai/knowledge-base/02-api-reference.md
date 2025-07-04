@@ -72,7 +72,10 @@ Retrieve current application settings.
       "elevationGain": {
         "calculateElevationGain": false,
         "userMassKg": 70.0,
-        "gravityAcceleration": 9.81
+        "gravityAcceleration": 9.81,
+        "useResistanceBasedCalculation": false,
+        "flatRoadResistance": 30.0,
+        "maxGradePercentage": 15.0
       }
     }
   },
@@ -124,7 +127,7 @@ Get system information and health status.
 The `format` section includes cycling-specific settings for elevation gain calculation.
 
 #### Elevation Gain Calculation
-**Purpose**: Estimates elevation gain from power data for cycling workouts when no existing elevation data is available.
+**Purpose**: Estimates elevation gain from resistance data for cycling workouts when no existing elevation data is available.
 
 **Configuration:**
 ```json
@@ -133,8 +136,8 @@ The `format` section includes cycling-specific settings for elevation gain calcu
     "cycling": {
       "elevationGain": {
         "calculateElevationGain": false,
-        "userMassKg": 70.0,
-        "gravityAcceleration": 9.81
+        "flatRoadResistance": 30.0,
+        "maxGradePercentage": 15.0
       }
     }
   }
@@ -143,11 +146,23 @@ The `format` section includes cycling-specific settings for elevation gain calcu
 
 **Parameters:**
 - `calculateElevationGain` (bool): Enable/disable elevation gain calculation (default: false)
-- `userMassKg` (float): User mass in kilograms for calculation (default: null, requires configuration)
-- `gravityAcceleration` (float): Gravity acceleration constant in m/s² (default: 9.81)
+- `flatRoadResistance` (float): Resistance value that represents "flat road" (0% grade). Default is 30. Any resistance above this value is considered climbing, below is considered descending.
+- `maxGradePercentage` (float): Maximum grade percentage for resistance-based calculation. Default is 15%. This caps the maximum grade that can be calculated from resistance data.
 
-**Formula**: `Elevation (m) = Energy (J) / (Mass (kg) × Gravity (m/s²))`
-Where `Energy (J) = Average Power (W) × Duration (s)`
+**How it works:**
+1. **Grade Estimation**: Resistance above the flat road threshold is mapped to a grade percentage (0% to MaxGradePercentage%)
+2. **Elevation Calculation**: For each second, elevation gain = speed (m/s) × grade percentage
+3. **Cumulative Total**: All elevation gains are summed to provide the total elevation gain for the workout
+
+**Requirements:**
+- Cycling workouts with resistance and speed data
+- No existing elevation data in the Peloton workout
+- Feature must be enabled in settings
+
+**Technical Notes:**
+- Experimental feature that provides elevation estimates when Peloton data lacks elevation information
+- Provides accurate estimates by processing resistance data second-by-second and only counting elevation gain during climbing segments
+- The calculation assumes a linear relationship between resistance and grade, which is a reasonable approximation for most indoor cycling scenarios
 
 ### 5. Garmin Authentication Controller (`/api/garmin/auth`)
 Manages Garmin Connect authentication.
