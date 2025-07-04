@@ -12,7 +12,7 @@ namespace Conversion
 	{
 		private static readonly ILogger _logger = LogContext.ForClass<JsonConverter>();
 
-		public JsonConverter(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) 
+		public JsonConverter(ISettingsService settings, IFileHandling fileHandler, IElevationGainCalculatorService elevationGainCalculatorService) : base(settings, fileHandler, elevationGainCalculatorService) 
 		{
 			Format = FileFormat.Json;
 		}

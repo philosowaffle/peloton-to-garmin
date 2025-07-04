@@ -14,7 +14,7 @@ public class TcxConverter : Converter<XElement>
 {
 	private static readonly ILogger _logger = LogContext.ForClass<TcxConverter>();
 
-	public TcxConverter(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) 
+	public TcxConverter(ISettingsService settings, IFileHandling fileHandler, IElevationGainCalculatorService elevationGainCalculatorService) : base(settings, fileHandler, elevationGainCalculatorService) 
 	{
 		Format = FileFormat.Tcx;
 	}

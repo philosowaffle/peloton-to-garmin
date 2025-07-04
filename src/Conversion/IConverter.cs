@@ -38,11 +38,13 @@ namespace Conversion
 
 		protected readonly ISettingsService _settingsService;
 		protected readonly IFileHandling _fileHandler;
+		protected readonly IElevationGainCalculatorService _elevationGainCalculatorService;
 
-		public Converter(ISettingsService settingsService, IFileHandling fileHandler)
+		public Converter(ISettingsService settingsService, IFileHandling fileHandler, IElevationGainCalculatorService elevationGainCalculatorService)
 		{
 			_settingsService = settingsService;
 			_fileHandler = fileHandler;
+			_elevationGainCalculatorService = elevationGainCalculatorService;
 		}
 
 		protected abstract bool ShouldConvert(Format settings);
@@ -580,6 +582,14 @@ namespace Conversion
 				default:
 					return Sport.Invalid;
 			}
+		}
+
+		protected async Task<float?> GetElevationGainAsync(Workout workout, WorkoutSamples workoutSamples, ElevationGainSettings settings)
+		{
+			if (!settings.CalculateElevationGain)
+				return null;
+
+			return await _elevationGainCalculatorService.CalculateElevationGainAsync(workout, workoutSamples, settings);
 		}
 	}
 }
