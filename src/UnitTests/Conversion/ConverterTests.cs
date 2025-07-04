@@ -518,7 +518,7 @@ namespace UnitTests.Conversion
 
 		private class ConverterInstance : Converter<string>
 		{
-			public ConverterInstance(ISettingsService settings, IFileHandling fileHandling) : base(settings, fileHandling) 
+			public ConverterInstance(ISettingsService settings, IFileHandling fileHandling, IElevationGainCalculatorService elevationGainCalculatorService) : base(settings, fileHandling, elevationGainCalculatorService) 
 			{
 				Format = FileFormat.Fit;
 			}

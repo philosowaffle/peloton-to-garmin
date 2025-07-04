@@ -4,9 +4,9 @@ using Common.Service;
 using Conversion;
 using FluentAssertions;
 using Moq;
+using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace UnitTests.Conversion;
 
@@ -21,7 +21,7 @@ public class ElevationGainCalculatorServiceTests
 		_service = new ElevationGainCalculatorService(_settingsServiceMock.Object);
 	}
 
-	[Fact]
+	[Test]
 	public async Task CalculateElevationGainAsync_WhenSettingsDisabled_ReturnsNull()
 	{
 		// Arrange
@@ -36,7 +36,7 @@ public class ElevationGainCalculatorServiceTests
 		result.Should().BeNull();
 	}
 
-	[Fact]
+	[Test]
 	public async Task CalculateElevationGainAsync_WhenNoPowerData_ReturnsNull()
 	{
 		// Arrange
@@ -59,7 +59,7 @@ public class ElevationGainCalculatorServiceTests
 		result.Should().BeNull();
 	}
 
-	[Fact]
+	[Test]
 	public async Task CalculateElevationGainAsync_WhenNoUserMass_ReturnsNull()
 	{
 		// Arrange
@@ -85,7 +85,7 @@ public class ElevationGainCalculatorServiceTests
 		result.Should().BeNull();
 	}
 
-	[Fact]
+	[Test]
 	public async Task CalculateElevationGainAsync_WithValidData_CalculatesCorrectElevation()
 	{
 		// Arrange
@@ -115,7 +115,7 @@ public class ElevationGainCalculatorServiceTests
 		result.Should().BeApproximately(1048f, 1f);
 	}
 
-	[Fact]
+	[Test]
 	public async Task CalculateElevationGainAsync_WithDifferentPowerAndDuration_CalculatesCorrectElevation()
 	{
 		// Arrange
@@ -145,7 +145,7 @@ public class ElevationGainCalculatorServiceTests
 		result.Should().BeApproximately(344f, 1f);
 	}
 
-	[Fact]
+	[Test]
 	public async Task CalculateElevationGainAsync_WithZeroPower_ReturnsNull()
 	{
 		// Arrange
@@ -172,7 +172,7 @@ public class ElevationGainCalculatorServiceTests
 		result.Should().BeNull();
 	}
 
-	[Fact]
+	[Test]
 	public async Task CalculateElevationGainAsync_WithCustomGravity_CalculatesCorrectElevation()
 	{
 		// Arrange
@@ -202,7 +202,7 @@ public class ElevationGainCalculatorServiceTests
 		result.Should().BeApproximately(648f, 1f);
 	}
 
-	[Fact]
+	[Test]
 	public async Task GetUserMassKgAsync_WithSettingsProvided_ReturnsSettingsValue()
 	{
 		// Arrange
@@ -216,7 +216,7 @@ public class ElevationGainCalculatorServiceTests
 		result.Should().Be(75f);
 	}
 
-	[Fact]
+	[Test]
 	public async Task GetUserMassKgAsync_WithNoSettingsButPelotonData_ReturnsPelotonValue()
 	{
 		// Arrange
@@ -231,7 +231,7 @@ public class ElevationGainCalculatorServiceTests
 		result.Should().BeNull(); // For now, returns null when no settings provided
 	}
 
-	[Fact]
+	[Test]
 	public async Task GetUserMassKgAsync_WithNoData_ReturnsNull()
 	{
 		// Arrange

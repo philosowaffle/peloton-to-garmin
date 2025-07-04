@@ -274,7 +274,7 @@ namespace UnitTests
 		{
 			private IOWrapper fileHandler = new IOWrapper();
 
-			public ConverterInstance(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
+			public ConverterInstance(ISettingsService settings, IFileHandling fileHandler, IElevationGainCalculatorService elevationGainCalculatorService) : base(settings, fileHandler, elevationGainCalculatorService) { }
 
 			public async Task<ICollection<Mesg>> ConvertForTest(string path, Settings settings)
 			{

@@ -5,10 +5,10 @@ using Common.Service;
 using Conversion;
 using FluentAssertions;
 using Moq;
+using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace UnitTests.Conversion;
 
@@ -25,7 +25,7 @@ public class ElevationGainIntegrationTests
 		_elevationGainCalculatorServiceMock = new Mock<IElevationGainCalculatorService>();
 	}
 
-	[Fact]
+	[Test]
 	public async Task FitConverter_WithElevationGainEnabled_CalculatesElevationGain()
 	{
 		// Arrange
@@ -95,7 +95,7 @@ public class ElevationGainIntegrationTests
 			Times.Once);
 	}
 
-	[Fact]
+	[Test]
 	public async Task FitConverter_WithElevationGainDisabled_DoesNotCalculateElevationGain()
 	{
 		// Arrange
@@ -161,7 +161,7 @@ public class ElevationGainIntegrationTests
 			Times.Never);
 	}
 
-	[Fact]
+	[Test]
 	public async Task FitConverter_WithExistingElevationData_DoesNotCalculateElevationGain()
 	{
 		// Arrange

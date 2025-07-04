@@ -172,9 +172,9 @@ namespace UnitTests.Conversion
 
 			public new FileFormat Format => base.Format;
 
-			public ConverterInstance(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
+			public ConverterInstance(ISettingsService settings, IFileHandling fileHandler, IElevationGainCalculatorService elevationGainCalculatorService) : base(settings, fileHandler, elevationGainCalculatorService) { }
 
-			public ConverterInstance(ISettingsService settings) : base(settings, null) { }
+			public ConverterInstance(ISettingsService settings, IElevationGainCalculatorService elevationGainCalculatorService) : base(settings, null, elevationGainCalculatorService) { }
 
 			public new bool ShouldConvert(Format settings) => base.ShouldConvert(settings);
 
