@@ -29,14 +29,6 @@ This knowledge base contains comprehensive documentation for maintaining, fixing
 - Docker development environment
 - Testing and debugging setup
 
-### 🔧 [04-troubleshooting-guide.md](04-troubleshooting-guide.md)
-**Comprehensive Troubleshooting Guide**
-- Common authentication issues (Peloton/Garmin)
-- Sync process problems and solutions
-- Configuration and performance issues
-- Diagnostic tools and debugging techniques
-- Prevention tips and best practices
-
 ### 🌐 [05-external-api-integration.md](05-external-api-integration.md)
 **External API Integration Guide**
 - Peloton API authentication and endpoints
@@ -44,14 +36,6 @@ This knowledge base contains comprehensive documentation for maintaining, fixing
 - Rate limiting and error handling strategies
 - Performance optimization techniques
 - Security and monitoring considerations
-
-### 🧪 [06-testing-strategy.md](06-testing-strategy.md)
-**Testing Strategy and Guidelines**
-- Comprehensive testing philosophy and approach
-- Unit, integration, and end-to-end testing
-- Test data management and mocking strategies
-- Performance and load testing
-- CI/CD pipeline integration
 
 ## Quick Reference
 

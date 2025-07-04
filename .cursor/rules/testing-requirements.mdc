@@ -4,47 +4,20 @@ alwaysApply: false
 ---
 # Testing Requirements
 
-## Comprehensive Testing Strategy
+Follow these testing guidelines when adding or modifying tests.
 
-Follow the testing guidelines from [.ai/knowledge-base/06-testing-strategy.md](mdc:.ai/knowledge-base/06-testing-strategy.md) when adding or modifying tests:
+**Location**: `src/UnitTests/`
 
-### Test Categories:
-- **Unit Tests** (`src/UnitTests/`) - Test individual components in isolation
-
-### Testing Framework Stack:
+## Testing Framework Stack:
 - **NUnit** - Primary testing framework
 - **Moq** - Mocking framework
 - **FluentAssertions** - Assertion library
-- **ASP.NET Core Test Host** - For API testing
+- **Bogus** - Test Data generator
 
-### Test Structure Pattern:
-```csharp
-[Test]
-public async Task MethodName_ShouldReturnExpected_WhenCondition()
-{
-    // Arrange
-    var mockService = new Mock<IService>();
-    var systemUnderTest = new SystemUnderTest(mockService.Object);
-    
-    // Act
-    var result = await systemUnderTest.MethodAsync();
-    
-    // Assert
-    result.Should().BeTrue();
-    mockService.Verify(x => x.Method(), Times.Once);
-}
-```
+## Example Tests
 
-### Test Data Management:
-- **Sample Data**: Use `src/UnitTests/Data/` for test data
-- **Builders**: Create test data builders for complex objects
-- **Helpers**: Use `TestDataHelper` for consistent test data
-
-### Coverage Requirements:
-- **Target**: >80% code coverage
-- **Critical Paths**: 100% coverage for sync workflow
-- **Error Scenarios**: Test all exception paths
-- **Edge Cases**: Test boundary conditions
+- Using AutoMock to mock dependencies: [SyncServiceTests.cs](mdc:src\UnitTests\Sync\SyncServiceTests.cs)
+- Using Bogus to setup test data: [StackedWorkoutsCalculatorTests.cs](mdc:src\UnitTests\Sync\StackedWorkoutsCalculatorTests.cs)
 
 ### Mocking Guidelines:
 - Mock external dependencies (Peloton/Garmin APIs)
@@ -54,15 +27,39 @@ public async Task MethodName_ShouldReturnExpected_WhenCondition()
 
 ### Running Tests:
 ```bash
-dotnet test                           # All tests
-dotnet test --filter "Category=Unit" # Unit tests only
-dotnet test --collect:"XPlat Code Coverage" # With coverage
+# Run all tests
+dotnet test
+
+# Run specific test class
+dotnet test --filter "FullyQualifiedName~SyncServiceTests"
+
+# With Coverage
+dotnet test --collect:"XPlat Code Coverage"
 ```
 
-### Test Maintenance:
-- Keep test data current with API changes
-- Update mocks when interfaces change
-- Remove obsolete tests
-- Monitor test execution time and reliability
+## Test Maintenance
 
-When adding new features, ensure corresponding tests are added and documented.
+### Regular Tasks
+1. **Update Test Data**: Keep sample data current
+2. **Review Coverage**: Maintain >80% code coverage
+3. **Remove Obsolete Tests**: Clean up unused tests
+4. **Update Dependencies**: Keep test frameworks updated
+
+
+## Best Practices
+
+### Do's
+- ✅ Write tests before fixing bugs
+- ✅ Test edge cases and error conditions
+- ✅ Use descriptive test names
+- ✅ Keep tests independent and isolated
+- ✅ Mock external dependencies
+- ✅ Use test data builders for complex objects
+
+### Don'ts
+- ❌ Don't test implementation details
+- ❌ Don't write tests that depend on external services
+- ❌ Don't ignore flaky tests
+- ❌ Don't test multiple concerns in one test
+- ❌ Don't use production data in tests
+- ❌ Don't skip tests without good reason
