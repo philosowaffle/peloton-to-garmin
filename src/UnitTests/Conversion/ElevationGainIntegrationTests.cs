@@ -5,6 +5,7 @@ using Conversion;
 using FluentAssertions;
 using Moq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -39,11 +40,11 @@ public class ElevationGainIntegrationTests
 		var workoutSamples = new WorkoutSamples
 		{
 			Duration = 3600, // 1 hour
-			Summaries = new List<Summary>
+			Summaries = new List<Summary>(),
+			Metrics = new List<Metric>
 			{
-				new Summary { Slug = "calories", Value = 500, Display_Unit = "kcal" }
+				new Metric { Slug = "output", Average_Value = 200 } // 200 watts average
 			},
-			Metrics = new List<Metric>(),
 			Seconds_Since_Pedaling_Start = Enumerable.Range(0, 3600).ToList(),
 			Segment_List = new List<Segment>()
 		};
@@ -60,11 +61,14 @@ public class ElevationGainIntegrationTests
 			Format = new Format
 			{
 				Fit = true,
-				ElevationGain = new ElevationGainSettings
+				Cycling = new Cycling
 				{
-					CalculateElevationGain = true,
-					UserMassKg = 70f,
-					GravityAcceleration = 9.81f
+					ElevationGain = new ElevationGainSettings
+					{
+						CalculateElevationGain = true,
+						UserMassKg = 70f,
+						GravityAcceleration = 9.81f
+					}
 				}
 			}
 		};
@@ -74,7 +78,7 @@ public class ElevationGainIntegrationTests
 			.ReturnsAsync(Format.DefaultDeviceInfoSettings[WorkoutType.None]);
 
 		_elevationGainCalculatorServiceMock
-			.Setup(s => s.CalculateElevationGainAsync(workout, workoutSamples, settings.Format.ElevationGain))
+			.Setup(s => s.CalculateElevationGainAsync(workout, workoutSamples, settings.Format.Cycling.ElevationGain))
 			.ReturnsAsync(1500f); // 1500 meters elevation gain
 
 		// Act
@@ -86,7 +90,7 @@ public class ElevationGainIntegrationTests
 		
 		// Verify that elevation gain calculator was called
 		_elevationGainCalculatorServiceMock.Verify(
-			s => s.CalculateElevationGainAsync(workout, workoutSamples, settings.Format.ElevationGain),
+			s => s.CalculateElevationGainAsync(workout, workoutSamples, settings.Format.Cycling.ElevationGain),
 			Times.Once);
 	}
 
@@ -106,11 +110,11 @@ public class ElevationGainIntegrationTests
 		var workoutSamples = new WorkoutSamples
 		{
 			Duration = 3600, // 1 hour
-			Summaries = new List<Summary>
+			Summaries = new List<Summary>(),
+			Metrics = new List<Metric>
 			{
-				new Summary { Slug = "calories", Value = 500, Display_Unit = "kcal" }
+				new Metric { Slug = "output", Average_Value = 200 } // 200 watts average
 			},
-			Metrics = new List<Metric>(),
 			Seconds_Since_Pedaling_Start = Enumerable.Range(0, 3600).ToList(),
 			Segment_List = new List<Segment>()
 		};
@@ -127,11 +131,14 @@ public class ElevationGainIntegrationTests
 			Format = new Format
 			{
 				Fit = true,
-				ElevationGain = new ElevationGainSettings
+				Cycling = new Cycling
 				{
-					CalculateElevationGain = false, // Disabled
-					UserMassKg = 70f,
-					GravityAcceleration = 9.81f
+					ElevationGain = new ElevationGainSettings
+					{
+						CalculateElevationGain = false, // Disabled
+						UserMassKg = 70f,
+						GravityAcceleration = 9.81f
+					}
 				}
 			}
 		};
@@ -171,10 +178,12 @@ public class ElevationGainIntegrationTests
 			Duration = 3600, // 1 hour
 			Summaries = new List<Summary>
 			{
-				new Summary { Slug = "elevation", Value = 800, Display_Unit = "m" }, // Existing elevation data
-				new Summary { Slug = "calories", Value = 500, Display_Unit = "kcal" }
+				new Summary { Slug = "elevation", Value = 800, Display_Unit = "m" } // Existing elevation data
 			},
-			Metrics = new List<Metric>(),
+			Metrics = new List<Metric>
+			{
+				new Metric { Slug = "output", Average_Value = 200 } // 200 watts average
+			},
 			Seconds_Since_Pedaling_Start = Enumerable.Range(0, 3600).ToList(),
 			Segment_List = new List<Segment>()
 		};
@@ -191,11 +200,14 @@ public class ElevationGainIntegrationTests
 			Format = new Format
 			{
 				Fit = true,
-				ElevationGain = new ElevationGainSettings
+				Cycling = new Cycling
 				{
-					CalculateElevationGain = true, // Enabled but should not be used due to existing data
-					UserMassKg = 70f,
-					GravityAcceleration = 9.81f
+					ElevationGain = new ElevationGainSettings
+					{
+						CalculateElevationGain = true, // Enabled but should not be used due to existing data
+						UserMassKg = 70f,
+						GravityAcceleration = 9.81f
+					}
 				}
 			}
 		};

@@ -15,6 +15,14 @@
     "StackedWorkouts": {
       "AutomaticallyStackWorkouts": false,
       "MaxAllowedGapSeconds": 300
+    },
+    "Cycling": {
+      "PreferredLapType": "Default",
+      "ElevationGain": {
+        "CalculateElevationGain": false,
+        "UserMassKg": null,
+        "GravityAcceleration": 9.81
+      }
     }
   },
 

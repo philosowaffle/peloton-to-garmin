@@ -389,7 +389,7 @@ namespace Conversion
 			else
 			{
 				// If no elevation data exists, try to calculate from energy if enabled
-				var estimatedElevation = await GetElevationGainAsync(workout, workoutSamples, settings.Format.ElevationGain);
+				var estimatedElevation = await GetElevationGainAsync(workout, workoutSamples, settings.Format.Cycling.ElevationGain);
 				if (estimatedElevation.HasValue)
 				{
 					try

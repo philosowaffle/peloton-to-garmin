@@ -10,7 +10,6 @@ namespace Common.Service;
 public class ElevationGainCalculatorService : IElevationGainCalculatorService
 {
 	private static readonly ILogger _logger = LogContext.ForClass<ElevationGainCalculatorService>();
-	private const float CaloriesToJoulesMultiplier = 4184f; // 1 kcal = 4184 J
 	
 	private readonly ISettingsService _settingsService;
 
@@ -34,14 +33,15 @@ public class ElevationGainCalculatorService : IElevationGainCalculatorService
 			return null;
 		}
 
-		var energyInJoules = GetEnergyInJoules(workoutSamples);
+		var energyInJoules = GetEnergyFromPowerData(workoutSamples);
 		if (energyInJoules == null)
 		{
-			_logger.Debug("Cannot calculate elevation gain: energy data not available");
+			_logger.Debug("Cannot calculate elevation gain: power/energy data not available");
 			return null;
 		}
 
 		// Formula: Elevation (m) = Energy (J) / (Mass (kg) x Gravity (m/s²))
+		// Energy (J) = Average Power (W) × Duration (s)
 		var elevationGain = energyInJoules.Value / (userMass.Value * settings.GravityAcceleration);
 		
 		_logger.Information("Calculated elevation gain: {ElevationGain}m from {Energy}J with {Mass}kg mass", 
@@ -65,50 +65,42 @@ public class ElevationGainCalculatorService : IElevationGainCalculatorService
 		return null;
 	}
 
-	private float? GetEnergyInJoules(WorkoutSamples workoutSamples)
+	private float? GetEnergyFromPowerData(WorkoutSamples workoutSamples)
 	{
-		if (workoutSamples?.Summaries == null)
+		if (workoutSamples?.Metrics == null)
 		{
-			_logger.Debug("No workout summaries available for energy calculation");
+			_logger.Debug("No workout metrics available for power calculation");
 			return null;
 		}
 
-		// Look for calories summary (preferred)
-		var caloriesSummary = workoutSamples.Summaries.FirstOrDefault(s => s.Slug == "calories");
-		if (caloriesSummary == null)
+		// Look for output (power/watts) metrics
+		var outputMetrics = workoutSamples.Metrics.FirstOrDefault(m => m.Slug == "output");
+		if (outputMetrics == null)
 		{
-			// Look for total_calories as fallback (Apple Watch integration)
-			caloriesSummary = workoutSamples.Summaries.FirstOrDefault(s => s.Slug == "total_calories");
-		}
-
-		if (caloriesSummary == null)
-		{
-			_logger.Debug("No calories summary found in workout data");
+			_logger.Debug("No output (power) metrics found in workout data");
 			return null;
 		}
 
-		if (!caloriesSummary.Value.HasValue)
+		if (outputMetrics.Average_Value == null || outputMetrics.Average_Value <= 0)
 		{
-			_logger.Debug("Calories summary has no value");
+			_logger.Debug("Output metrics has no average value or invalid value");
 			return null;
 		}
 
-		var energyValue = caloriesSummary.Value.Value;
-		var displayUnit = caloriesSummary.Display_Unit ?? "kcal";
+		var averagePowerWatts = (float)outputMetrics.Average_Value.Value;
+		var durationSeconds = workoutSamples.Duration;
 
-		// Convert to Joules based on unit
-		float energyInJoules = displayUnit.ToLowerInvariant() switch
+		if (durationSeconds <= 0)
 		{
-			"kcal" => energyValue * CaloriesToJoulesMultiplier,
-			"cal" => energyValue * CaloriesToJoulesMultiplier / 1000f, // cal to kcal to J
-			"j" => energyValue,
-			"joule" => energyValue,
-			"joules" => energyValue,
-			_ => energyValue * CaloriesToJoulesMultiplier // Default to kcal assumption
-		};
+			_logger.Debug("Workout duration is invalid");
+			return null;
+		}
 
-		_logger.Debug("Converted energy: {EnergyValue} {Unit} = {EnergyInJoules}J", 
-			energyValue, displayUnit, energyInJoules);
+		// Energy (J) = Power (W) × Time (s)
+		var energyInJoules = averagePowerWatts * durationSeconds;
+
+		_logger.Debug("Calculated energy: {AveragePower}W × {Duration}s = {EnergyInJoules}J", 
+			averagePowerWatts, durationSeconds, energyInJoules);
 
 		return energyInJoules;
 	}
