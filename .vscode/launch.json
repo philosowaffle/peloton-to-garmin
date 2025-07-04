@@ -2,10 +2,53 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch and Debug Standalone Blazor WebAssembly App",
-            "type": "blazorwasm",
+            "name": "Debug Web API",
+            "type": "coreclr",
             "request": "launch",
-            "cwd": "${workspaceFolder}/src/WebUI"
+            "program": "${workspaceFolder}/src/Api/bin/Debug/net9.0/Api.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/Api",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+                "uriFormat": "%s/swagger"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "P2G_API__HOSTURL": "http://localhost:8080"
+            }
+        },
+        {
+            "name": "Debug Web UI",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/WebUI/bin/Debug/net9.0/WebUI.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/WebUI",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "P2G_API__HOSTURL": "http://localhost:8080",
+                "P2G_WEBUI__HOSTURL": "http://localhost:8081"
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Debug Web API + Web UI",
+            "configurations": ["Debug Web API", "Debug Web UI"],
+            "preLaunchTask": "build",
+            "stopAll": true,
+            "presentation": {
+                "hidden": false,
+                "group": "P2G",
+                "order": 1
+            }
         }
     ]
 }

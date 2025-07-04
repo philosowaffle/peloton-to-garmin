@@ -7,7 +7,6 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/PelotonToGarmin.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -29,7 +28,6 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/PelotonToGarmin.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -41,9 +39,7 @@
             "type": "process",
             "args": [
                 "watch",
-                "run",
-                "--project",
-                "${workspaceFolder}/PelotonToGarmin.sln"
+                "run"
             ],
             "problemMatcher": "$msCompile"
         }
