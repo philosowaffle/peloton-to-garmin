@@ -1,0 +1,68 @@
+---
+alwaysApply: true
+---
+
+# .NET Development Patterns for P2G
+
+## Project Structure:
+- All projects target .NET 9.0
+- Use nullable reference types (`<Nullable>enable</Nullable>`)
+- Follow dependency injection patterns with Microsoft.Extensions.DependencyInjection
+- Use Serilog for logging throughout the application
+
+## Common Patterns:
+- Services implement interfaces (e.g., `ISyncService`, `IPelotonService`)
+- Use `Common.Stateful.Statics` for application-wide state
+- Configuration loaded via `Common.Configuration.ConfigurationSetup`
+- Observability via Prometheus metrics and Jaeger tracing
+
+## Key Dependencies:
+- **Flurl.Http**: HTTP client for API calls
+- **Serilog**: Structured logging
+- **Prometheus**: Metrics collection
+- **Dynastream.Fit**: FIT file format handling
+- **Microsoft.AspNetCore.Components.Web**: Blazor web components
+
+## Service Registration:
+- Services registered in `SharedStartup` classes
+- Background services inherit from `BackgroundService`
+- Use `IHost` for console applications
+- Web applications use `WebApplication.CreateBuilder()`
+
+## Error Handling:
+- Use `ServiceResult<T>` for operation results
+- Log exceptions with context using Serilog
+- Return `ConvertStatus` for conversion operations
+- Handle authentication errors separately (Garmin/Peloton)
+# .NET Development Patterns for P2G
+
+## Project Structure:
+- All projects target .NET 9.0
+- Use nullable reference types (`<Nullable>enable</Nullable>`)
+- Follow dependency injection patterns with Microsoft.Extensions.DependencyInjection
+- Use Serilog for logging throughout the application
+
+## Common Patterns:
+- Services implement interfaces (e.g., `ISyncService`, `IPelotonService`)
+- Use `Common.Stateful.Statics` for application-wide state
+- Configuration loaded via `Common.Configuration.ConfigurationSetup`
+- Observability via Prometheus metrics and Jaeger tracing
+
+## Key Dependencies:
+- **Flurl.Http**: HTTP client for API calls
+- **Serilog**: Structured logging
+- **Prometheus**: Metrics collection
+- **Dynastream.Fit**: FIT file format handling
+- **Microsoft.AspNetCore.Components.Web**: Blazor web components
+
+## Service Registration:
+- Services registered in `SharedStartup` classes
+- Background services inherit from `BackgroundService`
+- Use `IHost` for console applications
+- Web applications use `WebApplication.CreateBuilder()`
+
+## Error Handling:
+- Use `ServiceResult<T>` for operation results
+- Log exceptions with context using Serilog
+- Return `ConvertStatus` for conversion operations
+- Handle authentication errors separately (Garmin/Peloton)
