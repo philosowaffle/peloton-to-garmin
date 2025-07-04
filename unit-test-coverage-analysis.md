@@ -41,18 +41,14 @@ After analysis of the P2G codebase, the project currently has **322 unit tests**
 
 ## 1. **Garmin Integration** (COMPLETED ✅)
 
-**Status**: **COMPLETED** - Added comprehensive GarminUploader tests
+**Status**: **COMPLETED** - Added comprehensive Garmin integration tests
 - ✅ `src/UnitTests/Garmin/GarminUploaderTests.cs` - 9 tests covering core upload orchestration
-- ❌ `src/Garmin/ApiClient.cs` - HTTP API client (requires complex HTTP mocking)
+- ✅ `src/UnitTests/Garmin/GarminApiClientTests.cs` - 21 tests covering HTTP API client functionality
 - ❌ `src/Garmin/Auth/GarminAuthenticationService.cs` - OAuth authentication flows (requires complex auth flow mocking)
 
 **Tests Added**:
-- Upload disabled/enabled validation
-- Directory existence checks  
-- Configuration validation (ValidateConfig)
-- Error handling and exception propagation
-- Constructor and null reference validation
-- Early return scenarios (no files, no directory)
+- **GarminUploader (9 tests)**: Upload disabled/enabled validation, directory existence checks, configuration validation (ValidateConfig), error handling and exception propagation, constructor and null reference validation, early return scenarios (no files, no directory)
+- **GarminApiClient (21 tests)**: HTTP client functionality, OAuth credential management, cookie jar initialization, CSRF token handling, MFA code validation, OAuth1/OAuth2 token exchange, activity upload workflows, network error handling, authentication flows
 
 **Recommended Test Coverage**:
 
@@ -210,12 +206,12 @@ After analysis of the P2G codebase, the project currently has **322 unit tests**
 ## Metrics and Success Criteria
 
 ### Current State ✅
-- **331 total tests** (+9 from GarminUploader)
-- **327 passing** (4 skipped on Unix)
-- **~75% estimated coverage** (core logic well covered)
+- **352 total tests** (+30 from Garmin integration: 9 GarminUploader + 21 GarminApiClient)
+- **348 passing** (4 skipped on Unix)
+- **~80% estimated coverage** (core logic and HTTP integration well covered)
 
 ### Target State
-- **450+ total tests** (35% increase remaining)
+- **450+ total tests** (28% increase remaining)
 - **>90% line coverage** on critical paths
 - **100% coverage** on business rule validation
 - **Zero critical paths** without error scenario testing
@@ -246,18 +242,33 @@ The P2G project has a solid foundation of unit tests covering core business logi
 
 ## Completed Work ✅
 
-**GarminUploader Test Suite** - 9 comprehensive tests added:
+**Garmin Integration Test Suite** - 30 comprehensive tests added:
+
+**GarminUploader (9 tests)**:
 - Upload workflow validation (enabled/disabled states)
 - Configuration validation and error handling
 - Directory existence and file processing logic
 - Exception propagation and error scenarios
 - Constructor validation and null reference handling
 
+**GarminApiClient (21 tests)**:
+- Consumer credentials retrieval and HTTP error handling
+- Cookie jar initialization with query parameters and headers
+- Credential authentication with success/redirect/error scenarios
+- CSRF token extraction and HTTP validation
+- MFA code submission with valid/invalid code handling
+- OAuth1 token generation with network error scenarios
+- OAuth2 token exchange with authentication validation
+- Activity upload with file validation, network errors, and duplicate handling
+- Constructor and dependency injection validation
+
 ## Benefits Achieved
 
-1. **Reduced risk** of upload failures going undetected
-2. **Improved code confidence** for Garmin integration refactoring
-3. **Better error handling validation** for critical upload paths
-4. **Enhanced regression testing** for upload workflow changes
+1. **Reduced risk** of upload failures and HTTP integration issues going undetected
+2. **Improved code confidence** for Garmin integration refactoring and API changes
+3. **Better error handling validation** for critical upload paths and network scenarios
+4. **Enhanced regression testing** for upload workflow changes and authentication flows
+5. **Comprehensive HTTP client testing** with proper mocking of external API calls
+6. **Robust OAuth flow validation** ensuring authentication edge cases are covered
 
 The estimated effort to achieve full comprehensive coverage is **5-6 weeks** following the remaining phases outlined above.
