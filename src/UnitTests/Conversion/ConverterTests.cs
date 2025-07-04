@@ -5,6 +5,7 @@ using Common.Dto.Peloton;
 using Common.Service;
 using Conversion;
 using FluentAssertions;
+using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
 using System;
@@ -523,31 +524,30 @@ namespace UnitTests.Conversion
 				Format = FileFormat.Fit;
 			}
 
-			protected override Task<string> ConvertInternalAsync(P2GWorkout workout, Settings settings)
+			protected override Task<string> ConvertInternalAsync(P2GWorkout workout, Settings settings, bool forceElevationGainCalculation = false)
 			{
-				throw new NotImplementedException();
+				return Task.FromResult("");
 			}
 
 			protected override void Save(string data, string path)
 			{
-				throw new NotImplementedException();
 			}
 
 			protected override bool ShouldConvert(Format settings) => true;
 
 			public System.DateTime GetStartTime1(Workout workout)
 			{
-				return this.GetStartTimeUtc(workout);
+				return base.GetStartTimeUtc(workout);
 			}
 
 			public System.DateTime GetEndTimeUtc1(Workout workout, WorkoutSamples workoutSamples)
 			{
-				return this.GetEndTimeUtc(workout, workoutSamples);
+				return base.GetEndTimeUtc(workout, workoutSamples);
 			}
 
 			public string GetTimeStamp1(System.DateTime startTime, long offset)
 			{
-				return this.GetTimeStamp(startTime, offset);
+				return base.GetTimeStamp(startTime, offset);
 			}
 
 			public float GetMaxSpeedMetersPerSecond1(WorkoutSamples workoutSamples)
@@ -579,6 +579,7 @@ namespace UnitTests.Conversion
 			{
 				return base.GetHeartRateSummary(workoutSamples);
 			}
+
 			public Task<GarminDeviceInfo> GetDeviceInfo1(Workout workout)
 			{
 				return base.GetDeviceInfoAsync(workout);
@@ -588,6 +589,79 @@ namespace UnitTests.Conversion
 			{
 				return base.GetCyclingFtp(workout, userData);
 			}
+
+			public async Task<float?> GetElevationGain1(Workout workout, WorkoutSamples workoutSamples, ElevationGainSettings settings, bool forceCalculation)
+			{
+				return await GetElevationGainAsync(workout, workoutSamples, settings, forceCalculation);
+			}
+		}
+
+		[Test]
+		public async Task GetElevationGainAsync_When_ForceCalculation_True_Should_Calculate_EvenIfDisabled()
+		{
+			// SETUP
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+			var elevationService = autoMocker.GetMock<IElevationGainCalculatorService>();
+
+			var workout = new Workout();
+			var workoutSamples = new WorkoutSamples();
+			var settings = new ElevationGainSettings { CalculateElevationGain = false };
+			var expectedElevation = 100.0f;
+
+			elevationService.Setup(x => x.CalculateElevationGainAsync(workout, workoutSamples, settings))
+				.ReturnsAsync(expectedElevation);
+
+			// ACT
+			var result = await converter.GetElevationGain1(workout, workoutSamples, settings, forceCalculation: true);
+
+			// ASSERT
+			result.Should().Be(expectedElevation);
+			elevationService.Verify(x => x.CalculateElevationGainAsync(workout, workoutSamples, settings), Times.Once);
+		}
+
+		[Test]
+		public async Task GetElevationGainAsync_When_ForceCalculation_False_And_Disabled_Should_ReturnNull()
+		{
+			// SETUP
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+			var elevationService = autoMocker.GetMock<IElevationGainCalculatorService>();
+
+			var workout = new Workout();
+			var workoutSamples = new WorkoutSamples();
+			var settings = new ElevationGainSettings { CalculateElevationGain = false };
+
+			// ACT
+			var result = await converter.GetElevationGain1(workout, workoutSamples, settings, forceCalculation: false);
+
+			// ASSERT
+			result.Should().BeNull();
+			elevationService.Verify(x => x.CalculateElevationGainAsync(It.IsAny<Workout>(), It.IsAny<WorkoutSamples>(), It.IsAny<ElevationGainSettings>()), Times.Never);
+		}
+
+		[Test]
+		public async Task GetElevationGainAsync_When_ForceCalculation_False_And_Enabled_Should_Calculate()
+		{
+			// SETUP
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+			var elevationService = autoMocker.GetMock<IElevationGainCalculatorService>();
+
+			var workout = new Workout();
+			var workoutSamples = new WorkoutSamples();
+			var settings = new ElevationGainSettings { CalculateElevationGain = true };
+			var expectedElevation = 150.0f;
+
+			elevationService.Setup(x => x.CalculateElevationGainAsync(workout, workoutSamples, settings))
+				.ReturnsAsync(expectedElevation);
+
+			// ACT
+			var result = await converter.GetElevationGain1(workout, workoutSamples, settings, forceCalculation: false);
+
+			// ASSERT
+			result.Should().Be(expectedElevation);
+			elevationService.Verify(x => x.CalculateElevationGainAsync(workout, workoutSamples, settings), Times.Once);
 		}
 	}
 }

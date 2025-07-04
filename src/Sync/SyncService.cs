@@ -21,8 +21,8 @@ namespace Sync
 {
 	public interface ISyncService
 	{
-		Task<SyncResult> SyncAsync(int numWorkouts, bool forceStackClasses);
-		Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null, bool forceStackWorkouts = false);
+		Task<SyncResult> SyncAsync(int numWorkouts, bool forceStackClasses, bool forceElevationGainCalculation = false);
+		Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null, bool forceStackWorkouts = false, bool forceElevationGainCalculation = false);
 	}
 
 	public class SyncService : ISyncService
@@ -47,17 +47,17 @@ namespace Sync
 			_fileHandler = fileHandler;
 		}
 
-		public async Task<SyncResult> SyncAsync(int numWorkouts, bool forceStackClasses = false)
+		public async Task<SyncResult> SyncAsync(int numWorkouts, bool forceStackClasses = false, bool forceElevationGainCalculation = false)
 		{
 			using var timer = SyncHistogram.NewTimer();
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.ByNumWorkouts")
 										.WithTag("numWorkouts", numWorkouts.ToString());
 
 			var settings = await _settingsService.GetSettingsAsync();
-			return await SyncWithWorkoutLoaderAsync(() => _pelotonService.GetRecentWorkoutsAsync(numWorkouts), settings.Peloton.ExcludeWorkoutTypes, forceStackClasses);
+			return await SyncWithWorkoutLoaderAsync(() => _pelotonService.GetRecentWorkoutsAsync(numWorkouts), settings.Peloton.ExcludeWorkoutTypes, forceStackClasses, forceElevationGainCalculation);
 		}
 
-		public async Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null, bool forceStackClasses = false)
+		public async Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null, bool forceStackWorkouts = false, bool forceElevationGainCalculation = false)
 		{
 			using var timer = SyncHistogram.NewTimer();
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.ByWorkoutIds");
@@ -115,15 +115,16 @@ namespace Sync
 				_logger.Information("No workouts to sync. Sync complete.");
 				response.ConversionSuccess = true;
 				response.SyncSuccess = true;
+				response.UploadToGarminSuccess = true;
 				return response;
 			}
 
 			// calculate stacked workouts
 			var stackedWorkouts = filteredWorkouts;
-			if (settings.Format.StackedWorkouts.AutomaticallyStackWorkouts || forceStackClasses)
+			if (settings.Format.StackedWorkouts.AutomaticallyStackWorkouts || forceStackWorkouts)
 			{
 				_logger.Debug("Stacking classes.");
-				var stackedClassesMaxAllowedGapSeconds = forceStackClasses ? long.MaxValue : settings.Format.StackedWorkouts.MaxAllowedGapSeconds;
+				var stackedClassesMaxAllowedGapSeconds = forceStackWorkouts ? long.MaxValue : settings.Format.StackedWorkouts.MaxAllowedGapSeconds;
 				var stacks = StackedWorkoutsCalculator.GetStackedWorkouts(filteredWorkouts, stackedClassesMaxAllowedGapSeconds);
 				stackedWorkouts = StackedWorkoutsCalculator.CombineStackedWorkouts(stacks);
 				_logger.Debug($"{filteredWorkoutsCount} workouts yielded {stacks.Count()} stacks.");
@@ -137,7 +138,7 @@ namespace Sync
 				foreach (var workout in stackedWorkouts)
 				{
 					workout.UserData = userData;
-					tasks.AddRange(_converters.Select(c => c.ConvertAsync(workout)));
+					tasks.AddRange(_converters.Select(c => c.ConvertAsync(workout, forceElevationGainCalculation)));
 				}
 
 				await Task.WhenAll(tasks);
@@ -153,7 +154,7 @@ namespace Sync
 				return response;
 			}
 
-			if (!convertStatuses.Any() || convertStatuses.All(c => c.Result == ConversionResult.Skipped))
+			if (!convertStatuses.Any() || convertStatuses.Where(c => c != null).All(c => c.Result == ConversionResult.Skipped))
 			{
 				_logger.Information("All converters were skipped. Ensure you have atleast one output Format configured in your settings. Converting to FIT or TCX is required prior to uploading to Garmin Connect.");
 				response.SyncSuccess = false;
@@ -162,7 +163,7 @@ namespace Sync
 				return response;
 			}
 
-			if (convertStatuses.All(c => c.Result == ConversionResult.Failed))
+			if (convertStatuses.Where(c => c != null).All(c => c.Result == ConversionResult.Failed))
 			{
 				_logger.Error("All configured converters failed to convert workouts.");
 				response.SyncSuccess = false;
@@ -172,7 +173,7 @@ namespace Sync
 			}
 
 			foreach (var convertStatus in convertStatuses)
-				if (convertStatus.Result == ConversionResult.Failed)
+				if (convertStatus != null && convertStatus.Result == ConversionResult.Failed)
 					response.Errors.Add(new ServiceError() { Message = convertStatus.ErrorMessage });
 
 			response.ConversionSuccess = true;
@@ -243,7 +244,7 @@ namespace Sync
 					.Select(r => r.Id) ?? new List<string>();
 		}
 
-		private async Task<SyncResult> SyncWithWorkoutLoaderAsync(Func<Task<ServiceResult<ICollection<Workout>>>> loader, ICollection<WorkoutType>? exclude, bool forceStackClasses = false)
+		private async Task<SyncResult> SyncWithWorkoutLoaderAsync(Func<Task<ServiceResult<ICollection<Workout>>>> loader, ICollection<WorkoutType>? exclude, bool forceStackClasses = false, bool forceElevationGainCalculation = false)
 		{
 			using var activity = Tracing.Trace($"{nameof(SyncService)}.{nameof(SyncAsync)}.SyncWithWorkoutLoaderAsync");
 
@@ -300,7 +301,7 @@ namespace Sync
 			_logger.Information("Found {@NumWorkouts} completed workouts.", completedWorkoutsCount);
 			activity?.AddTag("workouts.completed", completedWorkoutsCount);
 
-			var result = await SyncAsync(completedWorkouts, settings.Peloton.ExcludeWorkoutTypes, forceStackClasses);
+			var result = await SyncAsync(completedWorkouts, settings.Peloton.ExcludeWorkoutTypes, forceStackClasses, forceElevationGainCalculation);
 
 			if (result.SyncSuccess)
 				syncTime.LastSuccessfulSyncTime = DateTime.Now;

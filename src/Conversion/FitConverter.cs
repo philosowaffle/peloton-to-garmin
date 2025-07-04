@@ -47,7 +47,7 @@ namespace Conversion
 			}
 		}
 
-		protected override async Task<Tuple<string, ICollection<Mesg>>> ConvertInternalAsync(P2GWorkout workoutData, Settings settings)
+		protected override async Task<Tuple<string, ICollection<Mesg>>> ConvertInternalAsync(P2GWorkout workoutData, Settings settings, bool forceElevationGainCalculation = false)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(ConvertAsync)}")
 										.WithTag(TagKey.Format, FileFormat.Fit.ToString())
@@ -184,7 +184,7 @@ namespace Conversion
 			
 			messages.Add(workoutMesg);
 
-			messages.Add(await GetSessionMesgAsync(workout, workoutSamples, userData, settings, sport, startTime, endTime, (ushort)lapCount));
+			messages.Add(await GetSessionMesgAsync(workout, workoutSamples, userData, settings, sport, startTime, endTime, (ushort)lapCount, forceElevationGainCalculation));
 
 			var activityMesg = new ActivityMesg();
 			activityMesg.SetTimestamp(endTime);
@@ -331,7 +331,7 @@ namespace Conversion
 			}
 		}
 
-		private async Task<SessionMesg> GetSessionMesgAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings, Sport sport, Dynastream.Fit.DateTime startTime, Dynastream.Fit.DateTime endTime, ushort numLaps)
+		private async Task<SessionMesg> GetSessionMesgAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings, Sport sport, Dynastream.Fit.DateTime startTime, Dynastream.Fit.DateTime endTime, ushort numLaps, bool forceElevationGainCalculation)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetSessionMesgAsync)}")
 										.WithTag(TagKey.Format, FileFormat.Fit.ToString())
@@ -389,7 +389,7 @@ namespace Conversion
 			else
 			{
 				// If no elevation data exists, try to calculate from energy if enabled
-				var estimatedElevation = await GetElevationGainAsync(workout, workoutSamples, settings.Format.Cycling.ElevationGain);
+				var estimatedElevation = await GetElevationGainAsync(workout, workoutSamples, settings.Format.Cycling.ElevationGain, forceElevationGainCalculation);
 				if (estimatedElevation.HasValue)
 				{
 					try

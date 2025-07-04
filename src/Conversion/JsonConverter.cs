@@ -19,7 +19,7 @@ namespace Conversion
 
 		protected override bool ShouldConvert(Format settings) => settings.Json;
 
-		protected override Task<P2GWorkout> ConvertInternalAsync(P2GWorkout workoutData, Settings settings)
+		protected override Task<P2GWorkout> ConvertInternalAsync(P2GWorkout workoutData, Settings settings, bool forceElevationGainCalculation = false)
 		{
 			return Task.FromResult(workoutData);
 		}

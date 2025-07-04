@@ -33,6 +33,17 @@
 				
 			</div>
 			<div class="col-md-4">
+				<HxSwitch @bind-Value="forceElevationGainCalculation" Inline="true"> 
+					<TextTemplate>
+						Force Elevation Gain Calculation
+                        <HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+                                   Title="<b>Force Elevation Gain Calculation</b>"
+                                   Content="@ForceElevationGainDocumentation"
+                                   Html="true">
+                            <HxIcon Icon="@BootstrapIcon.QuestionCircle" />
+                        </HxPopover>
+					</TextTemplate>
+				</HxSwitch>
 			</div>
 			<div class="col-md-4 text-end">
 				<HxButton OnClick="SyncAsync" Color="ThemeColor.Primary" Enabled="@IsSyncButtonEnabled()">
@@ -59,6 +70,7 @@
 	private static int PageSize = 25;
 	private bool PelotonSettingNotConfiguredYet = false;
 	private bool forceStackWorkouts = false;
+	private bool forceElevationGainCalculation = false;
 
 	private GarminMfaModal? _garminMfaModal;
 
@@ -122,7 +134,11 @@
 
 		try
 		{
-			var result = await _apiClient.SyncPostAsync(new SyncPostRequest() { WorkoutIds = selectedItems.Select(i => i.Id!).ToList(), ForceStackWorkouts = forceStackWorkouts });
+			var result = await _apiClient.SyncPostAsync(new SyncPostRequest() { 
+				WorkoutIds = selectedItems.Select(i => i.Id!).ToList(), 
+				ForceStackWorkouts = forceStackWorkouts,
+				ForceElevationGainCalculation = forceElevationGainCalculation
+			});
 			selectedItems.Clear();
 
 			if (result.SyncSuccess)
@@ -165,4 +181,6 @@
 	}
 
 	private string StackWorkoutsDocumentation => $"Checking this will force the selected workouts to be combined into a single workout.  Selecting this will override anything you have configured in Settings.  It will stack the workouts regardless of how much time is between them so long as the workouts are of the same type..";
+
+	private string ForceElevationGainDocumentation => $"Checking this will force elevation gain calculation for cycling workouts, even if it's disabled in your settings. This will attempt to calculate elevation gain from energy data for the selected workouts.";
 }
