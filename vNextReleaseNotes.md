@@ -37,19 +37,19 @@
 
 ## Docker Tags
 
-- Console
-    - `console-stable`
-    - `console-latest`
-    - `console-v5.0.2-rc`
-    - `console-v5`
+  - Console
+      - `console-stable`
+      - `console-latest`
+      - `console-v5.1.0-rc`
+      - `console-v5`
 
-- Api
-    - `api-stable`
-    - `api-latest`
-    - `api-v5.0.2-rc`
-    - `api-v5`
-- WebUI
-    - `webui-stable`
-    - `webui-latest`
-    - `webui-v5.0.2-rc`
-    - `webui-v5`
+  - Api
+      - `api-stable`
+      - `api-latest`
+      - `api-v5.1.0-rc`
+      - `api-v5`
+  - WebUI
+      - `webui-stable`
+      - `webui-latest`
+      - `webui-v5.1.0-rc`
+      - `webui-v5`

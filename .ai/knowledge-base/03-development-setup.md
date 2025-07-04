@@ -81,7 +81,14 @@ Edit `configuration.local.json`:
     "Fit": true,
     "Json": true,
     "Tcx": false,
-    "SaveLocalCopy": true
+    "SaveLocalCopy": true,
+    "Cycling": {
+      "ElevationGain": {
+        "CalculateElevationGain": false,
+        "UserMassKg": 70.0,
+        "GravityAcceleration": 9.81
+      }
+    }
   }
 }
 ```

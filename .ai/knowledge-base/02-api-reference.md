@@ -67,7 +67,14 @@ Retrieve current application settings.
     "fit": true,
     "json": false,
     "tcx": false,
-    "saveLocalCopy": true
+    "saveLocalCopy": true,
+    "cycling": {
+      "elevationGain": {
+        "calculateElevationGain": false,
+        "userMassKg": 70.0,
+        "gravityAcceleration": 9.81
+      }
+    }
   },
   "peloton": {
     "email": "user@example.com",
@@ -113,7 +120,36 @@ Get system information and health status.
 }
 ```
 
-### 4. Garmin Authentication Controller (`/api/garmin/auth`)
+### 4. Format Settings
+The `format` section includes cycling-specific settings for elevation gain calculation.
+
+#### Elevation Gain Calculation
+**Purpose**: Estimates elevation gain from power data for cycling workouts when no existing elevation data is available.
+
+**Configuration:**
+```json
+{
+  "format": {
+    "cycling": {
+      "elevationGain": {
+        "calculateElevationGain": false,
+        "userMassKg": 70.0,
+        "gravityAcceleration": 9.81
+      }
+    }
+  }
+}
+```
+
+**Parameters:**
+- `calculateElevationGain` (bool): Enable/disable elevation gain calculation (default: false)
+- `userMassKg` (float): User mass in kilograms for calculation (default: null, requires configuration)
+- `gravityAcceleration` (float): Gravity acceleration constant in m/s² (default: 9.81)
+
+**Formula**: `Elevation (m) = Energy (J) / (Mass (kg) × Gravity (m/s²))`
+Where `Energy (J) = Average Power (W) × Duration (s)`
+
+### 5. Garmin Authentication Controller (`/api/garmin/auth`)
 Manages Garmin Connect authentication.
 
 #### `POST /api/garmin/auth/signin`
@@ -146,7 +182,7 @@ Complete MFA authentication.
 }
 ```
 
-### 5. Peloton Workouts Controller (`/api/peloton/workouts`)
+### 6. Peloton Workouts Controller (`/api/peloton/workouts`)
 Provides access to Peloton workout data.
 
 #### `GET /api/peloton/workouts`
@@ -194,7 +230,7 @@ Get specific workout details.
 }
 ```
 
-### 6. Peloton Annual Challenge Controller (`/api/peloton/challenges`)
+### 7. Peloton Annual Challenge Controller (`/api/peloton/challenges`)
 Manages Peloton annual challenge data.
 
 #### `GET /api/peloton/challenges`
