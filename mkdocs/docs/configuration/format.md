@@ -60,7 +60,7 @@ The Format Settings provide settings related to how workouts should be converted
 | DeviceInfoSettings | no | `null` | See [customizing the Garmin device associated with the workout](#customizing-the-garmin-device-associated-with-the-workout). |
 | Cycling | no | `null` | Configuration specific to Cycling workouts. |
 | Cycling.PreferredLapType | no | `Default` | The preferred [lap type to use](#lap-types). |
-| Cycling.ElevationGain.CalculateElevationGain | no | `false` | **Experimental feature.** When enabled, P2G will estimate elevation gain from power output data for cycling workouts when no elevation data is provided by Peloton. Uses the formula: Elevation (m) = Energy (J) / (Mass (kg) × Gravity (m/s²)), where Energy = Average Power (W) × Duration (s). |
+| Cycling.ElevationGain.CalculateElevationGain | no | `false` | **Experimental feature.** When enabled, P2G will estimate elevation gain from power output data for cycling workouts when no elevation data is provided by Peloton. [Read More...](#estimating-cycling-elevation-gain) |
 | Cycling.ElevationGain.UserMassKg | no | `null` | Your mass in kilograms, required for elevation gain calculation. If not provided, P2G will attempt to get this from Peloton or Garmin user profile data. |
 | Cycling.ElevationGain.GravityAcceleration | no | `9.81` | Gravitational acceleration in m/s². Default is Earth's gravity (9.81 m/s²). Only change if you know what you're doing. |
 | Running | no | `null` | Configuration specific to Running workouts. |
@@ -241,6 +241,28 @@ Additionally, Garmin has a limit on how long a title will be. If the title excee
 
 For this setting to take effect, your Garmin Connect account must be set to allow custom workout names.  In the Garmin Connect web interface click on the user icon in the top right, select `Account Settings` then `Display Preferences` ([shortcut](https://connect.garmin.com/modern/settings/displayPreferences)).
 Change the `Activity Name` setting to `Workout Name (when available)`.  This will allow the custom workout name to sync, and should still allow the standard behavior when syncing non-P2G activities directly.
+
+## Estimating Cycling Elevation Gain
+
+P2G can estimate elevation gain for cycling workouts when Peloton doesn't provide elevation data. This feature uses power output data to calculate an estimated elevation gain based on the energy expended during the workout.
+
+### How It Works
+
+The elevation gain is calculated using the formula: **Elevation (m) = Energy (J) / (Mass (kg) × Gravity (m/s²))**, where Energy = Average Power (W) × Duration (s).
+
+This estimation assumes that the energy expended during the workout is equivalent to the potential energy gained from climbing, which provides a reasonable approximation for indoor cycling workouts.
+
+### Configuration
+
+You can enable elevation gain estimation in two ways:
+
+1. **Global Setting**: Enable `Cycling.ElevationGain.CalculateElevationGain` in your configuration file or UI settings
+2. **Manual Sync**: When syncing workouts manually through the UI, you can enable the "Force Elevation Gain Calculation" option for individual sync operations
+
+### Required Settings
+
+- **UserMassKg**: Your mass in kilograms (required for accurate calculations)
+- **GravityAcceleration**: Gravitational acceleration (defaults to Earth's gravity: 9.81 m/s²)
 
 ## Stacked Workouts
 
