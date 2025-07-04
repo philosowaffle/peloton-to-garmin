@@ -1,0 +1,274 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="ae816a3e-dd6b-46e6-a99a-423db2f3ecc7" name="@cursor 2025-07-04 17:24:47" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-07-04T17:24:47.3809514+00:00" queuing="2025-07-04T17:24:47.3809515+00:00" start="2025-07-04T17:24:46.7948804+00:00" finish="2025-07-04T17:24:47.4250203+00:00" />
+  <TestSettings name="default" id="9bea2f72-5307-4c7b-9ab4-8f225d3d0749">
+    <Deployment runDeploymentRoot="_cursor_2025-07-04_17_24_47" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="dfa1d0c9-7630-43c8-94c5-ec755c1d1f81" testId="9d2b5957-4f8f-fc22-f57e-f9eaded782e7" testName="SignInAsync_WhenCloudflareBlocked_ShouldThrowCloudflareException" computerName="cursor" duration="00:00:00.0121080" startTime="2025-07-04T17:24:47.3423004+00:00" endTime="2025-07-04T17:24:47.3544084+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dfa1d0c9-7630-43c8-94c5-ec755c1d1f81">
+      <Output>
+        <ErrorInfo>
+          <Message>  Assert.That(caughtException, expression)
+  Expected: &lt;Garmin.Auth.GarminAuthenticationError&gt;
+  But was:  &lt;Flurl.Http.FlurlHttpException: Call failed.
+   at Garmin.Auth.GarminAuthenticationService.SignInAsync() in /workspace/src/Garmin/Auth/GarminAuthenticationService.cs:line 151
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.GetResult()
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](TestExecutionContext context, Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(TestExecutionContext context, Func`1 invoke)
+   at NUnit.Framework.Assert.ThrowsAsync(IResolveConstraint expression, AsyncTestDelegate code, String message, Object[] args)&gt;
+</Message>
+          <StackTrace>   at UnitTests.Garmin.GarminAuthenticationServiceTests.SignInAsync_WhenCloudflareBlocked_ShouldThrowCloudflareException() in /workspace/src/UnitTests/Garmin/GarminAuthenticationServiceTests.cs:line 339
+
+1)    at UnitTests.Garmin.GarminAuthenticationServiceTests.SignInAsync_WhenCloudflareBlocked_ShouldThrowCloudflareException() in /workspace/src/UnitTests/Garmin/GarminAuthenticationServiceTests.cs:line 339
+
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="ca6d97e1-0a24-43e5-ab06-5fedf2f50fc0" testId="0029f72a-8851-6727-0ba3-2f8c2439bbd9" testName="SignInAsync_WhenGetCsrfTokenFails_ShouldThrowAuthenticationError" computerName="cursor" duration="00:00:00.0020960" startTime="2025-07-04T17:24:47.3544317+00:00" endTime="2025-07-04T17:24:47.3565279+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ca6d97e1-0a24-43e5-ab06-5fedf2f50fc0" />
+    <UnitTestResult executionId="867f1e00-2e6c-4122-9c99-3cfd2e650b51" testId="1c161d40-6f81-55f6-2fc5-a2aaa91db134" testName="SignInAsync_WhenValidCredentials_ShouldReturnAuthentication" computerName="cursor" duration="00:00:00.0029070" startTime="2025-07-04T17:24:47.3666871+00:00" endTime="2025-07-04T17:24:47.3695939+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="867f1e00-2e6c-4122-9c99-3cfd2e650b51">
+      <Output>
+        <ErrorInfo>
+          <Message>Garmin.Auth.GarminAuthenticationError : Auth appeared successful but failed to find regex match for service ticket.</Message>
+          <StackTrace>   at Garmin.Auth.GarminAuthenticationService.CompleteGarminAuthenticationAsync(String loginResult) in /workspace/src/Garmin/Auth/GarminAuthenticationService.cs:line 195
+   at Garmin.Auth.GarminAuthenticationService.SignInAsync() in /workspace/src/Garmin/Auth/GarminAuthenticationService.cs:line 186
+   at UnitTests.Garmin.GarminAuthenticationServiceTests.SignInAsync_WhenValidCredentials_ShouldReturnAuthentication() in /workspace/src/UnitTests/Garmin/GarminAuthenticationServiceTests.cs:line 270
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.GetResult()
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](TestExecutionContext context, Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(TestExecutionContext context, Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.BeforeAndAfterTestCommand.&lt;&gt;c__DisplayClass1_0.&lt;Execute&gt;b__0()
+   at NUnit.Framework.Internal.Commands.DelegatingTestCommand.RunTestMethodInThreadAbortSafeZone(TestExecutionContext context, Action action)
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="bc5ab330-5b78-4ba2-b2b6-995ced6415a7" testId="fea81199-2eda-7cc0-5447-b8c7203b67c6" testName="SignInAsync_WhenInvalidCredentials_ShouldThrowException" computerName="cursor" duration="00:00:00.0005850" startTime="2025-07-04T17:24:47.3573120+00:00" endTime="2025-07-04T17:24:47.3578968+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bc5ab330-5b78-4ba2-b2b6-995ced6415a7" />
+    <UnitTestResult executionId="c231f673-cdf5-4ed4-8494-80ec756539fa" testId="444cca3b-2483-9d7e-d765-ff03f8236c9a" testName="GarminAuthTokenExistsAndIsValidAsync_WhenOAuth1TokenExists_ShouldReturnTrue" computerName="cursor" duration="00:00:00.0012950" startTime="2025-07-04T17:24:47.3186336+00:00" endTime="2025-07-04T17:24:47.3199286+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c231f673-cdf5-4ed4-8494-80ec756539fa" />
+    <UnitTestResult executionId="c9fa2b49-8ccb-40f5-b1a5-8a6c2f17473b" testId="0d5ea9a5-e766-e27c-62d6-1ab97d135490" testName="GarminAuthTokenExistsAndIsValidAsync_WhenValidToken_ShouldReturnTrue" computerName="cursor" duration="00:00:00.0022670" startTime="2025-07-04T17:24:47.3199548+00:00" endTime="2025-07-04T17:24:47.3222211+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c9fa2b49-8ccb-40f5-b1a5-8a6c2f17473b" />
+    <UnitTestResult executionId="ae799028-11a4-4458-9ae5-0d7a22e75c83" testId="d7a6f086-e375-76ac-3b77-3efb22d2def2" testName="GetGarminAuthenticationAsync_WhenNoTokens_ShouldSignIn" computerName="cursor" duration="00:00:00.0086430" startTime="2025-07-04T17:24:47.3222461+00:00" endTime="2025-07-04T17:24:47.3308889+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ae799028-11a4-4458-9ae5-0d7a22e75c83">
+      <Output>
+        <ErrorInfo>
+          <Message>Garmin.Auth.GarminAuthenticationError : Auth appeared successful but failed to find regex match for service ticket.</Message>
+          <StackTrace>   at Garmin.Auth.GarminAuthenticationService.CompleteGarminAuthenticationAsync(String loginResult) in /workspace/src/Garmin/Auth/GarminAuthenticationService.cs:line 195
+   at Garmin.Auth.GarminAuthenticationService.SignInAsync() in /workspace/src/Garmin/Auth/GarminAuthenticationService.cs:line 186
+   at Garmin.Auth.GarminAuthenticationService.GetGarminAuthenticationAsync() in /workspace/src/Garmin/Auth/GarminAuthenticationService.cs:line 87
+   at UnitTests.Garmin.GarminAuthenticationServiceTests.GetGarminAuthenticationAsync_WhenNoTokens_ShouldSignIn() in /workspace/src/UnitTests/Garmin/GarminAuthenticationServiceTests.cs:line 228
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.GetResult()
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](TestExecutionContext context, Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(TestExecutionContext context, Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.BeforeAndAfterTestCommand.&lt;&gt;c__DisplayClass1_0.&lt;Execute&gt;b__0()
+   at NUnit.Framework.Internal.Commands.DelegatingTestCommand.RunTestMethodInThreadAbortSafeZone(TestExecutionContext context, Action action)
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="47d020da-600f-498f-9d66-9968e0c22a09" testId="907383d2-f552-bfad-d91c-b70280b356e5" testName="GetGarminAuthenticationAsync_WhenValidOAuth2Token_ShouldReturnCompleted" computerName="cursor" duration="00:00:00.0016450" startTime="2025-07-04T17:24:47.3406147+00:00" endTime="2025-07-04T17:24:47.3422597+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="47d020da-600f-498f-9d66-9968e0c22a09" />
+    <UnitTestResult executionId="f90f0a5c-744d-4f89-853b-74a6f03a74a1" testId="f998499a-614e-ff27-ca3d-a560deec8923" testName="SignInAsync_WhenInitCookieJarFails_ShouldThrowAuthenticationError" computerName="cursor" duration="00:00:00.0007490" startTime="2025-07-04T17:24:47.3565473+00:00" endTime="2025-07-04T17:24:47.3572959+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f90f0a5c-744d-4f89-853b-74a6f03a74a1" />
+    <UnitTestResult executionId="e07fb524-f064-4ffb-8431-dbe410bb20c0" testId="9fd31870-93ad-2d9b-0aaa-ad125f5392cb" testName="CompleteMFAAuthAsync_WhenNoPartialAuth_ShouldThrowException" computerName="cursor" duration="00:00:00.0016680" startTime="2025-07-04T17:24:47.2846427+00:00" endTime="2025-07-04T17:24:47.2863110+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e07fb524-f064-4ffb-8431-dbe410bb20c0" />
+    <UnitTestResult executionId="fd5386b5-94c6-4caf-bc4e-ea03b82077f2" testId="cd12b41f-af21-0e72-d29b-99ed70de03ed" testName="CompleteMFAAuthAsync_WhenValidCode_ShouldCompleteAuth" computerName="cursor" duration="00:00:00.0178660" startTime="2025-07-04T17:24:47.2863362+00:00" endTime="2025-07-04T17:24:47.3042020+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fd5386b5-94c6-4caf-bc4e-ea03b82077f2">
+      <Output>
+        <ErrorInfo>
+          <Message>Garmin.Auth.GarminAuthenticationError : Auth appeared successful but failed to find regex match for service ticket.</Message>
+          <StackTrace>   at Garmin.Auth.GarminAuthenticationService.CompleteGarminAuthenticationAsync(String loginResult) in /workspace/src/Garmin/Auth/GarminAuthenticationService.cs:line 195
+   at Garmin.Auth.GarminAuthenticationService.CompleteMFAAuthAsync(String mfaCode) in /workspace/src/Garmin/Auth/GarminAuthenticationService.cs:line 272
+   at UnitTests.Garmin.GarminAuthenticationServiceTests.CompleteMFAAuthAsync_WhenValidCode_ShouldCompleteAuth() in /workspace/src/UnitTests/Garmin/GarminAuthenticationServiceTests.cs:line 376
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.GetResult()
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](TestExecutionContext context, Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(TestExecutionContext context, Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.BeforeAndAfterTestCommand.&lt;&gt;c__DisplayClass1_0.&lt;Execute&gt;b__0()
+   at NUnit.Framework.Internal.Commands.DelegatingTestCommand.RunTestMethodInThreadAbortSafeZone(TestExecutionContext context, Action action)
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="9b2409c2-ebd6-42e8-b5ec-bfcaae71594d" testId="facbc2fa-2782-495e-b566-3c0160b941d0" testName="SignOutAsync_ShouldClearAllTokens" computerName="cursor" duration="00:00:00.0013800" startTime="2025-07-04T17:24:47.3696193+00:00" endTime="2025-07-04T17:24:47.3709993+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9b2409c2-ebd6-42e8-b5ec-bfcaae71594d" />
+    <UnitTestResult executionId="f4453cc7-4d85-4a5c-a8a5-86f4fd947cbb" testId="cb68c355-6bfa-b011-745e-3a9f50b6a807" testName="CompleteMFAAuthAsync_WhenWrongAuthStage_ShouldThrowException" computerName="cursor" duration="00:00:00.0016400" startTime="2025-07-04T17:24:47.3043998+00:00" endTime="2025-07-04T17:24:47.3060393+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f4453cc7-4d85-4a5c-a8a5-86f4fd947cbb" />
+    <UnitTestResult executionId="430b06a7-4afa-4edf-99b8-9c3c465b8c12" testId="62bf0dc9-a343-a0de-bd40-7ad06d05a1d9" testName="GetGarminAuthenticationAsync_WhenValidOAuth1Token_ShouldExchangeForOAuth2" computerName="cursor" duration="00:00:00.0022130" startTime="2025-07-04T17:24:47.3383828+00:00" endTime="2025-07-04T17:24:47.3405958+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="430b06a7-4afa-4edf-99b8-9c3c465b8c12" />
+    <UnitTestResult executionId="b5bbf961-6ae8-49a8-82e8-26321f2c9d3b" testId="53bd1552-7549-7526-31ea-0d733217eee6" testName="GarminAuthTokenExistsAndIsValidAsync_WhenExpiredToken_ShouldReturnFalse" computerName="cursor" duration="00:00:00.0044530" startTime="2025-07-04T17:24:47.3141509+00:00" endTime="2025-07-04T17:24:47.3186032+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b5bbf961-6ae8-49a8-82e8-26321f2c9d3b" />
+    <UnitTestResult executionId="24b17e24-a13f-426d-ba51-7cecb2f8de11" testId="868c7be5-cfbd-065b-6f91-c374862a7a8b" testName="Constructor_ShouldInitializeCorrectly" computerName="cursor" duration="00:00:00.0070140" startTime="2025-07-04T17:24:47.3060637+00:00" endTime="2025-07-04T17:24:47.3130778+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="24b17e24-a13f-426d-ba51-7cecb2f8de11">
+      <Output>
+        <StdOut>Warning:
+     The component "Fluent Assertions" is governed by the rules defined in the Xceed License Agreement and
+     the Xceed Fluent Assertions Community License. You may use Fluent Assertions free of charge for
+     non-commercial use only. An active subscription is required to use Fluent Assertions for commercial use.
+
+     Please contact Xceed Sales mailto:sales@xceed.com to acquire a subscription at a very low cost.
+
+     A paid commercial license supports the development and continued increasing support of
+     Fluent Assertions users under both commercial and community licenses. Help us
+     keep Fluent Assertions at the forefront of unit testing.
+
+     For more information, visit https://xceed.com/products/unit-testing/fluent-assertions/</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="a34adfdf-6efa-4506-9808-c1b48e981f13" testId="92679e3d-d661-be15-cbdf-a3fbbc1fd13a" testName="CompleteMFAAuthAsync_WhenInvalidCode_ShouldThrowException" computerName="cursor" duration="00:00:00.0617020" startTime="2025-07-04T17:24:47.2221725+00:00" endTime="2025-07-04T17:24:47.2838423+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a34adfdf-6efa-4506-9808-c1b48e981f13" />
+    <UnitTestResult executionId="0d3241a6-b6c6-4257-b9e5-862da0045aa6" testId="4692bdef-824c-2da9-2b8f-73cf5e60e9b6" testName="SignInAsync_WhenMfaRequired_ShouldReturnNeedMfaToken" computerName="cursor" duration="00:00:00.0087360" startTime="2025-07-04T17:24:47.3579223+00:00" endTime="2025-07-04T17:24:47.3666575+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0d3241a6-b6c6-4257-b9e5-862da0045aa6">
+      <Output>
+        <ErrorInfo>
+          <Message>Moq.MockException : 
+Expected invocation on the mock once, but was 2 times: db =&gt; db.UpsertPartialGarminAuthenticationAsync(1, It.IsAny&lt;StagedPartialGarminAuthentication&gt;())
+
+Performed invocations:
+
+   Mock&lt;IGarminDb:18&gt; (db):
+
+      IGarminDb.UpsertPartialGarminAuthenticationAsync(1, null)
+      IGarminDb.UpsertGarminOAuth1TokenAsync(1, null)
+      IGarminDb.UpsertGarminOAuth2TokenAsync(1, null)
+      IGarminDb.UpsertPartialGarminAuthenticationAsync(1, StagedPartialGarminAuthentication { ExpiresAt = 7/4/2025 5:39:47 PM, AuthStage = NeedMfaToken, CookieJarString = , UserAgent = , MFACsrfToken = mfa-csrf-token })
+</Message>
+          <StackTrace>   at Moq.Mock.Verify(Mock mock, LambdaExpression expression, Times times, String failMessage) in /_/src/Moq/Mock.cs:line 332
+   at Moq.Mock`1.Verify[TResult](Expression`1 expression, Func`1 times) in /_/src/Moq/Mock`1.cs:line 840
+   at UnitTests.Garmin.GarminAuthenticationServiceTests.SignInAsync_WhenMfaRequired_ShouldReturnNeedMfaToken() in /workspace/src/UnitTests/Garmin/GarminAuthenticationServiceTests.cs:line 320
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.GetResult()
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](TestExecutionContext context, Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(TestExecutionContext context, Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.BeforeAndAfterTestCommand.&lt;&gt;c__DisplayClass1_0.&lt;Execute&gt;b__0()
+   at NUnit.Framework.Internal.Commands.DelegatingTestCommand.RunTestMethodInThreadAbortSafeZone(TestExecutionContext context, Action action)
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="6fc20161-51c5-43c9-9912-297c691130fe" testId="fbc32450-3db5-5196-df70-c2c3b3967d88" testName="Constructor_WhenDependenciesAreNull_ShouldNotThrow" computerName="cursor" duration="00:00:00.0010230" startTime="2025-07-04T17:24:47.3131112+00:00" endTime="2025-07-04T17:24:47.3141341+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6fc20161-51c5-43c9-9912-297c691130fe" />
+    <UnitTestResult executionId="65445b79-0e24-4001-b601-7960957015fd" testId="990d39b7-12eb-a43b-a0d1-e7000c4a3239" testName="GetGarminAuthenticationAsync_WhenOAuth1ExchangeFails_ShouldFallbackToSignIn" computerName="cursor" duration="00:00:00.0074520" startTime="2025-07-04T17:24:47.3309100+00:00" endTime="2025-07-04T17:24:47.3383613+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="65445b79-0e24-4001-b601-7960957015fd" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="SignInAsync_WhenCloudflareBlocked_ShouldThrowCloudflareException" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="9d2b5957-4f8f-fc22-f57e-f9eaded782e7">
+      <Execution id="dfa1d0c9-7630-43c8-94c5-ec755c1d1f81" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="SignInAsync_WhenCloudflareBlocked_ShouldThrowCloudflareException" />
+    </UnitTest>
+    <UnitTest name="CompleteMFAAuthAsync_WhenWrongAuthStage_ShouldThrowException" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="cb68c355-6bfa-b011-745e-3a9f50b6a807">
+      <Execution id="f4453cc7-4d85-4a5c-a8a5-86f4fd947cbb" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="CompleteMFAAuthAsync_WhenWrongAuthStage_ShouldThrowException" />
+    </UnitTest>
+    <UnitTest name="CompleteMFAAuthAsync_WhenValidCode_ShouldCompleteAuth" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="cd12b41f-af21-0e72-d29b-99ed70de03ed">
+      <Execution id="fd5386b5-94c6-4caf-bc4e-ea03b82077f2" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="CompleteMFAAuthAsync_WhenValidCode_ShouldCompleteAuth" />
+    </UnitTest>
+    <UnitTest name="CompleteMFAAuthAsync_WhenInvalidCode_ShouldThrowException" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="92679e3d-d661-be15-cbdf-a3fbbc1fd13a">
+      <Execution id="a34adfdf-6efa-4506-9808-c1b48e981f13" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="CompleteMFAAuthAsync_WhenInvalidCode_ShouldThrowException" />
+    </UnitTest>
+    <UnitTest name="CompleteMFAAuthAsync_WhenNoPartialAuth_ShouldThrowException" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="9fd31870-93ad-2d9b-0aaa-ad125f5392cb">
+      <Execution id="e07fb524-f064-4ffb-8431-dbe410bb20c0" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="CompleteMFAAuthAsync_WhenNoPartialAuth_ShouldThrowException" />
+    </UnitTest>
+    <UnitTest name="SignInAsync_WhenValidCredentials_ShouldReturnAuthentication" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="1c161d40-6f81-55f6-2fc5-a2aaa91db134">
+      <Execution id="867f1e00-2e6c-4122-9c99-3cfd2e650b51" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="SignInAsync_WhenValidCredentials_ShouldReturnAuthentication" />
+    </UnitTest>
+    <UnitTest name="SignInAsync_WhenInitCookieJarFails_ShouldThrowAuthenticationError" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="f998499a-614e-ff27-ca3d-a560deec8923">
+      <Execution id="f90f0a5c-744d-4f89-853b-74a6f03a74a1" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="SignInAsync_WhenInitCookieJarFails_ShouldThrowAuthenticationError" />
+    </UnitTest>
+    <UnitTest name="GarminAuthTokenExistsAndIsValidAsync_WhenValidToken_ShouldReturnTrue" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="0d5ea9a5-e766-e27c-62d6-1ab97d135490">
+      <Execution id="c9fa2b49-8ccb-40f5-b1a5-8a6c2f17473b" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="GarminAuthTokenExistsAndIsValidAsync_WhenValidToken_ShouldReturnTrue" />
+    </UnitTest>
+    <UnitTest name="GetGarminAuthenticationAsync_WhenValidOAuth1Token_ShouldExchangeForOAuth2" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="62bf0dc9-a343-a0de-bd40-7ad06d05a1d9">
+      <Execution id="430b06a7-4afa-4edf-99b8-9c3c465b8c12" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="GetGarminAuthenticationAsync_WhenValidOAuth1Token_ShouldExchangeForOAuth2" />
+    </UnitTest>
+    <UnitTest name="GarminAuthTokenExistsAndIsValidAsync_WhenExpiredToken_ShouldReturnFalse" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="53bd1552-7549-7526-31ea-0d733217eee6">
+      <Execution id="b5bbf961-6ae8-49a8-82e8-26321f2c9d3b" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="GarminAuthTokenExistsAndIsValidAsync_WhenExpiredToken_ShouldReturnFalse" />
+    </UnitTest>
+    <UnitTest name="GetGarminAuthenticationAsync_WhenOAuth1ExchangeFails_ShouldFallbackToSignIn" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="990d39b7-12eb-a43b-a0d1-e7000c4a3239">
+      <Execution id="65445b79-0e24-4001-b601-7960957015fd" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="GetGarminAuthenticationAsync_WhenOAuth1ExchangeFails_ShouldFallbackToSignIn" />
+    </UnitTest>
+    <UnitTest name="GetGarminAuthenticationAsync_WhenValidOAuth2Token_ShouldReturnCompleted" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="907383d2-f552-bfad-d91c-b70280b356e5">
+      <Execution id="47d020da-600f-498f-9d66-9968e0c22a09" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="GetGarminAuthenticationAsync_WhenValidOAuth2Token_ShouldReturnCompleted" />
+    </UnitTest>
+    <UnitTest name="Constructor_ShouldInitializeCorrectly" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="868c7be5-cfbd-065b-6f91-c374862a7a8b">
+      <Execution id="24b17e24-a13f-426d-ba51-7cecb2f8de11" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="Constructor_ShouldInitializeCorrectly" />
+    </UnitTest>
+    <UnitTest name="SignInAsync_WhenGetCsrfTokenFails_ShouldThrowAuthenticationError" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="0029f72a-8851-6727-0ba3-2f8c2439bbd9">
+      <Execution id="ca6d97e1-0a24-43e5-ab06-5fedf2f50fc0" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="SignInAsync_WhenGetCsrfTokenFails_ShouldThrowAuthenticationError" />
+    </UnitTest>
+    <UnitTest name="Constructor_WhenDependenciesAreNull_ShouldNotThrow" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="fbc32450-3db5-5196-df70-c2c3b3967d88">
+      <Execution id="6fc20161-51c5-43c9-9912-297c691130fe" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="Constructor_WhenDependenciesAreNull_ShouldNotThrow" />
+    </UnitTest>
+    <UnitTest name="SignOutAsync_ShouldClearAllTokens" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="facbc2fa-2782-495e-b566-3c0160b941d0">
+      <Execution id="9b2409c2-ebd6-42e8-b5ec-bfcaae71594d" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="SignOutAsync_ShouldClearAllTokens" />
+    </UnitTest>
+    <UnitTest name="GetGarminAuthenticationAsync_WhenNoTokens_ShouldSignIn" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="d7a6f086-e375-76ac-3b77-3efb22d2def2">
+      <Execution id="ae799028-11a4-4458-9ae5-0d7a22e75c83" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="GetGarminAuthenticationAsync_WhenNoTokens_ShouldSignIn" />
+    </UnitTest>
+    <UnitTest name="GarminAuthTokenExistsAndIsValidAsync_WhenOAuth1TokenExists_ShouldReturnTrue" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="444cca3b-2483-9d7e-d765-ff03f8236c9a">
+      <Execution id="c231f673-cdf5-4ed4-8494-80ec756539fa" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="GarminAuthTokenExistsAndIsValidAsync_WhenOAuth1TokenExists_ShouldReturnTrue" />
+    </UnitTest>
+    <UnitTest name="SignInAsync_WhenMfaRequired_ShouldReturnNeedMfaToken" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="4692bdef-824c-2da9-2b8f-73cf5e60e9b6">
+      <Execution id="0d3241a6-b6c6-4257-b9e5-862da0045aa6" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="SignInAsync_WhenMfaRequired_ShouldReturnNeedMfaToken" />
+    </UnitTest>
+    <UnitTest name="SignInAsync_WhenInvalidCredentials_ShouldThrowException" storage="/workspace/src/unittests/bin/debug/net9.0/unittests.dll" id="fea81199-2eda-7cc0-5447-b8c7203b67c6">
+      <Execution id="bc5ab330-5b78-4ba2-b2b6-995ced6415a7" />
+      <TestMethod codeBase="/workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll" adapterTypeName="executor://nunit3testexecutor/" className="UnitTests.Garmin.GarminAuthenticationServiceTests" name="SignInAsync_WhenInvalidCredentials_ShouldThrowException" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="9d2b5957-4f8f-fc22-f57e-f9eaded782e7" executionId="dfa1d0c9-7630-43c8-94c5-ec755c1d1f81" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0029f72a-8851-6727-0ba3-2f8c2439bbd9" executionId="ca6d97e1-0a24-43e5-ab06-5fedf2f50fc0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1c161d40-6f81-55f6-2fc5-a2aaa91db134" executionId="867f1e00-2e6c-4122-9c99-3cfd2e650b51" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fea81199-2eda-7cc0-5447-b8c7203b67c6" executionId="bc5ab330-5b78-4ba2-b2b6-995ced6415a7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="444cca3b-2483-9d7e-d765-ff03f8236c9a" executionId="c231f673-cdf5-4ed4-8494-80ec756539fa" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0d5ea9a5-e766-e27c-62d6-1ab97d135490" executionId="c9fa2b49-8ccb-40f5-b1a5-8a6c2f17473b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d7a6f086-e375-76ac-3b77-3efb22d2def2" executionId="ae799028-11a4-4458-9ae5-0d7a22e75c83" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="907383d2-f552-bfad-d91c-b70280b356e5" executionId="47d020da-600f-498f-9d66-9968e0c22a09" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f998499a-614e-ff27-ca3d-a560deec8923" executionId="f90f0a5c-744d-4f89-853b-74a6f03a74a1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9fd31870-93ad-2d9b-0aaa-ad125f5392cb" executionId="e07fb524-f064-4ffb-8431-dbe410bb20c0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cd12b41f-af21-0e72-d29b-99ed70de03ed" executionId="fd5386b5-94c6-4caf-bc4e-ea03b82077f2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="facbc2fa-2782-495e-b566-3c0160b941d0" executionId="9b2409c2-ebd6-42e8-b5ec-bfcaae71594d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cb68c355-6bfa-b011-745e-3a9f50b6a807" executionId="f4453cc7-4d85-4a5c-a8a5-86f4fd947cbb" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="62bf0dc9-a343-a0de-bd40-7ad06d05a1d9" executionId="430b06a7-4afa-4edf-99b8-9c3c465b8c12" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="53bd1552-7549-7526-31ea-0d733217eee6" executionId="b5bbf961-6ae8-49a8-82e8-26321f2c9d3b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="868c7be5-cfbd-065b-6f91-c374862a7a8b" executionId="24b17e24-a13f-426d-ba51-7cecb2f8de11" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="92679e3d-d661-be15-cbdf-a3fbbc1fd13a" executionId="a34adfdf-6efa-4506-9808-c1b48e981f13" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4692bdef-824c-2da9-2b8f-73cf5e60e9b6" executionId="0d3241a6-b6c6-4257-b9e5-862da0045aa6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fbc32450-3db5-5196-df70-c2c3b3967d88" executionId="6fc20161-51c5-43c9-9912-297c691130fe" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="990d39b7-12eb-a43b-a0d1-e7000c4a3239" executionId="65445b79-0e24-4001-b601-7960957015fd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="20" executed="20" passed="15" failed="5" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>NUnit Adapter 5.0.0.0: Test execution started
+Running selected tests in /workspace/src/UnitTests/bin/Debug/net9.0/UnitTests.dll
+   NUnit3TestExecutor discovered 20 of 20 NUnit test cases using Current Discovery mode, Non-Explicit run
+     Warning:
+     The component "Fluent Assertions" is governed by the rules defined in the Xceed License Agreement and
+     the Xceed Fluent Assertions Community License. You may use Fluent Assertions free of charge for
+     non-commercial use only. An active subscription is required to use Fluent Assertions for commercial use.
+
+     Please contact Xceed Sales mailto:sales@xceed.com to acquire a subscription at a very low cost.
+
+     A paid commercial license supports the development and continued increasing support of
+     Fluent Assertions users under both commercial and community licenses. Help us
+     keep Fluent Assertions at the forefront of unit testing.
+
+     For more information, visit https://xceed.com/products/unit-testing/fluent-assertions/
+
+NUnit Adapter 5.0.0.0: Test execution complete
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

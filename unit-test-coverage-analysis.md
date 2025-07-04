@@ -44,11 +44,12 @@ After analysis of the P2G codebase, the project currently has **322 unit tests**
 **Status**: **COMPLETED** - Added comprehensive Garmin integration tests
 - ✅ `src/UnitTests/Garmin/GarminUploaderTests.cs` - 9 tests covering core upload orchestration
 - ✅ `src/UnitTests/Garmin/GarminApiClientTests.cs` - 21 tests covering HTTP API client functionality
-- ❌ `src/Garmin/Auth/GarminAuthenticationService.cs` - OAuth authentication flows (requires complex auth flow mocking)
+- ✅ `src/UnitTests/Garmin/GarminAuthenticationServiceTests.cs` - 20 tests covering OAuth authentication flows
 
 **Tests Added**:
 - **GarminUploader (9 tests)**: Upload disabled/enabled validation, directory existence checks, configuration validation (ValidateConfig), error handling and exception propagation, constructor and null reference validation, early return scenarios (no files, no directory)
 - **GarminApiClient (21 tests)**: HTTP client functionality, OAuth credential management, cookie jar initialization, CSRF token handling, MFA code validation, OAuth1/OAuth2 token exchange, activity upload workflows, network error handling, authentication flows
+- **GarminAuthenticationService (20 tests)**: OAuth2 token validation and expiration, OAuth1 token existence validation, complete authentication workflows, sign-in process validation, MFA flow handling, error scenarios for invalid credentials/Cloudflare blocking/network failures, CSRF token extraction, service ticket parsing, authentication state management
 
 **Recommended Test Coverage**:
 
@@ -160,7 +161,8 @@ After analysis of the P2G codebase, the project currently has **322 unit tests**
 ### Phase 1: Critical Gaps (COMPLETED ✅)
 1. **Garmin Integration Tests** - Highest business impact
    - ✅ GarminUploader comprehensive coverage (9 tests added)
-   - ❌ Authentication flow validation (requires complex mocking)
+   - ✅ GarminApiClient HTTP integration coverage (21 tests added)
+   - ✅ GarminAuthenticationService authentication flow validation (20 tests added)
    - ✅ Error handling scenarios
 
 ### Phase 2: Core Resilience (Weeks 3-4)
@@ -206,12 +208,12 @@ After analysis of the P2G codebase, the project currently has **322 unit tests**
 ## Metrics and Success Criteria
 
 ### Current State ✅
-- **352 total tests** (+30 from Garmin integration: 9 GarminUploader + 21 GarminApiClient)
-- **348 passing** (4 skipped on Unix)
-- **~80% estimated coverage** (core logic and HTTP integration well covered)
+- **372 total tests** (+50 from Garmin integration: 9 GarminUploader + 21 GarminApiClient + 20 GarminAuthenticationService)
+- **368 passing** (4 skipped on Unix)
+- **~85% estimated coverage** (core logic, HTTP integration, and authentication flows well covered)
 
 ### Target State
-- **450+ total tests** (28% increase remaining)
+- **450+ total tests** (17% increase remaining)
 - **>90% line coverage** on critical paths
 - **100% coverage** on business rule validation
 - **Zero critical paths** without error scenario testing
@@ -242,7 +244,7 @@ The P2G project has a solid foundation of unit tests covering core business logi
 
 ## Completed Work ✅
 
-**Garmin Integration Test Suite** - 30 comprehensive tests added:
+**Garmin Integration Test Suite** - 50 comprehensive tests added:
 
 **GarminUploader (9 tests)**:
 - Upload workflow validation (enabled/disabled states)
@@ -260,6 +262,18 @@ The P2G project has a solid foundation of unit tests covering core business logi
 - OAuth1 token generation with network error scenarios
 - OAuth2 token exchange with authentication validation
 - Activity upload with file validation, network errors, and duplicate handling
+- Constructor and dependency injection validation
+
+**GarminAuthenticationService (20 tests)**:
+- OAuth2 token validation and expiration checking
+- OAuth1 token existence and validation logic
+- Complete authentication workflow with token exchange
+- Sign-in process with credentials validation
+- Multi-factor authentication (MFA) flow handling
+- Error scenarios: invalid credentials, Cloudflare blocking, network failures
+- CSRF token extraction and validation
+- Service ticket parsing and OAuth token generation
+- Authentication state management and cleanup
 - Constructor and dependency injection validation
 
 ## Benefits Achieved
