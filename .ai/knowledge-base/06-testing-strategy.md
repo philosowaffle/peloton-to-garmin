@@ -19,7 +19,7 @@ This document outlines the comprehensive testing strategy for the P2G applicatio
 
 #### Test Structure
 ```csharp
-[Fact]
+[Test]
 public void SyncService_ShouldReturnSuccess_WhenWorkoutsExist()
 {
     // Arrange
@@ -42,93 +42,6 @@ public void SyncService_ShouldReturnSuccess_WhenWorkoutsExist()
 - **Configuration**: Settings validation
 - **Utilities**: Helper methods and extensions
 
-### 2. Integration Tests
-**Purpose**: Test component interactions and external dependencies
-**Location**: `src/IntegrationTests/` (to be created)
-**Framework**: ASP.NET Core Test Host, TestContainers
-
-#### Database Integration Tests
-```csharp
-[Collection("Database")]
-public class SettingsServiceIntegrationTests : IClassFixture<DatabaseFixture>
-{
-    private readonly DatabaseFixture _fixture;
-    
-    public SettingsServiceIntegrationTests(DatabaseFixture fixture)
-    {
-        _fixture = fixture;
-    }
-    
-    [Fact]
-    public async Task SaveSettings_ShouldPersistToDatabase()
-    {
-        // Arrange
-        var settingsService = new SettingsService(_fixture.DbContext);
-        var settings = new Settings { /* ... */ };
-        
-        // Act
-        await settingsService.SaveAsync(settings);
-        
-        // Assert
-        var saved = await settingsService.GetAsync();
-        saved.Should().BeEquivalentTo(settings);
-    }
-}
-```
-
-#### API Integration Tests
-```csharp
-[Collection("WebApp")]
-public class SyncControllerIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
-{
-    private readonly WebApplicationFactory<Program> _factory;
-    private readonly HttpClient _client;
-    
-    public SyncControllerIntegrationTests(WebApplicationFactory<Program> factory)
-    {
-        _factory = factory;
-        _client = factory.CreateClient();
-    }
-    
-    [Fact]
-    public async Task PostSync_ShouldReturnSuccess()
-    {
-        // Arrange
-        var request = new SyncRequest { NumWorkouts = 5 };
-        
-        // Act
-        var response = await _client.PostAsJsonAsync("/api/sync", request);
-        
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-    }
-}
-```
-
-### 3. End-to-End Tests
-**Purpose**: Test complete user workflows
-**Location**: `src/E2ETests/` (to be created)
-**Framework**: Playwright, SpecFlow
-
-#### Web UI E2E Tests
-```csharp
-[Test]
-public async Task CompleteSync_ShouldUploadWorkouts()
-{
-    // Arrange
-    await Page.GotoAsync("https://localhost:5001");
-    await Page.FillAsync("#peloton-email", "test@example.com");
-    await Page.FillAsync("#peloton-password", "password");
-    
-    // Act
-    await Page.ClickAsync("#sync-button");
-    await Page.WaitForSelectorAsync(".sync-success");
-    
-    // Assert
-    var successMessage = await Page.TextContentAsync(".sync-success");
-    successMessage.Should().Contain("Sync completed successfully");
-}
-```
 
 ## Test Data Management
 
@@ -221,7 +134,7 @@ public class MockPelotonApiClient : IPelotonApi
 
 ### Service Mocking
 ```csharp
-[Fact]
+[Test]
 public async Task SyncService_ShouldHandleAuthenticationFailure()
 {
     // Arrange
@@ -283,92 +196,10 @@ public class DatabaseFixture : IDisposable
 }
 ```
 
-## Performance Testing
-
-### Load Testing
-```csharp
-[Fact]
-public async Task SyncService_ShouldHandleMultipleWorkouts()
-{
-    // Arrange
-    var workouts = Enumerable.Range(1, 100)
-        .Select(i => TestDataHelper.CreateSampleWorkout())
-        .ToList();
-    
-    var stopwatch = Stopwatch.StartNew();
-    
-    // Act
-    var result = await syncService.SyncAsync(workouts);
-    
-    // Assert
-    stopwatch.Stop();
-    stopwatch.ElapsedMilliseconds.Should().BeLessThan(30000); // 30 seconds
-    result.SyncSuccess.Should().BeTrue();
-}
-```
-
-### Memory Testing
-```csharp
-[Fact]
-public async Task ConvertWorkouts_ShouldNotLeakMemory()
-{
-    // Arrange
-    var initialMemory = GC.GetTotalMemory(true);
-    var workouts = CreateLargeWorkoutSet();
-    
-    // Act
-    await converter.ConvertAsync(workouts);
-    
-    // Assert
-    GC.Collect();
-    GC.WaitForPendingFinalizers();
-    var finalMemory = GC.GetTotalMemory(true);
-    
-    (finalMemory - initialMemory).Should().BeLessThan(50_000_000); // 50MB
-}
-```
-
 ## Test Automation
 
-### CI/CD Pipeline Tests
-```yaml
-# .github/workflows/test.yml
-name: Test Suite
-on: [push, pull_request]
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 9.0.x
-    
-    - name: Run Unit Tests
-      run: dotnet test --configuration Release --logger trx --collect:"XPlat Code Coverage"
-    
-    - name: Upload Coverage
-      uses: codecov/codecov-action@v3
-```
-
-### Test Categories
-```csharp
-// Fast running unit tests
-[Trait("Category", "Unit")]
-public class FastUnitTests { }
-
-// Slower integration tests
-[Trait("Category", "Integration")]
-public class IntegrationTests { }
-
-// External dependency tests
-[Trait("Category", "External")]
-public class ExternalApiTests { }
-```
-
-### Running Tests
+# Running Tests
 ```bash
 # Run all tests
 dotnet test
@@ -388,11 +219,11 @@ dotnet test --filter "FullyQualifiedName~SyncServiceTests"
 ### Test Naming
 ```csharp
 // Good: Descriptive method names
-[Fact]
+[Test]
 public void SyncService_ShouldReturnFailure_WhenPelotonAuthenticationFails()
 
 // Bad: Unclear purpose
-[Fact]
+[Test]
 public void TestSync()
 ```
 
@@ -448,7 +279,7 @@ _mockPelotonService.Verify(x => x.GetRecentWorkoutsAsync(5), Times.Once);
 
 ### Test Debugging
 ```csharp
-[Fact]
+[Test]
 public async Task DebugSyncProcess()
 {
     // Enable detailed logging for debugging
@@ -463,7 +294,7 @@ public async Task DebugSyncProcess()
 
 ### Test Data Inspection
 ```csharp
-[Fact]
+[Test]
 public void InspectTestData()
 {
     var workout = TestDataHelper.CreateSampleWorkout();

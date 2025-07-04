@@ -10,18 +10,16 @@ Follow the testing guidelines from [.ai/knowledge-base/06-testing-strategy.md](m
 
 ### Test Categories:
 - **Unit Tests** (`src/UnitTests/`) - Test individual components in isolation
-- **Integration Tests** (planned) - Test component interactions
-- **End-to-End Tests** (planned) - Test complete user workflows
 
 ### Testing Framework Stack:
-- **xUnit** - Primary testing framework
+- **NUnit** - Primary testing framework
 - **Moq** - Mocking framework
 - **FluentAssertions** - Assertion library
 - **ASP.NET Core Test Host** - For API testing
 
 ### Test Structure Pattern:
 ```csharp
-[Fact]
+[Test]
 public async Task MethodName_ShouldReturnExpected_WhenCondition()
 {
     // Arrange
@@ -53,86 +51,6 @@ public async Task MethodName_ShouldReturnExpected_WhenCondition()
 - Use interfaces for testability
 - Verify mock interactions
 - Test both success and failure scenarios
-
-### Test Categories (using Traits):
-```csharp
-[Trait("Category", "Unit")]      // Fast unit tests
-[Trait("Category", "Integration")] // Slower integration tests
-[Trait("Category", "External")]   // External dependency tests
-```
-
-### Running Tests:
-```bash
-dotnet test                           # All tests
-dotnet test --filter "Category=Unit" # Unit tests only
-dotnet test --collect:"XPlat Code Coverage" # With coverage
-```
-
-### Test Maintenance:
-- Keep test data current with API changes
-- Update mocks when interfaces change
-- Remove obsolete tests
-- Monitor test execution time and reliability
-
-When adding new features, ensure corresponding tests are added and documented.
-# Testing Requirements
-
-## Comprehensive Testing Strategy
-
-Follow the testing guidelines from [.ai/knowledge-base/06-testing-strategy.md](mdc:.ai/knowledge-base/06-testing-strategy.md) when adding or modifying tests:
-
-### Test Categories:
-- **Unit Tests** (`src/UnitTests/`) - Test individual components in isolation
-- **Integration Tests** (planned) - Test component interactions
-- **End-to-End Tests** (planned) - Test complete user workflows
-
-### Testing Framework Stack:
-- **xUnit** - Primary testing framework
-- **Moq** - Mocking framework
-- **FluentAssertions** - Assertion library
-- **ASP.NET Core Test Host** - For API testing
-
-### Test Structure Pattern:
-```csharp
-[Fact]
-public async Task MethodName_ShouldReturnExpected_WhenCondition()
-{
-    // Arrange
-    var mockService = new Mock<IService>();
-    var systemUnderTest = new SystemUnderTest(mockService.Object);
-    
-    // Act
-    var result = await systemUnderTest.MethodAsync();
-    
-    // Assert
-    result.Should().BeTrue();
-    mockService.Verify(x => x.Method(), Times.Once);
-}
-```
-
-### Test Data Management:
-- **Sample Data**: Use `src/UnitTests/Data/` for test data
-- **Builders**: Create test data builders for complex objects
-- **Helpers**: Use `TestDataHelper` for consistent test data
-
-### Coverage Requirements:
-- **Target**: >80% code coverage
-- **Critical Paths**: 100% coverage for sync workflow
-- **Error Scenarios**: Test all exception paths
-- **Edge Cases**: Test boundary conditions
-
-### Mocking Guidelines:
-- Mock external dependencies (Peloton/Garmin APIs)
-- Use interfaces for testability
-- Verify mock interactions
-- Test both success and failure scenarios
-
-### Test Categories (using Traits):
-```csharp
-[Trait("Category", "Unit")]      // Fast unit tests
-[Trait("Category", "Integration")] // Slower integration tests
-[Trait("Category", "External")]   // External dependency tests
-```
 
 ### Running Tests:
 ```bash
