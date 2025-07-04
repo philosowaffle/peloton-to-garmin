@@ -57,6 +57,7 @@ public static class ApiStartupServices
 		services.AddSingleton<ISettingsUpdaterService, SettingsUpdaterService>();
 		services.AddSingleton<ISettingsDb, SettingsDb>();
 		services.AddSingleton<ISettingsService, SettingsService>();
+		services.AddSingleton<IElevationGainCalculatorService, ElevationGainCalculatorService>();
 
 		// SYNC
 		services.AddSingleton<ISyncStatusDb, SyncStatusDb>();

@@ -81,6 +81,7 @@ public class Format
 	public Rowing Rowing { get; init; }
 	public Strength Strength { get; init; }
 	public StackedWorkoutsSettings StackedWorkouts { get; init; } = new StackedWorkoutsSettings();
+	public ElevationGainSettings ElevationGain { get; init; } = new ElevationGainSettings();
 }
 
 public record StackedWorkoutsSettings
@@ -187,4 +188,25 @@ public enum FileFormat : byte
 	Fit = 0,
 	Tcx = 1,
 	Json = 2
+}
+
+public record ElevationGainSettings
+{
+	/// <summary>
+	/// True if P2G should calculate estimated elevation gain from energy output.
+	/// This is an opt-in feature that estimates elevation gain using the formula:
+	/// Elevation (m) = Energy (J) / (Mass (kg) x Gravity (m/s²))
+	/// </summary>
+	public bool CalculateElevationGain { get; set; } = false;
+
+	/// <summary>
+	/// User's mass in kilograms. If not provided, P2G will attempt to get this
+	/// from Peloton or Garmin user profile data.
+	/// </summary>
+	public float? UserMassKg { get; set; }
+
+	/// <summary>
+	/// Gravitational acceleration in m/s². Default is 9.81 m/s².
+	/// </summary>
+	public float GravityAcceleration { get; set; } = 9.81f;
 }
