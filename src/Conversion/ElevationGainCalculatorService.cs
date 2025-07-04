@@ -1,5 +1,6 @@
 using Common.Dto;
 using Common.Dto.Peloton;
+using Common.Observe;
 using Common.Service;
 using Serilog;
 using System;

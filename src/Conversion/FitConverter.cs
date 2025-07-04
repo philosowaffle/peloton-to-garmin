@@ -333,7 +333,7 @@ namespace Conversion
 
 		private async Task<SessionMesg> GetSessionMesgAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings, Sport sport, Dynastream.Fit.DateTime startTime, Dynastream.Fit.DateTime endTime, ushort numLaps)
 		{
-			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetSessionMesg)}")
+			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetSessionMesgAsync)}")
 										.WithTag(TagKey.Format, FileFormat.Fit.ToString())
 										.WithWorkoutId(workout.Id);
 
