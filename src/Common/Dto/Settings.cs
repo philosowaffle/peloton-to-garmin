@@ -103,6 +103,7 @@ public record StackedWorkoutsSettings
 public record Cycling
 {
 	public PreferredLapType PreferredLapType { get; set; }
+	public ElevationGainSettings ElevationGain { get; init; } = new ElevationGainSettings();
 }
 
 public record Running
@@ -187,4 +188,26 @@ public enum FileFormat : byte
 	Fit = 0,
 	Tcx = 1,
 	Json = 2
+}
+
+public record ElevationGainSettings
+{
+	/// <summary>
+	/// True if P2G should calculate estimated elevation gain from resistance data.
+	/// This method uses resistance data to estimate grade and calculate elevation gain
+	/// by processing resistance data second-by-second.
+	/// </summary>
+	public bool CalculateElevationGain { get; set; } = false;
+
+	/// <summary>
+	/// Resistance value that represents "flat road" (0% grade). Default is 30.
+	/// Any resistance above this value is considered climbing, below is considered descending.
+	/// </summary>
+	public float FlatRoadResistance { get; set; } = 30f;
+
+	/// <summary>
+	/// Maximum grade percentage for resistance-based calculation. Default is 15%.
+	/// This caps the maximum grade that can be calculated from resistance data.
+	/// </summary>
+	public float MaxGradePercentage { get; set; } = 15f;
 }

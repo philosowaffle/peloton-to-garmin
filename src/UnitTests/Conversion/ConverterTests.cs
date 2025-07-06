@@ -5,6 +5,7 @@ using Common.Dto.Peloton;
 using Common.Service;
 using Conversion;
 using FluentAssertions;
+using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
 using System;
@@ -516,6 +517,416 @@ namespace UnitTests.Conversion
 			calorieSummary?.Value.Should().Be(expectedCalories);
 		}
 
+		[Test]
+		public async Task GetElevationGainAsync_When_ForceCalculation_True_Should_Calculate_EvenIfDisabled()
+		{
+			// SETUP
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var workout = new Workout();
+			var workoutSamples = new WorkoutSamples
+			{
+				Metrics = new List<Metric>
+				{
+					new Metric { Slug = "resistance", Values = new double?[] { 45, 50, 55 } },
+					new Metric { Slug = "speed", Display_Unit = "mph", Values = new double?[] { 12, 10, 8 } }
+				}
+			};
+			var settings = new ElevationGainSettings 
+			{ 
+				CalculateElevationGain = false,
+				FlatRoadResistance = 30f,
+				MaxGradePercentage = 15f
+			};
+
+			// ACT
+			var result = await converter.GetElevationGain1(workout, workoutSamples, settings, forceCalculation: true);
+
+			// ASSERT
+			result.Should().NotBeNull();
+			result.Should().BeGreaterThan(0f);
+		}
+
+		[Test]
+		public async Task GetElevationGainAsync_When_ForceCalculation_False_And_Disabled_Should_ReturnNull()
+		{
+			// SETUP
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var workout = new Workout();
+			var workoutSamples = new WorkoutSamples();
+			var settings = new ElevationGainSettings { CalculateElevationGain = false };
+
+			// ACT
+			var result = await converter.GetElevationGain1(workout, workoutSamples, settings, forceCalculation: false);
+
+			// ASSERT
+			result.Should().BeNull();
+		}
+
+		[Test]
+		public async Task GetElevationGainAsync_When_ForceCalculation_False_And_Enabled_Should_Calculate()
+		{
+			// SETUP
+			var autoMocker = new AutoMocker();
+			var converter = autoMocker.CreateInstance<ConverterInstance>();
+
+			var workout = new Workout();
+			var workoutSamples = new WorkoutSamples
+			{
+				Metrics = new List<Metric>
+				{
+					new Metric { Slug = "resistance", Values = new double?[] { 45, 50, 55 } },
+					new Metric { Slug = "speed", Display_Unit = "mph", Values = new double?[] { 12, 10, 8 } }
+				}
+			};
+			var settings = new ElevationGainSettings 
+			{ 
+				CalculateElevationGain = true,
+				FlatRoadResistance = 30f,
+				MaxGradePercentage = 15f
+			};
+
+			// ACT
+			var result = await converter.GetElevationGain1(workout, workoutSamples, settings, forceCalculation: false);
+
+			// ASSERT
+			result.Should().NotBeNull();
+			result.Should().BeGreaterThan(0f);
+		}
+
+		// Static elevation gain calculation tests
+		[Test]
+		public async Task CalculateElevationGainAsync_WhenSettingsDisabled_ReturnsNull()
+		{
+			// Arrange
+			var workout = new Workout();
+			var workoutSamples = new WorkoutSamples();
+			var settings = new ElevationGainSettings { CalculateElevationGain = false };
+
+			// Act
+			var result = await Converter<string>.CalculateElevationGainAsync(workout, workoutSamples, settings);
+
+			// Assert
+			result.Should().BeNull();
+		}
+
+		[Test]
+		public async Task CalculateElevationGainAsync_WhenNoResistanceData_ReturnsNull()
+		{
+			// Arrange
+			var workout = new Workout();
+			var workoutSamples = new WorkoutSamples
+			{
+				Metrics = new List<Metric>()
+			};
+			var settings = new ElevationGainSettings { CalculateElevationGain = true };
+
+			// Act
+			var result = await Converter<string>.CalculateElevationGainAsync(workout, workoutSamples, settings);
+
+			// Assert
+			result.Should().BeNull();
+		}
+
+		[Test]
+		public async Task CalculateElevationGainAsync_WhenNoSpeedData_ReturnsNull()
+		{
+			// Arrange
+			var workout = new Workout();
+			var workoutSamples = new WorkoutSamples
+			{
+				Metrics = new List<Metric>
+				{
+					new Metric { Slug = "resistance", Values = new double?[] { 30, 35, 40 } }
+				}
+			};
+			var settings = new ElevationGainSettings { CalculateElevationGain = true };
+
+			// Act
+			var result = await Converter<string>.CalculateElevationGainAsync(workout, workoutSamples, settings);
+
+			// Assert
+			result.Should().BeNull();
+		}
+
+		[Test]
+		public async Task CalculateElevationGainAsync_WithFlatRoadResistance_ReturnsZero()
+		{
+			// Arrange
+			var workout = new Workout();
+			var workoutSamples = new WorkoutSamples
+			{
+				Metrics = new List<Metric>
+				{
+					new Metric { Slug = "resistance", Values = new double?[] { 30, 30, 30 } },
+					new Metric { Slug = "speed", Display_Unit = "mph", Values = new double?[] { 15, 15, 15 } }
+				}
+			};
+			var settings = new ElevationGainSettings 
+			{ 
+				CalculateElevationGain = true,
+				FlatRoadResistance = 30f
+			};
+
+			// Act
+			var result = await Converter<string>.CalculateElevationGainAsync(workout, workoutSamples, settings);
+
+			// Assert
+			result.Should().Be(0f);
+		}
+
+		[Test]
+		public async Task CalculateElevationGainAsync_WithClimbingResistance_CalculatesElevation()
+		{
+			// Arrange
+			var workout = new Workout();
+			var workoutSamples = new WorkoutSamples
+			{
+				Metrics = new List<Metric>
+				{
+					new Metric { Slug = "resistance", Values = new double?[] { 45, 50, 55 } }, // All above flat road (30)
+					new Metric { Slug = "speed", Display_Unit = "mph", Values = new double?[] { 12, 10, 8 } } // Decreasing speed
+				}
+			};
+			var settings = new ElevationGainSettings 
+			{ 
+				CalculateElevationGain = true,
+				FlatRoadResistance = 30f,
+				MaxGradePercentage = 15f
+			};
+
+			// Act
+			var result = await Converter<string>.CalculateElevationGainAsync(workout, workoutSamples, settings);
+
+			// Assert
+			result.Should().NotBeNull();
+			result.Should().BeGreaterThan(0f);
+			// Expected calculation:
+			// Resistance 45: Grade = 15% * (15/70) = 3.21%, Speed = 12 mph = 5.36 m/s, Elevation = 5.36 * 3.21% = 0.172 m
+			// Resistance 50: Grade = 15% * (20/70) = 4.29%, Speed = 10 mph = 4.47 m/s, Elevation = 4.47 * 4.29% = 0.192 m  
+			// Resistance 55: Grade = 15% * (25/70) = 5.36%, Speed = 8 mph = 3.58 m/s, Elevation = 3.58 * 5.36% = 0.192 m
+			// Total: 0.172 + 0.192 + 0.192 = 0.556 m
+			result.Should().BeApproximately(0.556f, 0.01f);
+		}
+
+		[Test]
+		public async Task CalculateElevationGainAsync_WithMixedResistance_OnlyCountsClimbing()
+		{
+			// Arrange
+			var workout = new Workout();
+			var workoutSamples = new WorkoutSamples
+			{
+				Metrics = new List<Metric>
+				{
+					new Metric { Slug = "resistance", Values = new double?[] { 25, 30, 35, 40 } }, // 25 below, 30 flat, 35&40 above
+					new Metric { Slug = "speed", Display_Unit = "mph", Values = new double?[] { 18, 15, 12, 10 } }
+				}
+			};
+			var settings = new ElevationGainSettings 
+			{ 
+				CalculateElevationGain = true,
+				FlatRoadResistance = 30f,
+				MaxGradePercentage = 15f
+			};
+
+			// Act
+			var result = await Converter<string>.CalculateElevationGainAsync(workout, workoutSamples, settings);
+
+			// Assert
+			result.Should().NotBeNull();
+			result.Should().BeGreaterThan(0f);
+			// Only resistance 35 and 40 should contribute to elevation gain
+			// Resistance 25 and 30 should be ignored (below or equal to flat road)
+		}
+
+		[Test]
+		public async Task CalculateElevationGainAsync_WithDifferentSpeedUnits_HandlesCorrectly()
+		{
+			// Arrange
+			var workout = new Workout();
+			var workoutSamples = new WorkoutSamples
+			{
+				Metrics = new List<Metric>
+				{
+					new Metric { Slug = "resistance", Values = new double?[] { 40, 45 } }, // Above flat road (30)
+					new Metric { Slug = "speed", Display_Unit = "kph", Values = new double?[] { 20, 18 } } // km/h instead of mph
+				}
+			};
+			var settings = new ElevationGainSettings 
+			{ 
+				CalculateElevationGain = true,
+				FlatRoadResistance = 30f,
+				MaxGradePercentage = 15f
+			};
+
+			// Act
+			var result = await Converter<string>.CalculateElevationGainAsync(workout, workoutSamples, settings);
+
+			// Assert
+			result.Should().NotBeNull();
+			result.Should().BeGreaterThan(0f);
+			// Should handle km/h conversion correctly
+		}
+
+		[Test]
+		public void CalculateResistanceBasedElevationGain_WhenNoResistanceData_ReturnsNull()
+		{
+			// Arrange
+			var workoutSamples = new WorkoutSamples
+			{
+				Metrics = new List<Metric>()
+			};
+			var settings = new ElevationGainSettings { CalculateElevationGain = true };
+
+			// Act
+			var result = Converter<string>.CalculateResistanceBasedElevationGain(workoutSamples, settings);
+
+			// Assert
+			result.Should().BeNull();
+		}
+
+		[Test]
+		public void CalculateResistanceBasedElevationGain_WhenNoSpeedData_ReturnsNull()
+		{
+			// Arrange
+			var workoutSamples = new WorkoutSamples
+			{
+				Metrics = new List<Metric>
+				{
+					new Metric { Slug = "resistance", Values = new double?[] { 30, 35, 40 } }
+				}
+			};
+			var settings = new ElevationGainSettings { CalculateElevationGain = true };
+
+			// Act
+			var result = Converter<string>.CalculateResistanceBasedElevationGain(workoutSamples, settings);
+
+			// Assert
+			result.Should().BeNull();
+		}
+
+		[Test]
+		public void CalculateResistanceBasedElevationGain_WithFlatRoadResistance_ReturnsZero()
+		{
+			// Arrange
+			var workoutSamples = new WorkoutSamples
+			{
+				Metrics = new List<Metric>
+				{
+					new Metric { Slug = "resistance", Values = new double?[] { 30, 30, 30 } },
+					new Metric { Slug = "speed", Display_Unit = "mph", Values = new double?[] { 15, 15, 15 } }
+				}
+			};
+			var settings = new ElevationGainSettings 
+			{ 
+				CalculateElevationGain = true,
+				FlatRoadResistance = 30f
+			};
+
+			// Act
+			var result = Converter<string>.CalculateResistanceBasedElevationGain(workoutSamples, settings);
+
+			// Assert
+			result.Should().Be(0f);
+		}
+
+		[Test]
+		public void CalculateResistanceBasedElevationGain_WithClimbingResistance_CalculatesElevation()
+		{
+			// Arrange
+			var workoutSamples = new WorkoutSamples
+			{
+				Metrics = new List<Metric>
+				{
+					new Metric { Slug = "resistance", Values = new double?[] { 45, 50, 55 } }, // All above flat road (30)
+					new Metric { Slug = "speed", Display_Unit = "mph", Values = new double?[] { 12, 10, 8 } } // Decreasing speed
+				}
+			};
+			var settings = new ElevationGainSettings 
+			{ 
+				CalculateElevationGain = true,
+				FlatRoadResistance = 30f,
+				MaxGradePercentage = 15f
+			};
+
+			// Act
+			var result = Converter<string>.CalculateResistanceBasedElevationGain(workoutSamples, settings);
+
+			// Assert
+			result.Should().NotBeNull();
+			result.Should().BeGreaterThan(0f);
+			// Expected calculation:
+			// Resistance 45: Grade = 15% * (15/70) = 3.21%, Speed = 12 mph = 5.36 m/s, Elevation = 5.36 * 3.21% = 0.172 m
+			// Resistance 50: Grade = 15% * (20/70) = 4.29%, Speed = 10 mph = 4.47 m/s, Elevation = 4.47 * 4.29% = 0.192 m  
+			// Resistance 55: Grade = 15% * (25/70) = 5.36%, Speed = 8 mph = 3.58 m/s, Elevation = 3.58 * 5.36% = 0.192 m
+			// Total: 0.172 + 0.192 + 0.192 = 0.556 m
+			result.Should().BeApproximately(0.556f, 0.01f);
+		}
+
+		[Test]
+		public void CalculateGradeFromResistance_WithFlatRoad_ReturnsZero()
+		{
+			// Arrange
+			var resistance = 30f;
+			var flatRoadResistance = 30f;
+			var maxGrade = 15f;
+
+			// Act
+			var result = Converter<string>.CalculateGradeFromResistance(resistance, flatRoadResistance, maxGrade);
+
+			// Assert
+			result.Should().Be(0f);
+		}
+
+		[Test]
+		public void CalculateGradeFromResistance_WithClimbing_CalculatesGrade()
+		{
+			// Arrange
+			var resistance = 45f;
+			var flatRoadResistance = 30f;
+			var maxGrade = 15f;
+
+			// Act
+			var result = Converter<string>.CalculateGradeFromResistance(resistance, flatRoadResistance, maxGrade);
+
+			// Assert
+			// Expected: (45-30)/(100-30) * 15 = 15/70 * 15 = 3.21%
+			result.Should().BeApproximately(3.21f, 0.01f);
+		}
+
+		[Test]
+		public void CalculateGradeFromResistance_WithMaxResistance_ReturnsMaxGrade()
+		{
+			// Arrange
+			var resistance = 100f;
+			var flatRoadResistance = 30f;
+			var maxGrade = 15f;
+
+			// Act
+			var result = Converter<string>.CalculateGradeFromResistance(resistance, flatRoadResistance, maxGrade);
+
+			// Assert
+			result.Should().Be(maxGrade);
+		}
+
+		[Test]
+		public void CalculateGradeFromResistance_WithExcessiveResistance_CapsAtMaxGrade()
+		{
+			// Arrange
+			var resistance = 120f; // Above max resistance
+			var flatRoadResistance = 30f;
+			var maxGrade = 15f;
+
+			// Act
+			var result = Converter<string>.CalculateGradeFromResistance(resistance, flatRoadResistance, maxGrade);
+
+			// Assert
+			result.Should().Be(maxGrade); // Should cap at max grade
+		}
+
 		private class ConverterInstance : Converter<string>
 		{
 			public ConverterInstance(ISettingsService settings, IFileHandling fileHandling) : base(settings, fileHandling) 
@@ -523,31 +934,30 @@ namespace UnitTests.Conversion
 				Format = FileFormat.Fit;
 			}
 
-			protected override Task<string> ConvertInternalAsync(P2GWorkout workout, Settings settings)
+			protected override Task<string> ConvertInternalAsync(P2GWorkout workout, Settings settings, bool forceElevationGainCalculation = false)
 			{
-				throw new NotImplementedException();
+				return Task.FromResult("");
 			}
 
 			protected override void Save(string data, string path)
 			{
-				throw new NotImplementedException();
 			}
 
 			protected override bool ShouldConvert(Format settings) => true;
 
 			public System.DateTime GetStartTime1(Workout workout)
 			{
-				return this.GetStartTimeUtc(workout);
+				return base.GetStartTimeUtc(workout);
 			}
 
 			public System.DateTime GetEndTimeUtc1(Workout workout, WorkoutSamples workoutSamples)
 			{
-				return this.GetEndTimeUtc(workout, workoutSamples);
+				return base.GetEndTimeUtc(workout, workoutSamples);
 			}
 
 			public string GetTimeStamp1(System.DateTime startTime, long offset)
 			{
-				return this.GetTimeStamp(startTime, offset);
+				return base.GetTimeStamp(startTime, offset);
 			}
 
 			public float GetMaxSpeedMetersPerSecond1(WorkoutSamples workoutSamples)
@@ -579,6 +989,7 @@ namespace UnitTests.Conversion
 			{
 				return base.GetHeartRateSummary(workoutSamples);
 			}
+
 			public Task<GarminDeviceInfo> GetDeviceInfo1(Workout workout)
 			{
 				return base.GetDeviceInfoAsync(workout);
@@ -587,6 +998,11 @@ namespace UnitTests.Conversion
 			public ushort? GetCyclingFtp1(Workout workout, UserData userData)
 			{
 				return base.GetCyclingFtp(workout, userData);
+			}
+
+			public async Task<float?> GetElevationGain1(Workout workout, WorkoutSamples workoutSamples, ElevationGainSettings settings, bool forceCalculation)
+			{
+				return await GetElevationGainAsync(workout, workoutSamples, settings, forceCalculation);
 			}
 		}
 	}

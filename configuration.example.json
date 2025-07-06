@@ -15,6 +15,14 @@
     "StackedWorkouts": {
       "AutomaticallyStackWorkouts": false,
       "MaxAllowedGapSeconds": 300
+    },
+    "Cycling": {
+      "PreferredLapType": "Default",
+      "ElevationGain": {
+        "CalculateElevationGain": false,
+        "FlatRoadResistance": 30,
+        "MaxGradePercentage": 15
+      }
     }
   },
 

@@ -4,25 +4,25 @@
 > [!TIP]
 > You can find specific Upgrade Instructions by visitng the [Install Page](https://philosowaffle.github.io/peloton-to-garmin/latest/install/) for your particular flavor of P2G and looking for the section titled `⬆️ Updating`.
 
-## Fixes
+## New Features
 
-- [#746] Fix permissions issue on v5 where the GitHub Action was failing to run
+- [#415] **Enhanced Elevation Gain Calculation for Cycling Workouts** - P2G can now estimate elevation gain from resistance data when Peloton doesn't provide elevation data. [Learn more](https://philosowaffle.github.io/peloton-to-garmin/latest/configuration/format.md#estimating-cycling-elevation-gain)
 
 ## Docker Tags
 
-- Console
-    - `console-stable`
-    - `console-latest`
-    - `console-v5.0.1`
-    - `console-v5`
+  - Console
+      - `console-stable`
+      - `console-latest`
+      - `console-v5.1.0-rc`
+      - `console-v5`
 
-- Api
-    - `api-stable`
-    - `api-latest`
-    - `api-v5.0.1`
-    - `api-v5`
-- WebUI
-    - `webui-stable`
-    - `webui-latest`
-    - `webui-v5.0.1`
-    - `webui-v5`
+  - Api
+      - `api-stable`
+      - `api-latest`
+      - `api-v5.1.0-rc`
+      - `api-v5`
+  - WebUI
+      - `webui-stable`
+      - `webui-latest`
+      - `webui-v5.1.0-rc`
+      - `webui-v5`

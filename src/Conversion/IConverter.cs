@@ -21,6 +21,7 @@ namespace Conversion
 	public interface IConverter
 	{
 		Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData);
+		Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData, bool forceElevationGainCalculation);
 	}
 
 	public abstract class Converter<T> : IConverter
@@ -47,11 +48,16 @@ namespace Conversion
 
 		protected abstract bool ShouldConvert(Format settings);
 
-		protected abstract Task<T> ConvertInternalAsync(P2GWorkout workoutData, Settings settings);
+		protected abstract Task<T> ConvertInternalAsync(P2GWorkout workoutData, Settings settings, bool forceElevationGainCalculation = false);
 
 		protected abstract void Save(T data, string path);
 
 		public async Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData)
+		{
+			return await ConvertAsync(workoutData, false);
+		}
+
+		public async Task<ConvertStatus> ConvertAsync(P2GWorkout workoutData, bool forceElevationGainCalculation)
 		{
 			using var tracing = Tracing.Trace($"{nameof(IConverter)}.{nameof(ConvertAsync)}.Workout")?
 										.WithWorkoutId(workoutData.Workout.Id)
@@ -71,7 +77,7 @@ namespace Conversion
 			var workoutTitle = WorkoutHelper.GetUniqueTitle(workoutData.Workout, settings.Format);
 			try
 			{
-				converted = await ConvertInternalAsync(workoutData, settings);
+				converted = await ConvertInternalAsync(workoutData, settings, forceElevationGainCalculation);
 			}
 			catch (Exception e)
 			{
@@ -580,6 +586,146 @@ namespace Conversion
 				default:
 					return Sport.Invalid;
 			}
+		}
+
+		protected async Task<float?> GetElevationGainAsync(Workout workout, WorkoutSamples workoutSamples, ElevationGainSettings settings, bool forceCalculation = false)
+		{
+			if (!forceCalculation && !settings.CalculateElevationGain)
+				return null;
+
+			// Create a temporary settings object with calculation enabled for forced calculations
+			var tempSettings = forceCalculation && !settings.CalculateElevationGain 
+				? new ElevationGainSettings 
+				{ 
+					CalculateElevationGain = true,
+					FlatRoadResistance = settings.FlatRoadResistance,
+					MaxGradePercentage = settings.MaxGradePercentage
+				}
+				: settings;
+
+			return await CalculateElevationGainAsync(workout, workoutSamples, tempSettings);
+		}
+
+		/// <summary>
+		/// Calculates estimated elevation gain using resistance data to estimate grade.
+		/// This method processes resistance data second-by-second to calculate elevation gain
+		/// based on the relationship between resistance, speed, and grade.
+		/// </summary>
+		/// <param name="workout">The workout data</param>
+		/// <param name="workoutSamples">The workout samples containing resistance and speed data</param>
+		/// <param name="settings">The elevation gain settings</param>
+		/// <returns>Estimated elevation gain in meters, or null if calculation cannot be performed</returns>
+		public static Task<float?> CalculateElevationGainAsync(Workout workout, WorkoutSamples workoutSamples, ElevationGainSettings settings)
+		{
+			if (!settings.CalculateElevationGain)
+			{
+				_logger.Debug("Elevation gain calculation is disabled in settings");
+				return Task.FromResult<float?>(null);
+			}
+
+			var elevationGain = CalculateResistanceBasedElevationGain(workoutSamples, settings);
+			if (elevationGain.HasValue)
+			{
+				_logger.Information("Calculated elevation gain: {ElevationGain}m", elevationGain.Value);
+			}
+			else
+			{
+				_logger.Debug("Elevation gain calculation failed: no resistance or speed data available");
+			}
+
+			return Task.FromResult(elevationGain);
+		}
+
+		/// <summary>
+		/// Calculates estimated elevation gain using resistance data to estimate grade.
+		/// This method processes resistance data second-by-second to calculate elevation gain
+		/// based on the relationship between resistance, speed, and grade.
+		/// </summary>
+		/// <param name="workoutSamples">The workout samples containing resistance and speed data</param>
+		/// <param name="settings">The elevation gain settings</param>
+		/// <returns>Estimated elevation gain in meters, or null if calculation cannot be performed</returns>
+		public static float? CalculateResistanceBasedElevationGain(WorkoutSamples workoutSamples, ElevationGainSettings settings)
+		{
+			if (workoutSamples?.Metrics == null)
+			{
+				_logger.Debug("No workout metrics available for elevation gain calculation");
+				return null;
+			}
+
+			// Look for resistance metrics
+			var resistanceMetrics = GetMetric("resistance", workoutSamples);
+			if (resistanceMetrics?.Values == null)
+			{
+				_logger.Debug("No resistance metrics found in workout data");
+				return null;
+			}
+
+			// Look for speed metrics
+			var speedMetrics = GetSpeedSummaryStatic(workoutSamples);
+			if (speedMetrics?.Values == null)
+			{
+				_logger.Debug("No speed metrics found in workout data");
+				return null;
+			}
+
+			float totalElevationGain = 0f;
+			var flatRoadResistance = settings.FlatRoadResistance;
+			var maxGrade = settings.MaxGradePercentage;
+
+			// Process each second of data
+			for (int i = 0; i < resistanceMetrics.Values.Length && i < speedMetrics.Values.Length; i++)
+			{
+				var resistance = (float)resistanceMetrics.GetValue(i);
+				var speedMps = ConvertToMetersPerSecond(speedMetrics.GetValue(i), speedMetrics.Display_Unit);
+
+				// Only calculate elevation gain if we're "climbing" (resistance > flat road)
+				if (resistance > flatRoadResistance)
+				{
+					var gradePercentage = CalculateGradeFromResistance(resistance, flatRoadResistance, maxGrade);
+					var elevationGainThisSecond = speedMps * gradePercentage / 100f;
+					totalElevationGain += elevationGainThisSecond;
+				}
+			}
+
+			_logger.Debug("Calculated elevation gain: {TotalElevationGain}m from {DataPoints} data points", 
+				totalElevationGain, Math.Min(resistanceMetrics.Values.Length, speedMetrics.Values.Length));
+
+			return totalElevationGain;
+		}
+
+		/// <summary>
+		/// Calculates the grade percentage from resistance values.
+		/// </summary>
+		/// <param name="resistance">Current resistance value</param>
+		/// <param name="flatRoadResistance">Resistance value for flat road</param>
+		/// <param name="maxGrade">Maximum grade percentage</param>
+		/// <returns>Grade percentage (0-maxGrade)</returns>
+		public static float CalculateGradeFromResistance(float resistance, float flatRoadResistance, float maxGrade)
+		{
+			if (resistance <= flatRoadResistance)
+				return 0f;
+				
+			// Linear interpolation: resistance above flat road maps to grade 0-maxGrade%
+			var resistanceRange = 100f - flatRoadResistance;
+			var resistanceAboveFlat = resistance - flatRoadResistance;
+			var gradePercentage = (resistanceAboveFlat / resistanceRange) * maxGrade;
+			
+			return Math.Min(gradePercentage, maxGrade); // Cap at max grade
+		}
+
+		/// <summary>
+		/// Static version of GetSpeedSummary for use in static methods.
+		/// </summary>
+		/// <param name="workoutSamples">The workout samples</param>
+		/// <returns>Speed metric or null if not found</returns>
+		private static Metric GetSpeedSummaryStatic(WorkoutSamples workoutSamples)
+		{
+			var speed = GetMetric("speed", workoutSamples);
+
+			if (speed is null)
+				speed = GetMetric("split_pace", workoutSamples);
+
+			return speed;
 		}
 	}
 }

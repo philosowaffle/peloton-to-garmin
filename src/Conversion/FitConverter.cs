@@ -47,7 +47,7 @@ namespace Conversion
 			}
 		}
 
-		protected override async Task<Tuple<string, ICollection<Mesg>>> ConvertInternalAsync(P2GWorkout workoutData, Settings settings)
+		protected override async Task<Tuple<string, ICollection<Mesg>>> ConvertInternalAsync(P2GWorkout workoutData, Settings settings, bool forceElevationGainCalculation = false)
 		{
 			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(ConvertAsync)}")
 										.WithTag(TagKey.Format, FileFormat.Fit.ToString())
@@ -184,7 +184,7 @@ namespace Conversion
 			
 			messages.Add(workoutMesg);
 
-			messages.Add(GetSessionMesg(workout, workoutSamples, userData, settings, sport, startTime, endTime, (ushort)lapCount));
+			messages.Add(await GetSessionMesgAsync(workout, workoutSamples, userData, settings, sport, startTime, endTime, (ushort)lapCount, forceElevationGainCalculation));
 
 			var activityMesg = new ActivityMesg();
 			activityMesg.SetTimestamp(endTime);
@@ -331,9 +331,9 @@ namespace Conversion
 			}
 		}
 
-		private SessionMesg GetSessionMesg(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings, Sport sport, Dynastream.Fit.DateTime startTime, Dynastream.Fit.DateTime endTime, ushort numLaps)
+		private async Task<SessionMesg> GetSessionMesgAsync(Workout workout, WorkoutSamples workoutSamples, UserData userData, Settings settings, Sport sport, Dynastream.Fit.DateTime startTime, Dynastream.Fit.DateTime endTime, ushort numLaps, bool forceElevationGainCalculation)
 		{
-			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetSessionMesg)}")
+			using var tracing = Tracing.Trace($"{nameof(FitConverter)}.{nameof(GetSessionMesgAsync)}")
 										.WithTag(TagKey.Format, FileFormat.Fit.ToString())
 										.WithWorkoutId(workout.Id);
 
@@ -384,6 +384,22 @@ namespace Conversion
 				} catch (Exception e)
 				{
 					_logger.Warning($"Failed to cast elevation of {totalElevation?.Value} to ushort after converting to meters. Skipping data point.", e);
+				}
+			}
+			else
+			{
+				// If no elevation data exists, try to calculate from energy if enabled
+				var estimatedElevation = await GetElevationGainAsync(workout, workoutSamples, settings.Format.Cycling.ElevationGain, forceElevationGainCalculation);
+				if (estimatedElevation.HasValue)
+				{
+					try
+					{
+						sessionMesg.SetTotalAscent((ushort)estimatedElevation.Value);
+						_logger.Information("Used estimated elevation gain: {EstimatedElevation}m for workout {WorkoutId}", estimatedElevation.Value, workout.Id);
+					} catch (Exception e)
+					{
+						_logger.Warning($"Failed to cast estimated elevation of {estimatedElevation.Value} to ushort. Skipping data point.", e);
+					}
 				}
 			}
 

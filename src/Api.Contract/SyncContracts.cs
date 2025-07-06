@@ -51,6 +51,14 @@ public record SyncPostRequest
 	/// type, regardless of the time gap between them.
 	/// </summary>
 	public bool ForceStackWorkouts { get; init; } = false;
+
+	/// <summary>
+	/// True if elevation gain calculation should be forced for these workouts.
+	/// When False, the sync will honor the elevation gain settings configured in Format.Cycling.ElevationGain.
+	/// When True, the sync will ignore the settings and attempt to calculate elevation gain for cycling workouts
+	/// regardless of the CalculateElevationGain setting.
+	/// </summary>
+	public bool ForceElevationGainCalculation { get; init; } = false;
 }
 
 public record SyncPostResponse
@@ -86,6 +94,14 @@ public record SyncRecentPostRequest
 	/// type, regardless of the time gap between them.
 	/// </summary>
 	public bool ForceStackWorkouts { get; init; } = false;
+
+	/// <summary>
+	/// True if elevation gain calculation should be forced for these workouts.
+	/// When False, the sync will honor the elevation gain settings configured in Format.Cycling.ElevationGain.
+	/// When True, the sync will ignore the settings and attempt to calculate elevation gain for cycling workouts
+	/// regardless of the CalculateElevationGain setting.
+	/// </summary>
+	public bool ForceElevationGainCalculation { get; init; } = false;
 }
 
 public record SyncRecentPostResponse

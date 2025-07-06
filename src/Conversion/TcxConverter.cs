@@ -29,7 +29,7 @@ public class TcxConverter : Converter<XElement>
 		data.Save(path);
 	}
 
-	protected override async Task<XElement> ConvertInternalAsync(P2GWorkout workoutData, Settings settings)
+	protected override async Task<XElement> ConvertInternalAsync(P2GWorkout workoutData, Settings settings, bool forceElevationGainCalculation = false)
 	{
 		using var tracing = Tracing.Trace($"{nameof(TcxConverter)}.{nameof(ConvertAsync)}")
 							.WithTag(TagKey.Format, FileFormat.Tcx.ToString())
@@ -76,6 +76,7 @@ public class TcxConverter : Converter<XElement>
 		var resistanceMetrics = allMetrics.FirstOrDefault(m => m.Slug == "resistance");
 		var locationMetrics = samples.Location_Data?.SelectMany(x => x.Coordinates).ToArray();
 		var altitudeMetrics = allMetrics.FirstOrDefault(m => m.Slug == "altitude");
+
 		for (var i = 0; i < samples.Seconds_Since_Pedaling_Start.Count; i++)
 		{
 			var trackPoint = new XElement(ns1+"TrackPoint");
@@ -156,7 +157,7 @@ public class TcxConverter : Converter<XElement>
 		var activities = new XElement(ns1 + "Activities");
 		activities.Add(activity);
 		var root = new XElement(ns1 + "TrainingCenterDatabase",
-		 						new XAttribute(XNamespace.Xmlns + "xsi", xsi.NamespaceName),
+			new XAttribute(XNamespace.Xmlns + "xsi", xsi.NamespaceName),
 								new XAttribute(XNamespace.Xmlns + nameof(activityExtensions), activityExtensions.NamespaceName),
 								new XAttribute(XNamespace.Xmlns + nameof(trackPointExtensions), trackPointExtensions.NamespaceName),
 								new XAttribute(XNamespace.Xmlns + nameof(profileExtension), profileExtension.NamespaceName));

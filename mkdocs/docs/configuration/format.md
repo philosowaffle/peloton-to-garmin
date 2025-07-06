@@ -23,7 +23,12 @@ The Format Settings provide settings related to how workouts should be converted
     "IncludeTimeInPowerZones": false,
     "DeviceInfoSettings": { /**(1)!**/ }
     "Cycling": {
-      "PreferredLapType": "Class_Targets"
+      "PreferredLapType": "Class_Targets",
+      "ElevationGain": {
+        "CalculateElevationGain": false,
+        "FlatRoadResistance": 30,
+        "MaxGradePercentage": 15
+      }
     },
     "Running": {
       "PreferredLapType": "Distance"
@@ -55,6 +60,9 @@ The Format Settings provide settings related to how workouts should be converted
 | DeviceInfoSettings | no | `null` | See [customizing the Garmin device associated with the workout](#customizing-the-garmin-device-associated-with-the-workout). |
 | Cycling | no | `null` | Configuration specific to Cycling workouts. |
 | Cycling.PreferredLapType | no | `Default` | The preferred [lap type to use](#lap-types). |
+| Cycling.ElevationGain.CalculateElevationGain | no | `false` | When enabled, P2G will estimate elevation gain from resistance data for cycling workouts when no elevation data is provided by Peloton. [Read More...](#estimating-cycling-elevation-gain) |
+| Cycling.ElevationGain.FlatRoadResistance | no | `30` | Resistance value that represents "flat road" (0% grade). Any resistance above this value is considered climbing, below is considered descending. |
+| Cycling.ElevationGain.MaxGradePercentage | no | `15` | Maximum grade percentage for resistance-based calculation. This caps the maximum grade that can be calculated from resistance data. |
 | Running | no | `null` | Configuration specific to Running workouts. |
 | Running.PreferredLapType | no | `Default` | The preferred [lap type to use](#lap-types). |
 | Rowing | no | `null` | Configuration specific to Rowing workouts. |
@@ -233,6 +241,26 @@ Additionally, Garmin has a limit on how long a title will be. If the title excee
 
 For this setting to take effect, your Garmin Connect account must be set to allow custom workout names.  In the Garmin Connect web interface click on the user icon in the top right, select `Account Settings` then `Display Preferences` ([shortcut](https://connect.garmin.com/modern/settings/displayPreferences)).
 Change the `Activity Name` setting to `Workout Name (when available)`.  This will allow the custom workout name to sync, and should still allow the standard behavior when syncing non-P2G activities directly.
+
+## Estimating Cycling Elevation Gain
+
+P2G can estimate elevation gain for cycling workouts when Peloton doesn't provide elevation data. This feature uses resistance data to calculate an estimated elevation gain based on the relationship between resistance, speed, and grade.
+
+### How It Works
+
+The elevation gain is calculated by processing resistance data second-by-second and only counting elevation gain when resistance is above your configured "flat road" resistance. This method provides realistic elevation estimates that account for the actual resistance profile of your workout.
+
+The calculation uses the following approach:
+1. **Grade Estimation**: Resistance above the flat road threshold is mapped to a grade percentage (0% to MaxGradePercentage%)
+2. **Elevation Calculation**: For each second, elevation gain = speed (m/s) × grade percentage
+3. **Cumulative Total**: All elevation gains are summed to provide the total elevation gain for the workout
+
+### Configuration
+
+You can enable elevation gain estimation in two ways:
+
+1. **Global Setting**: Enable `Cycling.ElevationGain.CalculateElevationGain` in your configuration file or UI settings
+2. **Manual Sync**: When syncing workouts manually through the UI, you can enable elevation gain calculation for individual workouts
 
 ## Stacked Workouts
 

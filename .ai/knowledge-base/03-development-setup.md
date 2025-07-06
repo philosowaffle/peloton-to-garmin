@@ -81,7 +81,14 @@ Edit `configuration.local.json`:
     "Fit": true,
     "Json": true,
     "Tcx": false,
-    "SaveLocalCopy": true
+    "SaveLocalCopy": true,
+    "Cycling": {
+      "ElevationGain": {
+        "CalculateElevationGain": false,
+        "FlatRoadResistance": 30,
+        "MaxGradePercentage": 15
+      }
+    }
   }
 }
 ```
@@ -237,145 +244,3 @@ dotnet test src/UnitTests/UnitTests.csproj
 # Run with coverage
 dotnet test --collect:"XPlat Code Coverage"
 ```
-
-### Integration Tests
-1. **Configure Test Credentials:**
-   - Use separate test accounts for Peloton/Garmin
-   - Set `Upload: false` in Garmin config for testing
-
-2. **Test Data:**
-   - Sample data in `src/UnitTests/Data/`
-   - Mock responses for API testing
-
-### Manual Testing
-1. **API Testing:**
-   - Use Postman collection (create one)
-   - Test all endpoints with various parameters
-
-2. **UI Testing:**
-   - Test all major user flows
-   - Verify responsive design
-   - Test error handling
-
-## Debugging Tips
-
-### Common Issues
-1. **MAUI Workload Issues:**
-   ```bash
-   dotnet workload repair
-   dotnet workload update
-   ```
-
-2. **Authentication Failures:**
-   - Check credentials in configuration
-   - Verify network connectivity
-   - Check API rate limits
-
-3. **File Permission Issues:**
-   - Ensure write permissions to output directories
-   - Check antivirus software interference
-
-### Logging Configuration
-Enable debug logging in `configuration.local.json`:
-```json
-{
-  "Observability": {
-    "Serilog": {
-      "MinimumLevel": {
-        "Default": "Debug"
-      }
-    }
-  }
-}
-```
-
-### Performance Profiling
-1. **Enable Metrics:**
-   ```json
-   {
-     "Observability": {
-       "Prometheus": {
-         "Enabled": true,
-         "Port": 4000
-       }
-     }
-   }
-   ```
-
-2. **View Metrics:**
-   - Navigate to `http://localhost:4000/metrics`
-   - Import Grafana dashboard from `grafana/p2g_dashboard.json`
-
-## Code Quality
-
-### Code Style
-- Follow `.editorconfig` settings
-- Use consistent naming conventions
-- Add XML documentation to public APIs
-
-### Static Analysis
-```bash
-# Run code analysis
-dotnet build --verbosity normal
-
-# Format code
-dotnet format
-```
-
-### Pre-commit Hooks
-Consider setting up pre-commit hooks for:
-- Code formatting
-- Unit test execution
-- Static analysis
-
-## Contribution Workflow
-
-### 1. Create Feature Branch
-```bash
-git checkout -b feature/your-feature-name
-```
-
-### 2. Make Changes
-- Follow existing code patterns
-- Add/update tests
-- Update documentation
-
-### 3. Test Changes
-```bash
-dotnet test
-dotnet build --configuration Release
-```
-
-### 4. Create Pull Request
-- Ensure all tests pass
-- Update release notes
-- Follow PR template
-
-## Troubleshooting
-
-### Build Issues
-- Clear bin/obj folders: `dotnet clean`
-- Restore packages: `dotnet restore`
-- Check .NET version: `dotnet --version`
-
-### Runtime Issues
-- Check log files in output directory
-- Verify configuration settings
-- Check network connectivity
-
-### Performance Issues
-- Enable profiling
-- Check memory usage
-- Monitor API response times
-
-## Additional Resources
-
-### Documentation
-- [Official .NET Documentation](https://docs.microsoft.com/en-us/dotnet/)
-- [ASP.NET Core Documentation](https://docs.microsoft.com/en-us/aspnet/core/)
-- [MAUI Documentation](https://docs.microsoft.com/en-us/dotnet/maui/)
-
-### Community
-- [GitHub Issues](https://github.com/philosowaffle/peloton-to-garmin/issues)
-- [GitHub Discussions](https://github.com/philosowaffle/peloton-to-garmin/discussions)
-- [Project Wiki](https://philosowaffle.github.io/peloton-to-garmin) 

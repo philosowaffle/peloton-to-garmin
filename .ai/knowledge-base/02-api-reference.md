@@ -67,7 +67,14 @@ Retrieve current application settings.
     "fit": true,
     "json": false,
     "tcx": false,
-    "saveLocalCopy": true
+    "saveLocalCopy": true,
+    "cycling": {
+      "elevationGain": {
+        "calculateElevationGain": false,
+        "flatRoadResistance": 30.0,
+        "maxGradePercentage": 15.0
+      }
+    }
   },
   "peloton": {
     "email": "user@example.com",
@@ -113,7 +120,48 @@ Get system information and health status.
 }
 ```
 
-### 4. Garmin Authentication Controller (`/api/garmin/auth`)
+### 4. Format Settings
+The `format` section includes cycling-specific settings for elevation gain calculation.
+
+#### Elevation Gain Calculation
+**Purpose**: Estimates elevation gain from resistance data for cycling workouts when no existing elevation data is available.
+
+**Configuration:**
+```json
+{
+  "format": {
+    "cycling": {
+      "elevationGain": {
+        "calculateElevationGain": false,
+        "flatRoadResistance": 30.0,
+        "maxGradePercentage": 15.0
+      }
+    }
+  }
+}
+```
+
+**Parameters:**
+- `calculateElevationGain` (bool): Enable/disable elevation gain calculation (default: false)
+- `flatRoadResistance` (float): Resistance value that represents "flat road" (0% grade). Default is 30. Any resistance above this value is considered climbing, below is considered descending.
+- `maxGradePercentage` (float): Maximum grade percentage for resistance-based calculation. Default is 15%. This caps the maximum grade that can be calculated from resistance data.
+
+**How it works:**
+1. **Grade Estimation**: Resistance above the flat road threshold is mapped to a grade percentage (0% to MaxGradePercentage%)
+2. **Elevation Calculation**: For each second, elevation gain = speed (m/s) × grade percentage
+3. **Cumulative Total**: All elevation gains are summed to provide the total elevation gain for the workout
+
+**Requirements:**
+- Cycling workouts with resistance and speed data
+- No existing elevation data in the Peloton workout
+- Feature must be enabled in settings
+
+**Technical Notes:**
+- Experimental feature that provides elevation estimates when Peloton data lacks elevation information
+- Provides accurate estimates by processing resistance data second-by-second and only counting elevation gain during climbing segments
+- The calculation assumes a linear relationship between resistance and grade, which is a reasonable approximation for most indoor cycling scenarios
+
+### 5. Garmin Authentication Controller (`/api/garmin/auth`)
 Manages Garmin Connect authentication.
 
 #### `POST /api/garmin/auth/signin`
@@ -146,7 +194,7 @@ Complete MFA authentication.
 }
 ```
 
-### 5. Peloton Workouts Controller (`/api/peloton/workouts`)
+### 6. Peloton Workouts Controller (`/api/peloton/workouts`)
 Provides access to Peloton workout data.
 
 #### `GET /api/peloton/workouts`
@@ -194,7 +242,7 @@ Get specific workout details.
 }
 ```
 
-### 6. Peloton Annual Challenge Controller (`/api/peloton/challenges`)
+### 7. Peloton Annual Challenge Controller (`/api/peloton/challenges`)
 Manages Peloton annual challenge data.
 
 #### `GET /api/peloton/challenges`

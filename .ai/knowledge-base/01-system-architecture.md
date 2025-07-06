@@ -27,7 +27,7 @@ P2G is a .NET 9.0 application that synchronizes workout data from Peloton to Gar
 - **Sync Service** (`src/Sync/`) - Orchestrates the entire sync process
 - **Peloton Service** (`src/Peloton/`) - Handles Peloton API integration
 - **Garmin Service** (`src/Garmin/`) - Manages Garmin Connect integration
-- **Conversion Service** (`src/Conversion/`) - Converts between file formats
+- **Conversion Service** (`src/Conversion/`) - Converts between file formats and performs elevation gain calculation for cycling workouts. Elevation gain estimation is implemented as static methods within the `Converter<T>` class in [`src/Conversion/IConverter.cs`](../src/Conversion/IConverter.cs).
 
 ### 3. Shared Components
 - **Common** (`src/Common/`) - Shared utilities, DTOs, and configuration
