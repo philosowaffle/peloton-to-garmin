@@ -1,0 +1,100 @@
+---
+description: When modifying or reading the vNextReleaseNotes.md or any other Release Notes tasks
+alwaysApply: false
+---
+
+# Overview
+
+[vNextReleaseNotes.md](mdc:vNextReleaseNotes.mdc) is used to document significant changes that were made that should be included in the upcoming Release Notes published on the GitHub release.
+
+## Example
+
+```markdown
+[![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/philosowaffle) <span class="badge-buymeacoffee"><a href="https://www.buymeacoffee.com/philosowaffle" title="Donate to this project using Buy Me A Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee donate button" /></a></span>
+---
+
+> [!TIP]
+> You can find specific Upgrade Instructions by visitng the [Install Page](https://philosowaffle.github.io/peloton-to-garmin/latest/install/) for your particular flavor of P2G and looking for the section titled `⬆️ Updating`.
+
+## New Features
+
+- [<issueNumber>] <One to two sentence description of the feature>. [Learn more](https://philosowaffle.github.io/peloton-to-garmin/latest/<appropriate link to relevant documentation>)
+
+## Fixes
+
+- [<issueNumber>] <One to two sentence description of the issue>.
+
+## Housekeeping
+
+- [<issueNumber>] <One to two sentence description of the task>.
+
+
+- [#415] **Enhanced Elevation Gain Calculation for Cycling Workouts** - P2G can now estimate elevation gain from resistance data when Peloton doesn't provide elevation data.  [Learn more](https://philosowaffle.github.io/peloton-to-garmin/latest/configuration/format.md#estimating-cycling-elevation-gain)
+
+## Docker Tags
+
+  - Console
+      - `console-stable`
+      - `console-latest`
+      - `console-v<version>-rc`
+      - `console-v<major version>`
+
+  - Api
+      - `api-stable`
+      - `api-latest`
+      - `api-v<version>-rc`
+      - `api-v<major version>`
+  - WebUI
+      - `webui-stable`
+      - `webui-latest`
+      - `webui-v<version>-rc`
+      - `webui-v<major version>`
+```
+
+## Sections
+
+### New Features
+
+This section is OPTIONAL and should only be present when a new feature or capability was introduced to P2G.  If possible, each new feature should include a link to the relevant documentation.
+
+### Fixes
+
+This section is OPTIONAL and should only be present when new bug fixes are done.
+
+### Housekeeping
+
+This section is OPTIONAL and should only be present when housekeeping tasks are preformed.  Housekeeping tasks include:
+
+1. Dependency version bumps without any logical changes to P2G
+2. Refactors without any behaviorial changes to P2G
+
+### Docker Tags
+
+This section documents the tags the changes will be available on.
+
+## Identifying content to add
+
+Each Github Issue worked on should correspond to a bullet point in one section of the release notes.  Tasks performed that do not have a GitHub Issue associated with them should not be added to the release notes.  Sub tasks of a larger issue should also not be added to the release notes.
+
+Say you are working on a new feature #413 and while working on this issue you did some refactors and updated documentation.
+
+### Correct
+
+```
+## New Features
+
+- [#413] - Added the ability to customize upload frequency. [Learn More](https://philosowaffle.github.io/peloton-to-garmin/latest/configuration/format.md#upload-frequency)
+```
+
+### Wrong
+
+```
+## New Features
+
+- [#413] - Added the ability to customize upload frequency. [Learn More](https://philosowaffle.github.io/peloton-to-garmin/latest/configuration/format.md#upload-frequency)
+
+## Housekeeping
+
+- [#413] - Refactored Settings Service to support DI
+- Updated documentation for clarity
+```

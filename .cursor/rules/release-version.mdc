@@ -1,0 +1,45 @@
+---
+description: When modifying, determining, or understanding P2G Version information.
+alwaysApply: false
+---
+
+# Release Version
+
+P2G follows [Semantic Versioning](https://semver.org/).
+
+## Major Versions
+
+Major versions are only incremented when a breaking or non-backwards compatible change is made to P2G.
+
+## Minor Versions
+
+Minor versions are incremented when new features or capabilities are added to P2G.
+
+## Patch Versions
+
+Patch versions are incremented when bug fixes are made in P2G.
+
+## Release Candidates
+
+Many changes may be made to P2G before a release is performed.  While pending release, the Version is considered a Release Candidate and the version number is post-fixed with `rc`.
+
+### Choosing Release Candidate Version
+
+If a release candidate has both a bug fix and a new feature, then the version should be a Minor Version increase.  In this way, the new version should always represent the highest order change that was made in the release candidate.
+
+### Example
+
+The previous released version was 5.0.0, and the current release candidate has a new Feature along with 2 Bug Fixes.
+
+#### Correct
+
+- 5.1.0-rc
+
+### Wrong
+
+- 5.1.2-rc
+- 5.1.2
+- 5.0.3-rc
+- 5.1.1-rc
+- 5.1.0
+- 6.0.0-rc

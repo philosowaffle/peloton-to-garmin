@@ -20,8 +20,8 @@
       "PreferredLapType": "Default",
       "ElevationGain": {
         "CalculateElevationGain": false,
-        "UserMassKg": null,
-        "GravityAcceleration": 9.81
+        "FlatRoadResistance": 30,
+        "MaxGradePercentage": 15
       }
     }
   },

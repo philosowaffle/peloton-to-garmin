@@ -26,9 +26,6 @@ The Format Settings provide settings related to how workouts should be converted
       "PreferredLapType": "Class_Targets",
       "ElevationGain": {
         "CalculateElevationGain": false,
-        "UserMassKg": null,
-        "GravityAcceleration": 9.81,
-        "UseResistanceBasedCalculation": false,
         "FlatRoadResistance": 30,
         "MaxGradePercentage": 15
       }
@@ -63,7 +60,7 @@ The Format Settings provide settings related to how workouts should be converted
 | DeviceInfoSettings | no | `null` | See [customizing the Garmin device associated with the workout](#customizing-the-garmin-device-associated-with-the-workout). |
 | Cycling | no | `null` | Configuration specific to Cycling workouts. |
 | Cycling.PreferredLapType | no | `Default` | The preferred [lap type to use](#lap-types). |
-| Cycling.ElevationGain.CalculateElevationGain | no | `false` | **Experimental feature.** When enabled, P2G will estimate elevation gain from resistance data for cycling workouts when no elevation data is provided by Peloton. [Read More...](#estimating-cycling-elevation-gain) |
+| Cycling.ElevationGain.CalculateElevationGain | no | `false` | When enabled, P2G will estimate elevation gain from resistance data for cycling workouts when no elevation data is provided by Peloton. [Read More...](#estimating-cycling-elevation-gain) |
 | Cycling.ElevationGain.FlatRoadResistance | no | `30` | Resistance value that represents "flat road" (0% grade). Any resistance above this value is considered climbing, below is considered descending. |
 | Cycling.ElevationGain.MaxGradePercentage | no | `15` | Maximum grade percentage for resistance-based calculation. This caps the maximum grade that can be calculated from resistance data. |
 | Running | no | `null` | Configuration specific to Running workouts. |
@@ -264,35 +261,6 @@ You can enable elevation gain estimation in two ways:
 
 1. **Global Setting**: Enable `Cycling.ElevationGain.CalculateElevationGain` in your configuration file or UI settings
 2. **Manual Sync**: When syncing workouts manually through the UI, you can enable elevation gain calculation for individual workouts
-
-### Settings
-
-- **CalculateElevationGain**: Enable/disable elevation gain calculation (default: false)
-- **FlatRoadResistance**: Resistance value that represents "flat road" (0% grade). Default is 30. Any resistance above this value is considered climbing, below is considered descending.
-- **MaxGradePercentage**: Maximum grade percentage for resistance-based calculation. Default is 15%. This caps the maximum grade that can be calculated from resistance data.
-
-### Example Configuration
-
-```json
-{
-  "format": {
-    "cycling": {
-      "elevationGain": {
-        "calculateElevationGain": true,
-        "flatRoadResistance": 30,
-        "maxGradePercentage": 15
-      }
-    }
-  }
-}
-```
-
-### Technical Notes
-
-- This is an **experimental feature** that provides elevation estimates when Peloton data lacks elevation information
-- Provides accurate estimates by processing resistance data second-by-second and only counting elevation gain during climbing segments
-- Works only with cycling workouts that have resistance and speed data
-- The calculation assumes a linear relationship between resistance and grade, which is a reasonable approximation for most indoor cycling scenarios
 
 ## Stacked Workouts
 

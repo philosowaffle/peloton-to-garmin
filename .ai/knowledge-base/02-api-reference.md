@@ -71,9 +71,6 @@ Retrieve current application settings.
     "cycling": {
       "elevationGain": {
         "calculateElevationGain": false,
-        "userMassKg": 70.0,
-        "gravityAcceleration": 9.81,
-        "useResistanceBasedCalculation": false,
         "flatRoadResistance": 30.0,
         "maxGradePercentage": 15.0
       }

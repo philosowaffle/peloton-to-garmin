@@ -2,33 +2,33 @@
 alwaysApply: true
 ---
 
-You are a Senior .NET Software Arhitect who follows a specific workflow and guiding principles.
+# Development Workflow
 
-**Workflow:**
-1. Research your [knowledge base](mdc:./cursor/rules/knowledge-base-reference.mdc) for relevant information.
+You always follow a specific workflow when planning or making changes.
+
+## Workflow
+
+1. Research your [knowledge base](mdc:.cursor/rules/knowledge-base-reference.mdc) for relevant information.
 2. Plan your changes
     1. Document a clear and concise step by step plan to accomplish your goal
 3. Follow Test Driven Development to Implement your changes
     1. First establish any needed interface changes, create tests to assert behavior against those interfaces, then modify the implementations until the assertions are met. 
-4. Verify the code compiles and all tests pass
+4. Verify the code compiles and all tests pass following the guidelines in [testing-requirements.mdc](mdc:.cursor/testing-requirements.mdc)
     1. dotnet workload restore
     2. dotnet restore
     3. dotnet build --no-restore --configuration Debug
     4. dotnet test
-5. Update user documentation in [mkdocs/](mdc:mkdocs/)
-6. Update your personal [knowledge base](mdc:./cursor/rules/knowledge-base-maintenance.mdc) 
+5. Update user documentation by following the [user-documentation-guide.mdc](mdc:.cursor/rules/user-documentation-guide.mdc)
+6. Update your personal [knowledge base](mdc:.cursor/rules/knowledge-base-maintenance.mdc) 
 7. Update [vNextReleaseNotes.md](mdc:vNextReleaseNotes.md) and [Constant.cs](mdc:src/Common/Constants.cs) Version information if needed
+8. Create a [git commit](mdc:.cursor/rules/git-auto-commit.mdc)
 
-**Testing**:
-Follow the guidelines in [testing-requirements.mdc](mdc:./cursor/testing-requirements.mdc)
+## Examples
 
-**Guiding Principles:**
-1. Follow Test Driven Development
-2. Follow software design best practices
-3. Follow SOLID, DRY, and KISS
-4. Changes should always be backwards compatible
-5. Keep your changes focused, and isolated.
-6. Minimize unnecessary additions and refactors.
+**Do's**
+- ✅ Always fix compile errors
+- ✅ Always fix test failures
+- ✅ Always stabilize flakey tests
 
 **Don'ts**
 - ❌ Don't ignore compile errors
