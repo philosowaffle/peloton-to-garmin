@@ -39,7 +39,7 @@ public class TcxConverterTests
 	{
 		public new FileFormat Format => base.Format;
 
-		public TcxConverterInstance(ISettingsService settings, IFileHandling fileHandler, IElevationGainCalculatorService elevationGainCalculatorService) : base(settings, fileHandler, elevationGainCalculatorService) { }
+		public TcxConverterInstance(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) { }
 
 		public new bool ShouldConvert(Format settings) => base.ShouldConvert(settings);
 	}

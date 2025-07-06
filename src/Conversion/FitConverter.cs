@@ -18,7 +18,7 @@ namespace Conversion
 	public class FitConverter : Converter<Tuple<string, ICollection<Mesg>>>
 	{
 		private static readonly ILogger _logger = LogContext.ForClass<FitConverter>();
-		public FitConverter(ISettingsService settings, IFileHandling fileHandler, IElevationGainCalculatorService elevationGainCalculatorService) : base(settings, fileHandler, elevationGainCalculatorService) 
+		public FitConverter(ISettingsService settings, IFileHandling fileHandler) : base(settings, fileHandler) 
 		{
 			Format = FileFormat.Fit;
 		}

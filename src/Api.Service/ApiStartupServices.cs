@@ -31,7 +31,6 @@ public static class ApiStartupServices
 		services.AddSingleton<IConverter, FitConverter>();
 		services.AddSingleton<IConverter, TcxConverter>();
 		services.AddSingleton<IConverter, JsonConverter>();
-		services.AddSingleton<IElevationGainCalculatorService, ElevationGainCalculatorService>();
 
 		// GARMIN
 		services.AddSingleton<IGarminUploader, GarminUploader>();
