@@ -6,23 +6,23 @@
 
 ## Fixes
 
-- [#746] Fix permissions issue on v5 where the GitHub Action was failing to run
+- [#779] Fix failed to deserialize error when there was a `null` accuracy value in the workout samples
 
 ## Docker Tags
 
 - Console
     - `console-stable`
     - `console-latest`
-    - `console-v5.0.1`
+    - `console-v5.0.2`
     - `console-v5`
 
 - Api
     - `api-stable`
     - `api-latest`
-    - `api-v5.0.1`
+    - `api-v5.0.2`
     - `api-v5`
 - WebUI
     - `webui-stable`
     - `webui-latest`
-    - `webui-v5.0.1`
+    - `webui-v5.0.2`
     - `webui-v5`
