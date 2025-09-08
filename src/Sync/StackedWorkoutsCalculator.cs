@@ -100,9 +100,10 @@ public static class StackedWorkoutsCalculator
 
 				var stackedWorkout = new P2GWorkout()
 				{
-					IsStackedWorkout = true,
 
 					UserData = firstWorkout.UserData,
+
+					StackedWorkouts = workoutsToStack.ToHashSet(),
 
 					Workout = new Workout()
 					{
