@@ -1,0 +1,42 @@
+﻿@page "/about"
+@inherits TracingComponentBase
+@inject IApiClient _apiClient
+
+<PageTitle>About</PageTitle>
+
+@if (systemInfo.NewerVersionAvailable.GetValueOrDefault())
+{
+    <HxAlert Color="ThemeColor.Success"> A new version of P2G is available! Checkout the <a href="@systemInfo.LatestVersionInformation?.ReleaseUrl" target="_blank" class="alert-link">release notes</a> to see whats new.</HxAlert>
+}
+
+<HxTabPanel InitialActiveTabId="tab0">
+    <HxTab Id="tab0" Title="System Info">
+        <Content>
+            <br />
+            <SharedUI.Shared.SystemInfo />
+        </Content>
+    </HxTab>
+    <HxTab Id="tab1" Title="Logs">
+        <Content>
+            <br />
+            <SharedUI.Shared.Logs />
+        </Content>
+    </HxTab>
+</HxTabPanel>
+
+@code {
+    private SystemInfoGetResponse systemInfo;
+
+    public About() : base(nameof(About))
+    {
+        systemInfo = new SystemInfoGetResponse();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var tracing = Tracing.ClientTrace($"{nameof(About)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+
+        var settings = await _apiClient.SettingsGetAsync();
+        systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = settings.App.CheckForUpdates});
+    }
+}

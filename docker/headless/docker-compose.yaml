@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  p2g:
+    container_name: p2g
+    image: philosowaffle/peloton-to-garmin:console-stable
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - ./configuration.local.json:/app/configuration.local.json
+      - ./output:/app/output

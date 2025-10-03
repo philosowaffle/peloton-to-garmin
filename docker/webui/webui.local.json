@@ -3,10 +3,6 @@
     "HostUrl": "http://p2g-api:8080"
   },
 
-  "WebUI": {
-    "HostUrl": "http://*:8080"
-  },
-
   "Observability": {
 
     "Prometheus": {
@@ -29,15 +25,7 @@
         }
       },
       "WriteTo": [
-        { "Name": "Console" },
-        {
-          "Name": "File",
-          "Args": {
-            "path": "./output/log.txt",
-            "rollingInterval": "Day",
-            "retainedFileCountLimit": 7
-          }
-        }
+        { "Name": "Console" }
       ]
     }
   }

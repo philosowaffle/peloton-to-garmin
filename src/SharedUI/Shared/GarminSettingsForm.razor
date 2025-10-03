@@ -1,0 +1,123 @@
+﻿@inject IApiClient _apiClient
+@inject IHxMessengerService _toaster;
+
+<EditForm Model="@garminSettings">
+	<div class="row g-3">
+		<div class="col-md-12">
+			<HxSwitch Text="Automatically upload to Garmin Connect" @bind-Value="garminSettings.Upload" Inline="true" />
+		</div>
+
+		<HxFormState Enabled="@garminSettings.Upload">
+			<div class="col-md-12">
+				<HxCard>
+					<HeaderTemplate>Auth</HeaderTemplate>
+					<BodyTemplate>
+						<div class="row">
+							<div class="col-md-6">
+								<HxInputText @bind-Value="garminSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
+							</div>
+							<div class="col-md-6">
+								<HxInputText @bind-Value="garminSettings.Password" Label="Password" Type="InputType.Password">
+									<LabelTemplate>
+										Password
+										@if (garminSettings.IsPasswordSet)
+										{
+											<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success">Password is set</HxBadge>
+										}
+									</LabelTemplate>
+									<InputGroupEndTemplate>
+										@if (garminSettings.IsPasswordSet)
+										{
+											<HxButton Text="Clear" Color="ThemeColor.Secondary" Outline="true" OnClick="ClearGarminPassword" />
+										}
+									</InputGroupEndTemplate>
+								</HxInputText>
+							</div>
+						</div>
+					</BodyTemplate>
+					<FooterTemplate>
+						<HxSwitch Text="Two Step Verification Enabled" @bind-Value="garminSettings.TwoStepVerificationEnabled" />
+					</FooterTemplate>
+				</HxCard>
+			</div>
+
+			<div class="col-md-12">
+				<HxAccordion>
+					<HxAccordionItem>
+						<HeaderTemplate>Advanced</HeaderTemplate>
+						<BodyTemplate>
+							<div class="row">
+								<div class="col-md-6">
+									<HxSelect Label="Format to Upload"
+											  Data="@formatTypes"
+											  Nullable="false"
+											  NullDataText="Loading info..."
+											  @bind-Value="garminSettings.FormatToUpload" />
+								</div>
+							</div>
+						</BodyTemplate>
+					</HxAccordionItem>
+				</HxAccordion>
+			</div>
+		</HxFormState>
+		<div class="col-md-3">
+			<HxSubmit Color="ThemeColor.Primary" OnClick="SaveGarminSettings">Save</HxSubmit>
+		</div>
+	</div>
+</EditForm>
+
+@code {
+	private static ICollection<FileFormat> formatTypes = Enum.GetValues(typeof(FileFormat)).Cast<FileFormat>().ToList();
+
+	private SettingsGarminGetResponse garminSettings;
+
+	public GarminSettingsForm()
+	{
+		var settings = new SettingsGetResponse();
+		garminSettings = settings.Garmin;
+	}
+
+	protected override Task OnInitializedAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(GarminSettingsForm)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+		return LoadDataAsync();
+	}
+
+	private async Task LoadDataAsync()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(GarminSettingsForm)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
+		var settings = await _apiClient.SettingsGetAsync();
+
+		garminSettings = settings.Garmin;
+	}
+
+	protected void ClearGarminPassword()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(GarminSettingsForm)}.{nameof(ClearGarminPassword)}", kind: ActivityKind.Client);
+		garminSettings.Password = string.Empty;
+		garminSettings.IsPasswordSet = false;
+	}
+
+	protected async Task SaveGarminSettings()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(GarminSettingsForm)}.{nameof(SaveGarminSettings)}", kind: ActivityKind.Client);
+
+		_toaster.Clear();
+
+		try
+		{
+			garminSettings = await _apiClient.SettingsGarminPostAsync(garminSettings.Map());
+			_toaster.AddInformation("Garmin Settings Saved!");
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to save Garmin Settings - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to save Garmin settings.", e);
+		}
+	}
+}

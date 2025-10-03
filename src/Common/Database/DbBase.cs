@@ -1,4 +1,5 @@
-﻿using Common.Observe;
+﻿using Common.Dto;
+using Common.Observe;
 using JsonFlatFileDataStore;
 using Serilog;
 using System;
@@ -10,7 +11,7 @@ namespace Common.Database
     {
 		private static readonly ILogger _logger = LogContext.ForClass<DbBase<T>>();
 
-		private IFileHandling _fileHandler;
+		protected IFileHandling _fileHandler;
 
 		protected Lazy<IDocumentCollection<T>> _table;
 

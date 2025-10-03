@@ -115,11 +115,14 @@ syncHistory.json
 configuration.local.json
 /.vs/PelotonToGarmin
 /src/Api/data
-/src/PelotonToGarminConsole/data
-/src/PelotonToGarminConsole/python/**
-/src/WebUI/wwwroot/lib
+/src/ConsoleClient/data
+/src/ConsoleClient/python/**
 */**/output/**
 /Output
 /.vs/ProjectSettings.json
 .vs/
 /.vscode/settings.json
+/src/ClientUI/ClientUI.csproj.user
+
+# docs
+/mkdocs/site

@@ -1,22 +1,14 @@
 ###################
 # CREATE FINAL LAYER
 ###################
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 as final
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 as final
 
-ENV PYTHONUNBUFFERED=1
 RUN apt-get update \
-	&& apt-get -y install bash python3 python3-pip tzdata \
+	&& apt-get -y install bash tzdata \
 	&& apt-get purge -y -f --force-yes $EXT_BUILD_DEPS \
 	&& apt-get autoremove -y \
 	&& apt-get clean \
-	&& rm -rf /var/lib/apt/lists/* \
-	&& ln -sf python3 /usr/bin/python \
-	&& pip3 install --no-cache --upgrade pip setuptools \
-	&& python --version \
-	&& pip3 --version
-
-COPY ./python/requirements.txt ./requirements.txt
-RUN pip3 install -r requirements.txt
+	&& rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 1015 p2g && useradd -g p2g -u 1015 p2g
 
@@ -27,7 +19,7 @@ RUN mkdir -m770 {output,data,working}
 ###################
 # BUILD LAYER
 ###################
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 
 COPY . /build
 WORKDIR /build
