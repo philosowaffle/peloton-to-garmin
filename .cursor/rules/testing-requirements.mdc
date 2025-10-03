@@ -1,0 +1,65 @@
+---
+description: When adding, modifying, or planning tests
+alwaysApply: false
+---
+# Testing Requirements
+
+Follow these testing guidelines when adding or modifying tests.
+
+**Location**: `src/UnitTests/`
+
+## Testing Framework Stack:
+- **NUnit** - Primary testing framework
+- **Moq** - Mocking framework
+- **FluentAssertions** - Assertion library
+- **Bogus** - Test Data generator
+
+## Example Tests
+
+- Using AutoMock to mock dependencies: [SyncServiceTests.cs](mdc:src\UnitTests\Sync\SyncServiceTests.cs)
+- Using Bogus to setup test data: [StackedWorkoutsCalculatorTests.cs](mdc:src\UnitTests\Sync\StackedWorkoutsCalculatorTests.cs)
+
+### Mocking Guidelines:
+- Mock external dependencies (Peloton/Garmin APIs)
+- Use interfaces for testability
+- Verify mock interactions
+- Test both success and failure scenarios
+
+### Running Tests:
+```bash
+# Run all tests
+dotnet test
+
+# Run specific test class
+dotnet test --filter "FullyQualifiedName~SyncServiceTests"
+
+# With Coverage
+dotnet test --collect:"XPlat Code Coverage"
+```
+
+## Test Maintenance
+
+### Regular Tasks
+1. **Update Test Data**: Keep sample data current
+2. **Review Coverage**: Maintain >80% code coverage
+3. **Remove Obsolete Tests**: Clean up unused tests
+4. **Update Dependencies**: Keep test frameworks updated
+
+
+## Best Practices
+
+### Do's
+- ✅ Write tests before fixing bugs
+- ✅ Test edge cases and error conditions
+- ✅ Use descriptive test names
+- ✅ Keep tests independent and isolated
+- ✅ Mock external dependencies
+- ✅ Use test data builders for complex objects
+
+### Don'ts
+- ❌ Don't test implementation details
+- ❌ Don't write tests that depend on external services
+- ❌ Don't ignore flaky tests
+- ❌ Don't test multiple concerns in one test
+- ❌ Don't use production data in tests
+- ❌ Don't skip tests without good reason

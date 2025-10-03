@@ -17,8 +17,6 @@ public class SettingsService : ISettingsService
 	private static readonly ILogger _logger = LogContext.ForClass<SettingsService>();
 	private static readonly object _lock = new object();
 	private static readonly string PelotonApiAuthKey = "PelotonApiAuth";
-	private static readonly string GarminApiAuthKey = "GarminApiAuth";
-	private static readonly string GarminDeviceInfoKey = "GarminDeviceInfo";
 
 	private readonly ISettingsDb _db;
 	private readonly IMemoryCache _cache;
@@ -121,13 +119,6 @@ public class SettingsService : ISettingsService
 		GarminDeviceInfo userProvidedDeviceInfo = null;
 
 		var settings = await GetSettingsAsync();
-#pragma warning disable CS0618 // Type or member is obsolete
-		var userDevicePath = settings?.Format?.DeviceInfoPath;
-#pragma warning restore CS0618 // Type or member is obsolete
-
-		_fileHandler.TryDeserializeXml(userDevicePath, out userProvidedDeviceInfo);
-
-		if (userProvidedDeviceInfo != null) return userProvidedDeviceInfo;
 
 		if (settings?.Format?.DeviceInfoSettings is object)
 		{

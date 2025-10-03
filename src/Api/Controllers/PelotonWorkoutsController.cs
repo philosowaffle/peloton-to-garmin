@@ -105,6 +105,14 @@ namespace Api.Controllers
 					workoutsToReturn.Add(w);
 				}
 			}
+			catch (ArgumentException ae)
+			{
+				return BadRequest(new ErrorResponse(ae.Message));
+			}
+			catch (PelotonAuthenticationError pe)
+			{
+				return BadRequest(new ErrorResponse(pe.Message));
+			}
 			catch (Exception e)
 			{
 				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));

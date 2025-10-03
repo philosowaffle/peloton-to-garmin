@@ -34,7 +34,8 @@ public class SettingsGetResponse
 			TwoStepVerificationEnabled = settings.Garmin.TwoStepVerificationEnabled,
 			FormatToUpload = settings.Garmin.FormatToUpload,
 			Upload = settings.Garmin.Upload,
-			IsPasswordSet = !string.IsNullOrEmpty(settings.Garmin.Password)
+			IsPasswordSet = !string.IsNullOrEmpty(settings.Garmin.Password),
+			Api = settings.Garmin.Api ?? new GarminApiSettings()
 		};
 	}
 
@@ -52,6 +53,7 @@ public class SettingsGarminGetResponse
 	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
+	public GarminApiSettings Api { get; set; } = new GarminApiSettings();
 }
 
 public class SettingsGarminPostRequest
@@ -61,6 +63,7 @@ public class SettingsGarminPostRequest
 	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
+	public GarminApiSettings Api { get; set; } = new GarminApiSettings();
 }
 
 public class SettingsPelotonGetResponse
@@ -70,6 +73,7 @@ public class SettingsPelotonGetResponse
 		ExcludeWorkoutTypes = new List<WorkoutType>();
 	}
 
+	public bool IsConfigured => !string.IsNullOrWhiteSpace(Email) && IsPasswordSet;
 	public bool IsPasswordSet { get; set; }
 	public string? Email { get; set; }
 	public string? Password { get; set; }
@@ -118,6 +122,7 @@ public static class Mapping
 			TwoStepVerificationEnabled = response.TwoStepVerificationEnabled,
 			FormatToUpload = response.FormatToUpload,
 			Upload = response.Upload,
+			Api = response.Api,
 		};
 	}
 
@@ -130,6 +135,7 @@ public static class Mapping
 			TwoStepVerificationEnabled = request.TwoStepVerificationEnabled,
 			FormatToUpload = request.FormatToUpload,
 			Upload = request.Upload,
+			Api = request.Api,
 		};
 	}
 }

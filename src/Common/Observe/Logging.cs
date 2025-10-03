@@ -1,6 +1,7 @@
 ﻿using Common.Dto;
 using Common.Stateful;
 using Serilog;
+using Serilog.Core;
 using Serilog.Sinks.File;
 using Serilog.Sinks.File.Header;
 using System.IO;
@@ -17,6 +18,7 @@ public class LogContext
 public static class Logging
 {
 	public static string CurrentFilePath { get; set; }
+	public static LoggingLevelSwitch InternalLevelSwitch { get; set; }
 
 	public static void LogSystemInformation()
 	{

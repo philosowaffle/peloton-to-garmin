@@ -1,0 +1,47 @@
+---
+description: When modifying sync-related components
+alwaysApply: false
+---
+# Sync Service Development Patterns
+
+## Core Sync Components
+
+When modifying sync-related components, follow these established patterns from the knowledge base:
+
+### Key Files and Patterns:
+- **Main Sync Logic**: [src/Sync/SyncService.cs](mdc:src/Sync/SyncService.cs)
+- **Peloton Integration**: [src/Peloton/ApiClient.cs](mdc:src/Peloton/ApiClient.cs)
+- **Garmin Integration**: [src/Garmin/ApiClient.cs](mdc:src/Garmin/ApiClient.cs)
+
+### Sync Workflow (from [.ai/knowledge-base/01-system-architecture.md](mdc:.ai/knowledge-base/01-system-architecture.md)):
+1. **Authentication** - Both Peloton and Garmin APIs
+2. **Fetch Workouts** - From Peloton API
+3. **Filter Workouts** - Apply user-configured filters
+4. **Stack Workouts** - Combine back-to-back workouts if enabled
+5. **Convert Formats** - To FIT, TCX, or JSON
+6. **Upload to Garmin** - Upload converted files
+
+### Error Handling Patterns:
+- Use `ServiceResult<T>` for operation results
+- Return `ConvertStatus` for conversion operations
+- Handle authentication errors separately (Peloton/Garmin)
+- Log exceptions with context using Serilog
+
+### Authentication Considerations:
+- **Peloton**: Session-based authentication with automatic renewal
+- **Garmin**: OAuth 1.0a + OAuth 2.0 hybrid flow with MFA support
+- Store credentials encrypted using platform-specific secure storage
+
+### Testing Requirements:
+- Mock external API dependencies
+- Test authentication failure scenarios
+- Verify workout filtering and stacking logic
+- Test conversion error handling
+
+### Performance Considerations:
+- Implement rate limiting for API calls
+- Use exponential backoff for transient failures
+- Process workouts in batches when possible
+- Clean up temporary files after processing
+
+Refer to [.ai/knowledge-base/05-external-api-integration.md](mdc:.ai/knowledge-base/05-external-api-integration.md) for detailed API integration patterns.

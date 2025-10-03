@@ -12,7 +12,7 @@ using SharedUI;
 Statics.AppType = Constants.WebUIName;
 Statics.MetricPrefix = Constants.WebUIName;
 Statics.TracingService = Constants.WebUIName;
-Statics.ConfigPath = Path.Join(Environment.CurrentDirectory, "configuration.local.json");
+Statics.ConfigPath = Path.Join(Statics.DefaultConfigDirectory, "configuration.local.json");
 
 ///////////////////////////////////////////////////////////
 /// HOST
@@ -20,7 +20,7 @@ Statics.ConfigPath = Path.Join(Environment.CurrentDirectory, "configuration.loca
 var builder = WebApplication.CreateBuilder(args);
 
 var configProvider = builder.Configuration.AddJsonFile(Statics.ConfigPath, optional: true, reloadOnChange: true)
-				.AddEnvironmentVariables(prefix: "P2G_")
+				.AddEnvironmentVariables(prefix: $"{Constants.EnvironmentVariablePrefix}_")
 				.AddCommandLine(args);
 
 var config = new AppConfiguration();

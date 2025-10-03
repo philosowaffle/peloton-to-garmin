@@ -1,7 +1,7 @@
 ﻿@page "/"
-@using SharedUI.Shared;
+@using SharedUI.Shared
 @inherits TracingComponentBase
-@inject IApiClient _apiClient
+@inject IApiClient _apiClient;
 @inject IHxMessengerService _toaster;
 
 <PageTitle>Home</PageTitle>
@@ -27,9 +27,9 @@
 	{
 		<div class="col-md-auto">
 			<HxCard ImageAlt="Grey area"
-				ImageSrc="@workout.ImageUrl?.ToString()"
-				ImageHeight="180"
-				style="width: 19rem; margin-bottom: 1rem; height: 19rem;">
+			ImageSrc="@workout.ImageUrl?.ToString()"
+			ImageHeight="180"
+			style="width: 19rem; margin-bottom: 1rem; height: 19rem;">
 				<BodyTemplate>
 					<HxCardTitle>@workout.WorkoutTitle</HxCardTitle>
 					<HxCardSubtitle CssClass="mb-2 text-muted">@DateTimeOffset.FromUnixTimeSeconds(workout.CreatedAt).LocalDateTime.ToString()</HxCardSubtitle>
@@ -47,6 +47,10 @@
 			<HxPlaceholder Columns="4" />
 		</HxPlaceholderContainer>
 	}
+	else if (PelotonSettingNotConfiguredYet)
+	{
+		<HxAlert Color="ThemeColor.Primary"><HxIcon Icon="@BootstrapIcon.GearFill" /> Head on over to the <a href="settings">Settings</a> page to connect to Peloton.</HxAlert>
+	}
 	else if (!TodaysWorkouts.Any())
 	{
 		<HxAlert Color="ThemeColor.Primary">No workouts today.</HxAlert>
@@ -63,6 +67,7 @@
 @code {
 
 	private bool TodaysWorkoutsAreLoading = true;
+	private bool PelotonSettingNotConfiguredYet = false;
 	private SyncGetResponse syncStatus;
 	private SettingsGetResponse settings;
 	private SystemInfoGetResponse systemInfo;
@@ -87,14 +92,21 @@
 
 		try
 		{
-			var getTodaysWorkoutsTask = LoadTodaysWorkoutsAsync();
-			var getSettingsTask = _apiClient.SettingsGetAsync();
+			settings = await _apiClient.SettingsGetAsync();
+			PelotonSettingNotConfiguredYet = !settings.Peloton.IsConfigured;
+
+			if (PelotonSettingNotConfiguredYet)
+			{
+				TodaysWorkoutsAreLoading = false;
+			} 
+			else 
+			{
+				var getTodaysWorkoutsTask = LoadTodaysWorkoutsAsync();
+				TodaysWorkouts = await getTodaysWorkoutsTask;
+				TodaysWorkoutsAreLoading = false;
+			}
+			
 			var getSyncStatusAsync = LoadSyncStatusAsync();
-
-			TodaysWorkouts = await getTodaysWorkoutsTask;
-			TodaysWorkoutsAreLoading = false;
-
-			settings = await getSettingsTask;
 			if (settings.App.CheckForUpdates)
 			{
 				systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = true });

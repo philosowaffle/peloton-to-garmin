@@ -22,7 +22,8 @@ This flavor of P2G runs without any user interface and relies on configuration f
 
 1. Create a directory `p2g-headless`
     1. Inside this folder create a [docker-compose.yaml](https://github.com/philosowaffle/peloton-to-garmin/blob/master/docker/headless/docker-compose.yaml) file in the directory
-    1. Also create a [configuration.local.json](https://github.com/philosowaffle/peloton-to-garmin/blob/master/configuration.example.json) file in the directory.
+    1. Within this same directory, also create a folder called `config`
+        1. Inside the `config` folder create the [configuration.local.json](https://github.com/philosowaffle/peloton-to-garmin/blob/master/configuration.example.json).
     1. Edit the configuration file to use your Peloton and Garmin credentials
 1. Open a terminal in this folder
 1. Run: `docker-compose pull && docker-compose up -d`

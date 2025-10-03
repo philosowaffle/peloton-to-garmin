@@ -1,0 +1,41 @@
+---
+description: When you need to make updates to documentation to reflect changes to the application.
+alwaysApply: false
+---
+# Documentation Guide
+
+## Documentation Structure:
+- **MkDocs Site**: [mkdocs/mkdocs.yml](mdc:mkdocs/mkdocs.yml) - Main documentation configuration
+- **Homepage**: [mkdocs/docs/index.md](mdc:mkdocs/docs/index.md) - Project overview and quick start
+- **Features**: [mkdocs/docs/features.md](mdc:mkdocs/docs/features.md) - Detailed feature descriptions
+- **Installation**: [mkdocs/docs/install/](mdc:mkdocs/docs/install/) - Various installation methods
+- **Configuration**: [mkdocs/docs/configuration/](mdc:mkdocs/docs/configuration/) - Settings and options
+- **Help**: [mkdocs/docs/help.md](mdc:mkdocs/docs/help.md) - Troubleshooting and support
+
+## Key Documentation Sections:
+- **Installation Options**: Docker, Windows App, Source, GitHub Actions
+- **Configuration**: App settings, format options, Peloton/Garmin credentials
+- **Migration Guides**: Version upgrade instructions
+- **FAQ**: Common questions and solutions
+- **Contributing**: Development guidelines and setup
+
+## Documentation Features:
+- **Material Theme**: Modern, responsive design
+- **Version Management**: Using Mike for versioned docs
+- **Search**: Full-text search across all pages
+- **Navigation**: Tabbed navigation and breadcrumbs
+- **Code Annotations**: Syntax highlighting and copy functionality
+
+## Contributing to Docs:
+- Use Markdown format with MkDocs extensions
+- Include screenshots and examples
+- Keep installation steps clear and sequential
+- Update configuration examples when adding new features
+- Test documentation changes locally with `mkdocs serve`
+
+## Documentation Workflow:
+1. Edit markdown files in [mkdocs/docs/](mdc:mkdocs/docs/)
+2. Test locally with `mkdocs serve`
+3. Build with `mkdocs build`
+
+IMPORTANT: NEVER DEPLOY DOCUMENTATION!

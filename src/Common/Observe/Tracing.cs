@@ -63,7 +63,7 @@ namespace Common.Observe
 					.AddAspNetCoreInstrumentation(c =>
 					{
 						c.RecordException = true;
-						c.Enrich = AspNetCoreEnricher;
+						c.EnrichWithHttpRequest = AspNetCoreEnricher;
 					});
 				});
 
@@ -107,7 +107,9 @@ namespace Common.Observe
 					.AddHttpClientInstrumentation(h =>
 					{
 						h.RecordException = true;
-						h.Enrich = HttpEnricher;
+						h.EnrichWithException = (activity, exception) => activity.SetTag("stackTrace", exception.StackTrace);
+						h.EnrichWithHttpRequestMessage = HttpEnricher_EnrichWithHttpRequestMessage;
+						h.EnrichWithHttpResponseMessage = HttpEnricher_EnrichWithHttpResponseMessage;
 					})
 					.AddJaegerExporter(o =>
 					{
@@ -181,49 +183,30 @@ namespace Common.Observe
 			}
 		}
 
-		public static void HttpEnricher(Activity activity, string name, object rawEventObject)
+		public static void HttpEnricher_EnrichWithHttpRequestMessage(Activity activity, HttpRequestMessage request)
 		{
-			if (name.Equals("OnStartActivity"))
-			{
-				if (rawEventObject is HttpRequestMessage request)
-				{
-					activity.DisplayName = $"{request.Method} {request.RequestUri.AbsolutePath}";
-					activity.SetTag("http.request.path", request.RequestUri.AbsolutePath);
-					activity.SetTag("http.request.query", request.RequestUri.Query);
-					activity.SetTag("http.request.body", request.Content?.ReadAsStringAsync().GetAwaiter().GetResult() ?? "no_content");
-				}
-			}
-			else if (name.Equals("OnStopActivity"))
-			{
-				if (rawEventObject is HttpResponseMessage response)
-				{
-					var content = response.Content?.ReadAsStringAsync().GetAwaiter().GetResult() ?? "no_content";
-					activity.SetTag("http.response.body", content);
-				}
-			}
-			else if (name.Equals("OnException"))
-			{
-				if (rawEventObject is Exception exception)
-				{
-					activity.SetTag("stackTrace", exception.StackTrace);
-				}
-			}
+			activity.DisplayName = $"{request.Method} {request.RequestUri.AbsolutePath}";
+			activity.SetTag("http.request.path", request.RequestUri.AbsolutePath);
+			activity.SetTag("http.request.query", request.RequestUri.Query);
+			activity.SetTag("http.request.body", request.Content?.ReadAsStringAsync().GetAwaiter().GetResult() ?? "no_content");
 		}
 
-		public static void AspNetCoreEnricher(Activity activity, string name, object rawEventObject)
+		public static void HttpEnricher_EnrichWithHttpResponseMessage(Activity activity, HttpResponseMessage response)
 		{
-			if (name.Equals("OnStartActivity")
-				&& rawEventObject is HttpRequest httpRequest)
-			{
-				if (httpRequest.Headers.TryGetValue("TraceId", out var incomingTraceParent))
-					activity.SetParentId(incomingTraceParent);
+			var content = response.Content?.ReadAsStringAsync().GetAwaiter().GetResult() ?? "no_content";
+			activity.SetTag("http.response.body", content);
+		}
 
-				if (httpRequest.Headers.TryGetValue("uber-trace-id", out incomingTraceParent))
-					activity.SetParentId(incomingTraceParent);
+		public static void AspNetCoreEnricher(Activity activity, HttpRequest request)
+		{
+			if (request.Headers.TryGetValue("TraceId", out var incomingTraceParent))
+				activity.SetParentId(incomingTraceParent);
 
-				activity.SetTag("http.path", httpRequest.Path);
-				activity.SetTag("http.query", httpRequest.QueryString);
-			}
+			if (request.Headers.TryGetValue("uber-trace-id", out incomingTraceParent))
+				activity.SetParentId(incomingTraceParent);
+
+			activity.SetTag("http.path", request.Path);
+			activity.SetTag("http.query", request.QueryString);
 		}
 	}
 }

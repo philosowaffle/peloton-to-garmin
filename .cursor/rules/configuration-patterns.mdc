@@ -1,0 +1,77 @@
+---
+description: When working with configuration and settings
+alwaysApply: false
+---
+# Configuration Management Patterns
+
+## Configuration System Guidelines
+
+Follow the configuration patterns established in the knowledge base when working with settings:
+
+### Configuration Files:
+- **Example**: [configuration.example.json](mdc:configuration.example.json) - Template configuration
+- **Local**: `configuration.local.json` - Local development settings (gitignored)
+- **Loading Logic**: [src/Common/Configuration.cs](mdc:src/Common/Configuration.cs)
+
+### Configuration Hierarchy (Priority Order):
+1. **Command line arguments** - Highest priority
+2. **Environment variables** (prefix: `P2G_`) - Override config file
+3. **Configuration files** (`configuration.local.json`) - File-based settings
+4. **Default values** - Fallback values
+
+### Environment Variable Format:
+```bash
+# Correct format (double underscore for nested properties)
+P2G_Peloton__Email=user@example.com
+P2G_Peloton__Password=password123
+P2G_Garmin__Upload=true
+
+# Incorrect format
+P2G_PELOTON_EMAIL=user@example.com  # Wrong separator
+```
+
+### Configuration Sections:
+- **App**: Application behavior settings
+- **Format**: Output format preferences (FIT, TCX, JSON)
+- **Peloton**: Peloton API credentials and settings
+- **Garmin**: Garmin Connect credentials and settings
+- **Observability**: Logging, metrics, and tracing
+
+### Security Considerations:
+- **Never commit credentials** to version control
+- **Use environment variables** for sensitive data in production
+- **Encrypt stored credentials** using platform-specific secure storage
+- **Validate configuration** on application startup
+
+### Settings Service Pattern:
+```csharp
+// Inject settings service
+public class MyService
+{
+    private readonly ISettingsService _settingsService;
+    
+    public MyService(ISettingsService settingsService)
+    {
+        _settingsService = settingsService;
+    }
+    
+    public async Task DoWorkAsync()
+    {
+        var settings = await _settingsService.GetSettingsAsync();
+        // Use settings...
+    }
+}
+```
+
+### Configuration Validation:
+- Validate required settings on startup
+- Provide clear error messages for missing configuration
+- Use data annotations for validation where appropriate
+- Test configuration loading in unit tests
+
+### Development vs Production:
+- **Development**: Use `configuration.local.json` with test accounts
+- **Production**: Use environment variables or secure configuration providers
+- **Docker**: Mount configuration files or use environment variables
+
+Refer to [.ai/knowledge-base/03-development-setup.md](mdc:.ai/knowledge-base/03-development-setup.md) for setup instructions and [.ai/knowledge-base/04-troubleshooting-guide.md](mdc:.ai/knowledge-base/04-troubleshooting-guide.md) for configuration issues.

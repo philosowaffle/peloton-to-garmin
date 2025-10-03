@@ -1,0 +1,36 @@
+---
+description: When making changes to the UI or UX
+alwaysApply: false
+---
+# UI Development Patterns for P2G
+
+## Blazor WebUI:
+- **Entry**: [src/WebUI/Program.cs](mdc:src/WebUI/Program.cs)
+- **Shared Components**: [src/SharedUI/](mdc:src/SharedUI/) - Reusable Blazor components
+- **Pages**: [src/SharedUI/Pages/](mdc:src/SharedUI/Pages/) - Main application pages
+- **API Client**: [src/WebUI/ApiClient.cs](mdc:src/WebUI/ApiClient.cs) - Communicates with API
+
+## MAUI ClientUI:
+- **Entry**: [src/ClientUI/MauiProgram.cs](mdc:src/ClientUI/MauiProgram.cs)
+- **Main App**: [src/ClientUI/Main.razor](mdc:src/ClientUI/Main.razor) - Uses shared Blazor components
+- **Platforms**: Android, iOS, macOS, Windows, Tizen
+- **Service Client**: [src/ClientUI/Platforms/](mdc:src/ClientUI/Platforms/) - Platform-specific implementations
+
+## Shared UI Components:
+- **Layout**: [src/SharedUI/Shared/MainLayout.razor](mdc:src/SharedUI/Shared/MainLayout.razor)
+- **Forms**: [src/SharedUI/Shared/AppSettingsForm.razor](mdc:src/SharedUI/Shared/AppSettingsForm.razor)
+- **Logs**: [src/SharedUI/Shared/ApiLogs.razor](mdc:src/SharedUI/Shared/ApiLogs.razor)
+
+## UI Patterns:
+- Use dependency injection for services
+- Shared components between WebUI and ClientUI
+- Bootstrap for styling and responsive design
+- Real-time updates via API polling
+- Error handling with user-friendly messages
+
+## Key Features:
+- Configuration management
+- Real-time sync status
+- Log viewing and filtering
+- Workout progress tracking
+- Annual challenge progress display

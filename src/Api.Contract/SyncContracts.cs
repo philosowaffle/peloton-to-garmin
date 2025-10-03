@@ -1,4 +1,6 @@
-﻿namespace Api.Contract;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Api.Contract;
 
 public record SyncGetResponse
 {
@@ -39,17 +41,56 @@ public record SyncPostRequest
 
 	/// <summary>
 	/// Sync a specific set of workouts by their Ids.
-	/// 
-	/// Mutually exclusive with 
-	/// - NumWorkouts
-	/// - SinceDate
 	/// </summary>
 	public ICollection<string> WorkoutIds { get; init; }
+
+	/// <summary>
+	/// True if these workouts should be combined (stacked) into a single final workout.
+	/// When False, the sync will still honor any settings configured in StackedClassesSettings.
+	/// When True, the sync will ignore the StackedClassesSettings and attempt stack all classes of the same
+	/// type, regardless of the time gap between them.
+	/// </summary>
+	public bool ForceStackWorkouts { get; init; } = false;
 }
 
 public record SyncPostResponse
 {
 	public SyncPostResponse()
+	{
+		Errors = new List<ErrorResponse>();
+	}
+
+	public bool SyncSuccess { get; init; }
+	public bool PelotonDownloadSuccess { get; init; }
+	public bool? ConverToFitSuccess { get; init; }
+	public bool? UploadToGarminSuccess { get; init; }
+	public ICollection<ErrorResponse> Errors { get; init; }
+}
+
+public record SyncRecentPostRequest
+{
+	/// <summary>
+	/// Syncs the most recent NumberToSync workouts.
+	/// 
+	/// Mutually exclusive with 
+	/// - NumWorkouts
+	/// - SinceDate
+	/// </summary>
+	[Required]
+	public int NumberToSync { get; init; }
+
+	/// <summary>
+	/// True if these workouts should be combined (stacked) into a single final workout.
+	/// When False, the sync will still honor any settings configured in StackedClassesSettings.
+	/// When True, the sync will ignore the StackedClassesSettings and attempt stack all classes of the same
+	/// type, regardless of the time gap between them.
+	/// </summary>
+	public bool ForceStackWorkouts { get; init; } = false;
+}
+
+public record SyncRecentPostResponse
+{
+	public SyncRecentPostResponse()
 	{
 		Errors = new List<ErrorResponse>();
 	}

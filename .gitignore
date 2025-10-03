@@ -126,3 +126,4 @@ configuration.local.json
 
 # docs
 /mkdocs/site
+*.user

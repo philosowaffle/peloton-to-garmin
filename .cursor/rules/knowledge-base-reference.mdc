@@ -1,0 +1,31 @@
+---
+alwaysApply: true
+---
+
+# Knowledge Base Reference Rule
+
+## Always Consult Knowledge Base Before Making Changes
+
+Before implementing any changes to the P2G codebase, you MUST reference the comprehensive knowledge base located in [.ai/knowledge-base/README.md](mdc:.ai/knowledge-base/README.md).
+
+### Knowledge Base Structure:
+- **System Architecture**: [.ai/knowledge-base/01-system-architecture.md](mdc:.ai/knowledge-base/01-system-architecture.md)
+- **API Reference**: [.ai/knowledge-base/02-api-reference.md](mdc:.ai/knowledge-base/02-api-reference.md)
+- **Development Setup**: [.ai/knowledge-base/03-development-setup.md](mdc:.ai/knowledge-base/03-development-setup.md)
+- **Troubleshooting**: [.ai/knowledge-base/04-troubleshooting-guide.md](mdc:.ai/knowledge-base/04-troubleshooting-guide.md)
+- **External APIs**: [.ai/knowledge-base/05-external-api-integration.md](mdc:.ai/knowledge-base/05-external-api-integration.md)
+- **Testing Strategy**: [.ai/knowledge-base/06-testing-strategy.md](mdc:.ai/knowledge-base/06-testing-strategy.md)
+
+### When Planning Changes:
+1. **Check Architecture**: Review system architecture to understand component interactions
+2. **Verify API Impact**: Check if changes affect REST API endpoints or external API integrations
+3. **Follow Patterns**: Use established development patterns and conventions
+4. **Consider Testing**: Plan appropriate test coverage using the testing strategy
+5. **Check Dependencies**: Understand how changes might affect other components
+
+### Key Project Context:
+- **.NET 9.0** application with multiple deployment models
+- **External APIs**: Peloton API and Garmin Connect integration
+- **Core Components**: ConsoleClient, WebUI, API, ClientUI, Sync Service
+- **File Formats**: FIT, TCX, JSON conversion capabilities
+- **Authentication**: Complex OAuth flows for both Peloton and Garmin

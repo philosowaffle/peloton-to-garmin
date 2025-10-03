@@ -20,7 +20,6 @@ Mike: https://github.com/jimporter/mike
 * `mike deploy <version> --push`
     * this will push to `gh-pages` branch and update the appropriate directory
 
-
 ## Project layout
 
     mkdocs.yml    # The configuration file.

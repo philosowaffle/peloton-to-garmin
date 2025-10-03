@@ -1,4 +1,5 @@
 ﻿@page "/about"
+@using Common.Stateful
 @inherits TracingComponentBase
 @inject IApiClient _apiClient
 
@@ -16,12 +17,30 @@
             <SharedUI.Shared.SystemInfo />
         </Content>
     </HxTab>
-    <HxTab Id="tab1" Title="Logs">
-        <Content>
-            <br />
-            <SharedUI.Shared.Logs />
-        </Content>
-    </HxTab>
+    @if (Statics.AppType == Constants.ClientUIName)
+    {
+        <HxTab Id="tab1" Title="Logs">
+            <Content>
+                <br />
+                <SharedUI.Shared.ClientLogs />
+            </Content>
+        </HxTab>
+    }
+    @if (Statics.AppType == Constants.WebUIName)
+    {
+        <HxTab Id="tab1" Title="WebUI Logs">
+            <Content>
+                <br />
+                <SharedUI.Shared.WebUILogs />
+            </Content>
+        </HxTab>
+        <HxTab Id="tab2" Title="Api Logs">
+            <Content>
+                <br />
+                <SharedUI.Shared.ApiLogs />
+            </Content>
+        </HxTab>
+    }
 </HxTabPanel>
 
 @code {

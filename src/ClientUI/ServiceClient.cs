@@ -14,6 +14,7 @@ using SharedUI;
 using Sync;
 using Garmin.Dto;
 using Sync.Database;
+using Microsoft.Extensions.Logging;
 
 namespace ClientUI;
 
@@ -215,36 +216,22 @@ public class ServiceClient : IApiClient
 
 	public async Task<SettingsGarminGetResponse> SettingsGarminPostAsync(SettingsGarminPostRequest garminSettings)
 	{
-		try
-		{
-			var result = await _settingsUpdaterService.UpdateGarminSettingsAsync(garminSettings);
+		var result = await _settingsUpdaterService.UpdateGarminSettingsAsync(garminSettings);
 
-			if (result.IsErrored())
-				throw new ApiClientException(result.Error.Message, result.Error.Exception);
+		if (result.IsErrored())
+			throw new ApiClientException(result.Error.Message, result.Error.Exception);
 
-			return result.Result;
-		}
-		catch (Exception e)
-		{
-			throw new ApiClientException($"Unexpected error occurred: {e.Message}", e);
-		}
+		return result.Result;
 	}
 
 	public async Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(SettingsPelotonPostRequest pelotonSettings)
 	{
-		try
-		{
-			var result = await _settingsUpdaterService.UpdatePelotonSettingsAsync(pelotonSettings);
+		var result = await _settingsUpdaterService.UpdatePelotonSettingsAsync(pelotonSettings);
 
-			if (result.IsErrored())
-				throw new ApiClientException(result.Error.Message, result.Error.Exception);
+		if (result.IsErrored())
+			throw new ApiClientException(result.Error.Message, result.Error.Exception);
 
-			return result.Result;
-		}
-		catch (Exception e)
-		{
-			throw new ApiClientException($"Unexpected error occurred: {e.Message}", e);
-		}
+		return result.Result;
 	}
 
 	public async Task<IFlurlResponse> SignInToGarminAsync()
@@ -317,7 +304,7 @@ public class ServiceClient : IApiClient
 		SyncResult syncResult = new();
 		try
 		{
-			syncResult = await _syncService.SyncAsync(syncPostRequest.WorkoutIds, exclude: null);
+			syncResult = await _syncService.SyncAsync(syncPostRequest.WorkoutIds, exclude: null, forceStackWorkouts: syncPostRequest.ForceStackWorkouts);
 		}
 		catch (Exception e)
 		{
@@ -351,6 +338,23 @@ public class ServiceClient : IApiClient
 				throw new ApiClientException(result.Error.Message, result.Error.Exception);
 
 			return result.Result;
+		}
+		catch (Exception e)
+		{
+			throw new ApiClientException($"Unexpected error occurred: {e.Message}", e);
+		}
+	}
+
+	public async Task<LogLevelPostResponse> LogLevelPostAsync(LogLevelPostRequest request)
+	{
+		try
+		{
+			var result = await _systemInfoService.SetLogLevelAsync(request);
+
+			if (result.IsErrored())
+				throw new ApiClientException(result.Error.Message, result.Error.Exception);
+
+			return new LogLevelPostResponse() { LogLevel = result.Result };
 		}
 		catch (Exception e)
 		{

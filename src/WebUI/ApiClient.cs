@@ -159,6 +159,22 @@ public class ApiClient : IApiClient
 		}
 	}
 
+	public async Task<LogLevelPostResponse> LogLevelPostAsync(LogLevelPostRequest request)
+	{
+		try
+		{
+			return await $"{_apiUrl}/api/systemInfo/logLevel"
+				.SetQueryParams(request)
+				.PostJsonAsync(request)
+				.ReceiveJson<LogLevelPostResponse>();
+		}
+		catch (FlurlHttpException e)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			throw new ApiClientException(error?.Message, e);
+		}
+	}
+
 	public async Task<PelotonWorkoutsGetAllResponse> PelotonWorkoutsGetAsync(PelotonWorkoutsGetAllRequest request)
 	{
 		try

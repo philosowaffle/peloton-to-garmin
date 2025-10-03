@@ -1,30 +1,28 @@
 [![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/philosowaffle) <span class="badge-buymeacoffee"><a href="https://www.buymeacoffee.com/philosowaffle" title="Donate to this project using Buy Me A Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee donate button" /></a></span>
 ---
 
-## Features
+> [!TIP]
+> You can find specific Upgrade Instructions by visitng the [Install Page](https://philosowaffle.github.io/peloton-to-garmin/latest/install/) for your particular flavor of P2G and looking for the section titled `⬆️ Updating`.
 
-- [#585] 
-    - Garmin Authentication now saves and refreshes tokens. Users using MFA will now only need provide their MFA code once.
-    - For those running via Docker, automatic syncing now works for MFA users after you have entered your code the first time.
+## Fixes
 
-## Misc
-
-- [#587] Dependency updates + switched to the official Garmin FIT SDK nuget package
+- [#779] Fix failed to deserialize error when there was a `null` accuracy value in the workout samples
 
 ## Docker Tags
 
 - Console
     - `console-stable`
     - `console-latest`
-    - `console-v4.3.0`
-    - `console-v4`
+    - `console-v5.0.2`
+    - `console-v5`
+
 - Api
     - `api-stable`
     - `api-latest`
-    - `api-v4.3.0`
-    - `api-v4`
+    - `api-v5.0.2`
+    - `api-v5`
 - WebUI
     - `webui-stable`
     - `webui-latest`
-    - `webui-v4.3.0`
-    - `webui-v4`
+    - `webui-v5.0.2`
+    - `webui-v5`

@@ -132,7 +132,7 @@ public class BackgroundSyncJob : BackgroundService
 
 		try
 		{
-			var result = await _syncService.SyncAsync(_config.Peloton.NumWorkoutsToDownload);
+			var result = await _syncService.SyncAsync(_config.Peloton.NumWorkoutsToDownload, forceStackClasses: false);
 			if (result.SyncSuccess)
 			{
 				Health.Set(HealthStatus.Healthy);
