@@ -8,12 +8,12 @@ on:
     inputs:
       workoutsToDownload:
         type: number
-        default: "5"
+        default: "10"
       saveLocalCopy:
         type: boolean
         default: false
   schedule:
-    - cron: '0 1 * * *'
+    - cron: '0 1,12,18 * * *'
 
 env:
   OUTPUT_DIR: /app/output
@@ -49,12 +49,13 @@ jobs:
             "IncludeTimeInHRZones": false,
             "IncludeTimeInPowerZones": false,
             "StackedWorkouts": {
-              "AutomaticallyStackWorkouts": false,
-              "MaxAllowedGapSeconds": 300
+              "AutomaticallyStackWorkouts": true,
+              "MaxAllowedGapSeconds": 600
             }
           },
           "Peloton": {
             "NumWorkoutsToDownload": ${{ github.event.inputs.workoutsToDownload || env.DEFAULT_WORKOUT_NUM }},
+                        "ExcludeWorkoutTypes": [ "meditation", "strength", "yoga", "outdoorrunning"],
           },
           "Garmin": {
             "Upload": true,
