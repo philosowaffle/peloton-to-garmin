@@ -17,6 +17,7 @@ The Peloton Settings provide settings related to how P2G should fetch workouts f
 "Peloton": {
     "Email": "peloton@gmail.com",
     "Password": "peloton",
+    "SessionId": "adsfd",
     "NumWorkoutsToDownload": 1,
     "ExcludeWorkoutTypes": [ "meditation" ]
   }
@@ -34,6 +35,7 @@ The Peloton Settings provide settings related to how P2G should fetch workouts f
 |:-----------|:---------|:--------|:------------|
 | Email | **yes** | `null` | Your Peloton email used to sign in |
 | Password | **yes** | `null` | Your Peloton password used to sign in. **Note: Does not support `\` character in password** |
+| SessionId | **no** | `null` | Your Peloton sessionId [Read more...](#peloton-session-id) |
 | NumWorkoutsToDownload | no | 5 | The default number of workouts to download. See [choosing number of workouts to download](#choosing-number-of-workouts-to-download).  Set this to `0` if you would like P2G to prompt you each time for a number to download. |
 | ExcludeWorkoutTypes | no | none | An array of workout types that you do not want P2G to download/convert/upload. [Read more...](#exclude-workout-types) |
 
@@ -53,3 +55,19 @@ Some example use cases include:
 1. You want to avoid double-counting activities you already track directly on a Garmin device, such as outdoor running workouts.
 
 The list of valid values are any [Exercise Type](exercise-types.md).
+
+## Peloton Session Id
+
+In the event P2G is not able to authenticate with Peloton, this configuration field can be used as a fallback option.
+
+By visiting the website, and logging in, you can grab your `peloton_session_id` out of the saved cookie.
+
+Saving the session id in the config file and restarting P2G will cause P2G to use that token for authentication, bypassing the need to "login".
+
+You will need to manually update this token every time it expires.  In order to stop using the token, simply delete `"SessionId": "..."` from your config file and restart P2G.
+
+!!! danger 
+    SessionId is like a password and should never be shared.
+    Github action users should set SessionId as a secret similar to how you configure Email and Password.
+
+!!! warning TODO: Better instructions and the ability to edit this from UI
