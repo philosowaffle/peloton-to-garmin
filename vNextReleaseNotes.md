@@ -6,23 +6,27 @@
 
 ## Fixes
 
-- [#779] Fix failed to deserialize error when there was a `null` accuracy value in the workout samples
+- [#795] Temporarily fixes Peloton API error
+
+## Features
+
+- [#795] Add ability to provide Peloton Session Id via config file (@eRaid6)
 
 ## Docker Tags
 
 - Console
     - `console-stable`
     - `console-latest`
-    - `console-v5.0.2`
+    - `console-v5.1.0`
     - `console-v5`
 
 - Api
     - `api-stable`
     - `api-latest`
-    - `api-v5.0.2`
+    - `api-v5.1.0`
     - `api-v5`
 - WebUI
     - `webui-stable`
     - `webui-latest`
-    - `webui-v5.0.2`
+    - `webui-v5.1.0`
     - `webui-v5`
