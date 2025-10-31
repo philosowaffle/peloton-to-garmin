@@ -942,6 +942,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#peloton-session-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      Peloton Session Id
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1336,6 +1345,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#peloton-session-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      Peloton Session Id
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1388,6 +1406,7 @@
 <div class="highlight"><pre><span></span><code><span class="nt">&quot;Peloton&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;Email&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;peloton@gmail.com&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;Password&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;peloton&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;SessionId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;adsfd&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;NumWorkoutsToDownload&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;ExcludeWorkoutTypes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&quot;meditation&quot;</span><span class="w"> </span><span class="p">]</span>
 <span class="w">  </span><span class="p">}</span>
@@ -1429,6 +1448,12 @@
 <td style="text-align: left;">Your Peloton password used to sign in. <strong>Note: Does not support <code>\</code> character in password</strong></td>
 </tr>
 <tr>
+<td style="text-align: left;">SessionId</td>
+<td style="text-align: left;"><strong>no</strong></td>
+<td style="text-align: left;"><code>null</code></td>
+<td style="text-align: left;">Your Peloton sessionId <a href="#peloton-session-id">Read more...</a></td>
+</tr>
+<tr>
 <td style="text-align: left;">NumWorkoutsToDownload</td>
 <td style="text-align: left;">no</td>
 <td style="text-align: left;">5</td>
@@ -1453,6 +1478,17 @@
 <li>You want to avoid double-counting activities you already track directly on a Garmin device, such as outdoor running workouts.</li>
 </ol>
 <p>The list of valid values are any <a href="../exercise-types/">Exercise Type</a>.</p>
+<h2 id="peloton-session-id">Peloton Session Id</h2>
+<p>In the event P2G is not able to authenticate with Peloton, this configuration field can be used as a fallback option.</p>
+<p>By visiting the website, and logging in, you can grab your <code>peloton_session_id</code> out of the saved cookie.</p>
+<p>Saving the session id in the config file and restarting P2G will cause P2G to use that token for authentication, bypassing the need to "login".</p>
+<p>You will need to manually update this token every time it expires.  In order to stop using the token, simply delete <code>"SessionId": "..."</code> from your config file and restart P2G.</p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>SessionId is like a password and should never be shared.
+Github action users should set SessionId as a secret similar to how you configure Email and Password.</p>
+</div>
+<p>!!! warning TODO: Better instructions and the ability to edit this from UI</p>
 
 
 
