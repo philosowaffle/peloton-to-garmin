@@ -30,7 +30,7 @@ namespace Peloton
 	{
 		private static readonly ILogger _logger = LogContext.ForClass<ApiClient>();
 		private static readonly string BaseUrl = "https://api.onepeloton.com/api";
-		private static readonly string AuthBaseUrl = "https://api.onepeloton.com/auth/login";
+		private static readonly string AuthBaseUrl = "https://api.onepeloton.com/auth/login?=";
 
 		private readonly ISettingsService _settingsService;
 
@@ -248,3 +248,4 @@ namespace Peloton
 		}
 	}
 }
+
