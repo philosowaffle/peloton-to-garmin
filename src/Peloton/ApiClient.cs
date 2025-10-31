@@ -20,7 +20,7 @@ namespace Peloton
 		Task<PelotonResponse<Workout>> GetWorkoutsAsync(DateTime fromUtc, DateTime toUtc);
 		Task<Workout> GetWorkoutByIdAsync(string id);
 		Task<WorkoutSamples> GetWorkoutSamplesByIdAsync(string id);
-		Task<UserData> GetUserDataAsync();
+		Task<UserData> GetUserDataAsync(string sessionId = null);
 		Task<PelotonChallenges> GetJoinedChallengesAsync(int userId);
 		Task<PelotonUserChallengeDetail> GetUserChallengeDetailsAsync(int userId, string challengeId);
 		Task<RideSegments> GetClassSegmentsAsync(string rideId);
@@ -44,6 +44,18 @@ namespace Peloton
 			var settings = await _settingsService.GetSettingsAsync();
 
 			settings.Peloton.EnsurePelotonCredentialsAreProvided();
+
+			if (!string.IsNullOrWhiteSpace(settings.Peloton.SessionId))
+            {
+				var userProvidedAuth = new PelotonApiAuthentication()
+				{
+					SessionId = settings.Peloton.SessionId
+				};
+
+				var userData = await GetUserDataAsync(userProvidedAuth.SessionId);
+				userProvidedAuth.UserId = userData.Id;
+				return userProvidedAuth;
+            }
 
 			var auth = _settingsService.GetPelotonApiAuthentication(settings.Peloton.Email);
 			if (auth is object && auth.IsValid(settings))
@@ -181,11 +193,11 @@ namespace Peloton
 				.GetStringAsync();
 		}
 
-		public async Task<UserData> GetUserDataAsync()
+		public async Task<UserData> GetUserDataAsync(string sessionId = null)
 		{
-			var auth = await GetAuthAsync();
+			var sid = sessionId ?? (await GetAuthAsync()).SessionId;
 			return await $"{BaseUrl}/me"
-			.WithCookie("peloton_session_id", auth.SessionId)
+			.WithCookie("peloton_session_id", sid)
 			.WithCommonHeaders()
 			.GetJsonAsync<UserData>();
 		}
