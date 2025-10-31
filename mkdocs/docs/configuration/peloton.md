@@ -64,4 +64,10 @@ By visiting the website, and logging in, you can grab your `peloton_session_id` 
 
 Saving the session id in the config file and restarting P2G will cause P2G to use that token for authentication, bypassing the need to "login".
 
+You will need to manually update this token every time it expires.  In order to stop using the token, simply delete `"SessionId": "..."` from your config file and restart P2G.
+
+!!! danger 
+    SessionId is like a password and should never be shared.
+    Github action users should set SessionId as a secret similar to how you configure Email and Password.
+
 !!! warning TODO: Better instructions and the ability to edit this from UI
