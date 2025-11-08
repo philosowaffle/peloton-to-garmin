@@ -6,7 +6,8 @@ namespace Common.Dto
 	public class P2GWorkout
 	{
 		public WorkoutType WorkoutType => GetWorkoutType();
-		public bool IsStackedWorkout { get; set; }
+		public bool IsStackedWorkout => StackedWorkouts.Count > 1;
+		public HashSet<P2GWorkout> StackedWorkouts { get; set; } = new HashSet<P2GWorkout>();
 
 		public UserData UserData { get; set; }
 		public Workout Workout { get; set; }

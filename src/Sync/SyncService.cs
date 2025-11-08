@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Dto;
+using Common.Dto.P2G;
 using Common.Dto.Peloton;
 using Common.Observe;
 using Common.Service;
@@ -34,10 +35,11 @@ namespace Sync
 		private readonly IGarminUploader _garminUploader;
 		private readonly IEnumerable<IConverter> _converters;
 		private readonly ISyncStatusDb _db;
+		private readonly IStackedWorkoutsDb _previouslyStackedWorkoutsDb;
 		private readonly IFileHandling _fileHandler;
 		private readonly ISettingsService _settingsService;
 
-		public SyncService(ISettingsService settingService, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, ISyncStatusDb dbClient, IFileHandling fileHandler)
+		public SyncService(ISettingsService settingService, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, ISyncStatusDb dbClient, IFileHandling fileHandler, IStackedWorkoutsDb syncHistoryDb)
 		{
 			_settingsService = settingService;
 			_pelotonService = pelotonService;
@@ -45,6 +47,7 @@ namespace Sync
 			_converters = converters;
 			_db = dbClient;
 			_fileHandler = fileHandler;
+			_previouslyStackedWorkoutsDb = syncHistoryDb;
 		}
 
 		public async Task<SyncResult> SyncAsync(int numWorkouts, bool forceStackClasses = false)
@@ -128,6 +131,14 @@ namespace Sync
 				stackedWorkouts = StackedWorkoutsCalculator.CombineStackedWorkouts(stacks);
 				_logger.Debug($"{filteredWorkoutsCount} workouts yielded {stacks.Count()} stacks.");
 			}
+
+			var previouslyStackedWorkouts = await _previouslyStackedWorkoutsDb.GetStackedWorkoutsRecords(1);
+			var finalWorkouts = stackedWorkouts.Where(s => forceStackClasses || s.IsStackComplete(previouslyStackedWorkouts));
+
+			// save the new stacks
+			var newStacks = finalWorkouts.CreateNewStacksIfNeeded(previouslyStackedWorkouts);
+			if (newStacks.Count > 0)
+				await _previouslyStackedWorkoutsDb.UpsertWorkoutStacksRecord(1, newStacks);
 
 			var convertStatuses = new List<ConvertStatus>();
 			try

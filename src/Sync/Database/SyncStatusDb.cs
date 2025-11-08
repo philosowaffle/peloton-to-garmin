@@ -33,8 +33,6 @@ namespace Sync.Database
 		{
 			try
 			{
-				var settings = _db.GetItem<SyncServiceStatus>("1");
-
 				if (_db.TryGetItem<SyncServiceStatus>(1, out var syncStatus))
 					return;
 
