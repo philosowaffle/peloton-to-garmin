@@ -8,6 +8,7 @@ namespace Common.Stateful
 		public string Password { get; set; }
 		public string UserId { get; set; }
 		public string SessionId { get; set; }
+		public string BearerToken { get; set; }
 
 		public bool IsValid(Settings settings)
 		{

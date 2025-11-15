@@ -146,6 +146,7 @@ public class PelotonSettings : ICredentials
 	public string Email { get; set; }
 	public string Password { get; set; }
 	public string SessionId { get; set; }
+	public string BearerToken { get; set; }
 	public int NumWorkoutsToDownload { get; set; }
 	public ICollection<WorkoutType> ExcludeWorkoutTypes { get; set; }
 }
