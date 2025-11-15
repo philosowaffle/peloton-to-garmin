@@ -20,7 +20,7 @@ namespace Peloton
 		Task<PelotonResponse<Workout>> GetWorkoutsAsync(DateTime fromUtc, DateTime toUtc);
 		Task<Workout> GetWorkoutByIdAsync(string id);
 		Task<WorkoutSamples> GetWorkoutSamplesByIdAsync(string id);
-		Task<UserData> GetUserDataAsync(string sessionId = null);
+		Task<UserData> GetUserDataAsync(string sessionId = null, string bearerToken = null);
 		Task<PelotonChallenges> GetJoinedChallengesAsync(int userId);
 		Task<PelotonUserChallengeDetail> GetUserChallengeDetailsAsync(int userId, string challengeId);
 		Task<RideSegments> GetClassSegmentsAsync(string rideId);
@@ -53,6 +53,18 @@ namespace Peloton
 				};
 
 				var userData = await GetUserDataAsync(userProvidedAuth.SessionId);
+				userProvidedAuth.UserId = userData.Id;
+				return userProvidedAuth;
+            }
+
+			if (!string.IsNullOrWhiteSpace(settings.Peloton.BearerToken))
+            {
+                var userProvidedAuth = new PelotonApiAuthentication()
+				{
+					BearerToken = settings.Peloton.BearerToken
+				};
+
+				var userData = await GetUserDataAsync(sessionId: "", bearerToken: userProvidedAuth.BearerToken);
 				userProvidedAuth.UserId = userData.Id;
 				return userProvidedAuth;
             }
@@ -103,6 +115,7 @@ namespace Peloton
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/user/{auth.UserId}/workouts"
 			.WithCookie("peloton_session_id", auth.SessionId)
+			.WithOAuthBearerToken(auth.BearerToken)
 			.WithCommonHeaders()
 			.SetQueryParams(new
 			{
@@ -119,6 +132,7 @@ namespace Peloton
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/user/{auth.UserId}/workouts"
 			.WithCookie("peloton_session_id", auth.SessionId)
+			.WithOAuthBearerToken(auth.BearerToken)
 			.WithCommonHeaders()
 			.SetQueryParams(new
 			{
@@ -138,6 +152,7 @@ namespace Peloton
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/user/{userId}/workouts"
 			.WithCookie("peloton_session_id", auth.SessionId)
+			.WithOAuthBearerToken(auth.BearerToken)
 			.WithCommonHeaders()
 			.SetQueryParams(new
 			{
@@ -157,6 +172,7 @@ namespace Peloton
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/workout/{id}"
 				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithOAuthBearerToken(auth.BearerToken)
 				.WithCommonHeaders()
 				.SetQueryParams(new
 				{
@@ -173,6 +189,7 @@ namespace Peloton
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/workout/{id}/performance_graph"
 				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithOAuthBearerToken(auth.BearerToken)
 				.WithCommonHeaders()
 				.SetQueryParams(new
 				{
@@ -189,15 +206,18 @@ namespace Peloton
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/ride/{rideId}/details"
 				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithOAuthBearerToken(auth.BearerToken)
 				.WithCommonHeaders()
 				.GetStringAsync();
 		}
 
-		public async Task<UserData> GetUserDataAsync(string sessionId = null)
+		public async Task<UserData> GetUserDataAsync(string sessionId = null, string bearerToken = null)
 		{
 			var sid = sessionId ?? (await GetAuthAsync()).SessionId;
+			var bearer = bearerToken ?? (await GetAuthAsync()).BearerToken;
 			return await $"{BaseUrl}/me"
 			.WithCookie("peloton_session_id", sid)
+			.WithOAuthBearerToken(bearer)
 			.WithCommonHeaders()
 			.GetJsonAsync<UserData>();
 		}
@@ -207,6 +227,7 @@ namespace Peloton
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/workout/{id}"
 				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithOAuthBearerToken(auth.BearerToken)
 				.WithCommonHeaders()
 				.SetQueryParams(new
 				{
@@ -220,6 +241,7 @@ namespace Peloton
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/workout/{id}/performance_graph"
 				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithOAuthBearerToken(auth.BearerToken)
 				.WithCommonHeaders()
 				.SetQueryParams(new
 				{
@@ -233,6 +255,7 @@ namespace Peloton
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/user/{auth.UserId}/challenges/current"
 				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithOAuthBearerToken(auth.BearerToken)
 				.WithCommonHeaders()
 				.SetQueryParams(new
 				{
@@ -246,6 +269,7 @@ namespace Peloton
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/user/{auth.UserId}/challenge/{challengeId}"
 				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithOAuthBearerToken(auth.BearerToken)
 				.WithCommonHeaders()
 				.GetJsonAsync<PelotonUserChallengeDetail>();
 		}
@@ -255,6 +279,7 @@ namespace Peloton
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/ride/{rideId}/details"
 				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithOAuthBearerToken(auth.BearerToken)
 				.WithCommonHeaders()
 				.GetJsonAsync<RideSegments>();
 		}
