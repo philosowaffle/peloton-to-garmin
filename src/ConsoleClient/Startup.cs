@@ -162,7 +162,16 @@ namespace ConsoleClient
 					var now = DateTime.UtcNow;
 					var nextRunTime = now.AddSeconds(settings.App.PollingIntervalSeconds);
 					NextSyncTime.Set(new DateTimeOffset(nextRunTime).ToUnixTimeSeconds());
-					Thread.Sleep(settings.App.PollingIntervalSeconds * 1000);
+					
+					try
+					{
+						await Task.Delay(settings.App.PollingIntervalSeconds * 1000, cancelToken);
+					}
+					catch (OperationCanceledException)
+					{
+						_logger.Information("Shutdown requested. Exiting gracefully...");
+						return;
+					}
 				}
 			}
 			catch (Exception ex)
