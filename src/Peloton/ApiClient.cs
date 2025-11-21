@@ -5,6 +5,7 @@ using Common.Stateful;
 using Flurl.Http;
 using Newtonsoft.Json.Linq;
 using Peloton.AnnualChallenge;
+using Peloton.Auth;
 using Peloton.Dto;
 using Serilog;
 using System;
@@ -33,10 +34,12 @@ namespace Peloton
 		private static readonly string AuthBaseUrl = "https://api.onepeloton.com/auth/login?=";
 
 		private readonly ISettingsService _settingsService;
+		private readonly IPelotonOAuthService _oauthService;
 
-		public ApiClient(ISettingsService settingsService)
+		public ApiClient(ISettingsService settingsService, IPelotonOAuthService oauthService = null)
 		{
 			_settingsService = settingsService;
+			_oauthService = oauthService ?? new PelotonOAuthService(settingsService);
 		}
 
 		public async Task<PelotonApiAuthentication> GetAuthAsync(string overrideUserAgent = null)

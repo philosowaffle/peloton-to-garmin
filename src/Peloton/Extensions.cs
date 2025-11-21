@@ -8,6 +8,10 @@ public static class Extensions
 {
 	public static void EnsurePelotonCredentialsAreProvided(this PelotonSettings settings)
 	{
+		// Allow bearer token or session ID as alternatives to email/password
+		if (!string.IsNullOrWhiteSpace(settings.BearerToken) || !string.IsNullOrWhiteSpace(settings.SessionId))
+			return;
+
 		if (string.IsNullOrEmpty(settings.Email))
 			throw new ArgumentException("Peloton Email must be set.", nameof(settings.Email));
 

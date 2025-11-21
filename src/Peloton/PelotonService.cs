@@ -59,6 +59,10 @@ namespace Peloton
 
 		public static void ValidateConfig(PelotonSettings config)
 		{
+			// Allow bearer token or session ID as alternatives to email/password
+			if (!string.IsNullOrWhiteSpace(config.BearerToken) || !string.IsNullOrWhiteSpace(config.SessionId))
+				return;
+
 			if (string.IsNullOrEmpty(config.Email))
 			{
 				_logger.Error("Peloton Email required, check your configuration {@ConfigSection}.{@ConfigProperty} is set.", nameof(Peloton), nameof(config.Email));
