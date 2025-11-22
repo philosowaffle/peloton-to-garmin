@@ -4,76 +4,103 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
+using Common.Dto;
+using Common.Dto.Peloton;
+using Common.Observe;
+using Common.Service;
+using Common.Stateful;
 using Flurl;
 using Flurl.Http;
 using HtmlAgilityPack;
+using Peloton.Dto;
+using Serilog;
 
 namespace Peloton.Auth;
+
+public interface IPelotonAuthApiClient
+{
+    Task<PelotonApiAuthentication> Authenticate();
+}
+
 public class PelotonAuthApiClient
 {
-    private const string DefaultBaseUrl = "https://api.onepeloton.com/";
-    private const string AuthDomain = "auth.onepeloton.com";
+    private static readonly ILogger _logger = LogContext.ForClass<PelotonAuthApiClient>();
 
-    // from browser: "q6lqsS8VoP0OzCNJ5PmbglDGkOD7NxxV";
-    private const string AuthClientId =  "WVoJxVDdPoFx4RNewvvg6ch2mZ7bwnsM";
-    private const string AuthAudience = "https://api.onepeloton.com/";
-    private const string AuthScope = "offline_access openid peloton-api.members:default";
-    private const string AuthRedirectUri = "https://members.onepeloton.com/callback";
-    private const string AuthMembersOrigin = "https://members.onepeloton.com";
-    private const string Auth0ClientPayload = "eyJuYW1lIjoiYXV0aDAtc3BhLWpzIiwidmVyc2lvbiI6IjIuMS4zIn0=";
-    private const string AuthAuthorizePath = "/authorize";
-    private const string AuthTokenPath = "/oauth/token";
-    private const int AuthRedirectLogLimit = 5000;
+    private readonly ISettingsService _settingsService;
 
-    private readonly string _baseUrl;
-    private readonly string _username;
-    private readonly string _password;
-    private CookieJar _cookieContainer;
-    private string _bearer;
-
-    public PelotonAuthApiClient(string username, string password)
+    public PelotonAuthApiClient(ISettingsService settingsService)
     {
-        _baseUrl = DefaultBaseUrl;
-        _username = username ?? throw new ArgumentNullException(nameof(username));
-        _password = password ?? throw new ArgumentNullException(nameof(password));
-        _cookieContainer = new CookieJar();
+        _settingsService = settingsService;
     }
 
-    public async Task LoginWithOAuthAsync()
+    public async Task<PelotonApiAuthentication> Authenticate()
     {
-        var config = GenerateOAuthConfig();
-        var token = await PerformOAuthLoginAsync(config);
-        _bearer = token;
+        var settings = (await _settingsService.GetSettingsAsync()).Peloton;
+        settings.EnsurePelotonCredentialsAreProvided();
+
+        try
+        {
+            // If the user hard coded their Bearer token
+            // then use that
+            if (!string.IsNullOrWhiteSpace(settings.BearerToken))           
+                return await ConstructAndSaveAuth(settings, settings.BearerToken);
+
+            // If we have an existing valid auth token
+            // then reuse it
+            var existingAuthentication = _settingsService.GetPelotonApiAuthentication(settings.Email);
+            if (existingAuthentication is object && existingAuthentication.IsValid(settings))
+                return existingAuthentication;
+
+            // If we have a refresh token then
+            // use that
+            if (existingAuthentication is object && !string.IsNullOrWhiteSpace(existingAuthentication.Token?.RefreshToken))
+                return await ConstructAndSaveAuth(settings, await RefreshOAuthToken(settings.Api, existingAuthentication.Token));
+
+            // Finally, do full login flow
+            return await ConstructAndSaveAuth(settings, await LoginWithOAuthAsync(settings));
+        }
+        catch (FlurlHttpException fe) when (fe.StatusCode == (int)HttpStatusCode.Unauthorized)
+        {
+            _logger.Error(fe, $"Failed to authenticate with Peloton.");
+            _settingsService.ClearPelotonApiAuthentication(settings.Email);
+            throw new PelotonAuthenticationError("Failed to authenticate with Peloton. Please confirm your Peloton Email and Password are correct.", fe);
+        }
+        catch (Exception e)
+        {
+            _logger.Fatal(e, $"Failed to authenticate with Peloton.");
+            _settingsService.ClearPelotonApiAuthentication(settings.Email);
+            throw;
+        } 
     }
 
-    public async Task<Dictionary<string, object>> GetMyInfoAsync()
+    private async Task<Token> LoginWithOAuthAsync(PelotonSettings settings)
     {
-        if (string.IsNullOrEmpty(_bearer))
-            throw new InvalidOperationException("Not authenticated. Call LoginWithOAuthAsync first.");
-
-        var response = await $"{_baseUrl}api/me"
-            .WithHeader("Accept", "application/json")
-            .WithHeader("Authorization", $"Bearer {_bearer}")
-            //.WithCookies(_cookieContainer)
-            .GetJsonAsync<Dictionary<string, object>>();
-
-        return response;
+        var config = GenerateOAuthConfig(settings.Api);
+        return await PerformOAuthLoginAsync(config, settings);
     }
 
-    private async Task<string> PerformOAuthLoginAsync(OAuthConfig config)
+    private async Task<Token> RefreshOAuthToken(PelotonApiSettings settings, Token currentToken)
     {
-        if (string.IsNullOrEmpty(_username) || string.IsNullOrEmpty(_password))
-            throw new InvalidOperationException("Missing credentials");
+        return await (await $"https://{settings.AuthDomain}{settings.AuthTokenPath}"
+            .WithHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
+            .PostUrlEncodedAsync(new
+            {
+                grant_type = "refresh_token",
+                client_id = settings.AuthClientId,
+                refresh_token = currentToken.RefreshToken
+            })).GetJsonAsync<Token>();
+    }
 
-        var authorizeUrl = BuildAuthorizeUrl(config);
+    private async Task<Token> PerformOAuthLoginAsync(OAuthConfig config, PelotonSettings pelotonSettings)
+    {
+        var authorizeUrl = BuildAuthorizeUrl(config, pelotonSettings.Api);
         var session = await InitiateAuthFlowAsync(authorizeUrl, config);
         
         if (!string.IsNullOrEmpty(session.State))
             config.State = session.State;
 
-        var nextUrl = await SubmitCredentialsAsync(session, config);
+        var nextUrl = await SubmitCredentialsAsync(session, config, pelotonSettings);
         var code = await FollowAuthorizationRedirectsAsync(nextUrl, config);
         var token = await ExchangeCodeForTokenAsync(code, config);
 
@@ -86,7 +113,7 @@ public class PelotonAuthApiClient
 
         var response = await authorizeUrl
             .WithAutoRedirect(true)
-            .WithCookies(out _cookieContainer)
+            .WithCookies(config.CookieJar)
             .WithAutoRedirect(true)
             .OnRedirect(call =>
             {
@@ -114,7 +141,7 @@ public class PelotonAuthApiClient
 
         // Extract CSRF token from cookies
         var authUrl = $"https://{config.AuthDomain}";
-        var csrfCookie = _cookieContainer.FirstOrDefault(c => c.OriginUrl.Root == authUrl
+        var csrfCookie = config.CookieJar.FirstOrDefault(c => c.OriginUrl.Root == authUrl
                                                         && c.Path == "/usernamepassword/login"
                                                         && c.Name == "_csrf");
 
@@ -129,7 +156,7 @@ public class PelotonAuthApiClient
         };
     }
 
-    private async Task<string> SubmitCredentialsAsync(AuthSession session, OAuthConfig config)
+    private async Task<string> SubmitCredentialsAsync(AuthSession session, OAuthConfig config, PelotonSettings pelotonSettings)
     {
         var payload = new Dictionary<string, string>
         {
@@ -143,8 +170,8 @@ public class PelotonAuthApiClient
             ["state"] = session.State,
             ["_intstate"] = "deprecated",
             ["nonce"] = config.Nonce,
-            ["username"] = _username,
-            ["password"] = _password,
+            ["username"] = pelotonSettings.Email,
+            ["password"] = pelotonSettings.Password,
             ["connection"] = "pelo-user-password",
             ["code_challenge"] = config.CodeChallenge,
             ["code_challenge_method"] = config.CodeChallengeMethod
@@ -153,12 +180,12 @@ public class PelotonAuthApiClient
         var loginEndpoint = $"https://{config.AuthDomain}/usernamepassword/login";
         
         var response = await loginEndpoint
-            .WithCookies(_cookieContainer)
+            .WithCookies(config.CookieJar)
             .WithHeader("Content-Type", "application/json")
             .WithHeader("Accept", "*/*")
             .WithHeader("Origin", $"https://{config.AuthDomain}")
             .WithHeader("Referer", session.LoginUrl)
-            .WithHeader("Auth0-Client", Auth0ClientPayload)
+            .WithHeader("Auth0-Client", pelotonSettings.Api.Auth0ClientPayload)
             .WithAutoRedirect(false)
             .AllowAnyHttpStatus()
             .PostJsonAsync(payload);
@@ -173,30 +200,30 @@ public class PelotonAuthApiClient
         var bodyText = await response.GetStringAsync();
         var (actionNext, hiddenFields) = ParseHiddenForm(bodyText);
 
-        return await SubmitHiddenFormAsync(actionNext, hiddenFields);
+        return await SubmitHiddenFormAsync(actionNext, hiddenFields, config);
     }
 
-    private async Task<string> SubmitHiddenFormAsync(string action, Dictionary<string, string> fields)
+    private async Task<string> SubmitHiddenFormAsync(string action, Dictionary<string, string> fields, OAuthConfig config)
     {
         var actionUrl = action;
         if (!actionUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
         {
-            actionUrl = EnsureAbsoluteUrl(AuthDomain, action);
+            actionUrl = EnsureAbsoluteUrl(config.AuthDomain, action);
         }
 
         var response = await actionUrl
-            .WithCookies(_cookieContainer)
+            .WithCookies(config.CookieJar)
             .WithHeader("Content-Type", "application/x-www-form-urlencoded")
             .WithHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
             .WithHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0")
-            .WithAutoRedirect(false)
+            .WithAutoRedirect(true)
             .AllowAnyHttpStatus()
             .PostUrlEncodedAsync(fields);
 
         var location = response.Headers.FirstOrDefault("Location");
         if (!string.IsNullOrEmpty(location))
         {
-            return EnsureAbsoluteUrl(AuthDomain, location);
+            return EnsureAbsoluteUrl(config.AuthDomain, location);
         }
 
         return response.ResponseMessage.RequestMessage?.RequestUri?.ToString() ?? actionUrl;
@@ -209,13 +236,13 @@ public class PelotonAuthApiClient
         string state = null;
 
         var response = await startUrl
-            .WithCookies(_cookieContainer)
+            .WithCookies(config.CookieJar)
             .WithAutoRedirect(true)
             .OnRedirect(call =>
             {
                 var redirectUrl = new Url(call.Redirect.Url);
                 var codeParam = redirectUrl.QueryParams.FirstOrDefault(q => q.Name == "code").Value?.ToString();
-                
+
                 if (!string.IsNullOrEmpty(codeParam))
                 {
                     callbackUrl = call.Redirect.Url;
@@ -259,9 +286,9 @@ public class PelotonAuthApiClient
         return code;
     }
 
-    private async Task<string> ExchangeCodeForTokenAsync(string code, OAuthConfig config)
+    private async Task<Token> ExchangeCodeForTokenAsync(string code, OAuthConfig config)
     {
-        var endpoint = $"https://{config.AuthDomain}{AuthTokenPath}";
+        var endpoint = $"https://{config.AuthDomain}{config.AuthTokenPath}";
         var payload = new Dictionary<string, string>
         {
             ["grant_type"] = "authorization_code",
@@ -272,7 +299,7 @@ public class PelotonAuthApiClient
         };
 
         var response = await endpoint
-            .WithCookies(_cookieContainer)
+            .WithCookies(config.CookieJar)
             .WithHeader("Content-Type", "application/json")
             .WithHeader("Accept", "application/json")
             .AllowAnyHttpStatus()
@@ -282,18 +309,18 @@ public class PelotonAuthApiClient
         {
             var errorBody = await response.GetStringAsync();
             throw new InvalidOperationException(
-                $"Token exchange failed: {Truncate(errorBody, AuthRedirectLogLimit)}");
+                $"Token exchange failed: {Truncate(errorBody, 500)}");
         }
 
-        var tokenResponse = await response.GetJsonAsync<TokenResponse>();
+        var tokenResponse = await response.GetJsonAsync<Token>();
         
         if (string.IsNullOrEmpty(tokenResponse.AccessToken))
             throw new InvalidOperationException("Token exchange response missing access token");
 
-        return tokenResponse.AccessToken;
+        return tokenResponse;
     }
 
-    private static OAuthConfig GenerateOAuthConfig()
+    private static OAuthConfig GenerateOAuthConfig(PelotonApiSettings pelotonApiSettings)
     {
         var verifier = GenerateRandomString(64);
         var challenge = GenerateCodeChallenge(verifier);
@@ -302,16 +329,17 @@ public class PelotonAuthApiClient
 
         return new OAuthConfig
         {
-            ClientId = AuthClientId,
+            ClientId = pelotonApiSettings.AuthClientId,
             CodeVerifier = verifier,
             CodeChallenge = challenge,
             CodeChallengeMethod = "S256",
             State = state,
             Nonce = nonce,
-            RedirectUri = AuthRedirectUri,
-            Audience = AuthAudience,
-            Scope = AuthScope,
-            AuthDomain = AuthDomain
+            RedirectUri = pelotonApiSettings.AuthRedirectUri,
+            Audience = pelotonApiSettings.AuthAudience,
+            Scope = pelotonApiSettings.AuthScope,
+            AuthDomain = pelotonApiSettings.AuthDomain,
+            AuthTokenPath = pelotonApiSettings.AuthTokenPath
         };
     }
 
@@ -335,9 +363,9 @@ public class PelotonAuthApiClient
         }
     }
 
-    private static string BuildAuthorizeUrl(OAuthConfig config)
+    private static string BuildAuthorizeUrl(OAuthConfig config, PelotonApiSettings apiSettings)
     {
-        return $"https://{config.AuthDomain}{AuthAuthorizePath}"
+        return $"https://{config.AuthDomain}{apiSettings.AuthAuthorizePath}"
             .SetQueryParam("client_id", config.ClientId)
             .SetQueryParam("audience", config.Audience)
             .SetQueryParam("scope", config.Scope)
@@ -348,7 +376,7 @@ public class PelotonAuthApiClient
             .SetQueryParam("nonce", config.Nonce)
             .SetQueryParam("code_challenge", config.CodeChallenge)
             .SetQueryParam("code_challenge_method", config.CodeChallengeMethod)
-            .SetQueryParam("auth0Client", Auth0ClientPayload);
+            .SetQueryParam("auth0Client", apiSettings.Auth0ClientPayload);
     }
 
     private static (string action, Dictionary<string, string> fields) ParseHiddenForm(string html)
@@ -375,7 +403,8 @@ public class PelotonAuthApiClient
                 var value = input.GetAttributeValue("value", "");
                 if (!string.IsNullOrEmpty(name))
                 {
-                    fields[name] = value;
+                    // Decode HTML entities (e.g., &#34; -> ")
+                    fields[name] = System.Net.WebUtility.HtmlDecode(value);
                 }
             }
         }
@@ -398,6 +427,42 @@ public class PelotonAuthApiClient
         return text.Substring(0, maxLength);
     }
 
+    private async Task<PelotonApiAuthentication> ConstructAndSaveAuth(PelotonSettings settings, Token bearerToken)
+    {
+        var auth = new PelotonApiAuthentication()
+        {
+            Email = settings.Email,
+            Password = settings.Password,
+            Token = bearerToken,
+            UserId = await GetUserId(bearerToken.AccessToken, settings.Api),
+            ExpiresAt = DateTime.UtcNow.AddHours(bearerToken.ExpiresIn),
+        };
+        _settingsService.SetPelotonApiAuthentication(auth);
+        return auth;
+    }
+
+    private async Task<PelotonApiAuthentication> ConstructAndSaveAuth(PelotonSettings settings, string bearerToken)
+    {
+        var auth = new PelotonApiAuthentication()
+        {
+            Email = settings.Email,
+            Password = settings.Password,
+            Token = new() { AccessToken = bearerToken },
+            UserId = await GetUserId(bearerToken, settings.Api),
+            ExpiresAt = DateTime.UtcNow.AddHours(settings.Api.BearerTokenDefaultTtlSeconds),
+        };
+        _settingsService.SetPelotonApiAuthentication(auth);
+        return auth;
+    }
+
+    private async Task<string> GetUserId(string bearerToken, PelotonApiSettings settings)
+    {
+        return (await $"{settings.ApiUrl}api/me"
+                            .WithOAuthBearerToken(bearerToken)
+                            .WithCommonHeaders()
+                            .GetJsonAsync<UserData>()).Id;
+    } 
+
     private class OAuthConfig
     {
         public string ClientId { get; set; }
@@ -410,6 +475,8 @@ public class PelotonAuthApiClient
         public string Audience { get; set; }
         public string Scope { get; set; }
         public string AuthDomain { get; set; }
+        public string AuthTokenPath { get; set; }
+        public CookieJar CookieJar { get; set; } = new CookieJar();
     }
 
     private class AuthSession
@@ -417,11 +484,5 @@ public class PelotonAuthApiClient
         public string LoginUrl { get; set; }
         public string State { get; set; }
         public string CsrfToken { get; set; }
-    }
-
-    private class TokenResponse
-    {
-        [System.Text.Json.Serialization.JsonPropertyName("access_token")]
-        public string AccessToken { get; set; }
     }
 }      

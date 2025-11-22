@@ -6,23 +6,23 @@
 
 ## Features
 
-- [#795] Add ability to provide Peloton Bearer Token via config file (@eRaid6)
+- [#795] Full solution for new Peloton Authentication Issues - special thanks to (@danieljmt)
 
 ## Docker Tags
 
 - Console
     - `console-stable`
     - `console-latest`
-    - `console-v5.2.0`
-    - `console-v5`
+    - `console-v6.0.0`
+    - `console-v6`
 
 - Api
     - `api-stable`
     - `api-latest`
-    - `api-v5.2.0`
-    - `api-v5`
+    - `api-v6.0.0`
+    - `api-v6`
 - WebUI
     - `webui-stable`
     - `webui-latest`
-    - `webui-v5.2.0`
-    - `webui-v5`
+    - `webui-v6.0.0`
+    - `webui-v6`

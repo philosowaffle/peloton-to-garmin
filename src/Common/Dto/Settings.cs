@@ -1,5 +1,6 @@
 ﻿using Common.Dto.Garmin;
 using Common.Stateful;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json.Serialization;
@@ -149,6 +150,21 @@ public class PelotonSettings : ICredentials
 	public string BearerToken { get; set; }
 	public int NumWorkoutsToDownload { get; set; }
 	public ICollection<WorkoutType> ExcludeWorkoutTypes { get; set; }
+	public PelotonApiSettings Api { get; set; } = new PelotonApiSettings();
+}
+
+public class PelotonApiSettings
+{
+	public string ApiUrl { get; set; } = "https://api.onepeloton.com/";
+	public string AuthDomain { get; set; } = "auth.onepeloton.com";
+    public string AuthClientId { get; set; } =  "WVoJxVDdPoFx4RNewvvg6ch2mZ7bwnsM";
+    public string AuthAudience { get; set; } = "https://api.onepeloton.com/";
+    public string AuthScope { get; set; } = "offline_access openid peloton-api.members:default";
+    public string AuthRedirectUri { get; set; } = "https://members.onepeloton.com/callback";
+    public string Auth0ClientPayload { get; set; } = "eyJuYW1lIjoiYXV0aDAuanMtdWxwIiwidmVyc2lvbiI6IjkuMTQuMyJ9";
+    public string AuthAuthorizePath { get; set; } = "/authorize";
+    public string AuthTokenPath { get; set; } = "/oauth/token";
+	public int BearerTokenDefaultTtlSeconds { get; set; } = 172800;
 }
 
 public class GarminSettings : ICredentials
