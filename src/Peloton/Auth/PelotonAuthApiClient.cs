@@ -449,7 +449,7 @@ public class PelotonAuthApiClient
             Password = settings.Password,
             Token = new() { AccessToken = bearerToken },
             UserId = await GetUserId(bearerToken, settings.Api),
-            ExpiresAt = DateTime.UtcNow.AddHours(settings.Api.BearerTokenDefaultTtlSeconds),
+            ExpiresAt = DateTime.UtcNow.AddHours(settings.Api.BearerTokenDefaultTtlSeconds).AddHours(-1), // refresh early
         };
         _settingsService.SetPelotonApiAuthentication(auth);
         return auth;
