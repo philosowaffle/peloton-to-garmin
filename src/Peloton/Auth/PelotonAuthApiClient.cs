@@ -23,7 +23,7 @@ public interface IPelotonAuthApiClient
     Task<PelotonApiAuthentication> Authenticate();
 }
 
-public class PelotonAuthApiClient
+public class PelotonAuthApiClient : IPelotonAuthApiClient
 {
     private static readonly ILogger _logger = LogContext.ForClass<PelotonAuthApiClient>();
 
