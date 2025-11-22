@@ -1056,17 +1056,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#peloton-session-id" class="md-nav__link">
+  <a href="#advanced-api-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Peloton Session Id
+        Advanced API Configuration
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="Advanced API Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#peloton-bearer-token" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1074,6 +1075,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1540,17 +1546,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#peloton-session-id" class="md-nav__link">
+  <a href="#advanced-api-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Peloton Session Id
+        Advanced API Configuration
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="Advanced API Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#peloton-bearer-token" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1558,6 +1565,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1680,7 +1692,6 @@
 <div class="highlight"><pre><span></span><code><span class="nt">&quot;Peloton&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;Email&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;peloton@gmail.com&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;Password&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;peloton&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;SessionId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;adsfd&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;NumWorkoutsToDownload&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;ExcludeWorkoutTypes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&quot;meditation&quot;</span><span class="w"> </span><span class="p">]</span>
 <span class="w">  </span><span class="p">}</span>
@@ -1722,18 +1733,6 @@
 <td style="text-align: left;">Your Peloton password used to sign in. <strong>Note: Does not support <code>\</code> character in password</strong></td>
 </tr>
 <tr>
-<td style="text-align: left;">SessionId</td>
-<td style="text-align: left;"><strong>no</strong></td>
-<td style="text-align: left;"><code>null</code></td>
-<td style="text-align: left;">Your Peloton sessionId <a href="#peloton-session-id">Read more...</a></td>
-</tr>
-<tr>
-<td style="text-align: left;">BearerToken</td>
-<td style="text-align: left;"><strong>no</strong></td>
-<td style="text-align: left;"><code>null</code></td>
-<td style="text-align: left;">Your Peloton API Bearer Token (excluding the word <code>Bearer</code>) <a href="#peloton-bearer-token">Read more...</a></td>
-</tr>
-<tr>
 <td style="text-align: left;">NumWorkoutsToDownload</td>
 <td style="text-align: left;">no</td>
 <td style="text-align: left;">5</td>
@@ -1744,6 +1743,12 @@
 <td style="text-align: left;">no</td>
 <td style="text-align: left;">none</td>
 <td style="text-align: left;">An array of workout types that you do not want P2G to download/convert/upload. <a href="#exclude-workout-types">Read more...</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Advanced Config</td>
+<td style="text-align: left;"><strong>no</strong></td>
+<td style="text-align: left;">N/A</td>
+<td style="text-align: left;"><a href="#advanced-api-configuration">Read more...</a></td>
 </tr>
 </tbody>
 </table>
@@ -1758,29 +1763,30 @@
 <li>You want to avoid double-counting activities you already track directly on a Garmin device, such as outdoor running workouts.</li>
 </ol>
 <p>The list of valid values are any <a href="../exercise-types/">Exercise Type</a>.</p>
-<h2 id="peloton-session-id">Peloton Session Id</h2>
-<p>In the event P2G is not able to authenticate with Peloton, this configuration field can be used as a fallback option.</p>
-<p>By visiting the website, and logging in, you can grab your <code>peloton_session_id</code> out of the saved cookie.</p>
-<p>Saving the session id in the config file and restarting P2G will cause P2G to use that token for authentication, bypassing the need to "login".</p>
-<p>You will need to manually update this token every time it expires.  In order to stop using the token, simply delete <code>"SessionId": "..."</code> from your config file and restart P2G.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Windows users, your config file is found in <code>&lt;Your P2G Folder&gt;/data/SettingsDb.json</code>.  Quit P2G, edit this file, then start P2G again.</p>
-</div>
-<div class="admonition danger">
-<p class="admonition-title">Danger</p>
-<p>SessionId is like a password and should never be shared.
-Github action users should set SessionId as a secret similar to how you configure Email and Password.</p>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>TODO: Better instructions and the ability to edit this from UI</p>
-</div>
-<h2 id="peloton-bearer-token">Peloton Bearer Token</h2>
-<p>In the event P2G is not able to authenticate with Peloton, this configuration field can be used as a fallback option.  If you use this option, you DO NOT need to set <code>Session Id</code>, consider this mutually exclusive with <code>Session Id</code> authentication.</p>
-<p>By visiting the website, and logging in, you can find your Bearer token by inspecting the Network traffic.  Quick, not great instructions on how to do that:</p>
+<h2 id="advanced-api-configuration">Advanced API Configuration</h2>
+<p>In general you should not need to modify these settings unless specifically recommended to do so.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Peloton&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="err">...Exis</span><span class="kc">t</span><span class="err">i</span><span class="kc">n</span><span class="err">g</span><span class="w"> </span><span class="err">co</span><span class="kc">nf</span><span class="err">ig</span><span class="w"> </span><span class="err">op</span><span class="kc">t</span><span class="err">io</span><span class="kc">ns</span><span class="err">...</span>
+<span class="w">    </span><span class="nt">&quot;BearerToken&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;Api&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;ApiUrl&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://api.onepeloton.com/&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;AuthDomain&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;auth.onepeloton.com&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;AuthClientId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;WVoJxVDdPoFx4RNewvvg6ch2mZ7bwnsM&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;AuthAudience&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://api.onepeloton.com/&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;AuthScope&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;offline_access openid peloton-api.members:default&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;AuthRedirectUri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://members.onepeloton.com/callback&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Auth0ClientPayload&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;eyJuYW1lIjoiYXV0aDAuanMtdWxwIiwidmVyc2lvbiI6IjkuMTQuMyJ9&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;AuthAuthorizePath&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/authorize&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;AuthTokenPath&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/oauth/token&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;BearerTokenDefaultTtlSeconds&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">172800</span><span class="p">,</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+</code></pre></div>
+<h3 id="peloton-bearer-token">Peloton Bearer Token</h3>
+<p>In the event P2G is not able to authenticate with Peloton, this configuration field can be used as a fallback option.  If you set this option then P2G will bypass authenticating with Peloton and use the provided BearerToken to authenticate requests.</p>
+<p>Quick, not great instructions on how to locate a Bearer Token:</p>
 <ol>
-<li>Got to Peloton and login</li>
+<li>Go to Peloton website and login</li>
 <li>Hit F12 on your keyboard, this should open the Developer Console</li>
 <li>Look for a Network tab</li>
 <li>Refresh the web page, this should cause new traffic to populate in the Network tab</li>
@@ -1791,10 +1797,10 @@ Github action users should set SessionId as a secret similar to how you configur
 <li>Save that copied text into your P2G config</li>
 </ol>
 <p>Saving the Bearer Token in the config file and restarting P2G will cause P2G to use that token for authentication, bypassing the need to "login".</p>
-<p>You will need to manually update this token every time it expires.  In order to stop using the token, simply delete <code>"BearerToken": "..."</code> from your config file and restart P2G.</p>
+<p>You will need to manually update this token every time it expires which will be roughly every 48hrs.  In order to stop using the token, simply delete <code>"BearerToken": "..."</code> from your config file and restart P2G.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Windows users, your config file is found in <code>&lt;Your P2G Folder&gt;/data/SettingsDb.json</code>.  Quit P2G, edit this file, then start P2G again.</p>
+<p>Windows users and Web UI users, your config file is found in <code>&lt;Your P2G Folder&gt;/data/SettingsDb.json</code>.  Quit P2G, edit this file, then start P2G again.</p>
 </div>
 <div class="admonition danger">
 <p class="admonition-title">Danger</p>
