@@ -10,6 +10,7 @@ using ConsoleClient;
 using System;
 using System.IO;
 using Sync;
+using Sync.Merge;
 using Serilog;
 using Serilog.Enrichers.Span;
 using Microsoft.Extensions.DependencyInjection;
@@ -99,6 +100,30 @@ static IHostBuilder CreateHostBuilder(string[] args)
 			// SYNC
 			services.AddSingleton<ISyncStatusDb, SyncStatusDb>();
 			services.AddSingleton<ISyncService, SyncService>();
+
+			// MERGE
+			services.AddSingleton<MergeEngine>(sp =>
+			{
+				var settingsService = sp.GetRequiredService<ISettingsService>();
+				var settings = settingsService.GetSettingsAsync().GetAwaiter().GetResult();
+				
+				var mergeOpts = MergeOptions.FromSettings(settings.Merge ?? new MergeSettings());
+				
+				var dataDir = settings.App.DataDirectory;
+				var mergedDir = Path.Combine(dataDir, "merged");
+				
+				// Ensure merged directory exists
+				if (!Directory.Exists(mergedDir))
+					Directory.CreateDirectory(mergedDir);
+				
+				return new MergeEngine(
+					mergeOpts,
+					sp.GetRequiredService<IPelotonService>(),
+					sp.GetRequiredService<IGarminApiClient>(),
+					sp.GetRequiredService<IGarminAuthenticationService>(),
+					mergedDir
+				);
+			});
 
 			// CONVERT
 			services.AddSingleton<IConverter, FitConverter>();

@@ -17,12 +17,14 @@ public class Settings
 		Format = new ();
 		Peloton = new ();
 		Garmin = new ();
+		Merge = new ();
 	}
 
 	public App App { get; set; }
 	public Format Format { get; set; }
 	public PelotonSettings Peloton { get; set; }
 	public GarminSettings Garmin { get; set; }
+	public MergeSettings Merge { get; set; }
 }
 
 public class App
@@ -188,4 +190,16 @@ public enum FileFormat : byte
 	Fit = 0,
 	Tcx = 1,
 	Json = 2
+}
+
+public class MergeSettings
+{
+	public bool Enabled { get; set; } = false;
+	public int MatchTimeWindowSeconds { get; set; } = 300;
+	public double MatchDurationDiffPct { get; set; } = 0.15;
+	public double MatchScoreThreshold { get; set; } = 0.50;
+	public bool AutoApproveEnabled { get; set; } = true;
+	public double AutoApproveScoreThreshold { get; set; } = 0.75;
+	public int InterpolationResolutionSeconds { get; set; } = 1;
+}
 }

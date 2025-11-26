@@ -1,0 +1,46 @@
+@page "/merge"
+@inject HttpClient Http
+
+<h1>Merge Dashboard</h1>
+<div>
+  <input @bind="pelotonId" placeholder="Peloton workout id" />
+  <button @onclick="Preview">Preview</button>
+</div>
+@if (preview != null)
+{
+  <div class="card">
+    <h3>Preview for @preview.PelotonId</h3>
+    <p>Candidate Garmin Id: @preview.GarminActivityId</p>
+    <p>Score: @preview.Score</p>
+    <p>AutoApproved: @preview.AutoApproved</p>
+    <button @onclick="Approve">Approve & Upload</button>
+  </div>
+}
+
+@code {
+  private string pelotonId;
+  private dynamic preview;
+
+  private async Task Preview()
+  {
+    preview = null;
+    var resp = await Http.PostAsync($"/api/merge/preview/{pelotonId}", null);
+    if (resp.IsSuccessStatusCode)
+    {
+      preview = await resp.Content.ReadFromJsonAsync<dynamic>();
+      if (preview != null && preview.result != null) preview = preview.result;
+    }
+    else
+    {
+      var txt = await resp.Content.ReadAsStringAsync();
+      preview = new { PelotonId = pelotonId, Error = txt };
+    }
+  }
+
+  private async Task Approve()
+  {
+    if (preview == null) return;
+    var payload = System.Text.Json.JsonSerializer.Serialize(preview);
+    var resp = await Http.PostAsync("/api/merge/approve", new StringContent(payload, System.Text.Encoding.UTF8, "application/json"));
+  }
+}

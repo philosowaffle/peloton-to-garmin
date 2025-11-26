@@ -33,6 +33,16 @@
     "FormatToUpload": "fit"
   },
 
+  "Merge": {
+    "Enabled": false,
+    "MatchTimeWindowSeconds": 300,
+    "MatchDurationDiffPct": 0.15,
+    "MatchScoreThreshold": 0.50,
+    "AutoApproveEnabled": true,
+    "AutoApproveScoreThreshold": 0.75,
+    "InterpolationResolutionSeconds": 1
+  },
+
   "Observability": {
 
     "Prometheus": {

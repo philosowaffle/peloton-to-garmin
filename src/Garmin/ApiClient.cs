@@ -22,6 +22,8 @@ namespace Garmin
 		Task<OAuth2Token> GetOAuth2TokenAsync(OAuth1Token oAuth1Token, ConsumerCredentials credentials);
 		Task<ConsumerCredentials> GetConsumerCredentialsAsync();
 		Task<UploadResponse> UploadActivity(string filePath, string format, GarminApiAuthentication auth);
+		Task<System.Collections.Generic.List<GarminActivity>> GetRecentActivitiesAsync(int limit, GarminApiAuthentication auth);
+		Task<string> GetActivityTcxAsync(long activityId, GarminApiAuthentication auth);
 	}
 
 	public class ApiClient : IGarminApiClient
@@ -172,6 +174,48 @@ namespace Garmin
 			}
 
 			return response;
+		}
+
+		public async Task<System.Collections.Generic.List<GarminActivity>> GetRecentActivitiesAsync(int limit, GarminApiAuthentication auth)
+		{
+			var settings = await _settingsService.GetSettingsAsync();
+
+			try
+			{
+				var activities = await $"https://connectapi.garmin.com/activitylist-service/activities/search/activities?limit={limit}"
+					.WithOAuthBearerToken(auth.OAuth2Token.Access_Token)
+					.WithHeader("User-Agent", settings.Garmin.Api.SsoUserAgent)
+					.WithHeader("NK", "NT")
+					.GetJsonAsync<System.Collections.Generic.List<GarminActivity>>();
+
+				return activities ?? new System.Collections.Generic.List<GarminActivity>();
+			}
+			catch (Exception e)
+			{
+				_logger.Error("Failed to get recent activities from Garmin: {error}", e.Message);
+				return new System.Collections.Generic.List<GarminActivity>();
+			}
+		}
+
+		public async Task<string> GetActivityTcxAsync(long activityId, GarminApiAuthentication auth)
+		{
+			var settings = await _settingsService.GetSettingsAsync();
+
+			try
+			{
+				var tcx = await $"https://connectapi.garmin.com/download-service/export/tcx/activity/{activityId}"
+					.WithOAuthBearerToken(auth.OAuth2Token.Access_Token)
+					.WithHeader("User-Agent", settings.Garmin.Api.SsoUserAgent)
+					.WithHeader("NK", "NT")
+					.GetStringAsync();
+
+				return tcx;
+			}
+			catch (Exception e)
+			{
+				_logger.Error("Failed to download TCX for activity {activityId}: {error}", activityId, e.Message);
+				return null;
+			}
 		}
 	}
 }

@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PelotonToGarmin.Sync.Merge;
 
 namespace Sync
 {
@@ -36,8 +37,9 @@ namespace Sync
 		private readonly ISyncStatusDb _db;
 		private readonly IFileHandling _fileHandler;
 		private readonly ISettingsService _settingsService;
+		private readonly MergeEngine _mergeEngine;
 
-		public SyncService(ISettingsService settingService, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, ISyncStatusDb dbClient, IFileHandling fileHandler)
+		public SyncService(ISettingsService settingService, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, ISyncStatusDb dbClient, IFileHandling fileHandler, MergeEngine mergeEngine = null)
 		{
 			_settingsService = settingService;
 			_pelotonService = pelotonService;
@@ -45,6 +47,7 @@ namespace Sync
 			_converters = converters;
 			_db = dbClient;
 			_fileHandler = fileHandler;
+			_mergeEngine = mergeEngine;
 		}
 
 		public async Task<SyncResult> SyncAsync(int numWorkouts, bool forceStackClasses = false)
@@ -223,6 +226,46 @@ namespace Sync
 				_fileHandler.Cleanup(settings.App.DownloadDirectory);
 				_fileHandler.Cleanup(settings.App.UploadDirectory);
 				_fileHandler.Cleanup(settings.App.WorkingDirectory);
+			}
+
+			// Merge with existing Garmin workouts if enabled
+			if (settings.Merge.Enabled && _mergeEngine != null)
+			{
+				_logger.Information("Merge is enabled. Processing {count} workouts for merge with existing Garmin data.", stackedWorkouts.Count());
+				
+				foreach (var workout in stackedWorkouts)
+				{
+					try
+					{
+						var mergeResult = await _mergeEngine.PreviewMergeAsync(workout.Workout.Id);
+						
+						if (mergeResult.Score >= settings.Merge.MatchScoreThreshold)
+						{
+							_logger.Information("Found matching Garmin workout for Peloton workout {pelotonId}. Score: {score}, Garmin ID: {garminId}", 
+								workout.Workout.Id, mergeResult.Score, mergeResult.GarminActivityId);
+
+							if (mergeResult.AutoApproved)
+							{
+								_logger.Information("Auto-approving merge for Peloton workout {pelotonId}", workout.Workout.Id);
+								await _mergeEngine.ApproveAndUploadAsync(mergeResult);
+							}
+							else
+							{
+								_logger.Information("Merge candidate found but not auto-approved. Manual review required for Peloton workout {pelotonId}", workout.Workout.Id);
+							}
+						}
+						else
+						{
+							_logger.Debug("No suitable Garmin match found for Peloton workout {pelotonId}. Score: {score}", 
+								workout.Workout.Id, mergeResult.Score);
+						}
+					}
+					catch (Exception ex)
+					{
+						_logger.Warning(ex, "Failed to merge workout {pelotonId}. Continuing with remaining workouts.", workout.Workout.Id);
+						// Don't fail the entire sync if merge fails
+					}
+				}
 			}
 
 			response.SyncSuccess = true;

@@ -53,6 +53,10 @@ builder.Services.ConfigureP2GApiServices();
 
 ObservabilityStartup.ConfigureApi(builder.Services, builder.Configuration, config);
 Common.Observe.Metrics.CreateAppInfo();
+builder.Services.AddSingleton<IMergeEngine, MergeEngine>();
+builder.Services.AddSingleton<IMergeScoreCalculator, DefaultMergeScoreCalculator>();
+builder.Services.Configure<MergeSettings>(
+	builder.Configuration.GetSection("MergeSettings"));
 
 ///////////////////////////////////////////////////////////
 /// APP
