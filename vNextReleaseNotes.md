@@ -4,29 +4,25 @@
 > [!TIP]
 > You can find specific Upgrade Instructions by visitng the [Install Page](https://philosowaffle.github.io/peloton-to-garmin/latest/install/) for your particular flavor of P2G and looking for the section titled `⬆️ Updating`.
 
-## Fixes
-
-- [#795] Temporarily fixes Peloton API error
-
 ## Features
 
-- [#795] Add ability to provide Peloton Session Id via config file (@eRaid6)
+- [#795] Full solution for new Peloton Authentication Issues - special thanks to (@danieljmt)
 
 ## Docker Tags
 
 - Console
     - `console-stable`
     - `console-latest`
-    - `console-v5.1.0`
-    - `console-v5`
+    - `console-v6.0.0`
+    - `console-v6`
 
 - Api
     - `api-stable`
     - `api-latest`
-    - `api-v5.1.0`
-    - `api-v5`
+    - `api-v6.0.0`
+    - `api-v6`
 - WebUI
     - `webui-stable`
     - `webui-latest`
-    - `webui-v5.1.0`
-    - `webui-v5`
+    - `webui-v6.0.0`
+    - `webui-v6`

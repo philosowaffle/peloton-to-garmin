@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Flurl.Http" Version="4.0.2" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
   </ItemGroup>
 
   <ItemGroup>
