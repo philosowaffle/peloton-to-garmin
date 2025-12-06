@@ -4,7 +4,7 @@
 
 1. [I'm using the Web UI](#web-ui-configuration)
 1. [I'm using the Windows GUI](#windows-ui-configuration)
-1. [I'm using GitHub Actions](#config-file)
+1. [I'm using GitHub Actions](#github-actions)
 1. [I'm running Headless/Console Application](#config-file)
 
 ## Web UI Configuration
@@ -20,6 +20,14 @@ The most common settings can be configured via the UI itself.  Additional lower 
     1. [Api Configuration](api.md)
     1. [Web UI Configuration](webui.md)
 
+### Advanced
+
+All of your settings and data are stored in the docker mounted `data/` directory.  More specifically there is a file called `SettingsDb.json`.
+
+Deleting this directory will reset all of your settings back to default.
+
+Generally you should never edit this file by hand, however it is an option in case of emergency.
+
 ## Windows UI Configuration
 
 The most common settings can be configured via the UI itself.
@@ -29,6 +37,21 @@ The most common settings can be configured via the UI itself.
     1. [Conversion Settings](format.md)
     1. [Peloton Settings](peloton.md)
     1. [Garmin Settings](garmin.md)
+
+### Advanced
+
+All of your settings and data are stored in the `data/` directory.  More specifically there is a file called `SettingsDb.json`.
+
+Deleting this directory will reset all of your settings back to default.
+
+Generally you should never edit this file by hand, however it is an option in case of emergency.
+
+!!! tip Launch P2G
+    This directory is created the first time you run P2G, so you must run the application atleast once to see this directory.
+
+## GitHub Actions
+
+All of your settings and data are managed directly in the `./github/workflows/sync_peloton_to_garmin.yml` [file itself](https://github.com/philosowaffle/peloton-to-garmin/blob/master/.github/workflows/sync_peloton_to_garmin.yml#L38).
 
 ## Config File
 
