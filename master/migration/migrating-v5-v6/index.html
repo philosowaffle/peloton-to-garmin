@@ -12,13 +12,9 @@
         <meta name="author" content="philosowaffle">
       
       
-        <link rel="canonical" href="https://philosowaffle.github.io/peloton-to-garmin/master/migration/migrations/">
+        <link rel="canonical" href="https://philosowaffle.github.io/peloton-to-garmin/master/migration/migrating-v5-v6/">
       
       
-        <link rel="prev" href="../../faq/">
-      
-      
-        <link rel="next" href="../../contributing/">
       
       
         
@@ -29,7 +25,7 @@
     
     
       
-        <title>Migration - Peloton To Garmin</title>
+        <title>Migrating from V5 to V6 - Peloton To Garmin</title>
       
     
     
@@ -78,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#migrating-from-older-p2g-versions" class="md-skip">
+        <a href="#migrating-from-v5-to-v6" class="md-skip">
           Skip to content
         </a>
       
@@ -115,7 +111,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Migration
+              Migrating from V5 to V6
             
           </span>
         </div>
@@ -280,12 +276,10 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
+      <li class="md-tabs__item">
         <a href="../../help/" class="md-tabs__link">
           
   
@@ -1152,10 +1146,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -1171,20 +1163,17 @@
     
     
       
-        
-        
-      
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -1202,7 +1191,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1273,19 +1262,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../migrations/" class="md-nav__link">
         
   
   
@@ -1301,7 +1281,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -1362,6 +1341,53 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breaking Changes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Breaking Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sessionid-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SessionId Removed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-peloton-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Peloton Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1378,46 +1404,6 @@
   
 
 
-  <nav class="md-path" aria-label="Navigation" >
-    <ol class="md-path__list">
-      
-        
-  
-  
-    <li class="md-path__item">
-      <a href="../.." class="md-path__link">
-        
-  <span class="md-ellipsis">
-    Home
-  </span>
-
-      </a>
-    </li>
-  
-
-      
-      
-        
-  
-  
-    
-    
-      <li class="md-path__item">
-        <a href="../../help/" class="md-path__link">
-          
-  <span class="md-ellipsis">
-    Help
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-      
-    </ol>
-  </nav>
-
               
               <article class="md-content__inner md-typeset">
                 
@@ -1428,15 +1414,46 @@
   
 
 
-<h1 id="migrating-from-older-p2g-versions">Migrating from older P2G Versions</h1>
-<p>P2G uses major release versions to designate when a breaking or non-backwards compatible change has been made. For this reason, when moving between major versions there may be some one time steps that need to be followed.</p>
-<ol>
-<li><a href="../migrate-v1-v2/">Migrating from V1 to V2</a></li>
-<li><a href="../migrate-v2-v3/">Migrating from V2 to V3</a></li>
-<li><a href="../migrate-v3-v4/">Migrating from V3 to V4</a></li>
-<li><a href="../migrate-v4-v5/">Migrating from V4 to V5</a></li>
-<li><a href="migrate-v5-v6.md">Migrating from V5 to V6</a></li>
-</ol>
+<h1 id="migrating-from-v5-to-v6">Migrating from V5 to V6</h1>
+<p>Version 6 introduces a new way of authenticating with Peloton and removes a few different capabilities that were added while investigating solutions.</p>
+<p>First, identify your <a href="../../install/#-start-here-to-explore-install-options">install method</a>.  Then, use the table below to determine if you need to take any special action.  A ✔️ means there is something for you to do.  Follow the hyperlink to see what steps to take.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Breaking Change</th>
+<th style="text-align: left;">Build From Source</th>
+<th style="text-align: left;">Docker Headless</th>
+<th style="text-align: left;">Docker WebUI</th>
+<th style="text-align: left;">GitHubAction</th>
+<th style="text-align: left;">Windows Exe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="#sessionid-removed">SessionId Removed</a></td>
+<td style="text-align: left;">✔️</td>
+<td style="text-align: left;">✔️</td>
+<td style="text-align: left;">✔️</td>
+<td style="text-align: left;">✔️</td>
+<td style="text-align: left;">✔️</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#new-peloton-authentication">New Peloton Authentication</a></td>
+<td style="text-align: left;">✔️</td>
+<td style="text-align: left;">✔️</td>
+<td style="text-align: left;">✔️</td>
+<td style="text-align: left;">❌</td>
+<td style="text-align: left;">✔️</td>
+</tr>
+</tbody>
+</table>
+<h2 id="breaking-changes">Breaking Changes</h2>
+<h3 id="sessionid-removed">SessionId Removed</h3>
+<p>While investigating a solution for the <a href="https://github.com/philosowaffle/peloton-to-garmin/issues/795">Peloton Auth Errors</a> a temporary solution was introduced that allowed  you to <a href="https://philosowaffle.github.io/peloton-to-garmin/v5.1.0/configuration/peloton/#peloton-session-id">authenticate via SessionId</a>.  This option stopped working somewhere along the way and is officially removed in v6.</p>
+<p>If you edited your configuration or settings to specify SessionId, you may delete it entirely.</p>
+<h3 id="new-peloton-authentication">New Peloton Authentication</h3>
+<p>Some users have reported needing to delete their <code>data/</code> directory before this new authentication scheme would work.  I'm not exactly sure why that is, it wasn't intentional, but worth noting.  This is inconvenient as it will require you to re-configure all of your settings again after the fact.  So if possible, see if P2G works first without deleting anything, if not, then try deleting the <code>data/</code> directory.</p>
+<p>To locate your configuration/settings/data start <a href="../../configuration/">here</a>.</p>
 
 
 

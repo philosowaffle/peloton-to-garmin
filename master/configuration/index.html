@@ -1378,6 +1378,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Web UI Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#advanced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1385,6 +1402,34 @@
     <span class="md-ellipsis">
       
         Windows UI Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Windows UI Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#advanced_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#github-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GitHub Actions
       
     </span>
   </a>
@@ -1575,7 +1620,7 @@
 <ol>
 <li><a href="#web-ui-configuration">I'm using the Web UI</a></li>
 <li><a href="#windows-ui-configuration">I'm using the Windows GUI</a></li>
-<li><a href="#config-file">I'm using GitHub Actions</a></li>
+<li><a href="#github-actions">I'm using GitHub Actions</a></li>
 <li><a href="#config-file">I'm running Headless/Console Application</a></li>
 </ol>
 <h2 id="web-ui-configuration">Web UI Configuration</h2>
@@ -1594,6 +1639,10 @@
 </ol>
 </li>
 </ol>
+<h3 id="advanced">Advanced</h3>
+<p>All of your settings and data are stored in the docker mounted <code>data/</code> directory.  More specifically there is a file called <code>SettingsDb.json</code>.</p>
+<p>Deleting this directory will reset all of your settings back to default.</p>
+<p>Generally you should never edit this file by hand, however it is an option in case of emergency.</p>
 <h2 id="windows-ui-configuration">Windows UI Configuration</h2>
 <p>The most common settings can be configured via the UI itself.</p>
 <ol>
@@ -1605,6 +1654,16 @@
 </ol>
 </li>
 </ol>
+<h3 id="advanced_1">Advanced</h3>
+<p>All of your settings and data are stored in the <code>data/</code> directory.  More specifically there is a file called <code>SettingsDb.json</code>.</p>
+<p>Deleting this directory will reset all of your settings back to default.</p>
+<p>Generally you should never edit this file by hand, however it is an option in case of emergency.</p>
+<div class="admonition tip launch p2g">
+<p class="admonition-title">Tip</p>
+<p>This directory is created the first time you run P2G, so you must run the application atleast once to see this directory.</p>
+</div>
+<h2 id="github-actions">GitHub Actions</h2>
+<p>All of your settings and data are managed directly in the <code>./github/workflows/sync_peloton_to_garmin.yml</code> <a href="https://github.com/philosowaffle/peloton-to-garmin/blob/master/.github/workflows/sync_peloton_to_garmin.yml#L38">file itself</a>.</p>
 <h2 id="config-file">Config File</h2>
 <p>When using a flavor of P2G that does not provide a user interface, all settings are provided via a JSON config file.</p>
 <p>P2G looks for a file named <code>configuration.local.json</code> in the same directory where it is run to load its settings.</p>
