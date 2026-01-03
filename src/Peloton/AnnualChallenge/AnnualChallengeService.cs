@@ -12,7 +12,7 @@ public interface IAnnualChallengeService
 
 public class AnnualChallengeService : IAnnualChallengeService
 {
-	private const string AnnualChallengeId = "fa65351309d6476a8aadcc53902d78ec";
+	private const string AnnualChallengeId = "67bfab351b6f4e239ed17aadf28c006e";
 
 	private IPelotonApi _pelotonApi;
 
