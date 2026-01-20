@@ -9,6 +9,7 @@
 		public const string WebUIName = "p2g_webui";
 		public const string ClientUIName = "p2g_clientui";
 
-		public const string AppVersion = "6.0.0";
+		public const string AppVersion = "6.0.1";
 	}
 }
+
