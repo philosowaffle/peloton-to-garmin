@@ -6,10 +6,7 @@
 
 ## Features
 
-> [!CAUTION]
-> Please see the [Migration Guide](https://philosowaffle.github.io/peloton-to-garmin/v6.0.0/migration/migrate-v5-v6/) for specific instructions on how to address these breaking changes.
-
-- [#795] Full solution for new Peloton Authentication Issues - special thanks to (@danieljmt)
+- [#813] Update annual challenge for 2026 (@run1206)
 
 ## Docker Tags
 
@@ -29,3 +26,4 @@
     - `webui-latest`
     - `webui-v6.0.0`
     - `webui-v6`
+
