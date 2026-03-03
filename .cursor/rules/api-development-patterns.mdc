@@ -1,0 +1,63 @@
+---
+description: When working with API controllers
+alwaysApply: false
+---
+# API Development Patterns
+
+## REST API Development Guidelines
+
+When working with API controllers, follow the established patterns documented in the knowledge base:
+
+### API Structure (from [.ai/knowledge-base/02-api-reference.md](mdc:.ai/knowledge-base/02-api-reference.md)):
+- **Base URL**: `http://localhost:8080` (configurable via `Api.HostUrl`)
+- **Content-Type**: `application/json`
+- **No Authentication**: Currently for local deployment only
+
+### Existing Controllers:
+- **SyncController** (`/api/sync`) - Workout synchronization operations
+- **SettingsController** (`/api/settings`) - Application configuration
+- **SystemInfoController** (`/api/systeminfo`) - System information
+- **GarminAuthenticationController** (`/api/garmin/auth`) - Garmin authentication
+- **PelotonWorkoutsController** (`/api/peloton/workouts`) - Peloton workout data
+- **PelotonAnnualChallengeController** (`/api/peloton/challenges`) - Challenge data
+
+### Response Patterns:
+```csharp
+// Success response
+return Ok(new { isSuccess = true, data = result });
+
+// Error response
+return BadRequest(new { 
+    error = new { 
+        code = "VALIDATION_ERROR", 
+        message = "Error description",
+        details = new[] { "Specific error details" }
+    }
+});
+```
+
+### HTTP Status Code Usage:
+- **200 OK** - Successful operation
+- **400 Bad Request** - Invalid request parameters
+- **401 Unauthorized** - Authentication required
+- **404 Not Found** - Resource not found
+- **500 Internal Server Error** - Server error
+
+### Validation Patterns:
+- Use model validation attributes
+- Return specific error messages
+- Validate business rules in service layer
+- Use `ServiceResult<T>` pattern for service responses
+
+### Dependency Injection:
+- Inject services through constructor
+- Use interfaces for testability
+- Follow established service registration patterns in [src/ConsoleClient/Program.cs](mdc:src/ConsoleClient/Program.cs)
+
+### Testing Considerations:
+- Create integration tests for new endpoints
+- Mock external dependencies
+- Test error scenarios and edge cases
+- Verify response schemas match documentation
+
+Ensure API changes are documented in [.ai/knowledge-base/02-api-reference.md](mdc:.ai/knowledge-base/02-api-reference.md).

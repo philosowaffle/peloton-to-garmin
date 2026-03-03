@@ -9,6 +9,14 @@ public record ProgressGetResponse
 
 	public double EarnedMinutes { get; init; }
 	public ICollection<Tier> Tiers { get; init; }
+	/// <summary>
+	/// The average pace achieved so far in terms of minutes/day.
+	/// </summary>
+	public double CurrentDailyPace { get; set; }
+	/// <summary>
+	/// The average pace achieved so far in terms of minutes/week.
+	/// </summary>
+	public double CurrentWeeklyPace { get; set; }
 }
 
 public record Tier

@@ -11,7 +11,11 @@
     "Tcx": false,
     "SaveLocalCopy": true,
     "IncludeTimeInHRZones": false,
-    "IncludeTimeInPowerZones": false
+    "IncludeTimeInPowerZones": false,
+    "StackedWorkouts": {
+      "AutomaticallyStackWorkouts": false,
+      "MaxAllowedGapSeconds": 300
+    }
   },
 
   "Peloton": {

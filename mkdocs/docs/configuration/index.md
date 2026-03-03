@@ -1,15 +1,15 @@
 # Configuration
 
-## How are you running P2G?
+## 👋 How are you running P2G?
 
 1. [I'm using the Web UI](#web-ui-configuration)
 1. [I'm using the Windows GUI](#windows-ui-configuration)
-1. [I'm using GitHub Actions](#config-file)
-1. [I'm running Headless](#config-file)
+1. [I'm using GitHub Actions](#github-actions)
+1. [I'm running Headless/Console Application](#config-file)
 
 ## Web UI Configuration
 
-Most of the most common settings can be configured via the UI itself.  Additional lower level settings can be provided via config file.
+The most common settings can be configured via the UI itself.  Additional lower level settings can be provided via config file.
 
 1. Settings
     1. [App Settings](app.md)
@@ -20,9 +20,17 @@ Most of the most common settings can be configured via the UI itself.  Additiona
     1. [Api Configuration](api.md)
     1. [Web UI Configuration](webui.md)
 
+### Advanced
+
+All of your settings and data are stored in the docker mounted `data/` directory.  More specifically there is a file called `SettingsDb.json`.
+
+Deleting this directory will reset all of your settings back to default.
+
+Generally you should never edit this file by hand, however it is an option in case of emergency.
+
 ## Windows UI Configuration
 
-Most of the most common settings can be configured via the UI itself.
+The most common settings can be configured via the UI itself.
 
 1. Settings
     1. [App Settings](app.md)
@@ -30,13 +38,28 @@ Most of the most common settings can be configured via the UI itself.
     1. [Peloton Settings](peloton.md)
     1. [Garmin Settings](garmin.md)
 
+### Advanced
+
+All of your settings and data are stored in the `data/` directory.  More specifically there is a file called `SettingsDb.json`.
+
+Deleting this directory will reset all of your settings back to default.
+
+Generally you should never edit this file by hand, however it is an option in case of emergency.
+
+!!! tip Launch P2G
+    This directory is created the first time you run P2G, so you must run the application atleast once to see this directory.
+
+## GitHub Actions
+
+All of your settings and data are managed directly in the `./github/workflows/sync_peloton_to_garmin.yml` [file itself](https://github.com/philosowaffle/peloton-to-garmin/blob/master/.github/workflows/sync_peloton_to_garmin.yml#L38).
+
 ## Config File
 
 When using a flavor of P2G that does not provide a user interface, all settings are provided via a JSON config file.
 
 P2G looks for a file named `configuration.local.json` in the same directory where it is run to load its settings.
 
-The structure of this file is as follows:
+The structure of this file is as follows. Click the `+` to explore the details of each section.
 
 ```json
 {
@@ -55,6 +78,7 @@ The structure of this file is as follows:
 5. Go to [Observability Settings Documentation](observability.md)
 
 !!! tip
+
     P2G provides an [example config](https://github.com/philosowaffle/peloton-to-garmin/blob/master/configuration.example.json) to get you started.
 
 ## Additional Configuration Options
@@ -67,6 +91,10 @@ P2G supports configuration via
 1. [via the user interface](#windows-ui-configuration)
 
 By default, P2G looks for a file named `configuration.local.json` in the same directory where it is run.
+
+!!! tip
+
+    You can override where the config Directory is mounted in the docker container by setting the environment vairable `P2G_CONFIG_DIRECTORY`.  P2G will expect to find a `configuration.local.json` file in the specified directory.
 
 ### Config Precedence
 
@@ -121,3 +149,10 @@ For nested config sections, continue to use the same naming convention of defini
 ```bash
 P2G_OBSERVABILITY__SERILOG__WRITETO__0__NAME="File"
 ```
+#### Additional Environment Variables
+
+In addition to overriding config values, the following extra environment variables are also supported.
+
+| ENV Variable | Required | Default | Description | 
+|:-------------|:---------|:--------|:--------------------------|
+| `P2G_CONFIG_DIRECTORY` | false | P2G Directory | Tells P2G where to look for the `configuration.local.json` file |

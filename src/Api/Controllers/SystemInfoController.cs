@@ -2,6 +2,7 @@
 using Api.Services;
 using Api.Service.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using Common.Observe;
 
 namespace WebApp.Controllers
 {
@@ -46,6 +47,28 @@ namespace WebApp.Controllers
 				return Ok(result.Result);
 
 			} catch (Exception e)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));
+			}
+		}
+
+		[HttpPost]
+		[Route("logLevel")]
+		[ProducesResponseType(StatusCodes.Status201Created)]
+		[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
+		public async Task<ActionResult<LogLevelPostResponse>> LogLevelPostAsync(LogLevelPostRequest request)
+		{
+			try
+			{
+				var result = await _systemInfoService.SetLogLevelAsync(request);
+
+				if (result.IsErrored())
+					return result.GetResultForError();
+
+				return Created("/systeminfo", new LogLevelPostResponse() { LogLevel = result.Result });
+
+			}
+			catch (Exception e)
 			{
 				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));
 			}

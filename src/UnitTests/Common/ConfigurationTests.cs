@@ -36,7 +36,6 @@ namespace UnitTests.Common
 			config.Format.SaveLocalCopy.Should().BeFalse();
 			config.Format.IncludeTimeInHRZones.Should().BeFalse();
 			config.Format.IncludeTimeInPowerZones.Should().BeFalse();
-			config.Format.DeviceInfoPath.Should().BeNullOrEmpty();
 
 			config.Format.Cycling.PreferredLapType.Should().Be(PreferredLapType.Default);
 			config.Format.Running.PreferredLapType.Should().Be(PreferredLapType.Default);

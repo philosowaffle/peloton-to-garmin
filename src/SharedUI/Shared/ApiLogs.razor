@@ -1,0 +1,123 @@
+﻿@using Serilog.Events
+@inherits TracingComponentBase
+@inject IApiClient _apiClient
+@inject IHxMessengerService _toaster;
+@inject IJSRuntime JS
+
+<h3>Api Logs</h3>
+<EditForm Model="@currentLogLevel">
+    <div class="row">
+        <div class="col-4">
+            <HxSelect Data="AvailableLogLevels"
+            @bind-Value="currentLogLevel"
+            TextSelector="(w) => w.ToString()"
+            SortKeySelector="(l) => (int)l">
+                <InputGroupStartTemplate>
+                    <div class="input-group-text">
+                        Log Level
+                        <HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+                        Title="<b>Log Level</b>"
+                        Content="@LogLevelDocumentation"
+                        Html="true">
+                            <HxIcon Icon="@BootstrapIcon.QuestionCircle" style="padding:.5em" />
+                        </HxPopover>
+                    </div>
+                </InputGroupStartTemplate>
+            </HxSelect>
+        </div>
+        <div class="col-3">
+            <HxSubmit Color="ThemeColor.Primary" OnClick="UpdateLogLevel">Update</HxSubmit>
+        </div>
+        <div class="col-3">
+        </div>
+    </div>
+</EditForm>
+
+<br />
+
+<div class="row mb-12">
+    <HxCard CssClass="mb-12 bg-dark text-white">
+        <HeaderTemplate>
+            <div class="row">
+                <div class="col-11"></div>
+                <div class="col-1" style="text-align:end;">
+                    <HxButton Icon="@BootstrapIcon.Copy" CssClass="text-white" OnClick="CopyTextToClipboard" style="font-size:1.5em;"></HxButton>
+                </div>
+            </div>
+        </HeaderTemplate>
+        <BodyTemplate>
+            <pre style="white-space:pre-wrap;">
+                @logs.LogText
+            </pre>
+        </BodyTemplate>
+    </HxCard>
+</div>
+
+@code {
+    private SystemInfoLogsGetResponse logs = new();
+
+    private ICollection<LogEventLevel> AvailableLogLevels = Enum.GetValues(typeof(LogEventLevel)).Cast<LogEventLevel>().ToList();
+    private LogEventLevel currentLogLevel;
+
+    private string configDocumentation = string.Empty;
+
+    public ApiLogs() : base(nameof(ApiLogs))
+    {
+        logs = new SystemInfoLogsGetResponse();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var tracing = Tracing.ClientTrace($"{nameof(ApiLogs)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
+
+        logs = await _apiClient.SystemInfoGetLogsAsync();
+        var systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = false });
+
+        currentLogLevel = systemInfo.CurrentLogLevel;
+        configDocumentation = systemInfo.Documentation + "/configuration/observability/#serilog-config";
+    }
+
+    protected async Task UpdateLogLevel()
+    {
+        using var tracing = Tracing.ClientTrace($"{nameof(ApiLogs)}.{nameof(UpdateLogLevel)}", kind: ActivityKind.Client);
+        _toaster.Clear();
+
+        try
+        {
+            var response = await _apiClient.LogLevelPostAsync(new LogLevelPostRequest() { LogLevel = currentLogLevel });
+            currentLogLevel = response.LogLevel;
+
+            _toaster.AddInformation("Log Level Updated!");
+        }
+        catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+        {
+            var error = await e.GetResponseJsonAsync<ErrorResponse>();
+            _toaster.AddError(error.Message);
+        }
+        catch (Exception e)
+        {
+            _toaster.AddError($"Failed to update Log Level - {e.Message} - See logs for details.");
+            Log.Error("UI - Failed to update Log Level.", e);
+        }
+    }
+
+    protected async Task CopyTextToClipboard()
+    {
+        using var tracing = Tracing.ClientTrace($"{nameof(ApiLogs)}.{nameof(CopyTextToClipboard)}", kind: ActivityKind.Client);
+        _toaster.Clear();
+
+        try
+        {
+            await JS.InvokeVoidAsync("navigator.clipboard.writeText", logs.LogText);
+        } catch (Exception e)
+        {
+            _toaster.AddError($"Failed to copy logs to clipboard. - See logs for details.");
+            Log.Error("UI - Failed to copy logs to clipboard.", e);
+        }
+
+        _toaster.AddInformation("Copied to clipboard!");
+
+    }
+
+    private string LogLevelDocumentation => $"Temporarily change the log level.<br /><br /><b>Note:</b> This setting will reset on application restart.<br /><br />To permanently change your default log level, please update your <a href='{configDocumentation}'>config file</a><br /><br /><small>(click the <b>?</b> to pin this window)</small>";
+}

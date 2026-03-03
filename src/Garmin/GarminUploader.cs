@@ -1,5 +1,4 @@
-﻿using Common;
-using Common.Dto;
+﻿using Common.Dto;
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
@@ -83,6 +82,12 @@ namespace Garmin
 										.AddTag("workouts.count", files.Count());
 
 			var auth = await _authService.GetGarminAuthenticationAsync();
+
+			if (auth.AuthStage == Dto.AuthStage.NeedMfaToken)
+				throw new GarminUploadException("User needs to go through MFA flow to re-authenticate with Garmin. AuthStage: NeedMfaToken", -2);
+
+			if (auth.AuthStage == Dto.AuthStage.None)
+				throw new GarminUploadException("Expected user to be authenticated with Garmin at this point, but they are not. AuthStage: None.", -3);
 
 			foreach (var file in files)
 			{

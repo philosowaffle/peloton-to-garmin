@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Common.Database;
 
+#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
+
 public interface IDbMigrations
 {
 	Task PreformMigrations();
@@ -21,14 +24,12 @@ public class DbMigrations : IDbMigrations
 
 	private readonly ISettingsDb _settingsDb;
 	private readonly IUsersDb _usersDb;
-	private readonly ISyncStatusDb _syncStatusDb;
 	private readonly IFileHandling _fileHandler;
 
-	public DbMigrations(ISettingsDb settingsDb, IUsersDb usersDb, ISyncStatusDb syncStatusDb, IFileHandling fileHandler)
+	public DbMigrations(ISettingsDb settingsDb, IUsersDb usersDb, IFileHandling fileHandler)
 	{
 		_settingsDb = settingsDb;
 		_usersDb = usersDb;
-		_syncStatusDb = syncStatusDb;
 		_fileHandler = fileHandler;
 	}
 
@@ -44,8 +45,7 @@ public class DbMigrations : IDbMigrations
 	/// </summary>
 	public async Task MigrateToAdminUserAsync()
 	{
-		#pragma warning disable CS0612 // Type or member is obsolete
-		var legacySettings = _settingsDb.GetLegacySettings();
+		var legacySettings = _settingsDb.DbMigrations_TryGetLegacy_Settings();
 
 		if (legacySettings is null) return;
 
@@ -59,7 +59,7 @@ public class DbMigrations : IDbMigrations
 			var success = await _settingsDb.UpsertSettingsAsync(admin.Id, legacySettings);
 			if (success)
 			{
-				await _settingsDb.RemoveLegacySettingsAsync();
+				await _settingsDb.DbMigrations_TryRemoveLegacySettingsAsync();
 				_logger.Information("[MIGRATION] Successfully migrated existing data to new Admin user.");
 			}
 			else
@@ -71,16 +71,6 @@ public class DbMigrations : IDbMigrations
 		{
 			_logger.Error(e, "[MIGRATION] Failed to migrate existing data to Admin user.");
 		}
-
-		try
-		{
-			await _syncStatusDb!.DeleteLegacySyncStatusAsync();
-		}
-		catch (Exception e)
-		{
-			_logger.Warning(e, "[MIGRATION Failed to delete LegacySyncStatus.");
-		}
-		#pragma warning restore CS0612 // Type or member is obsolete
 	}
 
 	/// <summary>
@@ -114,48 +104,62 @@ public class DbMigrations : IDbMigrations
 	/// </summary>
 	public async Task MigrateDeviceInfoFileToListAsync()
 	{
+
 		var admin = (await _usersDb.GetUsersAsync()).First();
 		var settings = await _settingsDb!.GetSettingsAsync(admin.Id);
+		var legacyDeviceInfoSettings = await _settingsDb!.DbMigrations_TryGetLegacy_DeviceInfoSettings(admin.Id);
 
-#pragma warning disable CS0618 // Type or member is obsolete
-		if (string.IsNullOrWhiteSpace(settings.Format.DeviceInfoPath))
+		if (string.IsNullOrWhiteSpace(legacyDeviceInfoSettings.DeviceInfoPath))
 			return;
 
-		_logger.Information($"[MIGRATION] Migrating {settings.Format.DeviceInfoPath} to new settings format.");
+		_logger.Information($"[MIGRATION] Migrating {legacyDeviceInfoSettings.DeviceInfoPath} to new settings format.");
 
 		try
 		{
 			GarminDeviceInfo deviceInfo = null;
-			_fileHandler.TryDeserializeXml(settings.Format.DeviceInfoPath, out deviceInfo);
+			_fileHandler.TryDeserializeXml(legacyDeviceInfoSettings.DeviceInfoPath, out deviceInfo);
 
 			if (deviceInfo != null)
 			{
 				settings.Format.DeviceInfoSettings.Clear();
 				settings.Format.DeviceInfoSettings.Add(WorkoutType.None, deviceInfo);
-				settings.Format.DeviceInfoPath = null;
+				
+				legacyDeviceInfoSettings.DeviceInfoPath = null;
 
 				await _settingsDb.UpsertSettingsAsync(admin.Id, settings);
 			} 
 			else
 			{
-				_logger.Warning($"[MIGRATION] Failed to parse {settings.Format.DeviceInfoPath}, migrating to P2G default device settings instead.");
+				_logger.Warning($"[MIGRATION] Failed to parse {legacyDeviceInfoSettings.DeviceInfoPath}, migrating to P2G default device settings instead.");
 				settings.Format.DeviceInfoSettings = new Dictionary<WorkoutType, GarminDeviceInfo>()
 				{
 					{ WorkoutType.None, GarminDevices.Forerunner945 },
 					{ WorkoutType.Cycling, GarminDevices.TACXDevice },
 					{ WorkoutType.Rowing, GarminDevices.EpixDevice },
 				};
-				settings.Format.DeviceInfoPath = null;
+				
+				legacyDeviceInfoSettings.DeviceInfoPath = null;
 
 				await _settingsDb.UpsertSettingsAsync(admin.Id, settings);
 			}
 
-			_logger.Information($"[MIGRATION] Successfully migrated {settings.Format.DeviceInfoPath} to new settings format.");
+			_logger.Information($"[MIGRATION] Successfully migrated {legacyDeviceInfoSettings.DeviceInfoPath} to new settings format.");
 
 		} catch (Exception e)
 		{
-			_logger.Error(e, $"[MIGRATION] Failed to migrated {settings.Format.DeviceInfoPath} to new settings format.");
+			_logger.Error(e, $"[MIGRATION] Failed to migrated {legacyDeviceInfoSettings.DeviceInfoPath} to new settings format.");
 		}
-#pragma warning restore CS0618 // Type or member is obsolete
 	}
+
 }
+
+/// <summary>
+/// P2G 5.0.0
+/// </summary>
+public class DbMigrations_LegacyDeviceInfo
+{
+	public string DeviceInfoPath { get; set; }
+}
+
+#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete

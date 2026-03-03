@@ -12,11 +12,11 @@
 				<HeaderTemplate>
 					Format Types 
 					<HxPopover 
-						Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus" 
-						Title="<b>Convert to various Format Types</b>"
-						Content="@FormatSettingsDocumentation"
-						Html="true">
-						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+					Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus" 
+					Title="<b>Convert to various Format Types</b>"
+					Content="@FormatSettingsDocumentation"
+					Html="true">
+						<HxIcon Icon="@BootstrapIcon.QuestionCircle" />
 					</HxPopover>
 				</HeaderTemplate>
 				<BodyTemplate>
@@ -34,11 +34,11 @@
 				<HeaderTemplate>
 					Workout Title
 					<HxPopover 
-						Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus" 
-						Title="<b>Workout Title Templating</b>"
-						Content="@WorkoutTitleDocumentation"
-						Html="true">
-						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+					Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus" 
+					Title="<b>Workout Title Templating</b>"
+					Content="@WorkoutTitleDocumentation"
+					Html="true">
+						<HxIcon Icon="@BootstrapIcon.QuestionCircle" />
 					</HxPopover>
 				</HeaderTemplate>
 				<BodyTemplate>
@@ -54,35 +54,35 @@
 				<HeaderTemplate>
 					Lap Types
 					<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
-							   Title="<b>Customzing Lap Types</b>"
-							   Content="@LapTypesDocumentation"
-							   Html="true">
-						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+					Title="<b>Customzing Lap Types</b>"
+					Content="@LapTypesDocumentation"
+					Html="true">
+						<HxIcon Icon="@BootstrapIcon.QuestionCircle" />
 					</HxPopover>
 				</HeaderTemplate>
 				<BodyTemplate>
 					<div class="row">
-                        <div class="col-md-4">
-                            <HxSelect Label="Cycling Lap Type"
-                                      Data="@lapTypes"
-                                      Nullable="false"
-                                      NullDataText="Loading info..."
-                            @bind-Value="formatSettings.Cycling.PreferredLapType" />
-                        </div>
-                        <div class="col-md-4">
-                            <HxSelect Label="Running Lap Type"
-                                      Data="@lapTypes"
-                                      Nullable="false"
-                                      NullDataText="Loading info..."
-                            @bind-Value="formatSettings.Running.PreferredLapType" />
-                        </div>
-                        <div class="col-md-4">
-                            <HxSelect Label="Rowing Lap Type"
-                                      Data="@lapTypes"
-                                      Nullable="false"
-                                      NullDataText="Loading info..."
-                            @bind-Value="formatSettings.Rowing.PreferredLapType" />
-                        </div>
+						<div class="col-md-4">
+							<HxSelect Label="Cycling Lap Type"
+							Data="@lapTypes"
+							Nullable="false"
+							NullDataText="Loading info..."
+							@bind-Value="formatSettings.Cycling.PreferredLapType" />
+						</div>
+						<div class="col-md-4">
+							<HxSelect Label="Running Lap Type"
+							Data="@lapTypes"
+							Nullable="false"
+							NullDataText="Loading info..."
+							@bind-Value="formatSettings.Running.PreferredLapType" />
+						</div>
+						<div class="col-md-4">
+							<HxSelect Label="Rowing Lap Type"
+							Data="@lapTypes"
+							Nullable="false"
+							NullDataText="Loading info..."
+							@bind-Value="formatSettings.Rowing.PreferredLapType" />
+						</div>
 					</div>
 				</BodyTemplate>
 			</HxCard>
@@ -95,10 +95,10 @@
 				<HeaderTemplate>
 					Strength
 					<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
-							   Title="<b>Strength Workouts</b>"
-							   Content="@StrengthDocumentation"
-							   Html="true">
-						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+					Title="<b>Strength Workouts</b>"
+					Content="@StrengthDocumentation"
+					Html="true">
+						<HxIcon Icon="@BootstrapIcon.QuestionCircle" />
 					</HxPopover>
 				</HeaderTemplate>
 				<BodyTemplate>
@@ -108,9 +108,30 @@
 		</div>
 	</div>
 	<br />
+	<div class="row g-3">
+		<div class="col-md-12">
+			<HxCard>
+				<HeaderTemplate>
+					Stacked Workouts
+					<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+					Title="<b>Stacked Workouts</b>"
+					Content="@StackedWorkoutsDocumentation"
+					Html="true">
+						<HxIcon Icon="@BootstrapIcon.QuestionCircle" />
+					</HxPopover>
+				</HeaderTemplate>
+				<BodyTemplate>
+					<HxSwitch Text="Enable Automatic Workout Stacking" @bind-Value="formatSettings.StackedWorkouts.AutomaticallyStackWorkouts" />
+					<br />
+					<HxInputNumber Label="Max Seconds between Stacked Workouts" TValue="long" @bind-Value="formatSettings.StackedWorkouts.MaxAllowedGapSeconds" Hint="A value of 300 would mean any workout started within 300s (5min) of the previous one would be stacked." />
+				</BodyTemplate>
+			</HxCard>
+		</div>
+	</div>
+	<br />
 	<div class="row gy-5">
 		<div class="md-col-12">
-			
+
 			<HxAccordion>
 				<HxAccordionItem>
 					<HeaderTemplate>
@@ -129,15 +150,10 @@
 										   Title="<b>Device Info Settings</b>"
 										   Content="@CustomDeviceInfoDocumentation"
 										   Html="true">
-									<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+									<HxIcon Icon="@BootstrapIcon.QuestionCircle" />
 								</HxPopover>
 							</HeaderTemplate>
 							<BodyTemplate>
-								@if (!string.IsNullOrWhiteSpace(formatSettings.DeviceInfoPath))
-								{
-									<HxInputText Label="Path to custom deviceInfo.xml file" @bind-Value="formatSettings.DeviceInfoPath" Hint="This setting is deprecated and will be removed in v5, please switch to using the below settings." />
-									<br />
-								}
 								<HxListLayout @bind-FilterModel="formatSettings.DeviceInfoSettings">
 									<CommandsTemplate>
 										<HxDropdownButtonGroup Split="true">
@@ -185,10 +201,10 @@
 							<HeaderTemplate>
 								Custom Zone Handling
 								<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
-											Title="<b>Custom Zone Handling</b>"
-											Content="@CustomZoneHandlingDocumentation"
-											Html="true">
-									<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Info">?</HxBadge>
+								Title="<b>Custom Zone Handling</b>"
+								Content="@CustomZoneHandlingDocumentation"
+								Html="true">
+									<HxIcon Icon="@BootstrapIcon.QuestionCircle" />
 								</HxPopover>
 							</HeaderTemplate>
 							<BodyTemplate>
@@ -219,7 +235,7 @@
 
 	private Format formatSettings;
 	private DeviceInfoModal? _deviceInfoModal;
-	private HxGrid<KeyValuePair<WorkoutType, GarminDeviceInfo>> _gridComponent;
+	private HxGrid<KeyValuePair<WorkoutType, GarminDeviceInfo>> _gridComponent = new();
 
 	private string workoutTemplateExample;
 	private string configDocumentation;
@@ -232,7 +248,11 @@
 		formatSettings = settings.Format;
 
 		workoutTemplateExample = string.Empty;
+
 		configDocumentation = string.Empty;
+		configDocumentationBase = string.Empty;
+
+		outputDirectory = string.Empty;
 	}
 
 	protected override Task OnInitializedAsync()
@@ -361,7 +381,8 @@
 	private string WorkoutTitleDocumentation => $"Allows you to customize how your workout title will appear in Garmin Connect using <a href='https://github.com/Handlebars-Net/Handlebars.Net'>Handlebars templates</a>. Some characters are not allowed, these characters will automatically be replaced with `-`.  Below are the data fields you can use in the template:<br /><br /> <ul><li>PelotonWorkoutTitle</li><li>PelotonInstructorName</li></ul><br /><a href='{configDocumentation}#workout-title-templating'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
 	private string LapTypesDocumentation => $"Lap type defines how/when P2G will create a new Lap within a workout.  This can be customized per Cardio type.  To read more about each Lap Type please see the documentation.<br /><br /><a href='{configDocumentation}'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
 	private string StrengthDocumentation => $"Some Strength workouts have you do an exercise for time rather than for a specific number of reps. This setting allows you to customize how P2G should estimate the number of reps that were done in a time based exercise.<br /><br /><a href='{configDocumentation}'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
-	private string CustomZoneHandlingDocumentation => $"If you are able to set your HR and Power Zones in Garmin Connect, then you do not need to enable these settings, Garmin will automatically calculate your time in zones correctly.  If you are not able to configure your zones in Garmin Connect, then you can enable these settings to have P2G calculate time in zone information.<br /><br />If these are enabled, its likely Garmin will not calculate Training Load, Effect, or related data points.<br /><br /><a href='{configDocumentationBase}#understanding-p2g-provided-zones'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
-	private string CustomDeviceInfoDocumentation => $"The device used for a given exercise type can impact what additional data Garmin Connect will calculate (like TE, TSS, and VO2).  P2G provides reasonable defaults, but you can customize what device you would like used here.<br /><br />The <strong>None</strong> Exercise Type serves as a global default. Meaning P2G will default to using this device if no more specific override is configured for a given Exercise type.<br /><br />If you delete all devices, P2G will restore its internal defaults.<br /><br /><a href='{configDocumentationBase}#customizing-the-garmin-device-associated-with-the-workout'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
+	private string StackedWorkoutsDocumentation => $"A stacked workout is when you do several classes of the same type back to back and would like those classes combined into a single final activity file.  In order for a workout to be stacked it must:<ol><li>Be of the same type as the other workouts in the stack</li><li>Have started within X seconds of the previous workouts end time</li></ol><br /><br /><a href='{configDocumentation}#stacked-workouts'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
+	private string CustomZoneHandlingDocumentation => $"If you are able to set your HR and Power Zones in Garmin Connect, then you do not need to enable these settings, Garmin will automatically calculate your time in zones correctly.  If you are not able to configure your zones in Garmin Connect, then you can enable these settings to have P2G calculate time in zone information.<br /><br />If these are enabled, its likely Garmin will not calculate Training Load, Effect, or related data points.<br /><br /><a href='{configDocumentation}#understanding-p2g-provided-zones'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
+	private string CustomDeviceInfoDocumentation => $"The device used for a given exercise type can impact what additional data Garmin Connect will calculate (like TE, TSS, and VO2).  P2G provides reasonable defaults, but you can customize what device you would like used here.<br /><br />The <strong>None</strong> Exercise Type serves as a global default. Meaning P2G will default to using this device if no more specific override is configured for a given Exercise type.<br /><br />If you delete all devices, P2G will restore its internal defaults.<br /><br /><a href='{configDocumentation}#customizing-the-garmin-device-associated-with-the-workout'>Documentation</a><br /><small>(click the <b>?</b> to pin this window)</small>";
 	private string SaveLocalCopyHint => $"Files will be saved to: {outputDirectory}.";
 }

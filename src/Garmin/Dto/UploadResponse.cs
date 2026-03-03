@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Garmin.Dto
 {
@@ -10,12 +9,18 @@ namespace Garmin.Dto
 
 	public class DetailedImportResult
 	{
-		public DateTime CreationDate { get; set; }
+		public string CreationDate { get; set; }
 		public string FileName { get; set; }
-		public int FileSize { get; set; }
+		public int? FileSize { get; set; }
 		public string IpAddress { get; set; }
-		public int ProcessingTime { get; set; }
-		public string UploadId { get; set; }
+		public int? ProcessingTime { get; set; }
+
+		/// <summary>
+		/// On Error, the type is string, empty string is returned.
+		/// On Success, the type is int, a number is returned.
+		/// </summary>
+		//public int UploadId { get; set; }
+
 		public ICollection<Failure> Failures { get; set; }
 		public ICollection<Success> Successes { get; set; }
 	}
@@ -23,14 +28,14 @@ namespace Garmin.Dto
 	public class Success
 	{
 		public string ExternalId { get; set; }
-		public string InternalId { get; set; }
+		//public int? InternalId { get; set; }
 		public ICollection<Messages> Messages { get; set; }
 	}
 
 	public class Failure
 	{
 		public string ExternalId { get; set; }
-		public string InternalId { get; set; }
+		//public int? InternalId { get; set; }
 		public ICollection<Messages> Messages { get; set; }
 	}
 

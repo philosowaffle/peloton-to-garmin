@@ -38,8 +38,9 @@ public class App
 	public bool EnablePolling { get; set; }
 	public int PollingIntervalSeconds { get; set; }
 	public bool CheckForUpdates { get; set; }
+	public bool CloseConsoleOnFinish { get; set; } = false;
 
-	public static string DataDirectory => Path.GetFullPath(Path.Join(Statics.DefaultDataDirectory, "data"));
+	public static string DataDirectory => Statics.DefaultDataDirectory;
 
 	public string WorkingDirectory => Statics.DefaultTempDirectory;
 	public string OutputDirectory => Statics.DefaultOutputDirectory;
@@ -74,14 +75,30 @@ public class Format
 	public bool SaveLocalCopy { get; set; }
 	public bool IncludeTimeInHRZones { get; set; }
 	public bool IncludeTimeInPowerZones { get; set; }
-	[Obsolete("Use DeviceInfoSettings instead.  Will be removed in P2G v5.")]
-	public string DeviceInfoPath { get; set; }
 	public Dictionary<WorkoutType, GarminDeviceInfo> DeviceInfoSettings { get; set; }
 	public string WorkoutTitleTemplate { get; set; } = "{{PelotonWorkoutTitle}}{{#if PelotonInstructorName}} with {{PelotonInstructorName}}{{/if}}";
 	public Cycling Cycling { get; set; }
 	public Running Running { get; set; }
 	public Rowing Rowing { get; init; }
 	public Strength Strength { get; init; }
+	public StackedWorkoutsSettings StackedWorkouts { get; init; } = new StackedWorkoutsSettings();
+}
+
+public record StackedWorkoutsSettings
+{
+	/// <summary>
+	/// True if P2G should automatically detect and stack workouts when
+	/// converting and syncing.  P2G will only stack workouts of the same type
+	/// and only within a default time gap of 5min.
+	/// </summary>
+	public bool AutomaticallyStackWorkouts { get; set; } = false;
+
+	/// <summary>
+	/// The maximum amount of time allowed between workouts that should be stacked.
+	/// If the gap of time is larger than this, then the workouts will not be stacked.
+	/// The default is 5min.
+	/// </summary>
+	public long MaxAllowedGapSeconds { get; set; } = 300;
 }
 
 public record Cycling
@@ -129,8 +146,24 @@ public class PelotonSettings : ICredentials
 	public EncryptionVersion EncryptionVersion { get; set; }
 	public string Email { get; set; }
 	public string Password { get; set; }
+	public string BearerToken { get; set; }
 	public int NumWorkoutsToDownload { get; set; }
 	public ICollection<WorkoutType> ExcludeWorkoutTypes { get; set; }
+	public PelotonApiSettings Api { get; set; } = new PelotonApiSettings();
+}
+
+public class PelotonApiSettings
+{
+	public string ApiUrl { get; set; } = "https://api.onepeloton.com/";
+	public string AuthDomain { get; set; } = "auth.onepeloton.com";
+    public string AuthClientId { get; set; } =  "WVoJxVDdPoFx4RNewvvg6ch2mZ7bwnsM";
+    public string AuthAudience { get; set; } = "https://api.onepeloton.com/";
+    public string AuthScope { get; set; } = "offline_access openid peloton-api.members:default";
+    public string AuthRedirectUri { get; set; } = "https://members.onepeloton.com/callback";
+    public string Auth0ClientPayload { get; set; } = "eyJuYW1lIjoiYXV0aDAuanMtdWxwIiwidmVyc2lvbiI6IjkuMTQuMyJ9";
+    public string AuthAuthorizePath { get; set; } = "/authorize";
+    public string AuthTokenPath { get; set; } = "/oauth/token";
+	public int BearerTokenDefaultTtlSeconds { get; set; } = 172800;
 }
 
 public class GarminSettings : ICredentials
@@ -141,6 +174,29 @@ public class GarminSettings : ICredentials
 	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
+	public GarminApiSettings Api {  get; set; } = new GarminApiSettings();
+}
+
+public class GarminApiSettings
+{
+	public string SsoSignInUrl { get; set; } = "https://sso.garmin.com/sso/signin";
+	public string SsoEmbedUrl { get; set; } = "https://sso.garmin.com/sso/embed";
+	public string SsoMfaCodeUrl { get; set; } = "https://sso.garmin.com/sso/verifyMFA/loginEnterMfaCode";
+	public string SsoUserAgent { get; set; } = "GCM-iOS-5.7.2.1";
+
+	public string OAuth1TokenUrl { get; set; } = "https://connectapi.garmin.com/oauth-service/oauth/preauthorized";
+	public string OAuth1LoginUrlParam { get; set; } = "https://sso.garmin.com/sso/embed&accepts-mfa-tokens=true";
+
+	public string OAuth2RequestUrl { get; set; } = "https://connectapi.garmin.com/oauth-service/oauth/exchange/user/2.0";
+
+	public string UploadActivityUrl { get; set; } = "https://connectapi.garmin.com/upload-service/upload";
+	public string UploadActivityUserAgent { get; set; } = "GCM-iOS-5.7.2.1";
+	public string UplaodActivityNkHeader { get; set; } = "NT";
+
+	public string Origin { get; set; } = "https://sso.garmin.com";
+	public string Referer { get; set; } = "https://sso.garmin.com/sso/signin";
+
+
 }
 
 public enum FileFormat : byte

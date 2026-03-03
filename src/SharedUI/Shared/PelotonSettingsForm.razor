@@ -28,12 +28,12 @@
 		</div>
 		<div class="col-md-6">
 			<HxMultiSelect Label="Excluded Workout Types"
-						   Data="@workoutTypes"
-						   @bind-Value="@selectedWorkoutTypes"
-						   EmptyText="- none -"
-						   TextSelector="(v) => v.ToString()"
-						   GenerateChip=true
-						   NullDataText="Loading workout types..." />
+			Data="@workoutTypes"
+			@bind-Value="@selectedWorkoutTypes"
+			EmptyText="- none -"
+			TextSelector="(v) => v.ToString()"
+			GenerateChip=true
+			NullDataText="Loading workout types..." />
 		</div>
 	</div>
 	<br />
@@ -91,6 +91,10 @@
 		{
 			var error = await e.GetResponseJsonAsync<ErrorResponse>();
 			_toaster.AddError(error.Message);
+		}
+		catch (ApiClientException e)
+		{
+			_toaster.AddError(e.Message);
 		}
 		catch (Exception e)
 		{

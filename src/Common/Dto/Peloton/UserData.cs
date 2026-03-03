@@ -28,7 +28,12 @@ public record UserData
 	public uint Default_Max_Heart_Rate { get; init; }
 	public uint Customized_Max_Heart_Rate { get; init; }
 
-	public uint Weight { get; init; }
+	public double Weight { get; init; }
+
+	/// <summary>
+	/// UserId
+	/// </summary>
+	public string Id { get; set; }
 }
 
 public enum CyclingFtpSource : byte

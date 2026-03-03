@@ -1,0 +1,33 @@
+---
+alwaysApply: true
+---
+
+# Peloton to Garmin (P2G) Project Overview
+
+This is a .NET 9.0 application that syncs Peloton workout data to Garmin Connect. The project converts Peloton workouts to FIT/TCX/JSON formats and uploads them to Garmin Connect.
+
+## Key Components:
+- **API** (`src/Api/`): REST API for programmatic access
+- **WebUI** (`src/WebUI/`): Blazor-based web interface  
+- **ClientUI** (`src/ClientUI/`): MAUI-based desktop application
+- **ConsoleClient** (`src/ConsoleClient/`): Headless console application
+- **Sync Service** (`src/Sync/`): Core synchronization logic
+- **Conversion** (`src/Conversion/`): Format converters (FIT, TCX, JSON)
+- **Peloton Integration** (`src/Peloton/`): Peloton API client
+- **Garmin Integration** (`src/Garmin/`): Garmin Connect uploader
+- **Common** (`src/Common/`): Shared utilities and DTOs
+
+## Main Entry Points:
+- [src/ConsoleClient/Program.cs](mdc:src/ConsoleClient/Program.cs) - Console application entry
+- [src/WebUI/Program.cs](mdc:src/WebUI/Program.cs) - Web UI entry
+- [src/Api/Program.cs](mdc:src/Api/Program.cs) - API entry
+- [src/ClientUI/MauiProgram.cs](mdc:src/ClientUI/MauiProgram.cs) - MAUI app entry
+
+## Configuration:
+- [configuration.example.json](mdc:configuration.example.json) - Example configuration
+- [src/Common/Configuration.cs](mdc:src/Common/Configuration.cs) - Configuration loading logic
+
+## Core Sync Logic:
+- [src/Sync/SyncService.cs](mdc:src/Sync/SyncService.cs) - Main synchronization service
+- [src/Conversion/IConverter.cs](mdc:src/Conversion/IConverter.cs) - Format conversion interface
+# Peloton to Garmin (P2G) Project Overview

@@ -43,6 +43,8 @@ public class PelotonAnnualChallengeService : IPelotonAnnualChallengeService
 			{
 				EarnedMinutes = data.EarnedMinutes,
 				Tiers = tiers ?? new List<Contract.Tier>(),
+				CurrentDailyPace = data.CurrentDailyPace,
+				CurrentWeeklyPace = data.CurrentWeeklyPace,
 			};
 
 			return result;

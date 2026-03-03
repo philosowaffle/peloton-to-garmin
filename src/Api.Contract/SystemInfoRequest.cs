@@ -1,4 +1,6 @@
-﻿namespace Api.Contract;
+﻿using Serilog.Events;
+
+namespace Api.Contract;
 
 public record SystemInfoGetRequest
 {
@@ -43,6 +45,8 @@ public record SystemInfoGetResponse
 	public LatestVersionInformation? LatestVersionInformation { get; set; }
 	public string OutputDirectory { get; set; }
 	public string TempDirectory { get; set; }
+	public string ApplicationConfigFilePath { get; set; } = string.Empty;
+	public LogEventLevel CurrentLogLevel { get; set; }
 }
 
 public class LatestVersionInformation
@@ -65,4 +69,13 @@ public class LatestVersionInformation
 public class SystemInfoLogsGetResponse
 {
 	public string? LogText { get; set; }
+}
+
+public record LogLevelPostRequest
+{
+	public LogEventLevel LogLevel { get; set; }
+}
+public record LogLevelPostResponse
+{
+	public LogEventLevel LogLevel { get; set; }
 }

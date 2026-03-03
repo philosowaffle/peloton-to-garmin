@@ -2,7 +2,7 @@
 using Common;
 using Common.Dto;
 using Common.Service;
-using Common.Stateful;
+using Garmin.Auth;
 
 namespace Api.Service;
 
@@ -17,11 +17,13 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 {
 	private readonly IFileHandling _fileHandler;
 	private readonly ISettingsService _settingsService;
+	private readonly IGarminAuthenticationService _garminAuthService;
 
-	public SettingsUpdaterService(IFileHandling fileHandler, ISettingsService settingsService)
+	public SettingsUpdaterService(IFileHandling fileHandler, ISettingsService settingsService, IGarminAuthenticationService garminAuthService)
 	{
 		_fileHandler = fileHandler;
 		_settingsService = settingsService;
+		_garminAuthService = garminAuthService;
 	}
 
 	public async Task<ServiceResult<App>> UpdateAppSettingsAsync(App updatedAppSettings)
@@ -38,13 +40,6 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 		var settings = await _settingsService.GetSettingsAsync();
 		settings.App = updatedAppSettings;
 
-		if (settings.Garmin.TwoStepVerificationEnabled && settings.App.EnablePolling)
-		{
-			result.Successful = false;
-			result.Error = new ServiceError() { Message = "Automatic Syncing cannot be enabled when Garmin TwoStepVerification is enabled." };
-			return result;
-		}
-
 		await _settingsService.UpdateSettingsAsync(settings);
 		var updatedSettings = await _settingsService.GetSettingsAsync();
 
@@ -60,14 +55,6 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 		{
 			result.Successful = false;
 			result.Error = new ServiceError() { Message = "Updated Format Settings must not be null or empty." };
-			return result;
-		}
-
-		if (!string.IsNullOrWhiteSpace(updatedFormatSettings.DeviceInfoPath)
-			&& !_fileHandler.FileExists(updatedFormatSettings.DeviceInfoPath))
-		{
-			result.Successful = false;
-			result.Error = new ServiceError() { Message = "The DeviceInfo path is either not accessible or does not exist." };
 			return result;
 		}
 
@@ -92,15 +79,21 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 			return result;
 		}
 
-		var settings = await _settingsService.GetSettingsAsync();
-		settings.Garmin = updatedGarminSettings.Map();
-
-		if (settings.Garmin.Upload && settings.Garmin.TwoStepVerificationEnabled && settings.App.EnablePolling)
+		if (!string.IsNullOrWhiteSpace(updatedGarminSettings.Password)
+			&& updatedGarminSettings.Password.Contains('\\'))
 		{
 			result.Successful = false;
-			result.Error = new ServiceError() { Message = "Garmin TwoStepVerification cannot be enabled while Automatic Syncing is enabled. Please disable Automatic Syncing first." };
+			result.Error = new ServiceError() { Message = "P2G does not support the `\\` character in passwords." };
 			return result;
 		}
+
+		var settings = await _settingsService.GetSettingsAsync();
+
+		if (settings.Garmin.Password != updatedGarminSettings.Password
+			|| settings.Garmin.Email != updatedGarminSettings.Email)
+			await _garminAuthService.SignOutAsync();
+
+		settings.Garmin = updatedGarminSettings.Map();
 
 		await _settingsService.UpdateSettingsAsync(settings);
 		var updatedSettings = await _settingsService.GetSettingsAsync();
@@ -117,6 +110,14 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 		{
 			result.Successful = false;
 			result.Error = new ServiceError() { Message = "Updated PelotonSettings must not be null or empty." };
+			return result;
+		}
+
+		if (!string.IsNullOrWhiteSpace(updatedPelotonSettings.Password) 
+			&& updatedPelotonSettings.Password.Contains('\\'))
+		{
+			result.Successful = false;
+			result.Error = new ServiceError() { Message = "P2G does not support the `\\` character in passwords." };
 			return result;
 		}
 

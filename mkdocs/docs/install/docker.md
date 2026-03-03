@@ -31,7 +31,7 @@ P2G ships several different flavors of containers that can be combined with a ve
 1. `latest` - The bleeding edge of the master branch, breaking changes may happen
 1. `vX.Y.Z` - For using a specific released version
 
-### Using Flavor and Version Tag
+### Using Flavor and Version Tag together
 
 In the below examples, you can substitute `console` for any [Image Flavor](#image-flavors).
 
@@ -46,6 +46,11 @@ The P2G images run the process under the user and group `p2g:p2g` with uid and g
 
 1. Create a group on the local machine `p2g` with group id `1015`
 1. Add your user on the local machine to the `p2g` group
+
+```sh
+> sudo groupadd -g 1015 p2g
+> sudo usermod -aG p2g <yourUser>
+```
 
 ## More about Docker
 

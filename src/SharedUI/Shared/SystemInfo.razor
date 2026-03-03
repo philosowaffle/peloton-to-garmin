@@ -1,53 +1,51 @@
-﻿@inherits TracingComponentBase
+﻿@using Common.Stateful
+@inherits TracingComponentBase
 @inject IApiClient _apiClient
 
-<div class="row mb-3">
-    <label for="version" class="col-sm-2 col-form-label bold-label">Version:</label>
-    <div class="col-sm-10">
-        @systemInfo.Version @if (systemInfo.NewerVersionAvailable.GetValueOrDefault())
-        {
-            <p><small> (newer version available: @systemInfo.LatestVersionInformation?.LatestVersion)</small></p>
-        }
+<div class="row">
+    <div class="col-6">
+        <HxListGroup Flush="true">
+            <HxListGroupItem>
+                <HxIcon Icon="BootstrapIcon.FileDiff" /> 
+                <b>Version:</b>
+                    @systemInfo.Version @if (systemInfo.NewerVersionAvailable.GetValueOrDefault())
+                    {
+                        <small>  (newer version available: @systemInfo.LatestVersionInformation?.LatestVersion) <HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success"><HxIcon Icon="BootstrapIcon.Check2"></HxIcon></HxBadge></small>
+                    }
+            </HxListGroupItem>
+            <HxListGroupItem><HxIcon Icon="BootstrapIcon.Pc" /> <b>OS:</b> @systemInfo.OperatingSystem</HxListGroupItem>
+            <HxListGroupItem><HxIcon Icon="BootstrapIcon.Pc" /> <b>OS Version:</b> @systemInfo.OperatingSystemVersion</HxListGroupItem>
+            <HxListGroupItem><HxIcon Icon="BootstrapIcon.Microsoft" /> <b>Runtime Version:</b> @systemInfo.RunTimeVersion</HxListGroupItem>
+            <HxListGroupItem><HxIcon Icon="BootstrapIcon.Folder2Open" /> <b>Output Directory:</b> @systemInfo.OutputDirectory</HxListGroupItem>
+            <HxListGroupItem><HxIcon Icon="BootstrapIcon.Folder" /> <b>Temp Directory:</b> @systemInfo.TempDirectory</HxListGroupItem>
+            @if (Statics.AppType == Constants.ClientUIName)
+            {
+                <HxListGroupItem><HxIcon Icon="BootstrapIcon.GearWideConnected" /> <b>Application Configuration Path:</b> @systemInfo.ApplicationConfigFilePath</HxListGroupItem>
+            }
+            @if (Statics.AppType == Constants.WebUIName)
+            {
+                <HxListGroupItem><HxIcon Icon="BootstrapIcon.GearWideConnected" /> <b>Api Application Configuration Path:</b> @systemInfo.ApplicationConfigFilePath</HxListGroupItem>
+                <HxListGroupItem><HxIcon Icon="BootstrapIcon.GearWideConnected" /> <b>WebUI Application Configuration Path:</b> @Statics.ConfigPath</HxListGroupItem>
+            }
+        </HxListGroup>
     </div>
 
-    <label for="version" class="col-sm-2 col-form-label bold-label">OS:</label>
-    <div class="col-sm-10">
-        @systemInfo.OperatingSystem
+    <div class="col-6">
+        <HxListGroup Flush="true">
+            @if (!string.IsNullOrWhiteSpace(systemInfo.Api))
+            {
+                <HxListGroupItem><HxIcon Icon="BootstrapIcon.BracesAsterisk" /> <a href="@systemInfo.Api" target="_blank">Swagger Api</a></HxListGroupItem>
+            }
+
+            <HxListGroupItem><HxIcon Icon="BootstrapIcon.Globe" /> <a href="@systemInfo.GitHub" target="_blank">Website</a></HxListGroupItem>
+            <HxListGroupItem><HxIcon Icon="BootstrapIcon.Book" /> <a href="@systemInfo.Documentation" target="_blank">Documentation</a></HxListGroupItem>
+            <HxListGroupItem><HxIcon Icon="BootstrapIcon.ChatHeart" /> <a href="@systemInfo.Forums" target="_blank">Forums</a></HxListGroupItem>
+            <HxListGroupItem><HxIcon Icon="BootstrapIcon.Bug" /> <a href="@systemInfo.Issues" target="_blank">Report an Issue</a></HxListGroupItem>
+            <HxListGroupItem><HxIcon Icon="BootstrapIcon.CupHot" /> <a href="@systemInfo.Donate" target="_blank">Donate</a></HxListGroupItem>
+        </HxListGroup>
     </div>
 
-    <label for="version" class="col-sm-2 col-form-label bold-label">OS Version:</label>
-    <div class="col-sm-10">
-        @systemInfo.OperatingSystemVersion
-    </div>
-
-    <label for="version" class="col-sm-2 col-form-label bold-label">RunTime Version:</label>
-    <div class="col-sm-10">
-        @systemInfo.RunTimeVersion
-    </div>
-
-    <label for="outputDir" class="col-sm-2 col-form-label bold-label">Output Directory:</label>
-    <div class="col-sm-10">
-        @systemInfo.OutputDirectory
-    </div>
-
-    <label for="tempDir" class="col-sm-2 col-form-label bold-label">Temp Directory:</label>
-    <div class="col-sm-10">
-        @systemInfo.TempDirectory
-    </div>
 </div>
-
-
-<ul class="list-group list-group-flush">
-    @if (!string.IsNullOrWhiteSpace(systemInfo.Api))
-    {
-        <li class="list-group-item"><a href="@systemInfo.Api" target="_blank">Api</a></li>
-    }
-    <li class="list-group-item"><a href="@systemInfo.GitHub" target="_blank">Website</a></li>
-    <li class="list-group-item"><a href="@systemInfo.Documentation" target="_blank">Documentation</a></li>
-    <li class="list-group-item"><a href="@systemInfo.Forums" target="_blank">Forums</a></li>
-    <li class="list-group-item"><a href="@systemInfo.Issues" target="_blank">Report an Issue</a></li>
-    <li class="list-group-item"><a href="@systemInfo.Donate" target="_blank">Donate</a></li>
-</ul>
 
 @code {
     private SystemInfoGetResponse systemInfo;

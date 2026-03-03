@@ -28,7 +28,7 @@ namespace Common.Dto.Peloton
 
 	public class Coordinate
 	{
-		public float Accuracy { get; set; }
+		public float? Accuracy { get; set; }
 		public float Distance { get; set; }
 		public string Distance_Display_Unit { get; set; }
 		public float Latitude { get; set; }

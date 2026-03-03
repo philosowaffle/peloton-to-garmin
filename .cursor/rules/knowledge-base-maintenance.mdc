@@ -1,0 +1,55 @@
+---
+alwaysApply: true
+---
+
+# Knowledge Base Maintenance Rule
+
+## Update Knowledge Base After Code Changes
+
+After making ANY changes to the P2G codebase, you MUST verify and update the knowledge base for accuracy.
+
+### Check These Documents for Impact:
+
+#### For Architecture Changes:
+- Update [.ai/knowledge-base/01-system-architecture.md](mdc:.ai/knowledge-base/01-system-architecture.md)
+- Verify component interactions and data flow diagrams
+- Update deployment model information if needed
+
+#### For API Changes:
+- Update [.ai/knowledge-base/02-api-reference.md](mdc:.ai/knowledge-base/02-api-reference.md)
+- Add new endpoints or modify existing ones
+- Update request/response schemas and examples
+
+#### For Configuration Changes:
+- Update [.ai/knowledge-base/03-development-setup.md](mdc:.ai/knowledge-base/03-development-setup.md)
+- Verify setup instructions remain accurate
+- Update configuration examples
+
+#### For New Issues/Solutions:
+- Update [.ai/knowledge-base/04-troubleshooting-guide.md](mdc:.ai/knowledge-base/04-troubleshooting-guide.md)
+- Add new troubleshooting scenarios
+- Update diagnostic procedures
+
+#### For External API Changes:
+- Update [.ai/knowledge-base/05-external-api-integration.md](mdc:.ai/knowledge-base/05-external-api-integration.md)
+- Modify authentication flows or endpoint documentation
+- Update rate limiting or error handling information
+
+#### For Testing Changes:
+- Update [.ai/knowledge-base/06-testing-strategy.md](mdc:.ai/knowledge-base/06-testing-strategy.md)
+- Add new testing patterns or frameworks
+- Update test data management strategies
+
+### Maintenance Checklist:
+1. **Identify Impact**: Determine which knowledge base sections are affected
+2. **Update Content**: Modify relevant documentation sections
+3. **Verify Examples**: Ensure code examples still work
+4. **Check Cross-References**: Update links between documents
+5. **Update Overview**: Modify [.ai/knowledge-base/README.md](mdc:.ai/knowledge-base/README.md) if structure changes
+
+### Common Update Scenarios:
+- **New Features**: Document in architecture and API reference
+- **Bug Fixes**: Add to troubleshooting guide
+- **Dependencies**: Update development setup
+- **Performance**: Update optimization guides
+- **Security**: Update security considerations
