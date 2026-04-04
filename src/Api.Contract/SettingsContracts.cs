@@ -24,7 +24,8 @@ public class SettingsGetResponse
 			Password = null,
 			ExcludeWorkoutTypes = settings.Peloton.ExcludeWorkoutTypes,
 			NumWorkoutsToDownload = settings.Peloton.NumWorkoutsToDownload,
-			IsPasswordSet = !string.IsNullOrEmpty(settings.Peloton.Password)
+			IsPasswordSet = !string.IsNullOrEmpty(settings.Peloton.Password),
+			Api = settings.Peloton.Api ?? new PelotonApiSettings()
 		};
 
 		Garmin = new SettingsGarminGetResponse()
@@ -68,7 +69,7 @@ public class SettingsGarminPostRequest
 
 public class SettingsPelotonGetResponse
 {
-	public SettingsPelotonGetResponse() 
+	public SettingsPelotonGetResponse()
 	{
 		ExcludeWorkoutTypes = new List<WorkoutType>();
 	}
@@ -79,6 +80,7 @@ public class SettingsPelotonGetResponse
 	public string? Password { get; set; }
 	public ICollection<WorkoutType> ExcludeWorkoutTypes { get; set; }
 	public int NumWorkoutsToDownload { get; set; }
+	public PelotonApiSettings Api { get; set; } = new PelotonApiSettings();
 }
 
 public class SettingsPelotonPostRequest
@@ -87,6 +89,7 @@ public class SettingsPelotonPostRequest
 	public string? Password { get; set; }
 	public ICollection<WorkoutType>? ExcludeWorkoutTypes { get; set; }
 	public int NumWorkoutsToDownload { get; set; }
+	public PelotonApiSettings Api { get; set; } = new PelotonApiSettings();
 }
 
 public static class Mapping
@@ -98,7 +101,8 @@ public static class Mapping
 			Email = response.Email,
 			Password = response.Password,
 			ExcludeWorkoutTypes = response.ExcludeWorkoutTypes,
-			NumWorkoutsToDownload = response.NumWorkoutsToDownload
+			NumWorkoutsToDownload = response.NumWorkoutsToDownload,
+			Api = response.Api,
 		};
 	}
 
@@ -110,6 +114,7 @@ public static class Mapping
 			Password = request.Password,
 			ExcludeWorkoutTypes = request.ExcludeWorkoutTypes,
 			NumWorkoutsToDownload = request.NumWorkoutsToDownload,
+			Api = request.Api,
 		};
 	}
 
