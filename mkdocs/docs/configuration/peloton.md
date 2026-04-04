@@ -122,13 +122,7 @@ Quick, not great instructions on how to locate a Bearer Token:
 Saving the Bearer Token in the config file and restarting P2G will cause P2G to use that token for authentication, bypassing the need to "login".
 
 You will need to manually update this token every time it expires which will be roughly every 48hrs.  In order to stop using the token, simply delete `"BearerToken": "..."` from your config file and restart P2G.
-
-!!! note 
-    Windows users and Web UI users, your config file is found in `<Your P2G Folder>/data/SettingsDb.json`.  Quit P2G, edit this file, then start P2G again.
     
 !!! danger 
     BearerToken is like a password and should never be shared.
     Github action users should set BearerToken as a secret similar to how you configure Email and Password.
-
-!!! note
-    Windows users and Web UI users can also set the Bearer Token via Settings > Peloton > Advanced in the UI.
