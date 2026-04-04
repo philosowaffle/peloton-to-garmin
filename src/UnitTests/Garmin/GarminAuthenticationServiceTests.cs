@@ -19,7 +19,6 @@ namespace UnitTests.Garmin
 		private Mock<ISettingsService> _settingsServiceMock;
 		private Mock<IGarminApiClient> _apiClientMock;
 		private Mock<IGarminDb> _garminDbMock;
-		private Mock<IServiceTicketProvider> _serviceTicketProviderMock;
 		private GarminAuthenticationService _authService;
 		private Settings _settings;
 
@@ -29,14 +28,11 @@ namespace UnitTests.Garmin
 			_settingsServiceMock = new Mock<ISettingsService>();
 			_apiClientMock = new Mock<IGarminApiClient>();
 			_garminDbMock = new Mock<IGarminDb>();
-			_serviceTicketProviderMock = new Mock<IServiceTicketProvider>();
-			_serviceTicketProviderMock.Setup(p => p.GetServiceTicketAsync()).ReturnsAsync((string)null);
 
 			_authService = new GarminAuthenticationService(
 				_settingsServiceMock.Object,
 				_apiClientMock.Object,
-				_garminDbMock.Object,
-				_serviceTicketProviderMock.Object);
+				_garminDbMock.Object);
 
 			_settings = new Settings
 			{
@@ -476,8 +472,7 @@ namespace UnitTests.Garmin
 			var authService = new GarminAuthenticationService(
 				_settingsServiceMock.Object,
 				_apiClientMock.Object,
-				_garminDbMock.Object,
-				_serviceTicketProviderMock.Object);
+				_garminDbMock.Object);
 
 			// ASSERT
 			authService.Should().NotBeNull();
@@ -488,7 +483,7 @@ namespace UnitTests.Garmin
 		{
 			// SETUP & ACT & ASSERT
 			// The constructor doesn't validate null parameters
-			Assert.DoesNotThrow(() => new GarminAuthenticationService(null, null, null, null));
+			Assert.DoesNotThrow(() => new GarminAuthenticationService(null, null, null));
 		}
 
 		[Test]

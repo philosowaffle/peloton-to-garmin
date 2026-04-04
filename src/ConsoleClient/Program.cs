@@ -94,7 +94,6 @@ static IHostBuilder CreateHostBuilder(string[] args)
 			services.AddSingleton<IGarminUploader, GarminUploader>();
 			services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
 			services.AddSingleton<IGarminDb, GarminDb>();
-			services.AddSingleton<IServiceTicketProvider, ManualServiceTicketProvider>();
 
 			// RELEASE CHECKS
 			services.AddGitHubReleaseChecker();

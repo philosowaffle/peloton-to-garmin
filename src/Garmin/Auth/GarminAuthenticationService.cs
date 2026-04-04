@@ -42,14 +42,12 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 	private readonly ISettingsService _settingsService;
 	private readonly IGarminApiClient _apiClient;
 	private readonly IGarminDb _garminDb;
-	private readonly IServiceTicketProvider _serviceTicketProvider;
 
-	public GarminAuthenticationService(ISettingsService settingsService, IGarminApiClient apiClient, IGarminDb garminDb, IServiceTicketProvider serviceTicketProvider)
+	public GarminAuthenticationService(ISettingsService settingsService, IGarminApiClient apiClient, IGarminDb garminDb)
 	{
 		_settingsService = settingsService;
 		_apiClient = apiClient;
 		_garminDb = garminDb;
-		_serviceTicketProvider = serviceTicketProvider;
 	}
 
 	public async Task<bool> GarminAuthTokenExistsAndIsValidAsync()
