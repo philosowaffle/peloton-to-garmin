@@ -59,5 +59,4 @@ nav:
     - 'F.A.Q': faq.md
     - Migration: migration/migrations.md
     - Contributing: contributing.md
- - Authentication:
     - 'Garmin Service Ticket': authentication/garmin-service-ticket.md
