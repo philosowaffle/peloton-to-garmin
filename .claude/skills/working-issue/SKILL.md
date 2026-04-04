@@ -26,69 +26,7 @@ git push -u origin issue<number>-<short-description>
 
 Derive the short description from the issue title — lowercase, hyphen-separated, 3–5 words.
 
-## Step 3 (optional): Agent-team mode — spawn spec-agent
-
-If the issue is complex (multiple subsystems, long spec, or the user has requested agent-team mode), delegate spec writing to `spec-agent` rather than writing it inline:
-
-```
-Use the spec-agent to write the spec for issue #<number>.
-```
-
-`spec-agent` will:
-1. Fetch the issue and read the codebase
-2. Write the spec file to `docs/specs/`
-3. Return a structured summary of ACs for your review
-
-Review the returned ACs. Once approved, commit the spec file and continue to Step 4. If agent-team mode is not needed, skip this step and write the spec inline below.
-
----
-
-## Step 3: Write or update the spec file
-
-Specs live in `docs/specs/` and are **per feature or capability**, not per issue. A single spec may cover multiple issues as the feature evolves over time.
-
-**Before creating a new file**, scan `docs/specs/` for an existing spec that covers the same feature area. If one exists, add a new `## Capability: <short title>` section to it rather than creating a new file.
-
-If no suitable spec exists, create `docs/specs/<feature-area>.md` — named after the capability, not the issue number:
-
-```markdown
-# Spec: <Feature / Capability Name>
-
-**Status:** In Progress
-
-## Overview
-<Brief description of the feature area and its purpose>
-
----
-
-## Capability: <Short Title>
-
-**Issue:** #<number> | **Status:** Draft
-
-### Problem
-<Extract or summarise from the issue's Problem Statement / Motivation>
-
-### Acceptance Criteria
-<Convert each AC from the issue checklist into a testable checkbox here>
-- [ ]
-
-### Notes
-<Any relevant context, constraints, or open questions from the issue body>
-```
-
-When adding a capability section to an existing spec, use the same `## Capability:` structure. Mark completed capabilities with `**Status:** Implemented` and check off their ACs.
-
-Populate from the issue content — do not leave sections empty.
-
-## Step 4: Commit and push the spec
-
-```bash
-git add docs/specs/<spec-file>.md
-git commit -m "[<number>] write spec"
-git push
-```
-
-## Step 5: Write the implementation plan
+## Step 3: Write the implementation plan
 
 Create `tmp/plan.md` with:
 - What needs to be built or changed
@@ -102,7 +40,7 @@ git commit -m "[<number>] implementation plan"
 git push
 ```
 
-## Step 6: Validate before every commit
+## Step 4: Validate before every commit
 
 Before committing any code changes (not docs-only commits), always run:
 
@@ -115,7 +53,7 @@ dotnet test
 
 All steps must pass cleanly. Fix any failures before committing — do not rely on CI to catch these.
 
-## Step 7: Implement the change
+## Step 5: Implement the change
 
 The project is now ready for implementation. After implementing, open a PR.
 

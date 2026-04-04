@@ -1,28 +1,39 @@
-﻿@inject IApiClient _apiClient
+@inject IApiClient _apiClient
 @inject IHxMessengerService _toaster;
 
 <EditForm Model="@pelotonSettings">
+	@if (pelotonSettings.IsBearerTokenSet)
+	{
+		<HxAlert Color="ThemeColor.Warning">
+			<HxIcon Icon="@BootstrapIcon.ExclamationTriangleFill" />
+			<strong>Email and Password are not used when a Bearer Token is set.</strong>
+		</HxAlert>
+	}
+	<HxFormState Enabled="@(!pelotonSettings.IsBearerTokenSet)">
+		<div class="row gy-5">
+			<div class="col-md-6">
+				<HxInputText @bind-Value="pelotonSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
+			</div>
+			<div class="col-md-6">
+				<HxInputText @bind-Value="pelotonSettings.Password" Label="Password" Type="InputType.Password">
+					<LabelTemplate>
+						Password
+						@if (pelotonSettings.IsPasswordSet)
+						{
+							<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success">Password is set</HxBadge>
+						}
+					</LabelTemplate>
+					<InputGroupEndTemplate>
+						@if (pelotonSettings.IsPasswordSet)
+						{
+							<HxButton Text="Clear" Color="ThemeColor.Secondary" Outline="true" OnClick="ClearPelotonPassword" />
+						}
+					</InputGroupEndTemplate>
+				</HxInputText>
+			</div>
+		</div>
+	</HxFormState>
 	<div class="row gy-5">
-		<div class="col-md-6">
-			<HxInputText @bind-Value="pelotonSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
-		</div>
-		<div class="col-md-6">
-			<HxInputText @bind-Value="pelotonSettings.Password" Label="Password" Type="InputType.Password">
-				<LabelTemplate>
-					Password
-					@if (pelotonSettings.IsPasswordSet)
-					{
-						<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success">Password is set</HxBadge>
-					}
-				</LabelTemplate>
-				<InputGroupEndTemplate>
-					@if (pelotonSettings.IsPasswordSet)
-					{
-						<HxButton Text="Clear" Color="ThemeColor.Secondary" Outline="true" OnClick="ClearPelotonPassword" />
-					}
-				</InputGroupEndTemplate>
-			</HxInputText>
-		</div>
 		<div class="col-md-6">
 			<HxInputNumber Label="Default number of workouts to download" TValue="int" @bind-Value="pelotonSettings.NumWorkoutsToDownload" />
 		</div>
@@ -37,6 +48,100 @@
 		</div>
 	</div>
 	<br />
+	<div class="row g-3">
+		<div class="col-md-12">
+			<HxAccordion>
+				<HxAccordionItem>
+					<HeaderTemplate>Advanced</HeaderTemplate>
+					<BodyTemplate>
+						<HxAlert Color="ThemeColor.Warning">
+							<HxIcon Icon="@BootstrapIcon.ExclamationTriangleFill" />
+							<strong>Most users should not need to modify these settings.  Please be sure you've read the documentation before changing.</strong>
+						</HxAlert>
+						<br />
+						<HxCard>
+							<HeaderTemplate>
+								Bearer Token
+								<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+								Title="<b>Bearer Token</b>"
+								Content="@BearerTokenDocumentation"
+								Html="true">
+									<HxIcon Icon="@BootstrapIcon.QuestionCircle" />
+								</HxPopover>
+							</HeaderTemplate>
+							<BodyTemplate>
+								<HxInputText @bind-Value="pelotonSettings.BearerToken" Label="Bearer Token" Type="InputType.Password">
+									<LabelTemplate>
+										Bearer Token
+										@if (pelotonSettings.IsBearerTokenSet)
+										{
+											<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success">Bearer Token is set</HxBadge>
+										}
+									</LabelTemplate>
+									<InputGroupEndTemplate>
+										@if (pelotonSettings.IsBearerTokenSet)
+										{
+											<HxButton Text="Clear" Color="ThemeColor.Secondary" Outline="true" OnClick="ClearBearerToken" />
+										}
+									</InputGroupEndTemplate>
+								</HxInputText>
+							</BodyTemplate>
+						</HxCard>
+						<br />
+						<HxCard CssClass="border-danger text-danger">
+							<HeaderTemplate>
+								Peloton Api Settings
+								<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+								Title="<b>Peloton Api Settings</b>"
+								Content="@PelotonApiDocumentation"
+								Html="true">
+									<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Danger">?</HxBadge>
+								</HxPopover>
+								<HxButton Icon="BootstrapIcon.ArrowCounterclockwise" Color="ThemeColor.Light" OnClick="RestoreDefaultApiSettings" Tooltip="Restore Defaults" />
+							</HeaderTemplate>
+							<BodyTemplate>
+								<div class="row">
+									<div class="col-md-6">
+										<HxInputText @bind-Value="pelotonSettings.Api.ApiUrl" Label="Api Url" Type="InputType.Text" InputMode="InputMode.Url" />
+									</div>
+									<div class="col-md-6">
+										<HxInputText @bind-Value="pelotonSettings.Api.AuthDomain" Label="Auth Domain" Type="InputType.Text" InputMode="InputMode.Url" />
+									</div>
+									<div class="col-md-6">
+										<HxInputText @bind-Value="pelotonSettings.Api.AuthClientId" Label="Auth Client Id" Type="InputType.Text" InputMode="InputMode.Text" />
+									</div>
+									<div class="col-md-6">
+										<HxInputText @bind-Value="pelotonSettings.Api.AuthAudience" Label="Auth Audience" Type="InputType.Text" InputMode="InputMode.Url" />
+									</div>
+									<div class="col-md-6">
+										<HxInputText @bind-Value="pelotonSettings.Api.AuthScope" Label="Auth Scope" Type="InputType.Text" InputMode="InputMode.Text" />
+									</div>
+									<div class="col-md-6">
+										<HxInputText @bind-Value="pelotonSettings.Api.AuthRedirectUri" Label="Auth Redirect Uri" Type="InputType.Text" InputMode="InputMode.Url" />
+									</div>
+									<div class="col-md-12"><br /></div>
+									<div class="col-md-6">
+										<HxInputText @bind-Value="pelotonSettings.Api.AuthAuthorizePath" Label="Auth Authorize Path" Type="InputType.Text" InputMode="InputMode.Text" />
+									</div>
+									<div class="col-md-6">
+										<HxInputText @bind-Value="pelotonSettings.Api.AuthTokenPath" Label="Auth Token Path" Type="InputType.Text" InputMode="InputMode.Text" />
+									</div>
+									<div class="col-md-12"><br /></div>
+									<div class="col-md-6">
+										<HxInputText @bind-Value="pelotonSettings.Api.Auth0ClientPayload" Label="Auth0 Client Payload" Type="InputType.Text" InputMode="InputMode.Text" />
+									</div>
+									<div class="col-md-6">
+										<HxInputNumber TValue="int" @bind-Value="pelotonSettings.Api.BearerTokenDefaultTtlSeconds" Label="Bearer Token Default TTL (seconds)" />
+									</div>
+								</div>
+							</BodyTemplate>
+						</HxCard>
+					</BodyTemplate>
+				</HxAccordionItem>
+			</HxAccordion>
+		</div>
+	</div>
+	<br />
 	<HxSubmit Color="ThemeColor.Primary" OnClick="SavePelotonSettings">Save</HxSubmit>
 </EditForm>
 
@@ -44,6 +149,7 @@
 	private static ICollection<WorkoutType> workoutTypes = Enum.GetValues(typeof(WorkoutType)).Cast<WorkoutType>().ToList();
 
 	private SettingsPelotonGetResponse pelotonSettings;
+	private string configDocumentation;
 
 	private List<WorkoutType> selectedWorkoutTypes = new List<WorkoutType>();
 
@@ -51,6 +157,7 @@
 	{
 		var settings = new SettingsGetResponse();
 		pelotonSettings = settings.Peloton;
+		configDocumentation = string.Empty;
 	}
 
 	protected override Task OnInitializedAsync()
@@ -66,6 +173,9 @@
 
 		pelotonSettings = settings.Peloton;
 		selectedWorkoutTypes = pelotonSettings.ExcludeWorkoutTypes.ToList();
+
+		var systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = settings.App.CheckForUpdates });
+		configDocumentation = systemInfo.Documentation + "/configuration/peloton";
 	}
 
 	protected void ClearPelotonPassword()
@@ -73,6 +183,13 @@
 		using var tracing = Tracing.ClientTrace($"{nameof(PelotonSettingsForm)}.{nameof(ClearPelotonPassword)}", kind: ActivityKind.Client);
 		pelotonSettings.Password = string.Empty;
 		pelotonSettings.IsPasswordSet = false;
+	}
+
+	protected void ClearBearerToken()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(PelotonSettingsForm)}.{nameof(ClearBearerToken)}", kind: ActivityKind.Client);
+		pelotonSettings.BearerToken = string.Empty;
+		pelotonSettings.IsBearerTokenSet = false;
 	}
 
 	protected async Task SavePelotonSettings()
@@ -102,4 +219,32 @@
 			Log.Error("UI - Failed to save Peloton settings.", e);
 		}
 	}
+
+	protected async Task RestoreDefaultApiSettings()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(PelotonSettingsForm)}.{nameof(RestoreDefaultApiSettings)}", kind: ActivityKind.Client);
+
+		_toaster.Clear();
+
+		try
+		{
+			pelotonSettings.Api = new PelotonApiSettings();
+
+			pelotonSettings = await _apiClient.SettingsPelotonPostAsync(pelotonSettings.Map());
+			_toaster.AddInformation("Peloton Settings Saved!");
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to save Peloton Settings - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to save Peloton settings.", e);
+		}
+	}
+
+	private string BearerTokenDocumentation => $"When a Bearer Token is set, P2G will bypass Email and Password authentication entirely and use this token to communicate with Peloton directly. The token expires roughly every 48 hours and must be manually updated.<br /><br /><b>Email and Password will be ignored while a Bearer Token is set.</b><br /><br /><a href='{configDocumentation}#peloton-bearer-token'>Documentation</a><br /><br /><small>(click the <b>?</b> to pin this window)</small>";
+	private string PelotonApiDocumentation => $"These settings control how P2G communicates with the Peloton Api. <br /><br /><b>Please do not change these values unless you've been given explicit guidance to do so.</b><br /><br /><a href='{configDocumentation}'>Documentation</a><br /><br /><small>(click the <b>?</b> to pin this window)</small>";
 }
