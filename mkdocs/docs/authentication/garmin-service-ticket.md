@@ -38,6 +38,9 @@ You will retrieve the service ticket directly from your browser. This takes abou
 6. After logging in, look in the Network tab for a request that includes `mobile/api/login`
 7. Click that request, then open the **Response** or **Preview** tab
 8. Find the value next to `"serviceTicketId"` — it looks like `ST-XXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-sso`
+
+    !!! tip "If the Response tab appears empty, right-click anywhere in the Network tab and choose **Save All As HAR**. Open the downloaded file in a text editor (e.g. Notepad) and search for `serviceTicketId` to find your ticket."
+
 9. **Copy the full value** (do not include the surrounding quotes)
 
 ---
