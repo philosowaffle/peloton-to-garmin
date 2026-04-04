@@ -58,8 +58,6 @@ This works for the **Windows App**, **Docker Web UI**, and **Source Web UI**.
 
 P2G will immediately exchange the ticket for a long-lived token. If it succeeds, the "Service Ticket is set" badge will disappear (the ticket has been consumed) and your next sync will work automatically.
 
-!!! tip "If you see an error after saving, the ticket may have expired. Go back to Step 1 and try again — move faster this time."
-
 ---
 
 ### Via config file (Docker Headless, GitHub Actions, Console)
