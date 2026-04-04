@@ -6,24 +6,24 @@
 
 ## Features
 
-- [#813] Update annual challenge for 2026 (@run1206)
+- [#833] Add UI for managing advanced Peloton API configuration options
 
 ## Docker Tags
 
 - Console
     - `console-stable`
     - `console-latest`
-    - `console-v6.0.0`
-    - `console-v6`
+    - `console-v6.1.0-rc`
+    - `console-v6.1`
 
 - Api
     - `api-stable`
     - `api-latest`
-    - `api-v6.0.0`
-    - `api-v6`
+    - `api-v6.1.0-rc`
+    - `api-v6.1`
 - WebUI
     - `webui-stable`
     - `webui-latest`
-    - `webui-v6.0.0`
-    - `webui-v6`
+    - `webui-v6.1.0-rc`
+    - `webui-v6.1`
 

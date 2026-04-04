@@ -25,6 +25,7 @@ public class SettingsGetResponse
 			ExcludeWorkoutTypes = settings.Peloton.ExcludeWorkoutTypes,
 			NumWorkoutsToDownload = settings.Peloton.NumWorkoutsToDownload,
 			IsPasswordSet = !string.IsNullOrEmpty(settings.Peloton.Password),
+			IsBearerTokenSet = !string.IsNullOrEmpty(settings.Peloton.BearerToken),
 			Api = settings.Peloton.Api ?? new PelotonApiSettings()
 		};
 
@@ -76,6 +77,7 @@ public class SettingsPelotonGetResponse
 
 	public bool IsConfigured => !string.IsNullOrWhiteSpace(Email) && IsPasswordSet;
 	public bool IsPasswordSet { get; set; }
+	public bool IsBearerTokenSet { get; set; }
 	public string? Email { get; set; }
 	public string? Password { get; set; }
 	public ICollection<WorkoutType> ExcludeWorkoutTypes { get; set; }
@@ -87,6 +89,7 @@ public class SettingsPelotonPostRequest
 {
 	public string? Email { get; set; }
 	public string? Password { get; set; }
+	public string? BearerToken { get; set; }
 	public ICollection<WorkoutType>? ExcludeWorkoutTypes { get; set; }
 	public int NumWorkoutsToDownload { get; set; }
 	public PelotonApiSettings Api { get; set; } = new PelotonApiSettings();
@@ -100,6 +103,7 @@ public static class Mapping
 		{
 			Email = response.Email,
 			Password = response.Password,
+			BearerToken = null,
 			ExcludeWorkoutTypes = response.ExcludeWorkoutTypes,
 			NumWorkoutsToDownload = response.NumWorkoutsToDownload,
 			Api = response.Api,
@@ -112,6 +116,7 @@ public static class Mapping
 		{
 			Email = request.Email,
 			Password = request.Password,
+			BearerToken = request.BearerToken,
 			ExcludeWorkoutTypes = request.ExcludeWorkoutTypes,
 			NumWorkoutsToDownload = request.NumWorkoutsToDownload,
 			Api = request.Api,
