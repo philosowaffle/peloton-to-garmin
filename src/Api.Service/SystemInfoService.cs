@@ -5,6 +5,7 @@ using Common.Dto;
 using Common.Observe;
 using Common.Service;
 using Common.Stateful;
+using Garmin.Auth;
 using Philosowaffle.Capability.ReleaseChecks.Model;
 using Serilog.Events;
 
@@ -21,11 +22,13 @@ public class SystemInfoService : ISystemInfoService
 {
 	private readonly IVersionInformationService _versionInformationService;
 	private readonly ISettingsService _settingsService;
+	private readonly IPlaywrightGarminAuthService _playwrightAuth;
 
-	public SystemInfoService(ISettingsService settingsService, IVersionInformationService versionInformationService)
+	public SystemInfoService(ISettingsService settingsService, IVersionInformationService versionInformationService, IPlaywrightGarminAuthService playwrightAuth)
 	{
 		_versionInformationService = versionInformationService;
 		_settingsService = settingsService;
+		_playwrightAuth = playwrightAuth;
 	}
 
 	public async Task<SystemInfoGetResponse> GetAsync(SystemInfoGetRequest request, string? scheme = null, string? host = null)
@@ -67,6 +70,7 @@ public class SystemInfoService : ISystemInfoService
 			TempDirectory = settings?.App?.WorkingDirectory ?? string.Empty,
 			ApplicationConfigFilePath = Statics.ConfigPath,
 			CurrentLogLevel = Logging.InternalLevelSwitch.MinimumLevel,
+			PlaywrightAvailable = _playwrightAuth?.IsAvailable() ?? false,
 		};
 	}
 

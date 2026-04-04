@@ -34,6 +34,7 @@ public static class ApiStartupServices
 		services.AddSingleton<IConverter, JsonConverter>();
 
 		// GARMIN
+		services.AddSingleton<IPlaywrightGarminAuthService, PlaywrightGarminAuthService>();
 		services.AddSingleton<IGarminUploader, GarminUploader>();
 		services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
 		services.AddSingleton<IGarminAuthenticationService, GarminAuthenticationService>();
