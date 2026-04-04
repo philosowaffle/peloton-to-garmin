@@ -80,6 +80,7 @@ public class SettingsPelotonGetResponse
 	public bool IsBearerTokenSet { get; set; }
 	public string? Email { get; set; }
 	public string? Password { get; set; }
+	public string? BearerToken { get; set; }
 	public ICollection<WorkoutType> ExcludeWorkoutTypes { get; set; }
 	public int NumWorkoutsToDownload { get; set; }
 	public PelotonApiSettings Api { get; set; } = new PelotonApiSettings();
@@ -103,7 +104,7 @@ public static class Mapping
 		{
 			Email = response.Email,
 			Password = response.Password,
-			BearerToken = null,
+			BearerToken = response.BearerToken,
 			ExcludeWorkoutTypes = response.ExcludeWorkoutTypes,
 			NumWorkoutsToDownload = response.NumWorkoutsToDownload,
 			Api = response.Api,

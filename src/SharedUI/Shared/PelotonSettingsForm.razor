@@ -70,7 +70,7 @@
 								</HxPopover>
 							</HeaderTemplate>
 							<BodyTemplate>
-								<HxInputText @bind-Value="bearerToken" Label="Bearer Token" Type="InputType.Password">
+								<HxInputText @bind-Value="pelotonSettings.BearerToken" Label="Bearer Token" Type="InputType.Password">
 									<LabelTemplate>
 										Bearer Token
 										@if (pelotonSettings.IsBearerTokenSet)
@@ -150,7 +150,6 @@
 
 	private SettingsPelotonGetResponse pelotonSettings;
 	private string configDocumentation;
-	private string bearerToken = string.Empty;
 
 	private List<WorkoutType> selectedWorkoutTypes = new List<WorkoutType>();
 
@@ -189,7 +188,7 @@
 	protected void ClearBearerToken()
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(PelotonSettingsForm)}.{nameof(ClearBearerToken)}", kind: ActivityKind.Client);
-		bearerToken = string.Empty;
+		pelotonSettings.BearerToken = string.Empty;
 		pelotonSettings.IsBearerTokenSet = false;
 	}
 
@@ -202,15 +201,7 @@
 		try
 		{
 			pelotonSettings.ExcludeWorkoutTypes = selectedWorkoutTypes;
-			var request = pelotonSettings.Map();
-
-			if (!string.IsNullOrWhiteSpace(bearerToken))
-				request.BearerToken = bearerToken;
-			else if (!pelotonSettings.IsBearerTokenSet)
-				request.BearerToken = string.Empty;
-
-			pelotonSettings = await _apiClient.SettingsPelotonPostAsync(request);
-			bearerToken = string.Empty;
+			pelotonSettings = await _apiClient.SettingsPelotonPostAsync(pelotonSettings.Map());
 			_toaster.AddInformation("Peloton Settings Saved!");
 		}
 		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
