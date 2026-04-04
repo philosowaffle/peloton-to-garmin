@@ -112,6 +112,25 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 			return new GarminApiAuthentication() { AuthStage = AuthStage.NeedServiceTicket };
 		}
 
+		var settings = await _settingsService.GetSettingsAsync();
+		if (!string.IsNullOrWhiteSpace(settings.Garmin.ServiceTicket))
+		{
+			try
+			{
+				_logger.Information("Service ticket found in settings, exchanging for DI OAuth token.");
+				var ticketAuth = await ExchangeServiceTicketAsync(settings.Garmin.ServiceTicket);
+				settings.Garmin.ServiceTicket = null;
+				await _settingsService.UpdateSettingsAsync(settings);
+				return ticketAuth;
+			}
+			catch (Exception ex)
+			{
+				_logger.Warning("Failed to exchange service ticket from settings, falling back to legacy auth.", ex);
+				settings.Garmin.ServiceTicket = null;
+				await _settingsService.UpdateSettingsAsync(settings);
+			}
+		}
+
 		var oAuth2Token = await _garminDb.GetGarminOAuth2TokenAsync(1);
 		if (oAuth2Token is object && !oAuth2Token.IsExpired())
 			return new GarminApiAuthentication()

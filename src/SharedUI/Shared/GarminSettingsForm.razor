@@ -47,6 +47,44 @@
 		<br />
 		<div class="row g-3">
 			<div class="col-md-12">
+				<HxCard>
+					<HeaderTemplate>
+						Alternative Authentication
+						<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+						Title="<b>Alternative Authentication</b>"
+						Content="@ServiceTicketDocumentation"
+						Html="true">
+							<HxIcon Icon="@BootstrapIcon.QuestionCircle" />
+						</HxPopover>
+					</HeaderTemplate>
+					<BodyTemplate>
+						<HxAlert Color="ThemeColor.Info">
+							<HxIcon Icon="@BootstrapIcon.InfoCircleFill" />
+							<strong>Only use this if the normal Email/Password sign-in is not working.</strong>
+							See the <a href="@($"{configDocumentationBase}/authentication/garmin-service-ticket")" target="_blank">documentation</a> for step-by-step instructions.
+						</HxAlert>
+						<HxInputText @bind-Value="garminSettings.ServiceTicket" Label="Service Ticket" Type="InputType.Password">
+							<LabelTemplate>
+								Service Ticket
+								@if (garminSettings.IsServiceTicketSet)
+								{
+									<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success">Service Ticket is set</HxBadge>
+								}
+							</LabelTemplate>
+							<InputGroupEndTemplate>
+								@if (garminSettings.IsServiceTicketSet)
+								{
+									<HxButton Text="Clear" Color="ThemeColor.Secondary" Outline="true" OnClick="ClearServiceTicket" />
+								}
+							</InputGroupEndTemplate>
+						</HxInputText>
+					</BodyTemplate>
+				</HxCard>
+			</div>
+		</div>
+		<br />
+		<div class="row g-3">
+			<div class="col-md-12">
 				<HxAccordion>
 					<HxAccordionItem>
 						<HeaderTemplate>Advanced</HeaderTemplate>
@@ -183,6 +221,13 @@
 		garminSettings.IsPasswordSet = false;
 	}
 
+	protected void ClearServiceTicket()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(GarminSettingsForm)}.{nameof(ClearServiceTicket)}", kind: ActivityKind.Client);
+		garminSettings.ServiceTicket = string.Empty;
+		garminSettings.IsServiceTicketSet = false;
+	}
+
 	protected async Task SaveGarminSettings()
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(GarminSettingsForm)}.{nameof(SaveGarminSettings)}", kind: ActivityKind.Client);
@@ -236,6 +281,7 @@
 
 	}
 
+	private string ServiceTicketDocumentation => $"If P2G cannot sign in to Garmin automatically (e.g. Cloudflare blocks the login), you can paste a one-time service ticket here as an alternative. P2G will exchange it for a long-lived token immediately when you save.<br /><br />The token lasts approximately 30 days, after which you will need to provide a new ticket.<br /><br /><a href='{configDocumentationBase}/authentication/garmin-service-ticket' target='_blank'>Step-by-step instructions</a><br /><br /><small>(click the <b>?</b> to pin this window)</small>";
 	private string UploadFormatDocumentation => $"Garmin supports uploading either FIT files or TCX files.  FIT is the more modern format and in most cases will result in the most data and features syncing to Garmin.<br /><br />  You must upload the FIT format in order to get extra fields calculated by Garmin such as TSS/VO2/TE.<br /><br /><a href='{configDocumentation}'>Documentation</a><br /><br /><small>(click the <b>?</b> to pin this window)</small>";
 	private string GarminApiDocumentation => $"These settings control how P2G communicates with the Garmin Api. <br /><br /><b>Please do not change these value unless you've been given explicit guidance to do so.</b><br /><br /><a href='{configDocumentation}'>Documentation</a><br /><br /><small>(click the <b>?</b> to pin this window)</small>";
 }
