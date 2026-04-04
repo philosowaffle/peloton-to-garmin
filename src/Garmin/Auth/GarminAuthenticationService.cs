@@ -109,7 +109,8 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 				}
 			}
 
-			return new GarminApiAuthentication() { AuthStage = AuthStage.NeedServiceTicket };
+			_logger.Information("DI OAuth session exists but both access token and refresh token are expired. Clearing session and falling through to legacy auth.");
+			await _garminDb.UpsertNativeOAuth2SessionAsync(1, null);
 		}
 
 		var settings = await _settingsService.GetSettingsAsync();

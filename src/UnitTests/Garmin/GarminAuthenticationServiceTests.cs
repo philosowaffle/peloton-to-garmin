@@ -567,7 +567,7 @@ namespace UnitTests.Garmin
 		}
 
 		[Test]
-		public async Task GetGarminAuthenticationAsync_WhenDIRefreshTokenExpired_ShouldReturnNeedServiceTicket()
+		public async Task GetGarminAuthenticationAsync_WhenDIRefreshTokenExpired_ShouldClearSessionAndFallThrough()
 		{
 			// SETUP
 			var expiredSession = new NativeOAuth2Session
@@ -588,15 +588,25 @@ namespace UnitTests.Garmin
 					}
 				}
 			};
+			var legacyOAuth2Token = new OAuth2Token
+			{
+				Access_Token = "legacy-access-token",
+				ExpiresAt = DateTime.Now.AddHours(12),
+			};
 
 			_garminDbMock.Setup(db => db.GetNativeOAuth2SessionAsync(1)).ReturnsAsync(expiredSession);
+			_garminDbMock.Setup(db => db.UpsertNativeOAuth2SessionAsync(1, null)).Returns(Task.CompletedTask);
+			_settingsServiceMock.Setup(s => s.GetSettingsAsync()).ReturnsAsync(new Settings());
+			_garminDbMock.Setup(db => db.GetGarminOAuth2TokenAsync(1)).ReturnsAsync(legacyOAuth2Token);
 
 			// ACT
 			var result = await _authService.GetGarminAuthenticationAsync();
 
 			// ASSERT
 			result.Should().NotBeNull();
-			result.AuthStage.Should().Be(AuthStage.NeedServiceTicket);
+			result.AuthStage.Should().Be(AuthStage.Completed);
+			result.OAuth2Token.Access_Token.Should().Be("legacy-access-token");
+			_garminDbMock.Verify(db => db.UpsertNativeOAuth2SessionAsync(1, null), Times.Once);
 		}
 
 		[Test]
