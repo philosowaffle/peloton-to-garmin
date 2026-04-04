@@ -151,12 +151,22 @@ namespace Garmin
 			{
 				try
 				{
+					var basicAuth = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(clientId + ":"));
 					var token = await settings.Garmin.Api.DiAuthUrl
+						.WithHeader("Authorization", $"Basic {basicAuth}")
+						.WithHeader("User-Agent", "GCM-Android-5.23")
+						.WithHeader("x-garmin-user-agent", "com.garmin.android.apps.connectmobile/5.23; ; Google/sdk_gphone64_arm64/google; Android/33; Dalvik/2.1.0")
+						.WithHeader("x-garmin-paired-app-version", "10861")
+						.WithHeader("x-garmin-client-platform", "Android")
+						.WithHeader("x-app-ver", "10861")
+						.WithHeader("x-lang", "en")
+						.WithHeader("x-gcexperience", "GC5")
 						.PostUrlEncodedAsync(new
 						{
-							grant_type = "service_ticket",
+							grant_type = "https://connectapi.garmin.com/di-oauth2-service/oauth/grant/service_ticket",
 							client_id = clientId,
 							service_ticket = serviceTicket,
+							service_url = "https://mobile.integration.garmin.com/gcm/android",
 						})
 						.ReceiveJson<OAuth2Token>();
 
@@ -176,7 +186,16 @@ namespace Garmin
 		{
 			var settings = await _settingsService.GetSettingsAsync();
 
+			var basicAuth = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(clientId + ":"));
 			return await settings.Garmin.Api.DiAuthUrl
+				.WithHeader("Authorization", $"Basic {basicAuth}")
+				.WithHeader("User-Agent", "GCM-Android-5.23")
+				.WithHeader("x-garmin-user-agent", "com.garmin.android.apps.connectmobile/5.23; ; Google/sdk_gphone64_arm64/google; Android/33; Dalvik/2.1.0")
+				.WithHeader("x-garmin-paired-app-version", "10861")
+				.WithHeader("x-garmin-client-platform", "Android")
+				.WithHeader("x-app-ver", "10861")
+				.WithHeader("x-lang", "en")
+				.WithHeader("x-gcexperience", "GC5")
 				.PostUrlEncodedAsync(new
 				{
 					grant_type = "refresh_token",
