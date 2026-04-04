@@ -33,10 +33,12 @@ public class SettingsGetResponse
 		{
 			Email = settings.Garmin.Email,
 			Password = null,
+			ServiceTicket = null,
 			TwoStepVerificationEnabled = settings.Garmin.TwoStepVerificationEnabled,
 			FormatToUpload = settings.Garmin.FormatToUpload,
 			Upload = settings.Garmin.Upload,
 			IsPasswordSet = !string.IsNullOrEmpty(settings.Garmin.Password),
+			IsServiceTicketSet = !string.IsNullOrEmpty(settings.Garmin.ServiceTicket),
 			Api = settings.Garmin.Api ?? new GarminApiSettings()
 		};
 	}
@@ -50,8 +52,10 @@ public class SettingsGetResponse
 public class SettingsGarminGetResponse
 {
 	public bool IsPasswordSet { get; set; }
+	public bool IsServiceTicketSet { get; set; }
 	public string? Email { get; set; }
 	public string? Password { get; set; }
+	public string? ServiceTicket { get; set; }
 	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
@@ -62,6 +66,7 @@ public class SettingsGarminPostRequest
 {
 	public string? Email { get; set; }
 	public string? Password { get; set; }
+	public string? ServiceTicket { get; set; }
 	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
@@ -130,6 +135,7 @@ public static class Mapping
 		{
 			Email = response.Email,
 			Password = response.Password,
+			ServiceTicket = response.ServiceTicket,
 			TwoStepVerificationEnabled = response.TwoStepVerificationEnabled,
 			FormatToUpload = response.FormatToUpload,
 			Upload = response.Upload,
@@ -143,6 +149,7 @@ public static class Mapping
 		{
 			Email = request.Email,
 			Password = request.Password,
+			ServiceTicket = request.ServiceTicket,
 			TwoStepVerificationEnabled = request.TwoStepVerificationEnabled,
 			FormatToUpload = request.FormatToUpload,
 			Upload = request.Upload,

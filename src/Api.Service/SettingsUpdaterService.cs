@@ -93,6 +93,22 @@ public class SettingsUpdaterService : ISettingsUpdaterService
 			|| settings.Garmin.Email != updatedGarminSettings.Email)
 			await _garminAuthService.SignOutAsync();
 
+		if (!string.IsNullOrWhiteSpace(updatedGarminSettings.ServiceTicket))
+		{
+			try
+			{
+				await _garminAuthService.ExchangeServiceTicketAsync(updatedGarminSettings.ServiceTicket);
+			}
+			catch (Exception e)
+			{
+				result.Successful = false;
+				result.Error = new ServiceError() { Message = $"Failed to exchange service ticket with Garmin. The ticket may have expired — please copy a fresh one and try again. Details: {e.Message}", Exception = e };
+				return result;
+			}
+
+			updatedGarminSettings.ServiceTicket = null;
+		}
+
 		settings.Garmin = updatedGarminSettings.Map();
 
 		await _settingsService.UpdateSettingsAsync(settings);

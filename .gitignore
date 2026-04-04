@@ -127,3 +127,6 @@ configuration.local.json
 # docs
 /mkdocs/site
 *.user
+
+# Claude Code
+.claude/settings.local.json

@@ -101,5 +101,28 @@ namespace Api.Controllers
 				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));
 			}
 		}
+
+		[HttpPost]
+		[Route("api/garminauthentication/serviceticket")]
+		[ProducesResponseType(StatusCodes.Status201Created)]
+		public async Task<ActionResult> PostServiceTicketAsync([FromBody] GarminAuthenticationServiceTicketPostRequest request)
+		{
+			if (string.IsNullOrWhiteSpace(request?.ServiceTicket))
+				return BadRequest(new ErrorResponse("ServiceTicket is required."));
+
+			try
+			{
+				await _garminAuthService.ExchangeServiceTicketAsync(request.ServiceTicket);
+				return Created("api/garminauthentication", new GarminAuthenticationGetResponse() { IsAuthenticated = true });
+			}
+			catch (GarminAuthenticationError gae)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Failed to exchange service ticket: {gae.Message}"));
+			}
+			catch (Exception e)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse($"Unexpected error occurred: {e.Message}"));
+			}
+		}
 	}
 }

@@ -9,6 +9,7 @@ using Garmin.Dto;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace UnitTests.Garmin
@@ -27,7 +28,7 @@ namespace UnitTests.Garmin
 			_settingsServiceMock = new Mock<ISettingsService>();
 			_apiClientMock = new Mock<IGarminApiClient>();
 			_garminDbMock = new Mock<IGarminDb>();
-			
+
 			_authService = new GarminAuthenticationService(
 				_settingsServiceMock.Object,
 				_apiClientMock.Object,
@@ -130,6 +131,8 @@ namespace UnitTests.Garmin
 				ExpiresAt = DateTime.Now.AddHours(2) // Need 2 hours because IsExpired() adds 1 hour padding
 			};
 
+			_garminDbMock.Setup(db => db.GetNativeOAuth2SessionAsync(1))
+				.ReturnsAsync((NativeOAuth2Session)null);
 			_garminDbMock.Setup(db => db.GetGarminOAuth2TokenAsync(1))
 				.ReturnsAsync(validOAuth2Token);
 
@@ -166,6 +169,8 @@ namespace UnitTests.Garmin
 				Expires_In = 3600
 			};
 
+			_garminDbMock.Setup(db => db.GetNativeOAuth2SessionAsync(1))
+				.ReturnsAsync((NativeOAuth2Session)null);
 			_garminDbMock.Setup(db => db.GetGarminOAuth2TokenAsync(1))
 				.ReturnsAsync((OAuth2Token)null);
 			_garminDbMock.Setup(db => db.GetGarminOAuth1TokenAsync(1))
@@ -189,6 +194,8 @@ namespace UnitTests.Garmin
 		public async Task GetGarminAuthenticationAsync_WhenNoTokens_ShouldSignIn()
 		{
 			// SETUP
+			_garminDbMock.Setup(db => db.GetNativeOAuth2SessionAsync(1))
+				.ReturnsAsync((NativeOAuth2Session)null);
 			_garminDbMock.Setup(db => db.GetGarminOAuth2TokenAsync(1))
 				.ReturnsAsync((OAuth2Token)null);
 			_garminDbMock.Setup(db => db.GetGarminOAuth1TokenAsync(1))
@@ -444,6 +451,8 @@ namespace UnitTests.Garmin
 				.Returns(Task.CompletedTask);
 			_garminDbMock.Setup(db => db.UpsertGarminOAuth2TokenAsync(1, null))
 				.Returns(Task.CompletedTask);
+			_garminDbMock.Setup(db => db.UpsertNativeOAuth2SessionAsync(1, null))
+				.Returns(Task.CompletedTask);
 
 			// ACT
 			var result = await _authService.SignOutAsync();
@@ -453,6 +462,7 @@ namespace UnitTests.Garmin
 			_garminDbMock.Verify(db => db.UpsertPartialGarminAuthenticationAsync(1, null), Times.Once);
 			_garminDbMock.Verify(db => db.UpsertGarminOAuth1TokenAsync(1, null), Times.Once);
 			_garminDbMock.Verify(db => db.UpsertGarminOAuth2TokenAsync(1, null), Times.Once);
+			_garminDbMock.Verify(db => db.UpsertNativeOAuth2SessionAsync(1, null), Times.Once);
 		}
 
 		[Test]
@@ -474,6 +484,155 @@ namespace UnitTests.Garmin
 			// SETUP & ACT & ASSERT
 			// The constructor doesn't validate null parameters
 			Assert.DoesNotThrow(() => new GarminAuthenticationService(null, null, null));
+		}
+
+		[Test]
+		public async Task GetGarminAuthenticationAsync_WhenValidDISession_ShouldReturnCompleted()
+		{
+			// SETUP
+			var diToken = new OAuth2Token
+			{
+				Access_Token = "di-access-token",
+				Refresh_Token = "di-refresh-token",
+				ExpiresAt = DateTime.Now.AddHours(23),
+				RefreshTokenExpiresAt = DateTime.Now.AddDays(29),
+			};
+			var nativeSession = new NativeOAuth2Session
+			{
+				StoredAt = DateTime.Now,
+				TokenSlots = new List<DITokenSlot>
+				{
+					new DITokenSlot { ClientId = "GARMIN_CONNECT_MOBILE_ANDROID_DI_2025Q2", Token = diToken }
+				}
+			};
+
+			_garminDbMock.Setup(db => db.GetNativeOAuth2SessionAsync(1)).ReturnsAsync(nativeSession);
+
+			// ACT
+			var result = await _authService.GetGarminAuthenticationAsync();
+
+			// ASSERT
+			result.Should().NotBeNull();
+			result.AuthStage.Should().Be(AuthStage.Completed);
+			result.OAuth2Token.Access_Token.Should().Be("di-access-token");
+			_garminDbMock.Verify(db => db.GetGarminOAuth2TokenAsync(1), Times.Never);
+		}
+
+		[Test]
+		public async Task GetGarminAuthenticationAsync_WhenDIAccessTokenExpiredButRefreshValid_ShouldRefreshAndReturnCompleted()
+		{
+			// SETUP
+			var expiredDiToken = new OAuth2Token
+			{
+				Access_Token = "old-di-access-token",
+				Refresh_Token = "di-refresh-token",
+				ExpiresAt = DateTime.Now.AddHours(-2),
+				RefreshTokenExpiresAt = DateTime.Now.AddDays(28),
+			};
+			var nativeSession = new NativeOAuth2Session
+			{
+				StoredAt = DateTime.Now,
+				TokenSlots = new List<DITokenSlot>
+				{
+					new DITokenSlot { ClientId = "GARMIN_CONNECT_MOBILE_ANDROID_DI_2025Q2", Token = expiredDiToken }
+				}
+			};
+			var refreshedToken = new OAuth2Token
+			{
+				Access_Token = "new-di-access-token",
+				Refresh_Token = "di-refresh-token",
+				Expires_In = 86400,
+				Refresh_Token_Expires_In = 2592000,
+			};
+
+			_garminDbMock.Setup(db => db.GetNativeOAuth2SessionAsync(1)).ReturnsAsync(nativeSession);
+			_apiClientMock.Setup(api => api.RefreshDITokenAsync("GARMIN_CONNECT_MOBILE_ANDROID_DI_2025Q2", "di-refresh-token"))
+				.ReturnsAsync(refreshedToken);
+			_garminDbMock.Setup(db => db.UpsertNativeOAuth2SessionAsync(1, It.IsAny<NativeOAuth2Session>()))
+				.Returns(Task.CompletedTask);
+
+			// ACT
+			var result = await _authService.GetGarminAuthenticationAsync();
+
+			// ASSERT
+			result.Should().NotBeNull();
+			result.AuthStage.Should().Be(AuthStage.Completed);
+			result.OAuth2Token.Access_Token.Should().Be("new-di-access-token");
+			_garminDbMock.Verify(db => db.UpsertNativeOAuth2SessionAsync(1, It.IsAny<NativeOAuth2Session>()), Times.Once);
+		}
+
+		[Test]
+		public async Task GetGarminAuthenticationAsync_WhenDIRefreshTokenExpired_ShouldClearSessionAndFallThrough()
+		{
+			// SETUP
+			var expiredSession = new NativeOAuth2Session
+			{
+				StoredAt = DateTime.Now.AddDays(-31),
+				TokenSlots = new List<DITokenSlot>
+				{
+					new DITokenSlot
+					{
+						ClientId = "GARMIN_CONNECT_MOBILE_ANDROID_DI_2025Q2",
+						Token = new OAuth2Token
+						{
+							Access_Token = "old-access",
+							Refresh_Token = "old-refresh",
+							ExpiresAt = DateTime.Now.AddHours(-25),
+							RefreshTokenExpiresAt = DateTime.Now.AddHours(-1), // expired
+						}
+					}
+				}
+			};
+			var legacyOAuth2Token = new OAuth2Token
+			{
+				Access_Token = "legacy-access-token",
+				ExpiresAt = DateTime.Now.AddHours(12),
+			};
+
+			_garminDbMock.Setup(db => db.GetNativeOAuth2SessionAsync(1)).ReturnsAsync(expiredSession);
+			_garminDbMock.Setup(db => db.UpsertNativeOAuth2SessionAsync(1, null)).Returns(Task.CompletedTask);
+			_settingsServiceMock.Setup(s => s.GetSettingsAsync()).ReturnsAsync(new Settings());
+			_garminDbMock.Setup(db => db.GetGarminOAuth2TokenAsync(1)).ReturnsAsync(legacyOAuth2Token);
+
+			// ACT
+			var result = await _authService.GetGarminAuthenticationAsync();
+
+			// ASSERT
+			result.Should().NotBeNull();
+			result.AuthStage.Should().Be(AuthStage.Completed);
+			result.OAuth2Token.Access_Token.Should().Be("legacy-access-token");
+			_garminDbMock.Verify(db => db.UpsertNativeOAuth2SessionAsync(1, null), Times.Once);
+		}
+
+		[Test]
+		public async Task ExchangeServiceTicketAsync_WhenValid_ShouldStoreAndReturnCompleted()
+		{
+			// SETUP
+			var rawToken = new OAuth2Token
+			{
+				Access_Token = "new-di-access",
+				Refresh_Token = "new-di-refresh",
+				Expires_In = 86400,
+				Refresh_Token_Expires_In = 2592000,
+			};
+
+			_apiClientMock.Setup(api => api.ExchangeServiceTicketForDITokenAsync("ST-12345"))
+				.ReturnsAsync(("GARMIN_CONNECT_MOBILE_ANDROID_DI_2025Q2", rawToken));
+			_garminDbMock.Setup(db => db.UpsertNativeOAuth2SessionAsync(1, It.IsAny<NativeOAuth2Session>()))
+				.Returns(Task.CompletedTask);
+
+			// ACT
+			var result = await _authService.ExchangeServiceTicketAsync("ST-12345");
+
+			// ASSERT
+			result.Should().NotBeNull();
+			result.AuthStage.Should().Be(AuthStage.Completed);
+			result.OAuth2Token.Access_Token.Should().Be("new-di-access");
+			result.OAuth2Token.ExpiresAt.Should().BeCloseTo(DateTime.Now.AddSeconds(86400), TimeSpan.FromSeconds(5));
+			result.OAuth2Token.RefreshTokenExpiresAt.Should().BeCloseTo(DateTime.Now.AddSeconds(2592000), TimeSpan.FromSeconds(5));
+			_garminDbMock.Verify(db => db.UpsertNativeOAuth2SessionAsync(1, It.Is<NativeOAuth2Session>(s =>
+				s.TokenSlots.Count == 1 &&
+				s.TokenSlots[0].ClientId == "GARMIN_CONNECT_MOBILE_ANDROID_DI_2025Q2")), Times.Once);
 		}
 
 		[Test]
@@ -515,6 +674,8 @@ namespace UnitTests.Garmin
 			var oAuth1Token = new OAuth1Token { Token = "token", TokenSecret = "secret" };
 			var consumerCredentials = new ConsumerCredentials { Consumer_Key = "key", Consumer_Secret = "secret" };
 
+			_garminDbMock.Setup(db => db.GetNativeOAuth2SessionAsync(1))
+				.ReturnsAsync((NativeOAuth2Session)null);
 			_garminDbMock.Setup(db => db.GetGarminOAuth2TokenAsync(1))
 				.ReturnsAsync((OAuth2Token)null);
 			_garminDbMock.Setup(db => db.GetGarminOAuth1TokenAsync(1))
