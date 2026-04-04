@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(gh issue:*)",
-      "Bash(xargs grep:*)"
-    ]
-  }
-}
