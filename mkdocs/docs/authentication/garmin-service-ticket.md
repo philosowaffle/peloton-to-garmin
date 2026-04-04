@@ -85,16 +85,7 @@ Set the following environment variable before starting P2G:
 P2G_Garmin__ServiceTicket=ST-XXXX-paste-your-ticket-here
 ```
 
-P2G will exchange the ticket on its next run and clear it from settings automatically.
-
-For Docker Compose, add it to your service environment:
-
-```yaml
-environment:
-  - P2G_Garmin__ServiceTicket=ST-XXXX-paste-your-ticket-here
-```
-
-Remove the variable after P2G has run successfully — you only need it once to bootstrap.
+P2G will exchange the ticket on its next run and clear it from settings automatically. Remove the variable after P2G has run successfully — you only need it once to bootstrap.
 
 ---
 
