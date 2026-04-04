@@ -47,48 +47,44 @@
 		<br />
 		<div class="row g-3">
 			<div class="col-md-12">
-				<HxCard>
-					<HeaderTemplate>
-						Alternative Authentication
-						<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
-						Title="<b>Alternative Authentication</b>"
-						Content="@ServiceTicketDocumentation"
-						Html="true">
-							<HxIcon Icon="@BootstrapIcon.QuestionCircle" />
-						</HxPopover>
-					</HeaderTemplate>
-					<BodyTemplate>
-						<HxAlert Color="ThemeColor.Info">
-							<HxIcon Icon="@BootstrapIcon.InfoCircleFill" />
-							<strong>Only use this if the normal Email/Password sign-in is not working.</strong>
-							See the <a href="@($"{configDocumentationBase}/authentication/garmin-service-ticket")" target="_blank">documentation</a> for step-by-step instructions.
-						</HxAlert>
-						<HxInputText @bind-Value="garminSettings.ServiceTicket" Label="Service Ticket" Type="InputType.Password">
-							<LabelTemplate>
-								Service Ticket
-								@if (garminSettings.IsServiceTicketSet)
-								{
-									<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success">Service Ticket is set</HxBadge>
-								}
-							</LabelTemplate>
-							<InputGroupEndTemplate>
-								@if (garminSettings.IsServiceTicketSet)
-								{
-									<HxButton Text="Clear" Color="ThemeColor.Secondary" Outline="true" OnClick="ClearServiceTicket" />
-								}
-							</InputGroupEndTemplate>
-						</HxInputText>
-					</BodyTemplate>
-				</HxCard>
-			</div>
-		</div>
-		<br />
-		<div class="row g-3">
-			<div class="col-md-12">
 				<HxAccordion>
 					<HxAccordionItem>
 						<HeaderTemplate>Advanced</HeaderTemplate>
 						<BodyTemplate>
+							<HxCard>
+								<HeaderTemplate>
+									Alternative Authentication
+									<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+									Title="<b>Alternative Authentication</b>"
+									Content="@ServiceTicketDocumentation"
+									Html="true">
+										<HxIcon Icon="@BootstrapIcon.QuestionCircle" />
+									</HxPopover>
+								</HeaderTemplate>
+								<BodyTemplate>
+									<HxAlert Color="ThemeColor.Info">
+										<HxIcon Icon="@BootstrapIcon.InfoCircleFill" />
+										<strong>Only use this if the normal Email/Password sign-in is not working.</strong>
+										See the <a href="@($"{configDocumentationBase}/authentication/garmin-service-ticket")" target="_blank">documentation</a> for step-by-step instructions.
+									</HxAlert>
+									<HxInputText @bind-Value="garminSettings.ServiceTicket" Label="Service Ticket" Type="InputType.Password">
+										<LabelTemplate>
+											Service Ticket
+											@if (garminSettings.IsServiceTicketSet)
+											{
+												<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success">Service Ticket is set</HxBadge>
+											}
+										</LabelTemplate>
+										<InputGroupEndTemplate>
+											@if (garminSettings.IsServiceTicketSet)
+											{
+												<HxButton Text="Clear" Color="ThemeColor.Secondary" Outline="true" OnClick="ClearServiceTicket" />
+											}
+										</InputGroupEndTemplate>
+									</HxInputText>
+								</BodyTemplate>
+							</HxCard>
+							<br />
 							<HxAlert Color="ThemeColor.Warning">
 								<HxIcon Icon="@BootstrapIcon.ExclamationTriangleFill" />
 								<strong>Most users should not need to modify these settings.  Please be sure you've read the documentation before changing.</strong>
