@@ -6,6 +6,12 @@
 
     **If your automatic syncs are working fine, you do not need to do anything here.**
 
+!!! note "Page generated with AI assistance"
+
+    This page was generated with the help of Claude AI. The happy path via the Settings UI has been explicitly tested. Other flows (config file, environment variable) have not been fully verified — please open an issue if you run into problems.
+
+---
+
 ## What is this?
 
 Normally P2G signs into Garmin automatically using your email and password. When Garmin blocks this (for example with a Cloudflare challenge), P2G can no longer authenticate on its own.
@@ -47,12 +53,25 @@ You will retrieve the service ticket directly from your browser. This takes abou
 
 ## Step 2: Give the Service Ticket to P2G
 
-### Via the Settings UI (recommended for most users)
+Jump to the instructions for your install method:
 
-This works for the **Windows App**, **Docker Web UI**, and **Source Web UI**.
+| Install Method | Instructions |
+|---|---|
+| Windows App | [Via the Settings UI](#via-the-settings-ui) |
+| Docker (Web UI) | [Via the Settings UI](#via-the-settings-ui) |
+| Web UI (from source) | [Via the Settings UI](#via-the-settings-ui) |
+| Docker (Headless) | [Via config file](#via-config-file) |
+| GitHub Actions | [Via config file](#via-config-file) |
+| Console | [Via config file](#via-config-file) |
+
+---
+
+### Via the Settings UI
+
+*For: Windows App, Docker (Web UI), Web UI (from source)*
 
 1. Open P2G and go to **Settings → Garmin**
-2. Scroll to the **Alternative Authentication** card (below the Email/Password fields)
+2. Open the **Advanced** section
 3. Paste your service ticket into the **Service Ticket** field
 4. Click **Save**
 
@@ -60,7 +79,9 @@ P2G will immediately exchange the ticket for a long-lived token. If it succeeds,
 
 ---
 
-### Via config file (Docker Headless, GitHub Actions, Console)
+### Via config file
+
+*For: Docker (Headless), GitHub Actions, Console*
 
 Add the `ServiceTicket` field to the `Garmin` section of your `configuration.local.json`:
 
@@ -77,36 +98,8 @@ Add the `ServiceTicket` field to the `Garmin` section of your `configuration.loc
 
 ---
 
-### Via environment variable (Docker, GitHub Actions)
-
-Set the following environment variable before starting P2G:
-
-```
-P2G_Garmin__ServiceTicket=ST-XXXX-paste-your-ticket-here
-```
-
-P2G will exchange the ticket on its next run and clear it from settings automatically. Remove the variable after P2G has run successfully — you only need it once to bootstrap.
-
----
-
 ## After 30 days
 
 The long-lived token P2G stores lasts approximately 30 days. After that, syncs will fail with an authentication error. When that happens, simply repeat this process from the beginning.
 
 P2G will log a message like `NeedServiceTicket` to let you know it is time to re-authenticate.
-
----
-
-## Troubleshooting
-
-**P2G shows an error after I paste the ticket and save**
-
-The ticket expired before P2G could use it — they are only valid for a few seconds. Go back to Step 1, copy the ticket, and paste it into P2G immediately without switching windows in between.
-
-**It stopped working after a few weeks**
-
-The token has expired. Repeat the process from Step 1.
-
-**I don't see a `mobile/api/login` request in the Network tab**
-
-Make sure you filtered the Network tab for `mobile/api/login` *before* you logged in, so the request is captured. Try again with the filter already in place before navigating to the sign-in URL.
