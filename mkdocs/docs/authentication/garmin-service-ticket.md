@@ -73,7 +73,7 @@ Add the `ServiceTicket` field to the `Garmin` section of your `configuration.loc
 }
 ```
 
-P2G will exchange the ticket the next time it runs and then automatically remove it from your settings. You do not need to remove it manually.
+**Start or restart P2G immediately after saving** so the ticket is consumed before it expires. P2G will exchange it on startup and automatically remove it from your settings — you do not need to remove it manually.
 
 ---
 
