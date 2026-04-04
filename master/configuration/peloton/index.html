@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -1068,6 +1068,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#advanced-api-settings-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced API Settings Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#peloton-bearer-token" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1558,6 +1569,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#advanced-api-settings-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced API Settings Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#peloton-bearer-token" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1765,6 +1787,15 @@
 <p>The list of valid values are any <a href="../exercise-types/">Exercise Type</a>.</p>
 <h2 id="advanced-api-configuration">Advanced API Configuration</h2>
 <p>In general you should not need to modify these settings unless specifically recommended to do so.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Most users should never need to change these settings. Incorrect values will break Peloton authentication and syncing.</p>
+</div>
+<p>These settings are available via:</p>
+<ul>
+<li><strong>Web UI / Windows App</strong>: Settings &gt; Peloton Tab &gt; Advanced section</li>
+<li><strong>Config file / Environment variables</strong>: See example below</li>
+</ul>
 <div class="highlight"><pre><span></span><code><span class="nt">&quot;Peloton&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="err">...Exis</span><span class="kc">t</span><span class="err">i</span><span class="kc">n</span><span class="err">g</span><span class="w"> </span><span class="err">co</span><span class="kc">nf</span><span class="err">ig</span><span class="w"> </span><span class="err">op</span><span class="kc">t</span><span class="err">io</span><span class="kc">ns</span><span class="err">...</span>
 <span class="w">    </span><span class="nt">&quot;BearerToken&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
@@ -1778,10 +1809,72 @@
 <span class="w">        </span><span class="nt">&quot;Auth0ClientPayload&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;eyJuYW1lIjoiYXV0aDAuanMtdWxwIiwidmVyc2lvbiI6IjkuMTQuMyJ9&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;AuthAuthorizePath&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/authorize&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;AuthTokenPath&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/oauth/token&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;BearerTokenDefaultTtlSeconds&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">172800</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;BearerTokenDefaultTtlSeconds&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">172800</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">},</span>
 </code></pre></div>
+<h3 id="advanced-api-settings-overview">Advanced API Settings Overview</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">ApiUrl</td>
+<td style="text-align: left;"><code>https://api.onepeloton.com/</code></td>
+<td style="text-align: left;">Base URL for the Peloton REST API</td>
+</tr>
+<tr>
+<td style="text-align: left;">AuthDomain</td>
+<td style="text-align: left;"><code>auth.onepeloton.com</code></td>
+<td style="text-align: left;">Auth0 domain used for Peloton authentication</td>
+</tr>
+<tr>
+<td style="text-align: left;">AuthClientId</td>
+<td style="text-align: left;"><code>WVoJxVDdPoFx4RNewvvg6ch2mZ7bwnsM</code></td>
+<td style="text-align: left;">Auth0 client ID for the Peloton app</td>
+</tr>
+<tr>
+<td style="text-align: left;">AuthAudience</td>
+<td style="text-align: left;"><code>https://api.onepeloton.com/</code></td>
+<td style="text-align: left;">OAuth2 audience for token requests</td>
+</tr>
+<tr>
+<td style="text-align: left;">AuthScope</td>
+<td style="text-align: left;"><code>offline_access openid peloton-api.members:default</code></td>
+<td style="text-align: left;">OAuth2 scopes requested during authentication</td>
+</tr>
+<tr>
+<td style="text-align: left;">AuthRedirectUri</td>
+<td style="text-align: left;"><code>https://members.onepeloton.com/callback</code></td>
+<td style="text-align: left;">OAuth2 redirect URI used during the auth flow</td>
+</tr>
+<tr>
+<td style="text-align: left;">Auth0ClientPayload</td>
+<td style="text-align: left;"><em>(base64 encoded)</em></td>
+<td style="text-align: left;">Auth0 telemetry payload sent during authentication</td>
+</tr>
+<tr>
+<td style="text-align: left;">AuthAuthorizePath</td>
+<td style="text-align: left;"><code>/authorize</code></td>
+<td style="text-align: left;">Path on the auth domain for the authorization endpoint</td>
+</tr>
+<tr>
+<td style="text-align: left;">AuthTokenPath</td>
+<td style="text-align: left;"><code>/oauth/token</code></td>
+<td style="text-align: left;">Path on the auth domain for the token endpoint</td>
+</tr>
+<tr>
+<td style="text-align: left;">BearerTokenDefaultTtlSeconds</td>
+<td style="text-align: left;"><code>172800</code></td>
+<td style="text-align: left;">Default time-to-live for bearer tokens in seconds (48 hours)</td>
+</tr>
+</tbody>
+</table>
 <h3 id="peloton-bearer-token">Peloton Bearer Token</h3>
 <p>In the event P2G is not able to authenticate with Peloton, this configuration field can be used as a fallback option.  If you set this option then P2G will bypass authenticating with Peloton and use the provided BearerToken to authenticate requests.</p>
 <p>Quick, not great instructions on how to locate a Bearer Token:</p>
@@ -1798,18 +1891,10 @@
 </ol>
 <p>Saving the Bearer Token in the config file and restarting P2G will cause P2G to use that token for authentication, bypassing the need to "login".</p>
 <p>You will need to manually update this token every time it expires which will be roughly every 48hrs.  In order to stop using the token, simply delete <code>"BearerToken": "..."</code> from your config file and restart P2G.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Windows users and Web UI users, your config file is found in <code>&lt;Your P2G Folder&gt;/data/SettingsDb.json</code>.  Quit P2G, edit this file, then start P2G again.</p>
-</div>
 <div class="admonition danger">
 <p class="admonition-title">Danger</p>
 <p>BearerToken is like a password and should never be shared.
 Github action users should set BearerToken as a secret similar to how you configure Email and Password.</p>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>TODO: Better instructions and the ability to edit this from UI</p>
 </div>
 
 
