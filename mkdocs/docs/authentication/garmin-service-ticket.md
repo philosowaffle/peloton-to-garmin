@@ -29,9 +29,13 @@ You will retrieve the service ticket directly from your browser. This takes abou
 1. Open a **new browser tab**
 2. Press **F12** (Windows/Linux) or **Cmd+Option+I** (Mac) to open Developer Tools
 3. Click the **Network** tab at the top of the Developer Tools panel
-4. In the filter/search box, type `api/login` to narrow down the results
-5. Navigate to `https://connect.garmin.com` and log in with your Garmin credentials
-6. After logging in, look in the Network tab for a request that includes `api/login`
+4. In the filter/search box, type `mobile/api/login` to narrow down the results
+5. Navigate to this exact URL and log in with your Garmin credentials:
+   ```
+   https://sso.garmin.com/mobile/sso/en_US/sign-in?clientId=GCM_ANDROID_DARK&service=https://mobile.integration.garmin.com/gcm/android
+   ```
+   !!! note "The page may not look like it loaded correctly — that is normal. As long as you were able to enter your credentials and submit the form, the ticket will appear in the Network tab."
+6. After logging in, look in the Network tab for a request that includes `mobile/api/login`
 7. Click that request, then open the **Response** or **Preview** tab
 8. Find the value next to `"serviceTicketId"` — it looks like `ST-XXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-sso`
 9. **Copy the full value** (do not include the surrounding quotes)
@@ -111,6 +115,6 @@ The ticket expired before P2G could use it — they are only valid for a few sec
 
 The token has expired. Repeat the process from Step 1.
 
-**I don't see an `api/login` request in the Network tab**
+**I don't see a `mobile/api/login` request in the Network tab**
 
-Make sure you filtered the Network tab for `api/login` *before* you logged in, so the request is captured. Try again with the filter already in place before navigating to `connect.garmin.com`.
+Make sure you filtered the Network tab for `mobile/api/login` *before* you logged in, so the request is captured. Try again with the filter already in place before navigating to the sign-in URL.
