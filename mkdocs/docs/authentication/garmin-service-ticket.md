@@ -24,7 +24,7 @@ Once this is done, P2G handles daily syncs automatically for approximately **30 
 
 You will retrieve the service ticket directly from your browser. This takes about 2 minutes.
 
-!!! tip "The service ticket expires within seconds of appearing — move quickly through Step 2 once you have it."
+!!! tip "The service ticket will expire, possibly within 1 minute — move quickly once you have it."
 
 1. Open a **new browser tab**
 2. Press **F12** (Windows/Linux) or **Cmd+Option+I** (Mac) to open Developer Tools
