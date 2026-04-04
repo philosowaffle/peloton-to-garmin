@@ -18,4 +18,5 @@ public enum AuthStage : byte
 	None = 0,
 	NeedMfaToken = 1,
 	Completed = 2,
+	NeedServiceTicket = 3,
 }

@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 
+
 namespace Garmin.Auth;
 
 public interface IGarminAuthenticationService
@@ -20,6 +21,7 @@ public interface IGarminAuthenticationService
 	Task<bool> GarminAuthTokenExistsAndIsValidAsync();
 	Task<GarminApiAuthentication> SignInAsync();
 	Task<GarminApiAuthentication> CompleteMFAAuthAsync(string mfaCode);
+	Task<GarminApiAuthentication> ExchangeServiceTicketAsync(string serviceTicket);
 	Task<bool> SignOutAsync();
 }
 
@@ -40,16 +42,26 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 	private readonly ISettingsService _settingsService;
 	private readonly IGarminApiClient _apiClient;
 	private readonly IGarminDb _garminDb;
+	private readonly IServiceTicketProvider _serviceTicketProvider;
 
-	public GarminAuthenticationService(ISettingsService settingsService, IGarminApiClient apiClient, IGarminDb garminDb)
+	public GarminAuthenticationService(ISettingsService settingsService, IGarminApiClient apiClient, IGarminDb garminDb, IServiceTicketProvider serviceTicketProvider)
 	{
 		_settingsService = settingsService;
 		_apiClient = apiClient;
 		_garminDb = garminDb;
+		_serviceTicketProvider = serviceTicketProvider;
 	}
 
 	public async Task<bool> GarminAuthTokenExistsAndIsValidAsync()
 	{
+		var nativeSession = await _garminDb.GetNativeOAuth2SessionAsync(1);
+		if (nativeSession is object && nativeSession.TokenSlots.Count > 0)
+		{
+			var slot = nativeSession.TokenSlots[0];
+			if (!slot.Token.IsRefreshTokenExpired())
+				return true;
+		}
+
 		var oAuth2Token = await _garminDb.GetGarminOAuth2TokenAsync(1);
 		var oAuth1Token = await _garminDb.GetGarminOAuth1TokenAsync(1);
 
@@ -60,6 +72,46 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 
 	public async Task<GarminApiAuthentication> GetGarminAuthenticationAsync()
 	{
+		var nativeSession = await _garminDb.GetNativeOAuth2SessionAsync(1);
+		if (nativeSession is object && nativeSession.TokenSlots.Count > 0)
+		{
+			var slot = nativeSession.TokenSlots[0];
+
+			if (!slot.Token.IsExpired())
+				return new GarminApiAuthentication()
+				{
+					AuthStage = AuthStage.Completed,
+					OAuth2Token = slot.Token,
+				};
+
+			if (!slot.Token.IsRefreshTokenExpired())
+			{
+				try
+				{
+					var refreshed = await _apiClient.RefreshDITokenAsync(slot.ClientId, slot.Token.Refresh_Token);
+					refreshed.ExpiresAt = DateTime.Now.AddSeconds(refreshed.Expires_In);
+					refreshed.RefreshTokenExpiresAt = refreshed.Refresh_Token_Expires_In > 0
+						? DateTime.Now.AddSeconds(refreshed.Refresh_Token_Expires_In)
+						: slot.Token.RefreshTokenExpiresAt;
+
+					nativeSession.TokenSlots[0] = new DITokenSlot { ClientId = slot.ClientId, Token = refreshed };
+					await _garminDb.UpsertNativeOAuth2SessionAsync(1, nativeSession);
+
+					return new GarminApiAuthentication()
+					{
+						AuthStage = AuthStage.Completed,
+						OAuth2Token = refreshed,
+					};
+				}
+				catch (Exception ex)
+				{
+					_logger.Warning("Failed to refresh DI OAuth token, will require new service ticket.", ex);
+				}
+			}
+
+			return new GarminApiAuthentication() { AuthStage = AuthStage.NeedServiceTicket };
+		}
+
 		var oAuth2Token = await _garminDb.GetGarminOAuth2TokenAsync(1);
 		if (oAuth2Token is object && !oAuth2Token.IsExpired())
 			return new GarminApiAuthentication()
@@ -74,7 +126,6 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 			try
 			{
 				var consumerCredentials = await _apiClient.GetConsumerCredentialsAsync();
-				var appConfig = await _settingsService.GetAppConfigurationAsync();
 
 				return await ExchangeOAuth1ForOAuth2Async(oAuth1Token, consumerCredentials);
 
@@ -336,11 +387,37 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 		};
 	}
 
+	public async Task<GarminApiAuthentication> ExchangeServiceTicketAsync(string serviceTicket)
+	{
+		var (clientId, rawToken) = await _apiClient.ExchangeServiceTicketForDITokenAsync(serviceTicket);
+
+		rawToken.ExpiresAt = DateTime.Now.AddSeconds(rawToken.Expires_In);
+		rawToken.RefreshTokenExpiresAt = DateTime.Now.AddSeconds(rawToken.Refresh_Token_Expires_In);
+
+		var session = new NativeOAuth2Session
+		{
+			StoredAt = DateTime.Now,
+			TokenSlots = new List<DITokenSlot>
+			{
+				new DITokenSlot { ClientId = clientId, Token = rawToken }
+			}
+		};
+
+		await _garminDb.UpsertNativeOAuth2SessionAsync(1, session);
+
+		return new GarminApiAuthentication()
+		{
+			AuthStage = AuthStage.Completed,
+			OAuth2Token = rawToken,
+		};
+	}
+
 	public async Task<bool> SignOutAsync()
 	{
 		await _garminDb.UpsertPartialGarminAuthenticationAsync(1, null);
 		await _garminDb.UpsertGarminOAuth1TokenAsync(1, null);
 		await _garminDb.UpsertGarminOAuth2TokenAsync(1, null);
+		await _garminDb.UpsertNativeOAuth2SessionAsync(1, null);
 
 		return true;
 	}

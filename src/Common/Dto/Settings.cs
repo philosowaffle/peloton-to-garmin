@@ -188,6 +188,7 @@ public class GarminApiSettings
 	public string OAuth1LoginUrlParam { get; set; } = "https://sso.garmin.com/sso/embed&accepts-mfa-tokens=true";
 
 	public string OAuth2RequestUrl { get; set; } = "https://connectapi.garmin.com/oauth-service/oauth/exchange/user/2.0";
+	public string DiAuthUrl { get; set; } = "https://diauth.garmin.com/di-oauth2-service/oauth/token";
 
 	public string UploadActivityUrl { get; set; } = "https://connectapi.garmin.com/upload-service/upload";
 	public string UploadActivityUserAgent { get; set; } = "GCM-iOS-5.7.2.1";

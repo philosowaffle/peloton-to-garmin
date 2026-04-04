@@ -6,6 +6,8 @@ using Garmin.Auth;
 using Garmin.Dto;
 using OAuth;
 using Serilog;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,6 +24,8 @@ namespace Garmin
 		Task<OAuth2Token> GetOAuth2TokenAsync(OAuth1Token oAuth1Token, ConsumerCredentials credentials);
 		Task<ConsumerCredentials> GetConsumerCredentialsAsync();
 		Task<UploadResponse> UploadActivity(string filePath, string format, GarminApiAuthentication auth);
+		Task<(string ClientId, OAuth2Token Token)> ExchangeServiceTicketForDITokenAsync(string serviceTicket);
+		Task<OAuth2Token> RefreshDITokenAsync(string clientId, string refreshToken);
 	}
 
 	public class ApiClient : IGarminApiClient
@@ -129,6 +133,57 @@ namespace Garmin
 								.WithHeader("Content-Type", "application/x-www-form-urlencoded") // this header is required, without it you get a 500
 								.PostUrlEncodedAsync(new object()) // hack: PostAsync() will drop the content-type header, by posting empty object we trick flurl into leaving the header
 								.ReceiveJson<OAuth2Token>();
+		}
+
+		public async Task<(string ClientId, OAuth2Token Token)> ExchangeServiceTicketForDITokenAsync(string serviceTicket)
+		{
+			var settings = await _settingsService.GetSettingsAsync();
+
+			var clientIds = new List<string>
+			{
+				"GARMIN_CONNECT_MOBILE_ANDROID_DI_2025Q2",
+				"GARMIN_CONNECT_MOBILE_ANDROID_DI_2024Q4",
+				"GARMIN_CONNECT_MOBILE_ANDROID_DI",
+			};
+
+			Exception lastException = null;
+			foreach (var clientId in clientIds)
+			{
+				try
+				{
+					var token = await settings.Garmin.Api.DiAuthUrl
+						.PostUrlEncodedAsync(new
+						{
+							grant_type = "service_ticket",
+							client_id = clientId,
+							service_ticket = serviceTicket,
+						})
+						.ReceiveJson<OAuth2Token>();
+
+					return (clientId, token);
+				}
+				catch (FlurlHttpException e)
+				{
+					_logger.Debug("ExchangeServiceTicketForDITokenAsync: client_id {clientId} failed with status {status}", clientId, e.StatusCode);
+					lastException = e;
+				}
+			}
+
+			throw new GarminAuthenticationError("Failed to exchange service ticket for DI OAuth token. All client IDs failed.", lastException) { Code = Code.AuthAppearedSuccessful };
+		}
+
+		public async Task<OAuth2Token> RefreshDITokenAsync(string clientId, string refreshToken)
+		{
+			var settings = await _settingsService.GetSettingsAsync();
+
+			return await settings.Garmin.Api.DiAuthUrl
+				.PostUrlEncodedAsync(new
+				{
+					grant_type = "refresh_token",
+					client_id = clientId,
+					refresh_token = refreshToken,
+				})
+				.ReceiveJson<OAuth2Token>();
 		}
 
 		public async Task<UploadResponse> UploadActivity(string filePath, string format, GarminApiAuthentication auth)
