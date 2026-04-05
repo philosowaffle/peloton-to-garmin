@@ -8,6 +8,7 @@
 
 - [#833] Add UI for managing advanced Peloton API configuration options
 - [#837] New Garmin authentication method via service ticket — works when Cloudflare blocks the standard SSO login. Provide a one-time service ticket via the Settings UI, config file, or environment variable. P2G exchanges it for a long-lived DI OAuth2 token (~30 days). See [documentation](https://philosowaffle.github.io/peloton-to-garmin/authentication/garmin-service-ticket) for setup instructions.
+- [#839] Automatic Garmin sign-in via Playwright headless browser — P2G now signs into Garmin automatically using a built-in invisible browser. Works out of the box on Docker (amd64/arm64) and GitHub Actions. No DevTools or manual service ticket needed for most users. Sessions last ~30 days and are refreshed automatically. MFA/2FA users and arm/v7 device users should continue using the manual service ticket method. See [documentation](https://philosowaffle.github.io/peloton-to-garmin/authentication/garmin) for details.
 
 ## Docker Tags
 

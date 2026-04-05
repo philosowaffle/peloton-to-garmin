@@ -40,6 +40,16 @@ In the below examples, you can substitute `console` for any [Image Flavor](#imag
 1. `console-v4`
 1. `console-v3.6.0`
 
+## Garmin Authentication in Docker
+
+P2G Docker images on **amd64** and **arm64** include automatic Garmin sign-in powered by Playwright. When a Garmin session expires (~30 days), P2G re-authenticates automatically using the credentials from your settings — no manual steps needed.
+
+!!! warning "arm/v7 Limitation"
+
+    The `linux/arm/v7` image (used on 32-bit Raspberry Pi 2/3 and similar devices) does **not** include Playwright, because Chromium does not support that architecture. On arm/v7, automatic sign-in is unavailable. You will need to provide a [Garmin service ticket](../authentication/garmin-service-ticket.md) manually approximately every 30 days.
+
+For more details on all Garmin authentication options, see [Garmin Authentication](../authentication/garmin.md).
+
 ## Docker User
 
 The P2G images run the process under the user and group `p2g:p2g` with uid and gid `1015:1015`.  To access files created by `p2g`:

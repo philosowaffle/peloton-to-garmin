@@ -98,10 +98,11 @@ Garmin Connect
 - **Session Management**: Automatic session renewal
 
 ### Garmin Authentication
-- **Method**: OAuth 1.0a + OAuth 2.0 hybrid
-- **Flow**: Multi-step authentication with optional 2FA
-- **Credentials**: Email/Password with optional MFA
-- **Token Management**: Automatic token refresh
+- **Primary Method**: DI OAuth2 via Playwright headless browser (Phase 3) or manual service ticket (Phase 1)
+- **Legacy Fallback**: OAuth 1.0a → OAuth 2.0 hybrid (may be blocked by Cloudflare)
+- **Flow**: Ordered chain in `GarminAuthenticationService.GetGarminAuthenticationAsync()` — see `05-external-api-integration.md`
+- **Playwright Dependency**: `Microsoft.Playwright` NuGet in `src/Garmin/Garmin.csproj`. Browser binary pre-installed in Docker images (amd64/arm64). Not available on arm/v7.
+- **Token Management**: DI access tokens ~24h, refresh tokens ~30d; automatic refresh via `RefreshDITokenAsync()`
 
 ### Security Features
 - **Credential Encryption**: AES encryption for stored credentials
