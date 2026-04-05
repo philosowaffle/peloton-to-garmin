@@ -19,6 +19,7 @@ namespace UnitTests.Garmin
 		private Mock<ISettingsService> _settingsServiceMock;
 		private Mock<IGarminApiClient> _apiClientMock;
 		private Mock<IGarminDb> _garminDbMock;
+		private Mock<IPlaywrightGarminAuthService> _playwrightAuthMock;
 		private GarminAuthenticationService _authService;
 		private Settings _settings;
 
@@ -28,11 +29,16 @@ namespace UnitTests.Garmin
 			_settingsServiceMock = new Mock<ISettingsService>();
 			_apiClientMock = new Mock<IGarminApiClient>();
 			_garminDbMock = new Mock<IGarminDb>();
+			_playwrightAuthMock = new Mock<IPlaywrightGarminAuthService>();
+
+			// Default: Playwright not available — existing tests are unaffected
+			_playwrightAuthMock.Setup(p => p.IsAvailable()).Returns(false);
 
 			_authService = new GarminAuthenticationService(
 				_settingsServiceMock.Object,
 				_apiClientMock.Object,
-				_garminDbMock.Object);
+				_garminDbMock.Object,
+				_playwrightAuthMock.Object);
 
 			_settings = new Settings
 			{
@@ -484,6 +490,165 @@ namespace UnitTests.Garmin
 			// SETUP & ACT & ASSERT
 			// The constructor doesn't validate null parameters
 			Assert.DoesNotThrow(() => new GarminAuthenticationService(null, null, null));
+		}
+
+		[Test]
+		public async Task GetGarminAuthenticationAsync_WhenPlaywrightAvailableAndSucceeds_ShouldReturnDIAuth()
+		{
+			// SETUP
+			var diToken = new OAuth2Token
+			{
+				Access_Token = "playwright-di-token",
+				Refresh_Token = "playwright-refresh-token",
+				ExpiresAt = DateTime.Now.AddHours(23),
+				RefreshTokenExpiresAt = DateTime.Now.AddDays(29),
+				Expires_In = 82800,
+				Refresh_Token_Expires_In = 2505600,
+			};
+
+			_settings.Garmin.Api.Di.EnablePlaywrightAuth = true;
+			_garminDbMock.Setup(db => db.GetNativeOAuth2SessionAsync(1)).ReturnsAsync((NativeOAuth2Session)null);
+			_garminDbMock.Setup(db => db.UpsertNativeOAuth2SessionAsync(1, It.IsAny<NativeOAuth2Session>())).Returns(Task.CompletedTask);
+			_playwrightAuthMock.Setup(p => p.IsAvailable()).Returns(true);
+			_playwrightAuthMock.Setup(p => p.GetServiceTicketViaHeadlessBrowserAsync("test@example.com", "password123"))
+				.ReturnsAsync("playwright-service-ticket");
+			_apiClientMock.Setup(api => api.ExchangeServiceTicketForDITokenAsync("playwright-service-ticket"))
+				.ReturnsAsync(("test-client-id", diToken));
+
+			// ACT
+			var result = await _authService.GetGarminAuthenticationAsync();
+
+			// ASSERT
+			result.Should().NotBeNull();
+			result.AuthStage.Should().Be(AuthStage.Completed);
+			result.OAuth2Token.Access_Token.Should().Be("playwright-di-token");
+			_playwrightAuthMock.Verify(p => p.GetServiceTicketViaHeadlessBrowserAsync("test@example.com", "password123"), Times.Once);
+			_garminDbMock.Verify(db => db.UpsertNativeOAuth2SessionAsync(1, It.IsAny<NativeOAuth2Session>()), Times.Once);
+			// Legacy auth should not be called
+			_garminDbMock.Verify(db => db.GetGarminOAuth2TokenAsync(1), Times.Never);
+		}
+
+		[Test]
+		public async Task GetGarminAuthenticationAsync_WhenPlaywrightNotAvailable_ShouldFallThroughToLegacyAuth()
+		{
+			// SETUP
+			_settings.Garmin.Api.Di.EnablePlaywrightAuth = true;
+			var validOAuth2Token = new OAuth2Token { Access_Token = "legacy-token", ExpiresAt = DateTime.Now.AddHours(2) };
+
+			_garminDbMock.Setup(db => db.GetNativeOAuth2SessionAsync(1)).ReturnsAsync((NativeOAuth2Session)null);
+			_garminDbMock.Setup(db => db.GetGarminOAuth2TokenAsync(1)).ReturnsAsync(validOAuth2Token);
+			_playwrightAuthMock.Setup(p => p.IsAvailable()).Returns(false);
+
+			// ACT
+			var result = await _authService.GetGarminAuthenticationAsync();
+
+			// ASSERT
+			result.AuthStage.Should().Be(AuthStage.Completed);
+			result.OAuth2Token.Access_Token.Should().Be("legacy-token");
+			_playwrightAuthMock.Verify(p => p.GetServiceTicketViaHeadlessBrowserAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+		}
+
+		[Test]
+		public async Task GetGarminAuthenticationAsync_WhenPlaywrightDisabledViaSetting_ShouldSkipPlaywright()
+		{
+			// SETUP
+			_settings.Garmin.Api.Di.EnablePlaywrightAuth = false;
+			var validOAuth2Token = new OAuth2Token { Access_Token = "legacy-token", ExpiresAt = DateTime.Now.AddHours(2) };
+
+			_garminDbMock.Setup(db => db.GetNativeOAuth2SessionAsync(1)).ReturnsAsync((NativeOAuth2Session)null);
+			_garminDbMock.Setup(db => db.GetGarminOAuth2TokenAsync(1)).ReturnsAsync(validOAuth2Token);
+			_playwrightAuthMock.Setup(p => p.IsAvailable()).Returns(true);
+
+			// ACT
+			var result = await _authService.GetGarminAuthenticationAsync();
+
+			// ASSERT
+			result.OAuth2Token.Access_Token.Should().Be("legacy-token");
+			_playwrightAuthMock.Verify(p => p.IsAvailable(), Times.Never);
+			_playwrightAuthMock.Verify(p => p.GetServiceTicketViaHeadlessBrowserAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+		}
+
+		[Test]
+		public async Task GetGarminAuthenticationAsync_WhenPlaywrightReturnsEmpty_ShouldFallThroughToLegacyAuth()
+		{
+			// SETUP
+			_settings.Garmin.Api.Di.EnablePlaywrightAuth = true;
+			var validOAuth2Token = new OAuth2Token { Access_Token = "legacy-token", ExpiresAt = DateTime.Now.AddHours(2) };
+
+			_garminDbMock.Setup(db => db.GetNativeOAuth2SessionAsync(1)).ReturnsAsync((NativeOAuth2Session)null);
+			_garminDbMock.Setup(db => db.GetGarminOAuth2TokenAsync(1)).ReturnsAsync(validOAuth2Token);
+			_playwrightAuthMock.Setup(p => p.IsAvailable()).Returns(true);
+			_playwrightAuthMock.Setup(p => p.GetServiceTicketViaHeadlessBrowserAsync(It.IsAny<string>(), It.IsAny<string>()))
+				.ReturnsAsync(string.Empty);
+
+			// ACT
+			var result = await _authService.GetGarminAuthenticationAsync();
+
+			// ASSERT
+			result.OAuth2Token.Access_Token.Should().Be("legacy-token");
+			_garminDbMock.Verify(db => db.GetGarminOAuth2TokenAsync(1), Times.Once);
+		}
+
+		[Test]
+		public async Task GetGarminAuthenticationAsync_WhenPlaywrightThrowsInvalidCredentials_ShouldRethrow()
+		{
+			// SETUP
+			_settings.Garmin.Api.Di.EnablePlaywrightAuth = true;
+
+			_garminDbMock.Setup(db => db.GetNativeOAuth2SessionAsync(1)).ReturnsAsync((NativeOAuth2Session)null);
+			_playwrightAuthMock.Setup(p => p.IsAvailable()).Returns(true);
+			_playwrightAuthMock.Setup(p => p.GetServiceTicketViaHeadlessBrowserAsync(It.IsAny<string>(), It.IsAny<string>()))
+				.ThrowsAsync(new GarminAuthenticationError("Bad credentials") { Code = Code.InvalidCredentials });
+
+			// ACT & ASSERT
+			var ex = await _authService.Invoking(a => a.GetGarminAuthenticationAsync())
+				.Should().ThrowAsync<GarminAuthenticationError>();
+			ex.Which.Code.Should().Be(Code.InvalidCredentials);
+			// Legacy auth was NOT attempted after invalid credentials
+			_garminDbMock.Verify(db => db.GetGarminOAuth2TokenAsync(1), Times.Never);
+		}
+
+		[Test]
+		public async Task GetGarminAuthenticationAsync_WhenPlaywrightThrowsUnexpectedException_ShouldFallThroughToLegacyAuth()
+		{
+			// SETUP
+			_settings.Garmin.Api.Di.EnablePlaywrightAuth = true;
+			var validOAuth2Token = new OAuth2Token { Access_Token = "legacy-token", ExpiresAt = DateTime.Now.AddHours(2) };
+
+			_garminDbMock.Setup(db => db.GetNativeOAuth2SessionAsync(1)).ReturnsAsync((NativeOAuth2Session)null);
+			_garminDbMock.Setup(db => db.GetGarminOAuth2TokenAsync(1)).ReturnsAsync(validOAuth2Token);
+			_playwrightAuthMock.Setup(p => p.IsAvailable()).Returns(true);
+			_playwrightAuthMock.Setup(p => p.GetServiceTicketViaHeadlessBrowserAsync(It.IsAny<string>(), It.IsAny<string>()))
+				.ThrowsAsync(new Exception("Unexpected Playwright error"));
+
+			// ACT
+			var result = await _authService.GetGarminAuthenticationAsync();
+
+			// ASSERT — fell through to legacy OAuth2 token
+			result.OAuth2Token.Access_Token.Should().Be("legacy-token");
+			_garminDbMock.Verify(db => db.GetGarminOAuth2TokenAsync(1), Times.Once);
+		}
+
+		[Test]
+		public async Task GetGarminAuthenticationAsync_WhenPlaywrightServiceIsNull_ShouldSkipPlaywrightStep()
+		{
+			// SETUP — create service without playwright (default null constructor)
+			var authServiceNoPlaywright = new GarminAuthenticationService(
+				_settingsServiceMock.Object,
+				_apiClientMock.Object,
+				_garminDbMock.Object);
+
+			_settings.Garmin.Api.Di.EnablePlaywrightAuth = true;
+			var validOAuth2Token = new OAuth2Token { Access_Token = "legacy-token", ExpiresAt = DateTime.Now.AddHours(2) };
+
+			_garminDbMock.Setup(db => db.GetNativeOAuth2SessionAsync(1)).ReturnsAsync((NativeOAuth2Session)null);
+			_garminDbMock.Setup(db => db.GetGarminOAuth2TokenAsync(1)).ReturnsAsync(validOAuth2Token);
+
+			// ACT
+			var result = await authServiceNoPlaywright.GetGarminAuthenticationAsync();
+
+			// ASSERT
+			result.OAuth2Token.Access_Token.Should().Be("legacy-token");
 		}
 
 		[Test]
