@@ -42,12 +42,14 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 	private readonly ISettingsService _settingsService;
 	private readonly IGarminApiClient _apiClient;
 	private readonly IGarminDb _garminDb;
+	private readonly IPlaywrightGarminAuthService _playwrightAuth;
 
-	public GarminAuthenticationService(ISettingsService settingsService, IGarminApiClient apiClient, IGarminDb garminDb)
+	public GarminAuthenticationService(ISettingsService settingsService, IGarminApiClient apiClient, IGarminDb garminDb, IPlaywrightGarminAuthService playwrightAuth = null)
 	{
 		_settingsService = settingsService;
 		_apiClient = apiClient;
 		_garminDb = garminDb;
+		_playwrightAuth = playwrightAuth;
 	}
 
 	public async Task<bool> GarminAuthTokenExistsAndIsValidAsync()
@@ -127,6 +129,40 @@ public class GarminAuthenticationService : IGarminAuthenticationService
 				_logger.Warning("Failed to exchange service ticket from settings, falling back to legacy auth.", ex);
 				settings.Garmin.ServiceTicket = null;
 				await _settingsService.UpdateSettingsAsync(settings);
+			}
+		}
+
+		// Phase 3: Try headless browser auth via Playwright to obtain a service ticket automatically.
+		// Returns null on any soft failure (not installed, MFA, CAPTCHA, timeout) — fall through to legacy auth.
+		// Throws GarminAuthenticationError(InvalidCredentials) on bad credentials — surface immediately.
+		var playwrightSettings = await _settingsService.GetSettingsAsync();
+		if (_playwrightAuth is not null
+			&& playwrightSettings.Garmin.Api.Di.EnablePlaywrightAuth
+			&& _playwrightAuth.IsAvailable())
+		{
+			try
+			{
+				playwrightSettings.Garmin.EnsureGarminCredentialsAreProvided();
+				_logger.Information("Attempting headless browser auth via Playwright.");
+				var ticket = await _playwrightAuth.GetServiceTicketViaHeadlessBrowserAsync(
+					playwrightSettings.Garmin.Email,
+					playwrightSettings.Garmin.Password);
+
+				if (!string.IsNullOrWhiteSpace(ticket))
+				{
+					_logger.Information("Playwright headless auth succeeded, exchanging service ticket for DI OAuth token.");
+					return await ExchangeServiceTicketAsync(ticket);
+				}
+
+				_logger.Information("Playwright headless auth returned no ticket, falling through to legacy auth.");
+			}
+			catch (GarminAuthenticationError gae) when (gae.Code == Code.InvalidCredentials)
+			{
+				throw;
+			}
+			catch (Exception ex)
+			{
+				_logger.Warning(ex, "Playwright headless auth failed unexpectedly, falling through to legacy auth.");
 			}
 		}
 

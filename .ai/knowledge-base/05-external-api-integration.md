@@ -157,11 +157,62 @@ var workouts = await $"{BaseUrl}/user/{userId}/workouts"
 ## Garmin Connect API Integration
 
 ### Authentication
-- **Method**: OAuth 1.0a + OAuth 2.0 hybrid
+- **Method**: DI OAuth2 (primary, Phase 1+3) or OAuth 1.0a + OAuth 2.0 hybrid (legacy fallback)
 - **Base URL**: `https://connect.garmin.com`
 - **SSO URL**: `https://sso.garmin.com`
+- **DI Auth URL**: `https://diauth.garmin.com`
 
-### Authentication Flow
+### Authentication Priority (GetGarminAuthenticationAsync)
+
+`GarminAuthenticationService` tries the following steps in order, short-circuiting on the first success:
+
+1. **Stored DI session** — `NativeOAuth2Session` from `GarminDb`. If access token is valid, use it. If expired but refresh token is valid, refresh it via `RefreshDITokenAsync()`.
+2. **Pending service ticket** — `GarminSettings.ServiceTicket` field. Exchange via `ExchangeServiceTicketAsync()`. Clears the field after use.
+3. **Playwright headless browser** (Phase 3) — `IPlaywrightGarminAuthService`. Launches invisible Chromium, fills credentials in Garmin's mobile SSO, captures `serviceTicketId` from `/mobile/api/login` response, exchanges via `ExchangeServiceTicketAsync()`. Returns empty on soft failures (MFA, CAPTCHA, timeout, not installed); rethrows `GarminAuthenticationError(InvalidCredentials)` on bad credentials. Skipped if `EnablePlaywrightAuth=false` or Playwright not available.
+4. **Legacy OAuth2 token** — unexpired `OAuth2Token` from `GarminDb`.
+5. **Legacy OAuth1 → OAuth2 exchange** — existing `OAuth1Token` from `GarminDb`, fetched via `GetConsumerCredentialsAsync()`.
+6. **Legacy SSO sign-in** — `SignInAsync()` — uses cookie/CSRF flow. Likely blocked by Cloudflare for most users.
+
+### DI OAuth2 Service Ticket Exchange (Phases 1 & 3)
+
+```http
+POST /di-oauth2-service/oauth/token
+Host: diauth.garmin.com
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=https://connectapi.garmin.com/di-oauth2-service/oauth/grant/service_ticket
+&service_ticket={serviceTicketId}
+&service={ServiceUrl}
+```
+
+The response is stored as a `DITokenSlot` inside a `NativeOAuth2Session` in `GarminDb`. Access tokens last ~24h; refresh tokens last ~30 days.
+
+### Playwright Headless Auth (Phase 3)
+
+**Component**: `IPlaywrightGarminAuthService` / `PlaywrightGarminAuthService` in `src/Garmin/Auth/`
+
+**Browser context**: Android WebView UA, viewport 412x915, mobile+touch, locale en-US.
+
+**SSO URL**: `https://sso.garmin.com/mobile/sso/en_US/sign-in?clientId={LoginClientId}&service={ServiceUrl}`
+
+**Ticket capture**: `page.Response` event handler listens for `/mobile/api/login`, extracts `serviceTicketId` from JSON response body via `TaskCompletionSource<string>`.
+
+**MFA handling (Phase 3a)**: URL pattern detection — if redirected to MFA page, returns empty string (falls through to manual service ticket).
+
+**Availability**: `IsAvailable()` checks Playwright can initialize and Chromium binary exists at `IBrowserType.ExecutablePath`. Result is cached. Returns false on arm/v7 (no Chromium support).
+
+**Settings** (`GarminDiApiSettings`):
+| Setting | Default | Purpose |
+|---|---|---|
+| `EnablePlaywrightAuth` | `true` | Master toggle |
+| `PlaywrightTimeoutSeconds` | `30` | Browser automation timeout |
+| `PlaywrightHeadless` | `true` | false = visible browser (debugging) |
+| `LoginClientId` | `GCM_ANDROID_DARK` | SSO client ID |
+| `BrowserUserAgent` | Android Chrome UA | Browser UA for SSO page |
+
+**Docker**: Playwright CLI and Chromium are pre-installed in the `final` stage of all three Dockerfiles. Skipped for `linux/arm/v7`. `PLAYWRIGHT_BROWSERS_PATH=/ms-playwright` is set so the p2g user can access the browser.
+
+### Legacy Authentication Flow
 1. **Initial SSO Request**:
    ```http
    GET /sso/embed?service=https://connect.garmin.com/modern/

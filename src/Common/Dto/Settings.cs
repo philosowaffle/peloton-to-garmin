@@ -214,6 +214,13 @@ public class GarminDiApiSettings
 	public string AppVersion { get; set; } = "10861";
 	public string Language { get; set; } = "en";
 	public string GcExperience { get; set; } = "GC5";
+
+	// Playwright headless browser auth settings (Phase 3)
+	public bool EnablePlaywrightAuth { get; set; } = true;
+	public int PlaywrightTimeoutSeconds { get; set; } = 30;
+	public bool PlaywrightHeadless { get; set; } = true;
+	public string LoginClientId { get; set; } = "GCM_ANDROID_DARK";
+	public string BrowserUserAgent { get; set; } = "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Mobile Safari/537.36";
 }
 
 public enum FileFormat : byte

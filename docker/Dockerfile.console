@@ -10,6 +10,25 @@ RUN apt-get update \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
 
+# Playwright Chromium system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	libglib2.0-0 libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 \
+	libcups2 libdrm2 libdbus-1-3 libxcb1 libxkbcommon0 libatspi2.0-0 \
+	libx11-6 libxcomposite1 libxdamage1 libxext6 libxfixes3 libxrandr2 \
+	libgbm1 libpango-1.0-0 libcairo2 libasound2 libwayland-client0 \
+	fonts-liberation \
+	&& rm -rf /var/lib/apt/lists/*
+
+# Install Playwright CLI and Chromium browser (skipped on arm/v7 — not supported upstream)
+ARG TARGETPLATFORM
+RUN if [ "$TARGETPLATFORM" != "linux/arm/v7" ]; then \
+	dotnet tool install --global Microsoft.Playwright.CLI \
+	&& PLAYWRIGHT_BROWSERS_PATH=/ms-playwright /root/.dotnet/tools/playwright install chromium \
+	&& chmod -R 755 /ms-playwright ; \
+	fi
+
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
 RUN groupadd -g 1015 p2g && useradd -g p2g -u 1015 p2g
 USER p2g:p2g
 

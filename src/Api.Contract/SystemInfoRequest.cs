@@ -47,6 +47,7 @@ public record SystemInfoGetResponse
 	public string TempDirectory { get; set; }
 	public string ApplicationConfigFilePath { get; set; } = string.Empty;
 	public LogEventLevel CurrentLogLevel { get; set; }
+	public bool PlaywrightAvailable { get; set; }
 }
 
 public class LatestVersionInformation

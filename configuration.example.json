@@ -31,7 +31,16 @@
     "ServiceTicket": "",
     "TwoStepVerificationEnabled": false,
     "Upload": false,
-    "FormatToUpload": "fit"
+    "FormatToUpload": "fit",
+    "Api": {
+      "Di": {
+        "EnablePlaywrightAuth": true,
+        "PlaywrightTimeoutSeconds": 30,
+        "PlaywrightHeadless": true,
+        "LoginClientId": "GCM_ANDROID_DARK",
+        "BrowserUserAgent": "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Mobile Safari/537.36"
+      }
+    }
   },
 
   "Observability": {

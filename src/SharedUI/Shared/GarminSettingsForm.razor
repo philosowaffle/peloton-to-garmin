@@ -118,6 +118,14 @@
 									Html="true">
 										<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Danger">?</HxBadge>
 									</HxPopover>
+									@if (playwrightAvailable)
+									{
+										<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success" title="Playwright and Chromium are installed — automatic headless browser auth is available">Playwright Available</HxBadge>
+									}
+									else
+									{
+										<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Warning" title="Playwright or Chromium is not installed — automatic headless browser auth is unavailable on this host">Playwright Unavailable</HxBadge>
+									}
 									<HxButton Icon="BootstrapIcon.ArrowCounterclockwise" Color="ThemeColor.Light" OnClick="RestoreDefaultDiApiSettings" Tooltip="Restore Defaults" />
 								</HeaderTemplate>
 								<BodyTemplate>
@@ -153,6 +161,23 @@
 										</div>
 										<div class="col-md-4">
 											<HxInputText @bind-Value="garminSettings.Api.Di.GcExperience" Label="GC Experience" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+										<div class="col-md-12"><br /></div>
+										<div class="col-md-4">
+											<HxSwitch Text="Enable Playwright Auth" @bind-Value="garminSettings.Api.Di.EnablePlaywrightAuth" />
+										</div>
+										<div class="col-md-4">
+											<HxSwitch Text="Headless Mode" @bind-Value="garminSettings.Api.Di.PlaywrightHeadless"
+												Hint="Disable to show the browser window (useful for debugging)" />
+										</div>
+										<div class="col-md-4">
+											<HxInputNumber TValue="int" @bind-Value="garminSettings.Api.Di.PlaywrightTimeoutSeconds" Label="Playwright Timeout (seconds)" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.Di.LoginClientId" Label="Login Client ID" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+										<div class="col-md-12">
+											<HxInputText @bind-Value="garminSettings.Api.Di.BrowserUserAgent" Label="Browser User Agent" Type="InputType.Text" InputMode="InputMode.Text" />
 										</div>
 									</div>
 								</BodyTemplate>
@@ -232,6 +257,7 @@
 	private SettingsGarminGetResponse garminSettings;
 	private string configDocumentationBase;
 	private string configDocumentation;
+	private bool playwrightAvailable;
 
 	public GarminSettingsForm()
 	{
@@ -257,6 +283,7 @@
 		var systemInfo = await _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = settings.App.CheckForUpdates });
 		configDocumentationBase = systemInfo.Documentation;
 		configDocumentation = systemInfo.Documentation + "/configuration/garmin";
+		playwrightAvailable = systemInfo.PlaywrightAvailable;
 	}
 
 	protected void ClearGarminPassword()

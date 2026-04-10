@@ -90,6 +90,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
 			services.AddSingleton<IPelotonService, PelotonService>();
 
 			// GARMIN
+			services.AddSingleton<IPlaywrightGarminAuthService, PlaywrightGarminAuthService>();
 			services.AddSingleton<IGarminAuthenticationService, GarminAuthenticationService>();
 			services.AddSingleton<IGarminUploader, GarminUploader>();
 			services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
