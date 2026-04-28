@@ -171,6 +171,7 @@ public class GarminSettings : ICredentials
 	public EncryptionVersion EncryptionVersion { get; set; }
 	public string Email { get; set; }
 	public string Password { get; set; }
+	public string ServiceTicket { get; set; }
 	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
@@ -189,6 +190,8 @@ public class GarminApiSettings
 
 	public string OAuth2RequestUrl { get; set; } = "https://connectapi.garmin.com/oauth-service/oauth/exchange/user/2.0";
 
+	public GarminDiApiSettings Di { get; set; } = new GarminDiApiSettings();
+
 	public string UploadActivityUrl { get; set; } = "https://connectapi.garmin.com/upload-service/upload";
 	public string UploadActivityUserAgent { get; set; } = "GCM-iOS-5.7.2.1";
 	public string UplaodActivityNkHeader { get; set; } = "NT";
@@ -197,6 +200,20 @@ public class GarminApiSettings
 	public string Referer { get; set; } = "https://sso.garmin.com/sso/signin";
 
 
+}
+
+public class GarminDiApiSettings
+{
+	public string TokenUrl { get; set; } = "https://diauth.garmin.com/di-oauth2-service/oauth/token";
+	public string ServiceTicketGrantType { get; set; } = "https://connectapi.garmin.com/di-oauth2-service/oauth/grant/service_ticket";
+	public string ServiceUrl { get; set; } = "https://mobile.integration.garmin.com/gcm/android";
+	public string UserAgent { get; set; } = "GCM-Android-5.23";
+	public string GarminUserAgent { get; set; } = "com.garmin.android.apps.connectmobile/5.23; ; Google/sdk_gphone64_arm64/google; Android/33; Dalvik/2.1.0";
+	public string PairedAppVersion { get; set; } = "10861";
+	public string ClientPlatform { get; set; } = "Android";
+	public string AppVersion { get; set; } = "10861";
+	public string Language { get; set; } = "en";
+	public string GcExperience { get; set; } = "GC5";
 }
 
 public enum FileFormat : byte

@@ -61,6 +61,9 @@ public class SettingsService : ISettingsService
 		if (updatedSettings.Peloton.Password is null)
 			updatedSettings.Peloton.Password = originalSettings.Peloton.Password;
 
+		if (updatedSettings.Peloton.BearerToken is null)
+			updatedSettings.Peloton.BearerToken = originalSettings.Peloton.BearerToken;
+
 		ClearPelotonApiAuthentication(originalSettings.Peloton.Email);
 		ClearPelotonApiAuthentication(updatedSettings.Peloton.Email);
 

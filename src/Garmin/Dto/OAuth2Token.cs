@@ -12,9 +12,15 @@ public record OAuth2Token
 	public int Expires_In { get; set; }
 	public DateTime ExpiresAt { get; set; }
 	public int Refresh_Token_Expires_In { get; set; }
+	public DateTime RefreshTokenExpiresAt { get; set; }
 
 	public bool IsExpired()
 	{
 		return ExpiresAt < DateTime.Now.AddHours(1); // pad the time a bit
+	}
+
+	public bool IsRefreshTokenExpired()
+	{
+		return RefreshTokenExpiresAt < DateTime.Now.AddDays(1); // pad by 1 day
 	}
 }

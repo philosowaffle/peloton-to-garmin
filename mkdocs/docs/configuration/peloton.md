@@ -59,6 +59,14 @@ The list of valid values are any [Exercise Type](exercise-types.md).
 
 In general you should not need to modify these settings unless specifically recommended to do so.
 
+!!! warning
+    Most users should never need to change these settings. Incorrect values will break Peloton authentication and syncing.
+
+These settings are available via:
+
+- **Web UI / Windows App**: Settings > Peloton Tab > Advanced section
+- **Config file / Environment variables**: See example below
+
 ```json
 
 "Peloton": {
@@ -74,11 +82,26 @@ In general you should not need to modify these settings unless specifically reco
         "Auth0ClientPayload": "eyJuYW1lIjoiYXV0aDAuanMtdWxwIiwidmVyc2lvbiI6IjkuMTQuMyJ9",
         "AuthAuthorizePath": "/authorize",
         "AuthTokenPath": "/oauth/token",
-        "BearerTokenDefaultTtlSeconds": 172800,
+        "BearerTokenDefaultTtlSeconds": 172800
     }
   },
 
 ```
+
+### Advanced API Settings Overview
+
+| Field | Default | Description |
+|:------|:--------|:------------|
+| ApiUrl | `https://api.onepeloton.com/` | Base URL for the Peloton REST API |
+| AuthDomain | `auth.onepeloton.com` | Auth0 domain used for Peloton authentication |
+| AuthClientId | `WVoJxVDdPoFx4RNewvvg6ch2mZ7bwnsM` | Auth0 client ID for the Peloton app |
+| AuthAudience | `https://api.onepeloton.com/` | OAuth2 audience for token requests |
+| AuthScope | `offline_access openid peloton-api.members:default` | OAuth2 scopes requested during authentication |
+| AuthRedirectUri | `https://members.onepeloton.com/callback` | OAuth2 redirect URI used during the auth flow |
+| Auth0ClientPayload | *(base64 encoded)* | Auth0 telemetry payload sent during authentication |
+| AuthAuthorizePath | `/authorize` | Path on the auth domain for the authorization endpoint |
+| AuthTokenPath | `/oauth/token` | Path on the auth domain for the token endpoint |
+| BearerTokenDefaultTtlSeconds | `172800` | Default time-to-live for bearer tokens in seconds (48 hours) |
 
 ### Peloton Bearer Token
 
@@ -99,13 +122,7 @@ Quick, not great instructions on how to locate a Bearer Token:
 Saving the Bearer Token in the config file and restarting P2G will cause P2G to use that token for authentication, bypassing the need to "login".
 
 You will need to manually update this token every time it expires which will be roughly every 48hrs.  In order to stop using the token, simply delete `"BearerToken": "..."` from your config file and restart P2G.
-
-!!! note 
-    Windows users and Web UI users, your config file is found in `<Your P2G Folder>/data/SettingsDb.json`.  Quit P2G, edit this file, then start P2G again.
     
 !!! danger 
     BearerToken is like a password and should never be shared.
     Github action users should set BearerToken as a secret similar to how you configure Email and Password.
-
-!!! warning 
-    TODO: Better instructions and the ability to edit this from UI

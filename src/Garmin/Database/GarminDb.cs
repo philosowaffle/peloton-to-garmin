@@ -19,6 +19,9 @@ public interface IGarminDb
 	Task<OAuth2Token> GetGarminOAuth2TokenAsync(int userId);
 	Task UpsertGarminOAuth2TokenAsync(int userId, OAuth2Token token);
 
+	Task<NativeOAuth2Session> GetNativeOAuth2SessionAsync(int userId);
+	Task UpsertNativeOAuth2SessionAsync(int userId, NativeOAuth2Session session);
+
 	Task<StagedPartialGarminAuthentication> GetStagedPartialGarminAuthenticationAsync(int userId);
 	Task UpsertPartialGarminAuthenticationAsync(int userId, StagedPartialGarminAuthentication partialGarminAuthentication);
 }
@@ -189,6 +192,66 @@ public class GarminDb : DbBase<P2GGarminData>, IGarminDb
 		catch (Exception e)
 		{
 			_logger.Error(e, "Failed to upsert garmin oAuth1 token");
+			return Task.FromResult(false);
+		}
+	}
+
+	public Task<NativeOAuth2Session> GetNativeOAuth2SessionAsync(int userId)
+	{
+		using var metrics = DbMetrics.DbActionDuration
+									.WithLabels("getNativeOAuth2Session", DbName)
+									.NewTimer();
+		using var tracing = Tracing.Trace($"{nameof(GarminDb)}.{nameof(GetNativeOAuth2SessionAsync)}", TagValue.Db)
+									.WithTable(DbName);
+
+		try
+		{
+			_db.TryGetItem<P2GGarminData>(userId, out var data);
+
+			if (string.IsNullOrWhiteSpace(data?.NativeOAuth2Session)) return Task.FromResult((NativeOAuth2Session)null);
+
+			var decryptedString = data.NativeOAuth2Session.Decrypt();
+			var session = _fileHandler.DeserializeJson<NativeOAuth2Session>(decryptedString);
+			return Task.FromResult(session);
+		}
+		catch (Exception e)
+		{
+			_logger.Error(e, "Failed to get native oauth2 session from db");
+			throw;
+		}
+	}
+
+	public Task UpsertNativeOAuth2SessionAsync(int userId, NativeOAuth2Session session)
+	{
+		using var metrics = DbMetrics.DbActionDuration
+									.WithLabels("upsertNativeOAuth2Session", DbName)
+									.NewTimer();
+		using var tracing = Tracing.Trace($"{nameof(GarminDb)}.{nameof(UpsertNativeOAuth2SessionAsync)}", TagValue.Db)
+									.WithTable(DbName);
+		try
+		{
+			_db.TryGetItem<P2GGarminData>(userId, out var data);
+
+			if (data is null)
+				data = new P2GGarminData();
+
+			if (session is null)
+			{
+				data.NativeOAuth2Session = null;
+			}
+			else
+			{
+				var serialized = _fileHandler.SerializeToJson(session);
+				var encrypted = serialized.Encrypt();
+				data.EncryptionVersion = EncryptionVersion.V1;
+				data.NativeOAuth2Session = encrypted;
+			}
+
+			return _db.ReplaceItemAsync(userId.ToString(), data, upsert: true);
+		}
+		catch (Exception e)
+		{
+			_logger.Error(e, "Failed to upsert native oauth2 session");
 			return Task.FromResult(false);
 		}
 	}
