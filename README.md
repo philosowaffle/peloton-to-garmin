@@ -1,7 +1,7 @@
-![Peloton To Garmin Banner](/images/logo/readme_banner.png?raw=true "Peloton to Garmin Banner")
-[![GitHub license](https://img.shields.io/github/license/jakovlev/peloton-to-garmin.svg)](https://github.com/philosowaffle/peloton-to-garmin/blob/master/LICENSE)
-[![GitHub Release](https://img.shields.io/github/release/jakovlev/peloton-to-garmin.svg?style=flat)]()
-[![Github all releases](https://img.shields.io/github/downloads/jakovlev/peloton-to-garmin/total.svg)](https://GitHub.com/philosowaffle/peloton-to-garmin/releases/)
+![Strava To Garmin Banner](/images/logo/readme_banner.png?raw=true "Strava to Garmin Banner")
+[![GitHub license](https://img.shields.io/github/license/jakovlev/strava-to-garmin.svg)](https://github.com/jakovlev/strava-to-garmin/blob/master/LICENSE)
+[![GitHub Release](https://img.shields.io/github/release/jakovlev/strava-to-garmin.svg?style=flat)]()
+[![Github all releases](https://img.shields.io/github/downloads/jakovlev/strava-to-garmin/total.svg)](https://GitHub.com/jakovlev/strava-to-garmin/releases/)
 # strava-to-garmin
 [![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/jakovlev)
 <span class="badge-buymeacoffee"><a href="https://www.buymeacoffee.com/jakovlev" title="Donate to this project using Buy Me A Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee donate button" /></a></span>
