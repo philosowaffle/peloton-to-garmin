@@ -6,9 +6,10 @@
   },
 
   "Format": {
-    "Fit": true,
+    "Fit": false,
     "Json": false,
     "Tcx": false,
+    "Gpx": true,
     "SaveLocalCopy": true,
     "IncludeTimeInHRZones": false,
     "IncludeTimeInPowerZones": false,
@@ -18,11 +19,14 @@
     }
   },
 
-  "Peloton": {
-    "Email": "",
-    "Password": "",
-    "NumWorkoutsToDownload": 1,
-    "ExcludeWorkoutTypes": [ ]
+  "Strava": {
+    "ClientId": 197584,
+    "ClientSecret": "",
+    "AccessToken": "",
+    "RefreshToken": "",
+    "TokenExpiresAt": "",
+    "NumActivitiesToDownload": 1,
+    "ExcludeActivityTypes": []
   },
 
   "Garmin": {
