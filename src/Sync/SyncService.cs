@@ -10,6 +10,7 @@ using Garmin.Auth;
 using Peloton;
 using Prometheus;
 using Serilog;
+using Strava;
 using Sync.Database;
 using Sync.Dto;
 using System;
@@ -30,17 +31,17 @@ namespace Sync
 		private static readonly ILogger _logger = LogContext.ForClass<SyncService>();
 		private static readonly Histogram SyncHistogram = Prometheus.Metrics.CreateHistogram($"{Statics.MetricPrefix}_sync_duration_seconds", "The histogram of sync jobs that have run.");
 
-		private readonly IPelotonService _pelotonService;
+		private readonly IStravaService _stravaService;
 		private readonly IGarminUploader _garminUploader;
 		private readonly IEnumerable<IConverter> _converters;
 		private readonly ISyncStatusDb _db;
 		private readonly IFileHandling _fileHandler;
 		private readonly ISettingsService _settingsService;
 
-		public SyncService(ISettingsService settingService, IPelotonService pelotonService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, ISyncStatusDb dbClient, IFileHandling fileHandler)
+		public SyncService(ISettingsService settingService, IStravaService stravaService, IGarminUploader garminUploader, IEnumerable<IConverter> converters, ISyncStatusDb dbClient, IFileHandling fileHandler)
 		{
 			_settingsService = settingService;
-			_pelotonService = pelotonService;
+			_stravaService = stravaService;
 			_garminUploader = garminUploader;
 			_converters = converters;
 			_db = dbClient;
@@ -54,7 +55,7 @@ namespace Sync
 										.WithTag("numWorkouts", numWorkouts.ToString());
 
 			var settings = await _settingsService.GetSettingsAsync();
-			return await SyncWithWorkoutLoaderAsync(() => _pelotonService.GetRecentWorkoutsAsync(numWorkouts), settings.Peloton.ExcludeWorkoutTypes, forceStackClasses);
+			return await SyncWithWorkoutLoaderAsync(() => LoadStravaActivitiesAsWorkoutsAsync(numWorkouts), settings.Strava.ExcludeActivityTypes, forceStackClasses);
 		}
 
 		public async Task<SyncResult> SyncAsync(IEnumerable<string> workoutIds, ICollection<WorkoutType>? exclude = null, bool forceStackClasses = false)
@@ -69,25 +70,25 @@ namespace Sync
 			UserData? userData = null;
 			try
 			{
-				userData = await _pelotonService.GetUserDataAsync();
+				userData = await _stravaService.GetAthleteDataAsync();
 			}
 			catch (Exception e)
 			{
-				_logger.Warning(e, $"Failed to fetch user data from Peloton: {e.Message}, FTP info may be missing for certain non-class workout types (Just Ride).");
+				_logger.Warning(e, $"Failed to fetch athlete data from Strava: {e.Message}, FTP info may be missing for certain non-class workout types (Just Ride).");
 			}
 
 			P2GWorkout[] workouts = { };
 			try
 			{
-				workouts = await _pelotonService.GetWorkoutDetailsAsync(recentWorkouts);
-				response.PelotonDownloadSuccess = true;
+				workouts = await LoadStravaActivitiesAsWorkoutsDetailedAsync(recentWorkouts);
+				response.StravaDownloadSuccess = true;
 			}
 			catch (Exception e)
 			{
-				_logger.Error(e, $"Failed to download workouts from Peloton.");
+				_logger.Error(e, $"Failed to download activities from Strava.");
 				response.SyncSuccess = false;
-				response.PelotonDownloadSuccess = false;
-				response.Errors.Add(new ServiceError() { Message = $"Failed to download workouts from Peloton. {e.Message} - Check logs for more details." });
+				response.StravaDownloadSuccess = false;
+				response.Errors.Add(new ServiceError() { Message = $"Failed to download activities from Strava. {e.Message} - Check logs for more details." });
 				return response;
 			}
 
@@ -259,7 +260,7 @@ namespace Sync
 			}
 			catch (ArgumentException ae)
 			{
-				var errorMessage = $"Failed to fetch workouts from Peloton: {ae.Message}";
+				var errorMessage = $"Failed to fetch activities from Strava: {ae.Message}";
 
 				_logger.Error(ae, errorMessage);
 				activity?.AddTag("exception.message", ae.Message);
@@ -271,13 +272,13 @@ namespace Sync
 
 				var response = new SyncResult();
 				response.SyncSuccess = false;
-				response.PelotonDownloadSuccess = false;
+				response.StravaDownloadSuccess = false;
 				response.Errors.Add(new ServiceError() { Message = $"{errorMessage}" });
 				return response;
 			}
 			catch (Exception ex)
 			{
-				var errorMessage = "Failed to fetch workouts from Peloton.";
+				var errorMessage = "Failed to fetch activities from Strava.";
 
 				_logger.Error(ex, errorMessage);
 				activity?.AddTag("exception.message", ex.Message);
@@ -289,7 +290,7 @@ namespace Sync
 
 				var response = new SyncResult();
 				response.SyncSuccess = false;
-				response.PelotonDownloadSuccess = false;
+				response.StravaDownloadSuccess = false;
 				response.Errors.Add(new ServiceError() { Message = $"{errorMessage} Check logs for more details." });
 				return response;
 			}
@@ -300,7 +301,7 @@ namespace Sync
 			_logger.Information("Found {@NumWorkouts} completed workouts.", completedWorkoutsCount);
 			activity?.AddTag("workouts.completed", completedWorkoutsCount);
 
-			var result = await SyncAsync(completedWorkouts, settings.Peloton.ExcludeWorkoutTypes, forceStackClasses);
+			var result = await SyncAsync(completedWorkouts, settings.Strava.ExcludeActivityTypes, forceStackClasses);
 
 			if (result.SyncSuccess)
 				syncTime.LastSuccessfulSyncTime = DateTime.Now;
@@ -310,4 +311,97 @@ namespace Sync
 			return result;
 		}
 	}
+}
+private async Task<ServiceResult<ICollection<Workout>>> LoadStravaActivitiesAsWorkoutsAsync(int numActivities)
+{
+var result = new ServiceResult<ICollection<Workout>>();
+var activities = await _stravaService.GetRecentActivitiesAsync(numActivities);
+
+// Конвертируем активности Strava в формат Workout
+var workouts = new List<Workout>();
+foreach (var activity in activities)
+{
+var workout = ConvertStravaActivityToWorkout(activity);
+workouts.Add(workout);
+}
+
+result.Result = workouts;
+return result;
+}
+
+private async Task<ServiceResult<ICollection<P2GWorkout>>> LoadStravaActivitiesAsWorkoutsDetailedAsync(IEnumerable<Workout> workouts)
+{
+var result = new ServiceResult<ICollection<P2GWorkout>>();
+
+var p2gWorkouts = new List<P2GWorkout>();
+foreach (var workout in workouts)
+{
+if (string.IsNullOrEmpty(workout.Id))
+continue;
+
+if (long.TryParse(workout.Id, out var activityId))
+{
+var activityWithStreams = await _stravaService.GetActivityDetailsAsync(activityId);
+var p2gWorkout = ConvertStravaActivityWithStreamsToP2GWorkout(activityWithStreams);
+p2gWorkouts.Add(p2gWorkout);
+}
+}
+
+result.Result = p2gWorkouts;
+return result;
+}
+
+private Workout ConvertStravaActivityToWorkout(StravaActivity activity)
+{
+return new Workout
+{
+Id = activity.Id.ToString(),
+Title = activity.Name,
+Status = "COMPLETE", // Strava активности всегда завершены
+Fitness_Discipline = MapStravaTypeToWorkoutType(activity.SportType),
+Start_Time = activity.StartDateLocal,
+End_Time = activity.StartDateLocal.AddSeconds(activity.ElapsedTime),
+Duration = activity.MovingTime,
+Distance = activity.Distance
+};
+}
+
+private P2GWorkout ConvertStravaActivityWithStreamsToP2GWorkout(StravaActivityWithStreams activity)
+{
+// Здесь будет полная конвертация с потоками данных
+// Для GPX нам нужны координаты, время, пульс, мощность и т.д.
+
+var workout = new P2GWorkout
+{
+Workout = new Workout
+{
+Id = activity.Id.ToString(),
+Title = activity.Name,
+Status = "COMPLETE",
+Fitness_Discipline = MapStravaTypeToWorkoutType(activity.SportType),
+Start_Time = activity.StartDateLocal,
+End_Time = activity.StartDateLocal.AddSeconds(activity.ElapsedTime),
+Duration = activity.MovingTime,
+Distance = activity.Distance
+},
+Raw = activity // Сохраняем оригинальные данные Strava
+};
+
+return workout;
+}
+
+private WorkoutType MapStravaTypeToWorkoutType(string stravaSportType)
+{
+return stravaSportType?.ToLower() switch
+{
+"run" or "trail_run" => WorkoutType.Run,
+"ride" or "virtual_ride" or "mountain_bike_ride" or "gravel_ride" => WorkoutType.Cycling,
+"walk" or "hike" => WorkoutType.Walk,
+"weight_training" or "workout" or "crossfit" => WorkoutType.StrengthTraining,
+"swim" => WorkoutType.Swimming,
+"row" or "virtual_row" => WorkoutType.Rowing,
+_ => WorkoutType.None
+};
+}
+}
 }

@@ -16,13 +16,13 @@ public class Settings
 	{
 		App = new ();
 		Format = new ();
-		Peloton = new ();
+		Strava = new ();
 		Garmin = new ();
 	}
 
 	public App App { get; set; }
 	public Format Format { get; set; }
-	public PelotonSettings Peloton { get; set; }
+	public StravaSettings Strava { get; set; }
 	public GarminSettings Garmin { get; set; }
 }
 
@@ -133,6 +133,24 @@ public enum PreferredLapType
 	Distance = 1,
 	Class_Segments = 2,
 	Class_Targets = 3
+}
+
+public class StravaSettings : ICredentials
+{
+	public StravaSettings()
+	{
+		ExcludeActivityTypes = new List<WorkoutType>();
+		NumActivitiesToDownload = 5;
+	}
+
+	public EncryptionVersion EncryptionVersion { get; set; }
+	public int ClientId { get; set; }
+	public string ClientSecret { get; set; }
+	public string AccessToken { get; set; }
+	public string RefreshToken { get; set; }
+	public string TokenExpiresAt { get; set; }
+	public int NumActivitiesToDownload { get; set; }
+	public ICollection<WorkoutType> ExcludeActivityTypes { get; set; }
 }
 
 public class PelotonSettings : ICredentials
