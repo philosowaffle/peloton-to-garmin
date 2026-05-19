@@ -21,17 +21,17 @@
 
   "Strava": {
     "ClientId": 197584,
-    "ClientSecret": "",
-    "AccessToken": "",
-    "RefreshToken": "",
+    "ClientSecret": "7cf75e89ab3317793f18884837792cd02298d573",
+    "AccessToken": "7cf75e89ab3317793f18884837792cd02298d573",
+    "RefreshToken": "13fae30da5a666e0f883fd097672801699160087",
     "TokenExpiresAt": "",
     "NumActivitiesToDownload": 1,
     "ExcludeActivityTypes": []
   },
 
   "Garmin": {
-    "Email": "",
-    "Password": "",
+    "Email": "jakovlev@me.com",
+    "Password": "g2DB_cfQ",
     "ServiceTicket": "",
     "TwoStepVerificationEnabled": false,
     "Upload": false,
