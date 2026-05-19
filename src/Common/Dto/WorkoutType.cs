@@ -17,5 +17,18 @@
 		Meditation = 12,
 		Rowing = 13,
 		OutdoorCycling = 14,
+		IndoorCycling = 15,
+		Walking = 16,
+		Hiking = 17,
+		StrengthTraining = 18,
+		PoolSwimming = 19,
+		OpenWaterSwimming = 20,
+		Pilates = 21,
+		Skiing = 22,
+		Snowboarding = 23,
+		IceSkating = 24,
+		Kayaking = 25,
+		StandUpPaddling = 26,
+		Other = 255,
 	}
 }
