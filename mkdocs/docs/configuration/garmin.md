@@ -53,3 +53,11 @@ This Garmin Settings provide settings related to uploading workouts to Garmin.
 | Upload | no | `false` | `Garmin Tab` |  `true` indicates you wish downloaded Peloton workouts to be uploaded to Garmin Connect. |
 | FormatToUpload | no | `fit` | `Garmin Tab > Advanced` | Valid values are `fit` or `tcx`. Ensure the format you specify here is also enabled in your [Format config](format.md) |
 | Api | no | See sample above | `Garmin Tab > Advanced > Garmin Api Settings` | Configures how P2G communicates with the Garmin Api. **Do not modify unless told to do so** |
+
+## Garmin Sign-In Troubleshooting
+
+If P2G is unable to sign into Garmin automatically (for example, you see Cloudflare or authentication errors in the logs), you can use the manual **service ticket** method as a fallback.
+
+!!! info "[Garmin Service Ticket Authentication Guide](../authentication/garmin-service-ticket.md)"
+
+    Step-by-step instructions for all P2G installation types.

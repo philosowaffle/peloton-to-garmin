@@ -9,3 +9,8 @@ public record GarminAuthenticationGetResponse
 {
 	public bool IsAuthenticated { get; init; }
 }
+
+public record GarminAuthenticationServiceTicketPostRequest
+{
+	public string? ServiceTicket { get; set; }
+}

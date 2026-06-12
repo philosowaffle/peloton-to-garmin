@@ -51,6 +51,40 @@
 					<HxAccordionItem>
 						<HeaderTemplate>Advanced</HeaderTemplate>
 						<BodyTemplate>
+							<HxCard>
+								<HeaderTemplate>
+									Alternative Authentication
+									<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+									Title="<b>Alternative Authentication</b>"
+									Content="@ServiceTicketDocumentation"
+									Html="true">
+										<HxIcon Icon="@BootstrapIcon.QuestionCircle" />
+									</HxPopover>
+								</HeaderTemplate>
+								<BodyTemplate>
+									<HxAlert Color="ThemeColor.Info">
+										<HxIcon Icon="@BootstrapIcon.InfoCircleFill" />
+										<strong>Only use this if the normal Email/Password sign-in is not working.</strong>
+										See the <a href="@($"{configDocumentationBase}/authentication/garmin-service-ticket")" target="_blank">documentation</a> for step-by-step instructions.
+									</HxAlert>
+									<HxInputText @bind-Value="garminSettings.ServiceTicket" Label="Service Ticket" Type="InputType.Password">
+										<LabelTemplate>
+											Service Ticket
+											@if (garminSettings.IsServiceTicketSet)
+											{
+												<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Success">Service Ticket is set</HxBadge>
+											}
+										</LabelTemplate>
+										<InputGroupEndTemplate>
+											@if (garminSettings.IsServiceTicketSet)
+											{
+												<HxButton Text="Clear" Color="ThemeColor.Secondary" Outline="true" OnClick="ClearServiceTicket" />
+											}
+										</InputGroupEndTemplate>
+									</HxInputText>
+								</BodyTemplate>
+							</HxCard>
+							<br />
 							<HxAlert Color="ThemeColor.Warning">
 								<HxIcon Icon="@BootstrapIcon.ExclamationTriangleFill" />
 								<strong>Most users should not need to modify these settings.  Please be sure you've read the documentation before changing.</strong>
@@ -72,6 +106,55 @@
 									Nullable="false"
 									NullDataText="Loading info..."
 									@bind-Value="garminSettings.FormatToUpload" />
+								</BodyTemplate>
+							</HxCard>
+							<br />
+							<HxCard CssClass="border-danger text-danger">
+								<HeaderTemplate>
+									Garmin DI Api Settings
+									<HxPopover Trigger="PopoverTrigger.Hover|PopoverTrigger.Click|PopoverTrigger.Focus"
+									Title="<b>Garmin DI Api Settings</b>"
+									Content="@GarminDiApiDocumentation"
+									Html="true">
+										<HxBadge Type="BadgeType.RoundedPill" Color="ThemeColor.Danger">?</HxBadge>
+									</HxPopover>
+									<HxButton Icon="BootstrapIcon.ArrowCounterclockwise" Color="ThemeColor.Light" OnClick="RestoreDefaultDiApiSettings" Tooltip="Restore Defaults" />
+								</HeaderTemplate>
+								<BodyTemplate>
+									<div class="row">
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.Di.TokenUrl" Label="Token Url" Type="InputType.Text" InputMode="InputMode.Url" />
+										</div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.Di.ServiceUrl" Label="Service Url" Type="InputType.Text" InputMode="InputMode.Url" />
+										</div>
+										<div class="col-md-12">
+											<HxInputText @bind-Value="garminSettings.Api.Di.ServiceTicketGrantType" Label="Service Ticket Grant Type" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+										<div class="col-md-12"><br /></div>
+										<div class="col-md-6">
+											<HxInputText @bind-Value="garminSettings.Api.Di.UserAgent" Label="User Agent" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+										<div class="col-md-12">
+											<HxInputText @bind-Value="garminSettings.Api.Di.GarminUserAgent" Label="Garmin User Agent" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+										<div class="col-md-12"><br /></div>
+										<div class="col-md-4">
+											<HxInputText @bind-Value="garminSettings.Api.Di.ClientPlatform" Label="Client Platform" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+										<div class="col-md-4">
+											<HxInputText @bind-Value="garminSettings.Api.Di.AppVersion" Label="App Version" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+										<div class="col-md-4">
+											<HxInputText @bind-Value="garminSettings.Api.Di.PairedAppVersion" Label="Paired App Version" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+										<div class="col-md-4">
+											<HxInputText @bind-Value="garminSettings.Api.Di.Language" Label="Language" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+										<div class="col-md-4">
+											<HxInputText @bind-Value="garminSettings.Api.Di.GcExperience" Label="GC Experience" Type="InputType.Text" InputMode="InputMode.Text" />
+										</div>
+									</div>
 								</BodyTemplate>
 							</HxCard>
 							<br />
@@ -183,6 +266,13 @@
 		garminSettings.IsPasswordSet = false;
 	}
 
+	protected void ClearServiceTicket()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(GarminSettingsForm)}.{nameof(ClearServiceTicket)}", kind: ActivityKind.Client);
+		garminSettings.ServiceTicket = string.Empty;
+		garminSettings.IsServiceTicketSet = false;
+	}
+
 	protected async Task SaveGarminSettings()
 	{
 		using var tracing = Tracing.ClientTrace($"{nameof(GarminSettingsForm)}.{nameof(SaveGarminSettings)}", kind: ActivityKind.Client);
@@ -202,6 +292,31 @@
 		catch (ApiClientException e)
 		{
 			_toaster.AddError(e.Message);
+		}
+		catch (Exception e)
+		{
+			_toaster.AddError($"Failed to save Garmin Settings - {e.Message} - See logs for details.");
+			Log.Error("UI - Failed to save Garmin settings.", e);
+		}
+	}
+
+	protected async Task RestoreDefaultDiApiSettings()
+	{
+		using var tracing = Tracing.ClientTrace($"{nameof(GarminSettingsForm)}.{nameof(RestoreDefaultDiApiSettings)}", kind: ActivityKind.Client);
+
+		_toaster.Clear();
+
+		try
+		{
+			garminSettings.Api.Di = new GarminDiApiSettings();
+
+			garminSettings = await _apiClient.SettingsGarminPostAsync(garminSettings.Map());
+			_toaster.AddInformation("Garmin Settings Saved!");
+		}
+		catch (FlurlHttpException e) when (e.StatusCode is StatusCodes.Status400BadRequest)
+		{
+			var error = await e.GetResponseJsonAsync<ErrorResponse>();
+			_toaster.AddError(error.Message);
 		}
 		catch (Exception e)
 		{
@@ -236,6 +351,8 @@
 
 	}
 
+	private string ServiceTicketDocumentation => $"If P2G cannot sign in to Garmin automatically (e.g. Cloudflare blocks the login), you can paste a one-time service ticket here as an alternative. P2G will exchange it for a long-lived token immediately when you save.<br /><br />The token lasts approximately 30 days, after which you will need to provide a new ticket.<br /><br /><a href='{configDocumentationBase}/authentication/garmin-service-ticket' target='_blank'>Step-by-step instructions</a><br /><br /><small>(click the <b>?</b> to pin this window)</small>";
 	private string UploadFormatDocumentation => $"Garmin supports uploading either FIT files or TCX files.  FIT is the more modern format and in most cases will result in the most data and features syncing to Garmin.<br /><br />  You must upload the FIT format in order to get extra fields calculated by Garmin such as TSS/VO2/TE.<br /><br /><a href='{configDocumentation}'>Documentation</a><br /><br /><small>(click the <b>?</b> to pin this window)</small>";
+	private string GarminDiApiDocumentation => $"These settings control how P2G communicates with the Garmin DI OAuth API used for the service ticket authentication flow. <br /><br /><b>Please do not change these values unless you've been given explicit guidance to do so.</b><br /><br /><a href='{configDocumentation}'>Documentation</a><br /><br /><small>(click the <b>?</b> to pin this window)</small>";
 	private string GarminApiDocumentation => $"These settings control how P2G communicates with the Garmin Api. <br /><br /><b>Please do not change these value unless you've been given explicit guidance to do so.</b><br /><br /><a href='{configDocumentation}'>Documentation</a><br /><br /><small>(click the <b>?</b> to pin this window)</small>";
 }

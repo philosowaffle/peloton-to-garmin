@@ -181,6 +181,50 @@ public class SettingsUpdaterServiceTests
 		return response.IsErrored();
 	}
 
+	[Test]
+	public async Task UpdatePelotonSettingsAsync_Preserves_ApiSettings()
+	{
+		var autoMocker = new AutoMocker();
+		var service = autoMocker.CreateInstance<SettingsUpdaterService>();
+		var settingService = autoMocker.GetMock<ISettingsService>();
+
+		var savedSettings = new Settings()
+		{
+			App = new() { EnablePolling = false },
+			Peloton = new() { Email = "email", Password = "password" },
+			Garmin = new(),
+		};
+
+		settingService
+			.SetupWithAny<ISettingsService, Task<Settings>>(nameof(settingService.Object.GetSettingsAsync))
+			.ReturnsAsync(savedSettings);
+
+		settingService
+			.SetupWithAny<ISettingsService, Task>(nameof(settingService.Object.UpdateSettingsAsync))
+			.Callback<Settings>(s => savedSettings = s)
+			.Returns(Task.CompletedTask);
+
+		var customApi = new PelotonApiSettings()
+		{
+			ApiUrl = "https://custom.api.com/",
+			AuthDomain = "custom.auth.com",
+			BearerTokenDefaultTtlSeconds = 3600,
+		};
+
+		var request = new SettingsPelotonPostRequest()
+		{
+			Email = "email",
+			NumWorkoutsToDownload = 5,
+			Api = customApi,
+		};
+
+		await service.UpdatePelotonSettingsAsync(request);
+
+		savedSettings.Peloton.Api.ApiUrl.Should().Be(customApi.ApiUrl);
+		savedSettings.Peloton.Api.AuthDomain.Should().Be(customApi.AuthDomain);
+		savedSettings.Peloton.Api.BearerTokenDefaultTtlSeconds.Should().Be(customApi.BearerTokenDefaultTtlSeconds);
+	}
+
 	[TestCase("valid", ExpectedResult = false)]
 	[TestCase("\\", ExpectedResult = true)]
 	[TestCase("a\\a", ExpectedResult = true)]

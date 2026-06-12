@@ -1,12 +1,10 @@
-﻿using Common;
-using Common.Dto;
-using Common.Service;
-using Common.Stateful;
+﻿using Common.Stateful;
 using Flurl.Http.Testing;
 using Moq;
 using Moq.AutoMock;
 using NUnit.Framework;
 using Peloton;
+using Peloton.Auth;
 using System.IO;
 using System.Threading.Tasks;
 using UnitTests.UnitTestHelpers;
@@ -22,8 +20,8 @@ namespace UnitTests.PelotonTests
 		{
 			var autoMocker = new AutoMocker();
 			var apiClient = autoMocker.CreateInstance<ApiClient>();
-			var settingsService = autoMocker.GetMock<ISettingsService>();
-			SetupSuccessfulAuth(settingsService);
+			autoMocker.GetMock<IPelotonAuthApiClient>().Setup(x => x.Authenticate())
+			.ReturnsAsync(new PelotonApiAuthentication() { Token = new () });
 
 			var responseData = await FileHelper.ReadTextFromFileAsync(Path.Join(DataDirectory, "rower_sample.json"));
 
@@ -43,8 +41,8 @@ namespace UnitTests.PelotonTests
 		{
 			var autoMocker = new AutoMocker();
 			var apiClient = autoMocker.CreateInstance<ApiClient>();
-			var settingsService = autoMocker.GetMock<ISettingsService>();
-			SetupSuccessfulAuth(settingsService);
+			autoMocker.GetMock<IPelotonAuthApiClient>().Setup(x => x.Authenticate())
+			.ReturnsAsync(new PelotonApiAuthentication() { Token = new () });
 
 			var responseData = await FileHelper.ReadTextFromFileAsync(Path.Join(DataDirectory, "rower_performance_graph.json"));
 
@@ -57,26 +55,6 @@ namespace UnitTests.PelotonTests
 			await apiClient.GetWorkoutSamplesByIdAsync("0");
 
 			httpMock.ShouldHaveMadeACall();
-		}
-
-		private void SetupSuccessfulAuth(Mock<ISettingsService> settingsService)
-		{
-			settingsService.Setup(x => x.GetSettingsAsync()).ReturnsAsync(new Settings()
-			{
-				Peloton = new()
-				{
-					Email = "blah",
-					Password = "blah"
-				}
-			});
-
-			settingsService.Setup(x => x.GetPelotonApiAuthentication(It.IsAny<string>())).Returns(new PelotonApiAuthentication()
-			{
-				Email = "blah",
-				Password = "blah",
-				UserId = "blah",
-				SessionId = "blah"
-			});
 		}
 	}
 }

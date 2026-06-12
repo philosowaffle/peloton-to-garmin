@@ -22,6 +22,7 @@ using Serilog.Settings.Configuration;
 using Common.Observe;
 using Garmin.Database;
 using Sync.Database;
+using Peloton.Auth;
 
 Statics.AppType = Constants.ConsoleAppName;
 Statics.MetricPrefix = Constants.ConsoleAppName;
@@ -84,6 +85,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
 			});
 
 			// PELOTON
+			services.AddSingleton<IPelotonAuthApiClient, PelotonAuthApiClient>();
 			services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
 			services.AddSingleton<IPelotonService, PelotonService>();
 

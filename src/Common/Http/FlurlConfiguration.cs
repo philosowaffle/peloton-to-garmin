@@ -49,7 +49,7 @@ public static class FlurlConfiguration
 				{
 					var settings = await SettingsService.GetSettingsAsync();
 					var pelotonAuth = SettingsService.GetPelotonApiAuthentication(settings.Peloton.Email);
-					var content = call.GetRawRequestBody().StripSensitiveData(settings.Peloton.Email, settings.Peloton.Password, pelotonAuth?.SessionId, settings.Garmin.Email, settings.Garmin.Password);
+					var content = call.GetRawRequestBody().StripSensitiveData(settings.Peloton.Email, settings.Peloton.Password, pelotonAuth?.Token.AccessToken, settings.Garmin.Email, settings.Garmin.Password);
 					LogRequest(call, content);
 				}
 			} catch (Exception e)

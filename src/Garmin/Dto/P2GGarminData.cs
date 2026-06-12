@@ -9,6 +9,7 @@ public record P2GGarminData
 	public EncryptionVersion EncryptionVersion { get; set; }
 	public string OAuth1Token { get; set; }
 	public string OAuth2Token { get; set; }
+	public string NativeOAuth2Session { get; set; }
 	public StagedPartialGarminAuthentication PartialGarminAuthentication { get; set; }
 
 }

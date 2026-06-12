@@ -86,6 +86,9 @@ namespace Garmin
 			if (auth.AuthStage == Dto.AuthStage.NeedMfaToken)
 				throw new GarminUploadException("User needs to go through MFA flow to re-authenticate with Garmin. AuthStage: NeedMfaToken", -2);
 
+			if (auth.AuthStage == Dto.AuthStage.NeedServiceTicket)
+				throw new GarminUploadException("Garmin re-authentication required. Please provide a new service ticket via the UI or API. AuthStage: NeedServiceTicket", -4);
+
 			if (auth.AuthStage == Dto.AuthStage.None)
 				throw new GarminUploadException("Expected user to be authenticated with Garmin at this point, but they are not. AuthStage: None.", -3);
 

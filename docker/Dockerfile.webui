@@ -1,7 +1,7 @@
 ###################
 # CREATE FINAL LAYER
 ###################
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 as final
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 
 RUN apt-get update \
 	&& apt-get -y install bash tzdata \
@@ -30,7 +30,7 @@ RUN dotnet tool install -g Microsoft.Web.LibraryManager.Cli \
 # BUILD WebUI
 ###################
 
-WORKDIR /build/src/WebUI
+WORKDIR /build/src/SharedUI
 RUN /root/.dotnet/tools/libman restore
 
 WORKDIR /build

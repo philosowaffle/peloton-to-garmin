@@ -14,6 +14,7 @@ using Garmin.Auth;
 using Api.Service;
 using Garmin.Database;
 using Sync.Database;
+using Peloton.Auth;
 
 namespace SharedStartup;
 
@@ -45,6 +46,7 @@ public static class ApiStartupServices
 		services.AddSingleton<IDbMigrations, DbMigrations>();
 
 		// PELOTON
+		services.AddSingleton<IPelotonAuthApiClient, PelotonAuthApiClient>();
 		services.AddSingleton<IPelotonApi, Peloton.ApiClient>();
 		services.AddSingleton<IPelotonService, PelotonService>();
 		services.AddSingleton<IPelotonAnnualChallengeService, PelotonAnnualChallengeService>();

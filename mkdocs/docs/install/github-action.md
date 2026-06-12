@@ -18,12 +18,12 @@ The easiest way to use the action is to simply create a fork of the repo using t
 1. Create an account on [GitHub](https://github.com)
 1. Navigate to the [P2G repo](https://github.com/philosowaffle/peloton-to-garmin)
 1. In the upper right hand corner, click the button that says `Fork`
-1. Make note of the url to your forked copy
+1. Make note of or bookmark the url to your forked copy so that you’ll be able to easily find it again later when you’re ready to sync.
 1. Continue on to the [Secrets instructions](#secrets) below
 
 ### 2. Setup Secrets
 
-Once you've created your fork, you'll need to set a number of secrets in your repository.
+Once you've created your fork, you'll need to set a number of secrets in your repository.  Secrets are a tool for storing sensitive information our Action will need (like email and password) in a way that is private and not visible to others.
 
 1. From your forked copy of P2G, click the `Settings`
 1. Then, on the side nav, select `Secrets` and then `Actions`.
@@ -39,6 +39,8 @@ From this point on you can add secrets by clicking the `New repository secret` b
 | `P2G_GARMIN__PASSWORD`  | The password that you use to log into Garmin                         |
 
 #### Action Permissions
+
+In order for our newly created Action to run, we need to ensure it has the right permissions configured.
 
 1. From your forked copy of P2G, click the `Settings` tab
 1. Navigate to the settings for `Actions > General`
@@ -64,6 +66,7 @@ You can learn more about customizing your configuration over in the [Configurati
 
 1. Make a copy of your current configuration in `.github/workflows/sync_peloton_to_garmin.yml` as you will need to reapply these changes after updating.
 1. From the home page of your forked repository, there should be a button to `Sync fork`, click this to pull in the latest changes from the original repo.
+    1. If prompted always choose the latest new changes coming in over any customization you have done.  You can always re-apply your customization afterwards.
 1. Go back to your `.github/workflows/sync_peloton_to_garmin.yml` and re-apply any changes from step 1.
 
 ## ❌ Uninstalling

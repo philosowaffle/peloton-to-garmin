@@ -3,6 +3,10 @@
 
 If you are encountering a problem, here are some resources that may help you.
 
+## 🔐 Garmin Authentication Issues
+
+If P2G is unable to sign into Garmin automatically (for example, you see Cloudflare or authentication errors in the logs), see the [Garmin Service Ticket guide](authentication/garmin-service-ticket.md) for a step-by-step workaround covering all P2G installation types.
+
 ## 💬 Discussion Forum
 
 [Search the Discussion Forum](https://github.com/philosowaffle/peloton-to-garmin/discussions) to see if your topic has already been discussed before.  Take note that the search bar lets you filter by `open` and `closed` discussions, it is beneficial to check both.

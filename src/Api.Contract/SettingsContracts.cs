@@ -24,17 +24,21 @@ public class SettingsGetResponse
 			Password = null,
 			ExcludeWorkoutTypes = settings.Peloton.ExcludeWorkoutTypes,
 			NumWorkoutsToDownload = settings.Peloton.NumWorkoutsToDownload,
-			IsPasswordSet = !string.IsNullOrEmpty(settings.Peloton.Password)
+			IsPasswordSet = !string.IsNullOrEmpty(settings.Peloton.Password),
+			IsBearerTokenSet = !string.IsNullOrEmpty(settings.Peloton.BearerToken),
+			Api = settings.Peloton.Api ?? new PelotonApiSettings()
 		};
 
 		Garmin = new SettingsGarminGetResponse()
 		{
 			Email = settings.Garmin.Email,
 			Password = null,
+			ServiceTicket = null,
 			TwoStepVerificationEnabled = settings.Garmin.TwoStepVerificationEnabled,
 			FormatToUpload = settings.Garmin.FormatToUpload,
 			Upload = settings.Garmin.Upload,
 			IsPasswordSet = !string.IsNullOrEmpty(settings.Garmin.Password),
+			IsServiceTicketSet = !string.IsNullOrEmpty(settings.Garmin.ServiceTicket),
 			Api = settings.Garmin.Api ?? new GarminApiSettings()
 		};
 	}
@@ -48,8 +52,10 @@ public class SettingsGetResponse
 public class SettingsGarminGetResponse
 {
 	public bool IsPasswordSet { get; set; }
+	public bool IsServiceTicketSet { get; set; }
 	public string? Email { get; set; }
 	public string? Password { get; set; }
+	public string? ServiceTicket { get; set; }
 	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
@@ -60,6 +66,7 @@ public class SettingsGarminPostRequest
 {
 	public string? Email { get; set; }
 	public string? Password { get; set; }
+	public string? ServiceTicket { get; set; }
 	public bool TwoStepVerificationEnabled { get; set; }
 	public bool Upload { get; set; }
 	public FileFormat FormatToUpload { get; set; }
@@ -68,25 +75,30 @@ public class SettingsGarminPostRequest
 
 public class SettingsPelotonGetResponse
 {
-	public SettingsPelotonGetResponse() 
+	public SettingsPelotonGetResponse()
 	{
 		ExcludeWorkoutTypes = new List<WorkoutType>();
 	}
 
 	public bool IsConfigured => !string.IsNullOrWhiteSpace(Email) && IsPasswordSet;
 	public bool IsPasswordSet { get; set; }
+	public bool IsBearerTokenSet { get; set; }
 	public string? Email { get; set; }
 	public string? Password { get; set; }
+	public string? BearerToken { get; set; }
 	public ICollection<WorkoutType> ExcludeWorkoutTypes { get; set; }
 	public int NumWorkoutsToDownload { get; set; }
+	public PelotonApiSettings Api { get; set; } = new PelotonApiSettings();
 }
 
 public class SettingsPelotonPostRequest
 {
 	public string? Email { get; set; }
 	public string? Password { get; set; }
+	public string? BearerToken { get; set; }
 	public ICollection<WorkoutType>? ExcludeWorkoutTypes { get; set; }
 	public int NumWorkoutsToDownload { get; set; }
+	public PelotonApiSettings Api { get; set; } = new PelotonApiSettings();
 }
 
 public static class Mapping
@@ -97,8 +109,10 @@ public static class Mapping
 		{
 			Email = response.Email,
 			Password = response.Password,
+			BearerToken = response.BearerToken,
 			ExcludeWorkoutTypes = response.ExcludeWorkoutTypes,
-			NumWorkoutsToDownload = response.NumWorkoutsToDownload
+			NumWorkoutsToDownload = response.NumWorkoutsToDownload,
+			Api = response.Api,
 		};
 	}
 
@@ -108,8 +122,10 @@ public static class Mapping
 		{
 			Email = request.Email,
 			Password = request.Password,
+			BearerToken = request.BearerToken,
 			ExcludeWorkoutTypes = request.ExcludeWorkoutTypes,
 			NumWorkoutsToDownload = request.NumWorkoutsToDownload,
+			Api = request.Api,
 		};
 	}
 
@@ -119,6 +135,7 @@ public static class Mapping
 		{
 			Email = response.Email,
 			Password = response.Password,
+			ServiceTicket = response.ServiceTicket,
 			TwoStepVerificationEnabled = response.TwoStepVerificationEnabled,
 			FormatToUpload = response.FormatToUpload,
 			Upload = response.Upload,
@@ -132,6 +149,7 @@ public static class Mapping
 		{
 			Email = request.Email,
 			Password = request.Password,
+			ServiceTicket = request.ServiceTicket,
 			TwoStepVerificationEnabled = request.TwoStepVerificationEnabled,
 			FormatToUpload = request.FormatToUpload,
 			Upload = request.Upload,

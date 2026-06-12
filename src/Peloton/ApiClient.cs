@@ -1,15 +1,10 @@
 ﻿using Common.Dto.Peloton;
-using Common.Observe;
-using Common.Service;
 using Common.Stateful;
 using Flurl.Http;
-using Newtonsoft.Json.Linq;
 using Peloton.AnnualChallenge;
-using Peloton.Dto;
-using Serilog;
+using Peloton.Auth;
 using System;
 using System.Globalization;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace Peloton
@@ -28,69 +23,24 @@ namespace Peloton
 
 	public class ApiClient : IPelotonApi
 	{
-		private static readonly ILogger _logger = LogContext.ForClass<ApiClient>();
 		private static readonly string BaseUrl = "https://api.onepeloton.com/api";
-		private static readonly string AuthBaseUrl = "https://api.onepeloton.com/auth/login";
+		private readonly IPelotonAuthApiClient _authApiClient;
 
-		private readonly ISettingsService _settingsService;
-
-		public ApiClient(ISettingsService settingsService)
+		public ApiClient(IPelotonAuthApiClient authApiClient)
 		{
-			_settingsService = settingsService;
+			_authApiClient = authApiClient;
 		}
 
-		public async Task<PelotonApiAuthentication> GetAuthAsync(string overrideUserAgent = null)
+		public Task<PelotonApiAuthentication> GetAuthAsync(string overrideUserAgent = null)
 		{
-			var settings = await _settingsService.GetSettingsAsync();
-
-			settings.Peloton.EnsurePelotonCredentialsAreProvided();
-
-			var auth = _settingsService.GetPelotonApiAuthentication(settings.Peloton.Email);
-			if (auth is object && auth.IsValid(settings))
-				return auth;
-
-			auth = new();
-			auth.Email = settings.Peloton.Email;
-			auth.Password = settings.Peloton.Password;
-
-			try
-			{
-				var response = await $"{AuthBaseUrl}"
-				.WithHeader("Accept-Language", "en-US")
-				.WithHeader("User-Agent", overrideUserAgent ?? "PostmanRuntime/7.26.20")
-				.WithTimeout(30)
-				.PostJsonAsync(new AuthRequest()
-				{
-					username_or_email = auth.Email,
-					password = auth.Password
-				})
-				.ReceiveJson<AuthResponse>();
-
-				auth.UserId = response.user_id;
-				auth.SessionId = response.session_id;
-
-				_settingsService.SetPelotonApiAuthentication(auth);
-				return auth;
-			}
-			catch (FlurlHttpException fe) when (fe.StatusCode == (int)HttpStatusCode.Unauthorized)
-			{
-				_logger.Error(fe, $"Failed to authenticate with Peloton.");
-				_settingsService.ClearPelotonApiAuthentication(auth.Email);
-				throw new PelotonAuthenticationError("Failed to authenticate with Peloton. Please confirm your Peloton Email and Password are correct.", fe);
-			}
-			catch (Exception e)
-			{
-				_logger.Fatal(e, $"Failed to authenticate with Peloton.");
-				_settingsService.ClearPelotonApiAuthentication(auth.Email);
-				throw;
-			}
+			return _authApiClient.Authenticate();
 		}
 
 		public async Task<PagedPelotonResponse<Workout>> GetWorkoutsAsync(int pageSize, int page)
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/user/{auth.UserId}/workouts"
-			.WithCookie("peloton_session_id", auth.SessionId)
+			.WithOAuthBearerToken(auth.Token.AccessToken)
 			.WithCommonHeaders()
 			.SetQueryParams(new
 			{
@@ -106,7 +56,7 @@ namespace Peloton
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/user/{auth.UserId}/workouts"
-			.WithCookie("peloton_session_id", auth.SessionId)
+			.WithOAuthBearerToken(auth.Token.AccessToken)
 			.WithCommonHeaders()
 			.SetQueryParams(new
 			{
@@ -125,7 +75,7 @@ namespace Peloton
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/user/{userId}/workouts"
-			.WithCookie("peloton_session_id", auth.SessionId)
+			.WithOAuthBearerToken(auth.Token.AccessToken)
 			.WithCommonHeaders()
 			.SetQueryParams(new
 			{
@@ -144,7 +94,7 @@ namespace Peloton
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/workout/{id}"
-				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithOAuthBearerToken(auth.Token.AccessToken)
 				.WithCommonHeaders()
 				.SetQueryParams(new
 				{
@@ -160,7 +110,7 @@ namespace Peloton
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/workout/{id}/performance_graph"
-				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithOAuthBearerToken(auth.Token.AccessToken)
 				.WithCommonHeaders()
 				.SetQueryParams(new
 				{
@@ -176,7 +126,7 @@ namespace Peloton
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/ride/{rideId}/details"
-				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithOAuthBearerToken(auth.Token.AccessToken)
 				.WithCommonHeaders()
 				.GetStringAsync();
 		}
@@ -185,7 +135,7 @@ namespace Peloton
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/me"
-			.WithCookie("peloton_session_id", auth.SessionId)
+			.WithOAuthBearerToken(auth.Token.AccessToken)
 			.WithCommonHeaders()
 			.GetJsonAsync<UserData>();
 		}
@@ -194,7 +144,7 @@ namespace Peloton
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/workout/{id}"
-				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithOAuthBearerToken(auth.Token.AccessToken)
 				.WithCommonHeaders()
 				.SetQueryParams(new
 				{
@@ -207,7 +157,7 @@ namespace Peloton
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/workout/{id}/performance_graph"
-				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithOAuthBearerToken(auth.Token.AccessToken)
 				.WithCommonHeaders()
 				.SetQueryParams(new
 				{
@@ -220,7 +170,7 @@ namespace Peloton
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/user/{auth.UserId}/challenges/current"
-				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithOAuthBearerToken(auth.Token.AccessToken)
 				.WithCommonHeaders()
 				.SetQueryParams(new
 				{
@@ -233,7 +183,7 @@ namespace Peloton
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/user/{auth.UserId}/challenge/{challengeId}"
-				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithOAuthBearerToken(auth.Token.AccessToken)
 				.WithCommonHeaders()
 				.GetJsonAsync<PelotonUserChallengeDetail>();
 		}
@@ -242,7 +192,7 @@ namespace Peloton
 		{
 			var auth = await GetAuthAsync();
 			return await $"{BaseUrl}/ride/{rideId}/details"
-				.WithCookie("peloton_session_id", auth.SessionId)
+				.WithOAuthBearerToken(auth.Token.AccessToken)
 				.WithCommonHeaders()
 				.GetJsonAsync<RideSegments>();
 		}
